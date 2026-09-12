@@ -36,7 +36,7 @@ button{cursor:pointer}
 
 /* 상단 */
 .top{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 16px 10px}
-.clock{font-size:34px;font-weight:700;letter-spacing:-.5px;line-height:1}
+.clock{font-size:30px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
 .slot{color:var(--muted);font-size:14px;text-align:right}
 .slot b{color:var(--ink);font-weight:600}
 .banner{margin:0 16px 10px;padding:10px 12px;border-left:4px solid var(--danger);background:#3a2f31;font-size:14px}
@@ -45,7 +45,19 @@ button{cursor:pointer}
 /* 기록 버튼 = 노란 안내판 */
 .plate{display:flex;flex-direction:column;justify-content:space-between;width:calc(100% - 32px);margin:0 16px;min-height:32vh;padding:20px 20px 18px;border:0;border-radius:4px;background:var(--sign);color:#17191c;text-align:left;box-shadow:inset 0 -6px 0 rgba(0,0,0,.14)}
 .plate:active{transform:translateY(2px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)}
-.plate .pict{width:56px;height:56px}
+.plate .pict{width:58px;height:58px;overflow:visible}
+.plate .pict .plane{transform-box:fill-box;transform-origin:center;animation:takeoff 3.4s cubic-bezier(.4,0,.5,1) infinite}
+.plate .pict .trail rect{fill:#17191c;opacity:.25;animation:trail 3.4s linear infinite}
+.plate .pict .trail rect:nth-child(2){animation-delay:.12s}
+.plate .pict .trail rect:nth-child(3){animation-delay:.24s}
+@keyframes takeoff{
+  0%{transform:translate(-14px,12px) rotate(-4deg);opacity:0}
+  12%{opacity:1}
+  55%{transform:translate(4px,-2px) rotate(0deg);opacity:1}
+  85%{transform:translate(18px,-16px) rotate(6deg);opacity:.9}
+  100%{transform:translate(26px,-26px) rotate(8deg);opacity:0}
+}
+@keyframes trail{0%,40%{opacity:0}55%{opacity:.3}100%{opacity:0}}
 .plate .big{font-size:32px;font-weight:700;line-height:1.2;letter-spacing:-.5px}
 .plate .sub{font-size:15px;font-weight:600;opacity:.75}
 .plate.busy{opacity:.7}
@@ -57,30 +69,38 @@ button{cursor:pointer}
 .grp{margin-bottom:10px}
 .grp .lab{font-size:13px;color:var(--muted);margin-bottom:4px}
 .grp .lab.air{color:var(--sign);font-weight:700;font-size:14px}
-.grp .lab.city{color:#3DDC84;font-weight:700;font-size:14px}
-#segDirCity button[aria-pressed="true"]{border-color:#3DDC84;color:#3DDC84;box-shadow:inset 0 0 0 1px #3DDC84}
+.grp .lab.city{color:#A8CBFF;font-weight:700;font-size:14px}
+#segDirCity button[aria-pressed="true"]{border-color:#A8CBFF;color:#A8CBFF;box-shadow:inset 0 0 0 1px #A8CBFF}
 .seg{display:flex;gap:6px}
 .seg.wrap{flex-wrap:wrap}
 .seg.wrap button{flex:1 1 30%;min-width:100px}
 .seg button{flex:1;min-height:48px;border:1px solid var(--line);background:var(--panel);border-radius:4px;font-weight:600;font-size:15px}
 .seg button[aria-pressed="true"]{border-color:var(--sign);color:var(--sign);background:#3A3F46;box-shadow:inset 0 0 0 1px var(--sign)}
-.manual{display:block;width:calc(100% - 32px);margin:2px 16px 0;min-height:44px;background:transparent;border:1px dashed var(--line);border-radius:4px;color:var(--muted);font-size:14px}
+
+.manual{display:flex;align-items:center;gap:12px;width:calc(100% - 32px);margin:12px 16px 0;padding:14px;background:var(--panel);border:1px solid var(--line);border-left:5px solid #A8CBFF;border-radius:6px;color:var(--ink);text-align:left}
+.manual:active{background:#3A3F46}
+.manual .mpin{flex:none;width:26px;height:26px;border-radius:50%;background:#A8CBFF;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z'/%3E%3C/svg%3E") center/contain no-repeat}
+.manual .mtxt{flex:1;min-width:0}
+.manual .mtxt b{display:block;font-size:15px;font-weight:700;color:#A8CBFF}
+.manual .mtxt i{display:block;font-style:normal;font-size:12.5px;color:var(--muted);margin-top:2px}
+.manual .marrow{flex:none;color:var(--muted);font-size:22px;line-height:1}
 
 /* 전광판 */
 .board{margin:16px;background:var(--board);border-top:3px solid var(--sign);padding:12px 0 6px}
 .board h2{font-size:15px;font-weight:600;margin:0 14px 2px;color:var(--ink)}
 .board .hint{font-size:13px;color:var(--muted);margin:0 14px 8px}
-.brow{display:grid;grid-template-columns:28px 1fr 64px;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid #30353c}
+.brow{display:grid;grid-template-columns:28px 1fr 64px;align-items:center;gap:8px;padding:11px 14px;border-top:1px solid #30353c}
+.brow:nth-of-type(even){background:#1F2328}
 .brow .rk{color:var(--muted);font-weight:600}
-.brow .zn{color:var(--sign);font-size:18px;font-weight:600;line-height:1.25}
+.brow .zn{color:#FFC81E;font-size:19px;font-weight:700;line-height:1.25}
 .brow .bar{height:4px;background:#30353c;margin-top:5px;border-radius:2px;overflow:hidden}
 .brow .bar i{display:block;height:100%;background:var(--sign)}
 .brow .ct{text-align:right;font-size:14px;color:var(--muted)}
 .brow .ct b{display:block;color:var(--ink);font-size:17px}
 a.brow{color:inherit;text-decoration:none;min-height:64px;background:transparent}
 a.brow:active{background:#2a2e34}
-.brow .dest{font-size:13px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:5px}
-.brow .dest.kakao:before{background:#FFCD00}
+.brow .dest{font-size:14px;font-weight:500;color:#C9CFD6;margin-top:4px;display:flex;align-items:center;gap:6px}
+.brow .dest:before{background:#03C75A}
 .brow .dest:before{content:'';width:12px;height:12px;flex:none;background:#03C75A;border-radius:2px;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 0a4.5 4.5 0 0 0-4.5 4.5C1.5 8 6 12 6 12s4.5-4 4.5-7.5A4.5 4.5 0 0 0 6 0zm0 6.3a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 0a4.5 4.5 0 0 0-4.5 4.5C1.5 8 6 12 6 12s4.5-4 4.5-7.5A4.5 4.5 0 0 0 6 0zm0 6.3a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6z'/%3E%3C/svg%3E") center/contain no-repeat}
 .leaflet-popup-content a.navlink{display:inline-block;margin-top:6px;padding:6px 10px;background:#03C75A;color:#fff;border-radius:3px;font-weight:600;text-decoration:none}
 .leaflet-popup-content a.navlink[href*="kakao"],.nvinfo a.navlink[href*="kakao"]{background:#FFCD00;color:#17191c}
@@ -136,8 +156,47 @@ a.brow:active{background:#2a2e34}
 .zbar .track{height:14px;background:var(--panel);border-radius:2px;overflow:hidden}
 .zbar .track i{display:block;height:100%}
 .zbar .c{text-align:right}
+.fz{padding:9px 0;border-top:1px solid var(--line)}
+.fz:first-child{border-top:0}
+.fz .top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.fz .nm{font-size:15px;font-weight:600}
+.fz .st{color:var(--sign);font-size:14px;letter-spacing:1px;flex:none}
+.fz .nt{font-size:13px;color:var(--muted);margin-top:2px}
+.fz .me{font-size:13px;margin-top:3px;color:var(--blue)}
+.fz.hot .nm{color:var(--sign)}
+.pick{display:flex;gap:6px;align-items:stretch}
+.pick select{flex:1 1 auto;min-width:0;text-overflow:ellipsis}
+.mini{flex:none;min-height:46px;padding:0 10px;border-radius:4px;border:1px solid var(--line);background:var(--panel);font-size:13px;font-weight:600;white-space:nowrap}
+.mini.gps{color:#A8CBFF;border-color:#A8CBFF}
+.mini.mic{color:var(--sign);border-color:var(--sign)}
+.mini.on{background:var(--danger);border-color:var(--danger);color:#fff}
+.mini:disabled{opacity:.6}
+.voicemsg{font-size:14px;color:var(--muted);min-height:20px;margin-top:6px}
+.voicemsg.hear{color:var(--sign);font-weight:600}
+.btn2{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
+.btn.ride{background:#3DDC84;border-color:#3DDC84;color:#10331f;font-weight:700}
+.btn.navi{width:100%;margin-top:10px;background:#FFCD00;border-color:#FFCD00;color:#17191c;font-weight:700}
+.rstep{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin:8px 0 6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.rstep::-webkit-scrollbar{height:3px}
+.rstep::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+.rstep b{flex:none;white-space:nowrap;background:var(--board);border-left:3px solid var(--sign);padding:8px 10px;border-radius:3px;font-size:14.5px}
+.rstep i{flex:none}
+.rstep b.br{border-left-color:var(--blue);color:var(--blue)}
+.rstep i{font-style:normal;color:var(--muted)}
+.ralt{font-size:14px;color:var(--muted);margin-top:4px}
+.ralt b{color:var(--ink);font-weight:600}
+.rcau{font-size:14px;color:#FFD98A;margin-top:6px}
+.road{padding:10px 0;border-top:1px solid var(--line)}
+.road:first-child{border-top:0}
+.road{padding:12px 0}
+.road .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.road .rn{font-size:16px;font-weight:700;color:var(--ink);line-height:1.3}
+.road .rx{font-size:11px;font-weight:700;color:var(--slate);background:var(--muted);border-radius:3px;padding:2px 7px;flex:none}
+.road .rs{font-size:13.5px;color:var(--blue);margin-top:5px;line-height:1.45}
+.road .rt{font-size:13.5px;color:var(--muted);margin-top:3px;line-height:1.55}
+.road .rt span{display:block}
 .heat{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
-.heat th{font-weight:600;color:var(--muted);padding:3px 0}
+.heat th{font-weight:600;color:var(--muted);padding:3px 0;font-size:11px}
 .heat td{height:30px;text-align:center;border:1px solid var(--slate);color:#17191c;font-weight:700}
 .heat td.zero{color:transparent;background:var(--panel)}
 .heat td.now{outline:2px solid var(--ink);outline-offset:-2px}
@@ -172,7 +231,7 @@ a.brow:active{background:#2a2e34}
 /* 하단 탭 */
 .tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--board);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:1000}
 .tabbar .in{display:flex;width:100%;max-width:560px}
-.tabbar button{flex:1;height:var(--tabh);border:0;background:transparent;color:var(--muted);font-weight:600;font-size:14px;border-top:3px solid transparent;padding:0 2px}
+.tabbar button{flex:1;height:var(--tabh);border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;border-top:3px solid transparent;padding:0 1px;letter-spacing:-.5px}
 .tabbar button[aria-selected="true"]{color:var(--sign);border-top-color:var(--sign)}
 
 /* 시트·토스트 */
@@ -191,7 +250,11 @@ a.brow:active{background:#2a2e34}
 .toast{position:fixed;left:50%;bottom:calc(var(--tabh) + 14px + env(safe-area-inset-bottom));transform:translateX(-50%);width:calc(100% - 32px);max-width:528px;display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:var(--ink);color:#17191c;border-radius:4px;z-index:3000;font-weight:600}
 .toast.on{display:flex}
 .toast button{border:0;background:transparent;color:#17191c;text-decoration:underline;font-weight:700;min-height:36px}
-@media (prefers-reduced-motion:reduce){.plate.saved{animation:none;box-shadow:0 0 0 6px var(--ok)}.plate:active{transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .plate.saved{animation:none;box-shadow:0 0 0 6px var(--ok)}
+  .plate:active{transform:none}
+  .plate .pict .plane,.plate .pict .trail rect{animation:none;opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
@@ -205,9 +268,13 @@ a.brow:active{background:#2a2e34}
     <div class="banner" id="storeBanner" style="display:none"></div>
 
     <button class="plate" id="recBtn" type="button">
-      <svg class="pict" viewBox="0 0 64 64" aria-hidden="true"><path fill="#17191c" d="M60 22.5c1.6-3.4-1.3-7-5-6.2l-12.6 3L25.6 6.8a3 3 0 0 0-2.9-.4l-4 1.6a1.6 1.6 0 0 0-.5 2.7l11.6 12.3-12.7 3-6.6-5a2.5 2.5 0 0 0-2.3-.4l-2.6.9a1.5 1.5 0 0 0-.7 2.3l7.4 10.4a4 4 0 0 0 4.2 1.6L57 26.6c1.3-.4 2.4-2.4 3-4.1zM6 52h52v5H6z"/></svg>
+      <svg class="pict" viewBox="0 0 64 64" aria-hidden="true">
+        <g class="trail"><rect x="6" y="50" width="14" height="3" rx="1.5"/><rect x="24" y="50" width="10" height="3" rx="1.5"/><rect x="38" y="50" width="6" height="3" rx="1.5"/></g>
+        <path class="plane" fill="#17191c" d="M60 22.5c1.6-3.4-1.3-7-5-6.2l-12.6 3L25.6 6.8a3 3 0 0 0-2.9-.4l-4 1.6a1.6 1.6 0 0 0-.5 2.7l11.6 12.3-12.7 3-6.6-5a2.5 2.5 0 0 0-2.3-.4l-2.6.9a1.5 1.5 0 0 0-.7 2.3l7.4 10.4a4 4 0 0 0 4.2 1.6L57 26.6c1.3-.4 2.4-2.4 3-4.1z"/>
+        <rect class="runway" x="4" y="57" width="56" height="4" rx="2" fill="#17191c"/>
+      </svg>
       <span>
-        <span class="big" id="recLabel">공항행 콜 기록</span><br>
+        <span class="big" id="recLabel">서울 → 공항</span><br>
         <span class="sub" id="recSub">정차한 뒤 누르면 지금 위치가 저장됩니다</span>
       </span>
     </button>
@@ -228,26 +295,29 @@ a.brow:active{background:#2a2e34}
       </div>
       <div class="grp"><div class="lab">호출 유형</div>
         <div class="seg" id="segType">
-          <button type="button" data-v="일반">일반</button>
-          <button type="button" data-v="XL">XL</button>
+          <button type="button" data-v="우버XL">우버XL</button>
+          <button type="button" data-v="카카오">카카오</button>
+          <button type="button" data-v="길손">길손</button>
           <button type="button" data-v="예약">예약</button>
-          <button type="button" data-v="모범">모범</button>
         </div>
       </div>
       <div class="grp"><div class="lab">터미널</div>
         <div class="seg" id="segTerm">
-          <button type="button" data-v="">모름</button>
           <button type="button" data-v="T1">T1</button>
           <button type="button" data-v="T2">T2</button>
         </div>
       </div>
     </div>
-    <button class="manual" id="manualBtn" type="button">위치 없이 권역만 골라 기록</button>
+    <button class="manual" id="manualBtn" type="button">
+      <span class="mpin" aria-hidden="true"></span>
+      <span class="mtxt"><b>위치 없이 권역만 고르기</b><i>GPS가 안 잡힐 때 명동·홍대처럼 지역만 저장합니다</i></span>
+      <span class="marrow" aria-hidden="true">›</span>
+    </button>
 
     <div class="board" id="board"></div>
 
     <div class="sec">
-      <h3>최근 기록</h3>
+      <h3>최근 내역</h3>
       <div id="recent"></div>
     </div>
   </section>
@@ -275,9 +345,18 @@ a.brow:active{background:#2a2e34}
         <option value="all">전체</option>
       </select>
       <label><input type="checkbox" id="lyHotel" checked> 호텔</label>
+      <label><input type="checkbox" id="lySpot"> 관광지</label>
+      <select id="spotCat" aria-label="관광지 분류">
+        <option value="all">관광지 전체</option>
+        <option value="history">역사문화</option>
+        <option value="shop">쇼핑·먹자</option>
+        <option value="local">로컬·신흥</option>
+        <option value="view">전망·자연</option>
+        <option value="biz">비즈니스·의료</option>
+      </select>
       <label><input type="checkbox" id="lyZone"> 권역 범위</label>
       <button type="button" id="btnMe">내 위치</button>
-      <button type="button" id="btnFit">기록 전체</button>
+      <button type="button" id="btnFit">전체 보기</button>
     </div>
     <div class="trackbar">
       <button type="button" id="btnTrack">주행 경로 기록 시작</button>
@@ -295,6 +374,11 @@ a.brow:active{background:#2a2e34}
       <span><i style="background:#F4A259"></i>서울→시외</span>
       <span><i style="background:#C792EA"></i>시외→서울</span>
       <span><i style="border:2px solid var(--muted);background:var(--slate)"></i>외국인 선호 호텔 (테두리색 = 권역)</span>
+      <span><i style="background:#C792EA;border-radius:2px"></i>역사문화</span>
+      <span><i style="background:#F4A259;border-radius:2px"></i>쇼핑·먹자</span>
+      <span><i style="background:#69F0AE;border-radius:2px"></i>로컬·신흥</span>
+      <span><i style="background:#8AB6F9;border-radius:2px"></i>전망·자연</span>
+      <span><i style="background:#FFC81E;border-radius:2px"></i>비즈니스·의료</span>
       <span><i style="background:var(--ok)"></i>주행 경로</span>
     </div>
   </section>
@@ -326,6 +410,10 @@ a.brow:active{background:#2a2e34}
     <div class="sec blue">
       <h3>권역별 픽업</h3>
       <div id="zbars"></div>
+    </div>
+    <div class="sec">
+      <h3>권역별 외국인 밀집도</h3>
+      <div id="foreignBox"></div>
     </div>
     <div class="sec green">
       <h3>요일 × 시간대</h3>
@@ -375,6 +463,41 @@ a.brow:active{background:#2a2e34}
         <p>기본값은 <b>기아 스포티지 2.0 LPG</b> 기준입니다(복합연비 8.5km/L). 실제 주행 연비와 충전 단가를 넣으면 계산이 정확해집니다.</p>
         <p>평균 요금은 공항→서울 기록이 쌓이면 그 평균으로 자동 갱신됩니다. 승객이 통행료를 내는 경우가 많아 태웠을 때의 통행료는 계산에서 뺐습니다.</p>
       </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-road" aria-label="도로">
+    <div class="sec">
+      <h3>어느 길로 갈까?</h3>
+      <div class="field">
+        <label class="hi" for="rdFrom">출발 권역</label>
+        <div class="pick"><select id="rdFrom"></select>
+          <button type="button" id="btnHere" class="mini gps" title="현위치로 잡기">현위치</button></div>
+      </div>
+      <div class="field">
+        <label class="hi" for="rdTo">도착 권역</label>
+        <div class="pick"><select id="rdTo"></select>
+          <button type="button" id="btnVoice" class="mini mic" title="음성으로 도착지 말하기">🎤 말하기</button></div>
+      </div>
+      <div class="voicemsg" id="voiceMsg"></div>
+      <div class="btn2">
+        <button class="btn primary" type="button" id="btnRoad">경로 보기</button>
+        <button class="btn ride" type="button" id="btnRide">출발 (현위치)</button>
+      </div>
+      <div id="roadResult"></div>
+    </div>
+    <div class="sec blue">
+      <h3>서울 간선도로</h3>
+      <div class="filters" style="padding:0 0 10px">
+        <select id="roadAxis" aria-label="축">
+          <option value="all">전체</option>
+          <option value="동서">동서축</option>
+          <option value="남북">남북축</option>
+          <option value="순환">순환</option>
+          <option value="공항">공항축</option>
+        </select>
+      </div>
+      <div id="roadList"></div>
     </div>
   </section>
 
@@ -430,7 +553,8 @@ a.brow:active{background:#2a2e34}
 </div>
 
 <nav class="tabbar" aria-label="화면 전환"><div class="in" role="tablist">
-  <button type="button" role="tab" data-tab="v-rec" aria-selected="true">기록</button>
+  <button type="button" role="tab" data-tab="v-rec" aria-selected="true">입력</button>
+  <button type="button" role="tab" data-tab="v-road" aria-selected="false">도로</button>
   <button type="button" role="tab" data-tab="v-map" aria-selected="false">지도</button>
   <button type="button" role="tab" data-tab="v-stat" aria-selected="false">통계</button>
   <button type="button" role="tab" data-tab="v-ret" aria-selected="false">귀로</button>
@@ -469,7 +593,8 @@ var ZONES = [
   {name:'잠실',             lat:37.5120, lng:127.1000, r:1.4, color:'#76D7C4', dest:{n:'시그니엘 서울', lat:37.5126039, lng:127.1025242}},
   {name:'성수',             lat:37.5445, lng:127.0560, r:1.3, color:'#F1948A', dest:{n:'성수역', lat:37.544577, lng:127.055991}},
   {name:'김포공항',         lat:37.5625, lng:126.8010, r:1.8, color:'#D5D8DC', dest:{n:'김포공항 국제선', lat:37.564964, lng:126.800651}},
-  {name:'인천공항',         lat:37.4600, lng:126.4400, r:6.0, color:'#FFFFFF', dest:null}
+  {name:'인천공항 T1',      lat:37.4497, lng:126.4506, r:3.0, color:'#FFFFFF', dest:{n:'인천공항 제1여객터미널', lat:37.4497, lng:126.4506}},
+  {name:'인천공항 T2',      lat:37.4689, lng:126.4334, r:3.0, color:'#D5D8DC', dest:{n:'인천공항 제2여객터미널', lat:37.4688875, lng:126.433359}}
 ];
 var OTHER = '기타';
 
@@ -505,6 +630,287 @@ var HOTELS = [
   {n:'안다즈 서울 강남', lat:37.5254876, lng:127.0289201, note:''},
   {n:'인천공항 T1', lat:37.4497, lng:126.4506, note:'예약택시 1C·14C'},
   {n:'인천공항 T2', lat:37.4688875, lng:126.433359, note:'예약택시 1C·10C'}
+];
+
+/* 서울 간선도로. 88도로는 올림픽대로의 옛 이름이라 같은 도로로 본다. */
+var ROADS = [
+  {n:'올림픽대로', axis:'동서', side:'남', sec:'김포공항~강일(한강 남안)',
+   tip:'옛 88도로. 공항·강서에서 강남·잠실까지 최단. 출퇴근 때 여의도~반포 구간이 막힘'},
+  {n:'강변북로', axis:'동서', side:'북', sec:'행주~구리(한강 북안)',
+   tip:'도심·용산·성수를 잇는 축. 한남대교 북단과 반포 나들목 근처가 상습 정체'},
+  {n:'내부순환로', axis:'순환', side:'북', sec:'성산~홍은~정릉~성동',
+   tip:'강북 서쪽과 동쪽을 잇는 우회로. 강변북로가 막힐 때 대안. 마장램프 정체 잦음'},
+  {n:'동부간선도로', axis:'남북', side:'북', sec:'성수~장안~노원~의정부',
+   tip:'동북권 남북축. 중랑천 따라감. 비 많이 오면 통제되는 구간 있음'},
+  {n:'북부간선도로', axis:'동서', side:'북', sec:'중랑~구리',
+   tip:'동북권에서 구리·남양주 방향으로 나갈 때'},
+  {n:'서부간선도로', axis:'남북', side:'남', sec:'금천~구로~양평동',
+   tip:'서남권 남북축. 지하도로 개통으로 지상보다 빠름. 화물차 많음'},
+  {n:'서울제물포터널', axis:'동서', side:'남', sec:'신월~여의도 방면',
+   tip:'유료. 국회대로 정체를 건너뛰고 여의도로 진입할 때'},
+  {n:'노들길', axis:'동서', side:'남', sec:'여의도~노량진~대방',
+   tip:'올림픽대로 여의도 구간이 막힐 때 신호 있는 우회로'},
+  {n:'강남순환로', axis:'동서', side:'남', sec:'금천~관악~사당~수서',
+   tip:'유료 터널. 서남권에서 강남·수서로 넘어갈 때 남부순환로보다 빠름'},
+  {n:'남부순환로', axis:'동서', side:'남', sec:'김포공항~사당~양재~송파',
+   tip:'신호 많음. 올림픽대로가 막힐 때만'},
+  {n:'자유로', axis:'동서', side:'북', sec:'상암~일산~파주',
+   tip:'서북권에서 고양·파주 시외 운행할 때'},
+  {n:'인천공항고속도로', axis:'공항', side:'서', sec:'상암~김포공항~영종대교~인천공항',
+   tip:'북쪽·도심에서 인천공항 갈 때 기본 경로. 영종대교 통행료'},
+  {n:'인천대교', axis:'공항', side:'서', sec:'송도~인천공항',
+   tip:'강남·서남권에서 제2경인 타고 올 때. 통행료가 영종대교보다 비쌈'},
+  {n:'제2경인고속도로', axis:'공항', side:'남', sec:'안양~인천~인천대교',
+   tip:'강남 출발 공항행에서 올림픽대로 정체를 피할 때'},
+  {n:'남산1호터널', axis:'남북', side:'북', sec:'한남~장충~명동',
+   tip:'강남에서 명동·을지로 진입 최단. 혼잡통행료 구간'},
+  {n:'남산3호터널', axis:'남북', side:'북', sec:'한남~용산~회현',
+   tip:'서울역·남대문 방면일 때 1호터널보다 유리'}
+];
+/* 한강 다리 (서→동 순). 출발·도착 위치에 맞는 다리를 고른다. */
+var BRIDGES = [
+  {n:'행주대교', lng:126.8150}, {n:'가양대교', lng:126.8686}, {n:'성산대교', lng:126.8971},
+  {n:'양화대교', lng:126.9062}, {n:'서강대교', lng:126.9300}, {n:'마포대교', lng:126.9450},
+  {n:'원효대교', lng:126.9550}, {n:'한강대교', lng:126.9580}, {n:'동작대교', lng:126.9800},
+  {n:'반포대교', lng:126.9960}, {n:'한남대교', lng:127.0100}, {n:'동호대교', lng:127.0190},
+  {n:'성수대교', lng:127.0320}, {n:'영동대교', lng:127.0520}, {n:'청담대교', lng:127.0660},
+  {n:'잠실대교', lng:127.0880}, {n:'올림픽대교', lng:127.1080}, {n:'천호대교', lng:127.1220}
+];
+/* 권역을 동서남북 방면으로 묶는다 */
+var ZONE_AREA = {
+  '광화문·종로':'도심', '명동·을지로':'도심', '서울역·남대문':'도심', '동대문':'도심',
+  '홍대·연남':'서북', '마포·공덕':'서북',
+  '성수':'동북',
+  '용산역':'용산', '이태원·한남·남산':'용산',
+  '여의도':'서남',
+  '강남역·역삼':'강남', '신사·압구정·청담':'강남', '삼성·코엑스':'강남',
+  '잠실':'동남',
+  '김포공항':'공항서', '인천공항 T1':'공항서', '인천공항 T2':'공항서', '인천공항':'공항서'
+};
+function zoneArea(name){ return ZONE_AREA[name] || '기타'; }
+/* 말한 내용에서 권역을 찾는다. 앞에 오는 규칙이 우선한다. */
+var ZONE_WORDS = [
+  {z:'인천공항 T2', w:['인천공항 티투','인천공항 t2','제2여객터미널','이터미널','티투','t2','투터미널']},
+  {z:'인천공항 T1', w:['인천공항 티원','인천공항 t1','제1여객터미널','일터미널','티원','t1','인천공항','인천 공항']},
+  {z:'김포공항',    w:['김포공항','김포 공항','김포']},
+  {z:'명동·을지로', w:['명동','을지로','충무로','소공동','롯데호텔']},
+  {z:'서울역·남대문', w:['서울역','남대문','회현','서울 역']},
+  {z:'광화문·종로', w:['광화문','종로','경복궁','인사동','북촌','안국','시청']},
+  {z:'동대문',      w:['동대문','디디피','ddp','신당','동묘']},
+  {z:'홍대·연남',   w:['홍대','연남','합정','상수','망원']},
+  {z:'마포·공덕',   w:['마포','공덕','아현','대흥']},
+  {z:'용산역',      w:['용산','서울드래곤시티','아이파크몰']},
+  {z:'이태원·한남·남산', w:['이태원','한남','남산','해밀턴','녹사평','경리단']},
+  {z:'여의도',      w:['여의도','국회','더현대','샛강']},
+  {z:'신사·압구정·청담', w:['신사','압구정','청담','가로수길','도산']},
+  {z:'강남역·역삼', w:['강남역','역삼','테헤란','논현','선릉','강남']},
+  {z:'삼성·코엑스', w:['삼성역','코엑스','봉은사','삼성동']},
+  {z:'잠실',        w:['잠실','롯데월드','석촌','송파']},
+  {z:'성수',        w:['성수','서울숲','뚝섬','건대']}
+];
+function normText(t){ return String(t||'').toLowerCase().replace(/\s+/g,''); }
+function matchZoneByText(text){
+  var t=normText(text), i, j, w;
+  if (!t) return null;
+  for (i=0;i<ZONE_WORDS.length;i++){
+    for (j=0;j<ZONE_WORDS[i].w.length;j++){
+      w=normText(ZONE_WORDS[i].w[j]);
+      if (t.indexOf(w)>=0) return ZONE_WORDS[i].z;
+    }
+  }
+  /* 권역 이름 자체를 말한 경우 */
+  for (i=0;i<ZONES.length;i++){
+    if (t.indexOf(normText(ZONES[i].name))>=0) return ZONES[i].name;
+  }
+  return null;
+}
+function isIncheon(name){ return String(name).indexOf('인천공항')===0; }
+function isAirportZone(name){ return isIncheon(name) || name==='김포공항'; }
+function zoneInfo(name){
+  var i;
+  for (i=0;i<ZONES.length;i++) if (ZONES[i].name===name) return ZONES[i];
+  if (name==='인천공항') return zoneInfo('인천공항 T1');   /* 예전 기록 호환 */
+  return null;
+}
+/* 한강 남쪽인지 (위도 기준, 용산·여의도는 개별 지정) */
+function riverSide(name){
+  var z=zoneInfo(name);
+  if (!z) return '북';
+  if (name==='여의도') return '남';
+  if (isAirportZone(name)) return '서';
+  return z.lat >= 37.5250 ? '북' : '남';
+}
+function pickBridge(lngA, lngB){
+  var mid=(lngA+lngB)/2, best=BRIDGES[0], bd=Math.abs(BRIDGES[0].lng-mid), i, d;
+  for (i=1;i<BRIDGES.length;i++){
+    d=Math.abs(BRIDGES[i].lng-mid);
+    if (d<bd){ bd=d; best=BRIDGES[i]; }
+  }
+  return best.n;
+}
+/* 권역의 대표 지점 (없으면 권역 중심) */
+function zonePoint(name){
+  var z=zoneInfo(name);
+  if (!z) return null;
+  if (z.dest) return {n:z.dest.n, lat:z.dest.lat, lng:z.dest.lng};
+  return {n:name, lat:z.lat, lng:z.lng};
+}
+function roadByName(n){ for (var i=0;i<ROADS.length;i++) if (ROADS[i].n===n) return ROADS[i]; return null; }
+/* 출발 권역 → 도착 권역 간선 경로 안내 */
+function routeAdvice(fromZone, toZone){
+  var a=zoneInfo(fromZone), b=zoneInfo(toZone);
+  if (!a || !b || fromZone===toZone) return null;
+  var sa=riverSide(fromZone), sb=riverSide(toZone);
+  var aa=zoneArea(fromZone), ab=zoneArea(toZone);
+  var steps=[], alt=[], caution='', bridge=null;
+
+  /* 공항이 끼면 공항 축을 우선 */
+  if (isIncheon(fromZone) || isIncheon(toZone)){
+    var city = isIncheon(fromZone) ? toZone : fromZone;
+    var cs = riverSide(city), ca = zoneArea(city);
+    if (ca==='강남' || ca==='동남' || ca==='서남'){
+      steps=['인천대교','제2경인고속도로','올림픽대로'];
+      alt=['인천공항고속도로','올림픽대로'];
+      caution='강남·잠실 방면은 인천대교가 보통 빠르지만 통행료가 더 비쌉니다.';
+    } else {
+      steps=['인천공항고속도로','올림픽대로 또는 강변북로'];
+      alt=['인천대교','제2경인고속도로'];
+      caution='도심·강북 방면은 영종대교를 건너 강변북로로 붙는 흐름이 기본입니다.';
+    }
+    return {from:fromZone, to:toZone, steps:steps, bridge:null, alt:alt, caution:caution};
+  }
+  if (fromZone==='김포공항' || toZone==='김포공항'){
+    return {from:fromZone, to:toZone, steps:['올림픽대로'], bridge:null,
+      alt:['공항대로','남부순환로'],
+      caution:'강북 도심으로 갈 때는 가양대교나 성산대교로 넘어가 강변북로를 타는 편이 낫습니다.'};
+  }
+
+  /* 한강을 건너는지 */
+  if (sa!==sb){
+    bridge=pickBridge(a.lng, b.lng);
+    steps = (sa==='북')
+      ? ['강변북로', bridge, '올림픽대로']
+      : ['올림픽대로', bridge, '강변북로'];
+    if ((aa==='강남'&&ab==='도심') || (aa==='도심'&&ab==='강남')){
+      alt=['남산1호터널','한남대교'];
+      caution='명동·을지로는 남산1호터널이 가장 빠르고, 서울역·남대문은 3호터널이 낫습니다.';
+    } else {
+      alt=['내부순환로','남부순환로'];
+      caution='출퇴근 시간에는 다리 진입로부터 밀립니다. 한 다리 옆으로 옮기는 편이 빠를 때가 많습니다.';
+    }
+    return {from:fromZone, to:toZone, steps:steps, bridge:bridge, alt:alt, caution:caution};
+  }
+
+  /* 같은 편에서의 이동 */
+  if (sa==='북'){
+    if ((aa==='서북'&&ab==='동북') || (aa==='동북'&&ab==='서북')){
+      steps=['내부순환로']; alt=['강변북로','북부간선도로'];
+      caution='내부순환로 마장램프 부근이 상습 정체입니다.';
+    } else if (aa==='동북' || ab==='동북'){
+      steps=['강변북로','동부간선도로']; alt=['내부순환로'];
+      caution='동부간선도로는 비가 많이 오면 일부 구간이 통제됩니다.';
+    } else if (aa==='도심' && ab==='도심'){
+      steps=['세종대로·을지로 등 도심 간선']; alt=['청계천로','퇴계로'];
+      caution='도심 안은 간선도로보다 신호 흐름이 관건입니다.';
+    } else {
+      steps=['강변북로']; alt=['내부순환로','도심 간선'];
+      caution='한강 북안을 따라가는 흐름이 기본입니다.';
+    }
+  } else {
+    if (aa==='서남' || ab==='서남'){
+      steps=['올림픽대로']; alt=['노들길','서울제물포터널'];
+      caution='여의도 구간이 막히면 노들길로 우회하세요.';
+    } else if ((aa==='강남'&&ab==='동남') || (aa==='동남'&&ab==='강남')){
+      steps=['올림픽대로']; alt=['테헤란로','송파대로'];
+      caution='잠실 방면은 올림픽대로가 기본, 행사 있는 날은 지하철역 주변이 막힙니다.';
+    } else {
+      steps=['올림픽대로']; alt=['강남순환로','남부순환로'];
+      caution='한강 남안 축이 기본입니다.';
+    }
+  }
+  return {from:fromZone, to:toZone, steps:steps, bridge:null, alt:alt, caution:caution};
+}
+
+/* 권역별 외국인 밀집도.
+   score 1~5는 아래 근거 수치를 바탕으로 매긴 상대 등급이다.
+   출처: 서울AI재단 2025 외국인 유동인구 분석(통신 데이터), 호텔별 외국인 투숙 비중 보도,
+        2026 상반기 관광 통계. 자치구 단위 원자료는 한국관광 데이터랩 조회 화면에서만 제공된다. */
+var ZONE_FOREIGN = [
+  {zone:'명동·을지로',      score:5, note:'일평균 외국인 10만 910명으로 1위, 비중 47.1%'},
+  {zone:'이태원·한남·남산', score:5, note:'N서울타워 5만 7,370명, 비중 55.7%로 최고'},
+  {zone:'삼성·코엑스',      score:4, note:'4만 6,813명, 비중 26.4%'},
+  {zone:'강남역·역삼',      score:4, note:'4만 1,210명. 의료관광 환자 201만 명(2025)'},
+  {zone:'홍대·연남',        score:4, note:'4만 213명, 증가율 10.5%'},
+  {zone:'동대문',           score:4, note:'DDP 증가율 12.1%로 1위, 비중 19.6%'},
+  {zone:'광화문·종로',      score:4, note:'경복궁·북촌·광장시장·익선동이 모여 있음'},
+  {zone:'서울역·남대문',    score:4, note:'남대문시장 비중 28.0%, KTX·공항철도 환승'},
+  {zone:'성수',             score:3, note:'2017년 대비 24배 증가, 서울숲 긍정 리뷰 1위'},
+  {zone:'신사·압구정·청담', score:3, note:'피부관리·마사지 지출 153.9% 증가'},
+  {zone:'잠실',             score:3, note:'롯데월드·시그니엘 숙박 수요'},
+  {zone:'용산역',           score:3, note:'서울드래곤시티, KTX 환승'},
+  {zone:'마포·공덕',        score:2, note:'홍대 인접 숙박권'},
+  {zone:'여의도',           score:2, note:'비즈니스 출장객 중심'},
+  {zone:'김포공항',         score:2, note:'일본·중국 노선 중심'},
+  {zone:'인천공항 T1',      score:5, note:'외국인 승하차 1위 지점. 예약택시 1C·14C'},
+  {zone:'인천공항 T2',      score:5, note:'대한항공·아시아나 등. 예약택시 1C·10C'}
+];
+function zoneForeign(name){
+  for (var i=0;i<ZONE_FOREIGN.length;i++) if (ZONE_FOREIGN[i].zone===name) return ZONE_FOREIGN[i];
+  return null;
+}
+/* 외국인 밀집도가 높은데 내 기록이 적은 권역을 찾는다 */
+function foreignGap(recs){
+  var mine={}, i, r, out=[], zf, n;
+  for (i=0;i<recs.length;i++){ r=recs[i]; mine[r.zone]=(mine[r.zone]||0)+1; }
+  for (i=0;i<ZONE_FOREIGN.length;i++){
+    zf=ZONE_FOREIGN[i];
+    if (isAirportZone(zf.zone)) continue;
+    n=mine[zf.zone]||0;
+    out.push({zone:zf.zone, score:zf.score, note:zf.note, mine:n, gap:zf.score*2-n});
+  }
+  out.sort(function(a,b){ return b.gap-a.gap || b.score-a.score; });
+  return out;
+}
+
+/* 외국인 관광 포인트 — 서울AI재단 2025년 외국인 유동인구 분석과 최근 보도 기준 */
+/* 처음 열었을 때의 지도 중심과 배율.
+   카카오는 레벨을 직접 지정한다. 레벨 7 = 경복궁~용산이 한 화면에 들어오는 범위. */
+var MAP_HOME = {lat:37.5580, lng:126.9920, zoom:13, kakaoLevel:7};
+var SPOT_CATS = [
+  {key:'history', name:'역사문화', color:'#C792EA'},
+  {key:'shop',    name:'쇼핑·먹자', color:'#F4A259'},
+  {key:'local',   name:'로컬·신흥', color:'#69F0AE'},
+  {key:'view',    name:'전망·자연', color:'#8AB6F9'},
+  {key:'biz',     name:'비즈니스·의료', color:'#FFC81E'}
+];
+function spotCatName(k){ for (var i=0;i<SPOT_CATS.length;i++) if (SPOT_CATS[i].key===k) return SPOT_CATS[i].name; return ''; }
+function spotCatColor(k){ for (var i=0;i<SPOT_CATS.length;i++) if (SPOT_CATS[i].key===k) return SPOT_CATS[i].color; return '#A7ADB5'; }
+var SPOTS = [
+  /* 역사문화 — 동남아 관광객 비중 높음 */
+  {n:'경복궁', lat:37.579617, lng:126.977041, cat:'history', note:'구글맵 평점 4.7로 최고. 화요일 휴관'},
+  {n:'북촌한옥마을', lat:37.5814696, lng:126.9849519, cat:'history', note:'유럽 관광객 비중 높음. 오후 5시 이후 한산'},
+  {n:'낙산공원', lat:37.5806571, lng:127.0074835, cat:'history', note:'외국인 방문 증가율 10.5%. 성곽길 야경'},
+  {n:'이화벽화마을', lat:37.5779788, lng:127.0071915, cat:'history', note:'낙산공원과 묶어 다님. 주민 거주지'},
+  {n:'익선동 한옥마을', lat:37.5737132, lng:126.9901271, cat:'history', note:'한옥 카페 골목. 종로3가 인근'},
+  /* 쇼핑·먹자 — 일본·중국 관광객 비중 높음 */
+  {n:'명동', lat:37.5653249, lng:126.9849538, cat:'shop', note:'일평균 외국인 10만 910명으로 1위, 비중 47.1%'},
+  {n:'남대문시장', lat:37.559277, lng:126.9777029, cat:'shop', note:'외국인 비중 28.0%. 일요일 휴무'},
+  {n:'광장시장', lat:37.5700385, lng:126.9996038, cat:'shop', note:'증가율 10.4%. 육회·빈대떡, 밤 10시 반까지'},
+  {n:'DDP 동대문', lat:37.5665256, lng:127.0092236, cat:'shop', note:'증가율 12.1%로 1위, 비중 19.6%'},
+  {n:'망원시장', lat:37.5559018, lng:126.9062854, cat:'shop', note:'로컬 맛집 찾는 개별 여행객'},
+  /* 로컬·신흥 — 아메리카 관광객, 젊은 개별 여행객 */
+  {n:'성수동 카페거리', lat:37.5446148, lng:127.0580149, cat:'local', note:'2017년 대비 외국인 24배. 팝업스토어'},
+  {n:'서울숲', lat:37.5443878, lng:127.0374424, cat:'local', note:'긍정 리뷰 비율 79.9%로 1위'},
+  {n:'홍대 일대', lat:37.5561973, lng:126.9250341, cat:'local', note:'일평균 4만 213명, 증가율 10.5%'},
+  {n:'연남동 경의선숲길', lat:37.5588868, lng:126.9254274, cat:'local', note:'홍대와 도보권. 카페·맛집 골목'},
+  {n:'청계천광장', lat:37.5690744, lng:126.9775921, cat:'local', note:'일상 공간을 찾는 흐름의 중심'},
+  /* 전망·자연 */
+  {n:'N서울타워', lat:37.5511694, lng:126.9882266, cat:'view', note:'외국인 비중 55.7%로 최고. 대중교통 불편'},
+  {n:'여의도한강공원', lat:37.5267106, lng:126.9347112, cat:'view', note:'한강 피크닉. 야간 수요'},
+  {n:'북한산 우이령', lat:37.6777287, lng:127.0033015, cat:'view', note:'일평균 4,015명으로 산 중 1위'},
+  /* 비즈니스·의료 */
+  {n:'코엑스·삼성역', lat:37.5116828, lng:127.059151, cat:'biz', note:'일평균 4만 6,813명, 비중 26.4%'},
+  {n:'강남역', lat:37.497952, lng:127.027619, cat:'biz', note:'일평균 4만 1,210명. 의료·뷰티 수요'}
 ];
 
 /* 기록이 쌓이기 전 기본 순위 (우버 2019 공개 데이터 + 호텔 외국인 비중 + 서울시 단속 배치) */
@@ -551,7 +957,20 @@ function isValidDir(v){
   return false;
 }
 function pad2(n){ n = Math.floor(n); return n < 10 ? '0'+n : ''+n; }
-function hhmm(ts){ var d=new Date(ts); return pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+/* 화면 표시는 오전/오후 12시간제, 파일 저장은 24시간제 그대로 */
+function hhmm(ts){
+  var d=new Date(ts), h=d.getHours(), ap=h<12?'오전':'오후', h12=h%12;
+  if (h12===0) h12=12;
+  return ap+' '+h12+':'+pad2(d.getMinutes());
+}
+function hour12(h){ var v=h%12; return v===0?12:v; }
+function ampmOf(h){ return h<12?'오전':'오후'; }
+var BUCKET_RANGE = ['밤 12시~새벽 3시','새벽 3시~아침 6시','아침 6시~오전 9시','오전 9시~낮 12시',
+                    '낮 12시~오후 3시','오후 3시~저녁 6시','저녁 6시~밤 9시','밤 9시~자정'];
+var BUCKET_NAME  = ['밤 12시','새벽 3시','아침 6시','오전 9시','낮 12시','오후 3시','저녁 6시','밤 9시'];
+var BUCKET_SHORT = ['밤12','새3','아6','오9','낮12','오3','저6','밤9'];
+function bucketRange(b){ return BUCKET_RANGE[b]||''; }
+function bucketName(b){ return BUCKET_NAME[b]||''; }
 function fmtDate(ts){ var d=new Date(ts); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes()); }
 function mdDay(ts){ var d=new Date(ts); return (d.getMonth()+1)+'/'+d.getDate()+'('+DAYS[dayIdx(ts)]+')'; }
 function newId(){ return 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
@@ -634,6 +1053,25 @@ function kakaoNaviUrl(lat, lng, name, android){
   }
   return 'kakaonavi-sdk://navigate?'+q;
 }
+var KMAP_PKG = 'net.daum.android.map';
+/* 카카오맵 길찾기 화면(경로 미리보기). 키가 필요 없다. */
+function kakaoMapRouteScheme(sp, ep, android){
+  if (!ep) return '';
+  var q='ep='+ep.lat+','+ep.lng+'&by=car';
+  if (sp && isNum(sp.lat)) q='sp='+sp.lat+','+sp.lng+'&'+q;
+  if (android===undefined) android=isAndroid();
+  if (android){
+    return 'intent://route?'+q+'#Intent;scheme=kakaomap;action=android.intent.action.VIEW;'+
+           'category=android.intent.category.BROWSABLE;package='+KMAP_PKG+
+           ';S.browser_fallback_url='+encodeURIComponent(kakaoMapRouteUrl(ep.lat, ep.lng, ep.n||'목적지'))+';end';
+  }
+  return 'kakaomap://route?'+q;
+}
+function previewRoute(sp, ep){
+  var u=kakaoMapRouteScheme(sp, ep);
+  if (!u){ toast('도착지를 확인할 수 없습니다'); return; }
+  window.location.href=u;
+}
 function startKakaoNavi(lat, lng, name){
   var u=kakaoNaviUrl(lat, lng, name);
   if (!u){ toast('데이터 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
@@ -692,7 +1130,7 @@ function recommend(recs, nowTs){
   var w=dayIdx(nowTs), b=bucketIdx(nowTs), m={}, arr=[], i, r, rw, rb, s, k, diff;
   for (i=0;i<recs.length;i++){
     r=recs[i];
-    if (r.dir!=='toAir' || !r.zone || r.zone===OTHER || r.zone==='인천공항') continue;
+    if (r.dir!=='toAir' || !r.zone || r.zone===OTHER || isAirportZone(r.zone)) continue;
     rw=dayIdx(r.ts); rb=bucketIdx(r.ts); s=0;
     diff=Math.abs(rb-b);
     if (rb===b) s = (rw===w) ? 3 : 1.5;
@@ -807,13 +1245,23 @@ if (typeof window !== 'undefined') {
     validTrack:validTrack, mergeTracks:mergeTracks, tracksToCSV:tracksToCSV, trackLabel:trackLabel,
     routeUrl:routeUrl, kakaoMapRouteUrl:kakaoMapRouteUrl, naviAppName:naviAppName, getNaviApp:getNaviApp,
     dirLabel:dirLabel, dirColor:dirColor, dirFromLabel:dirFromLabel, dirMatches:dirMatches, isAirDir:isAirDir, DIRS:DIRS,
+    SPOTS:SPOTS, SPOT_CATS:SPOT_CATS, spotCatName:spotCatName, spotCatColor:spotCatColor, MAP_HOME:MAP_HOME,
+    ZONE_FOREIGN:ZONE_FOREIGN, zoneForeign:zoneForeign, foreignGap:foreignGap,
+    ROADS:ROADS, BRIDGES:BRIDGES, zoneArea:zoneArea, riverSide:riverSide, pickBridge:pickBridge,
+    routeAdvice:routeAdvice, roadByName:roadByName, zonePoint:zonePoint,
+    isIncheon:isIncheon, isAirportZone:isAirportZone, matchZoneByText:matchZoneByText, ZONE_WORDS:ZONE_WORDS,
+    nearestZone:nearestZone, reverseGeocode:reverseGeocode,
+    kakaoMapRouteScheme:kakaoMapRouteScheme,
     fuelCost:fuelCost, waitMinutes:waitMinutes, returnPlan:returnPlan, rushHours:rushHours,
     retSettings:retSettings, RET_DEFAULT:RET_DEFAULT};
 }
 
 /* ───────── 상태 ───────── */
 var records = [];
-var prefs = {dir:'toAir', type:'일반', term:''};
+var TYPES = ['우버XL','카카오','길손','예약'];
+var TERMS = ['T1','T2'];
+function inList(arr, v){ for (var i=0;i<arr.length;i++) if (arr[i]===v) return true; return false; }
+var prefs = {dir:'toAir', type:'우버XL', term:'T1'};
 var busy = false;
 var lastBucketKey = '';
 
@@ -821,10 +1269,17 @@ function loadAll(){
   var raw = sGet(STORE_KEY), p;
   if (raw){ try { var arr=JSON.parse(raw); if (Object.prototype.toString.call(arr)==='[object Array]') records=arr.filter(validRec); } catch(e){ records=[]; } }
   raw = sGet(PREF_KEY);
-  if (raw){ try { p=JSON.parse(raw); if (p && isValidDir(p.dir)) prefs.dir=p.dir; if (p && p.type) prefs.type=p.type; if (p && typeof p.term==='string') prefs.term=p.term; } catch(e){} }
+  if (raw){
+    try {
+      p=JSON.parse(raw);
+      if (p && inList(TYPES, p.type)) prefs.type=p.type;     /* 예전 유형 값은 기본값으로 되돌림 */
+      if (p && inList(TERMS, p.term)) prefs.term=p.term;
+    } catch(e){}
+  }
 }
 function persist(){ sSet(STORE_KEY, JSON.stringify(records)); }
-function savePrefs(){ sSet(PREF_KEY, JSON.stringify(prefs)); }
+/* 방향은 매번 기본값(서울 → 공항)에서 시작하도록 저장하지 않는다 */
+function savePrefs(){ sSet(PREF_KEY, JSON.stringify({type:prefs.type, term:prefs.term})); }
 function findRec(id){ for (var i=0;i<records.length;i++){ if (records[i].id===id) return records[i]; } return null; }
 function removeRecord(id){
   for (var i=0;i<records.length;i++){ if (records[i].id===id){ records.splice(i,1); break; } }
@@ -892,7 +1347,7 @@ function bindSeg(segId, key){
   }
 }
 function renderPlate(){
-  $('recLabel').textContent = dirLabel(prefs.dir)+' 기록';
+  $('recLabel').textContent = dirLabel(prefs.dir);
   if (!busy) $('recSub').textContent = '정차한 뒤 누르면 지금 위치가 저장됩니다';
 }
 function setBusy(on){
@@ -970,13 +1425,15 @@ function openEdit(id){
   var dirVals=[], dirLabels=[], di;
   for (di=0;di<DIRS.length;di++){ dirVals.push(DIRS[di].v); dirLabels.push(DIRS[di].label); }
   var dSel=sel('edDir',dirVals,dirLabels,r.dir);
-  var tSel=sel('edType',['일반','XL','예약','모범'],['일반','XL','예약','모범'],r.type);
-  var mSel=sel('edTerm',['','T1','T2'],['모름','T1','T2'],r.term||'');
+  var tVals=TYPES.slice(), tLabels=TYPES.slice();
+  if (r.type && !inList(tVals, r.type)){ tVals.unshift(r.type); tLabels.unshift(r.type); }
+  var tSel=sel('edType',tVals,tLabels,r.type);
+  var mSel=sel('edTerm',['T1','T2',''],['T1','T2','해당 없음'],r.term||'');
   var fare=el('input',{id:'edFare', type:'text', inputmode:'numeric', placeholder:'예: 72000', value: isNum(r.fare)?String(r.fare):''});
   var memo=el('textarea',{id:'edMemo', rows:'2', placeholder:'국적, 짐 개수, 호텔 이름 등'}); memo.value=r.memo||'';
   var where = isNum(r.lat) ? ('좌표 '+r.lat.toFixed(5)+', '+r.lng.toFixed(5)+(isNum(r.acc)?' (오차 약 '+r.acc+'m)':'')) : '좌표 없음 (권역 수동 선택)';
   openSheet([
-    el('h4',{text: mdDay(r.ts)+' '+hhmm(r.ts)+' 기록'}),
+    el('h4',{text: mdDay(r.ts)+' '+hhmm(r.ts)}),
     el('p',{cls:'msg', text: where}),
     el('div',{cls:'field'},[el('label',{'for':'edZone', text:'권역'}), zSel]),
     el('div',{cls:'row2'},[
@@ -1004,12 +1461,12 @@ function openEdit(id){
 
 function renderClock(){
   var now=Date.now(), d=new Date(now);
-  $('clock').textContent = pad2(d.getHours())+':'+pad2(d.getMinutes());
+  $('clock').textContent = ampmOf(d.getHours())+' '+hour12(d.getHours())+':'+pad2(d.getMinutes());
   var b=bucketIdx(now);
   clear($('slot'));
   $('slot').appendChild(el('b',{text: (d.getMonth()+1)+'월 '+d.getDate()+'일 '+DAYS[dayIdx(now)]+'요일'}));
   $('slot').appendChild(el('br'));
-  $('slot').appendChild(document.createTextNode(BUCKETS[b]+'~'+(b===7?'24시':BUCKETS[b+1])+' 시간대'));
+  $('slot').appendChild(document.createTextNode(bucketRange(b)+' 시간대'));
   var key=dayIdx(now)+'-'+b;
   if (key!==lastBucketKey){ lastBucketKey=key; renderBoard(); }
 }
@@ -1029,7 +1486,7 @@ function boardRow(rank, zoneName, middleKids, rightNode){
 function renderBoard(){
   var box=$('board'), now=Date.now(), recs=recommend(records, now), i, max, pct;
   clear(box);
-  var d=DAYS[dayIdx(now)], bl=BUCKETS[bucketIdx(now)];
+  var d=DAYS[dayIdx(now)], bl=bucketName(bucketIdx(now));
   box.appendChild(el('h2',{text: d+'요일 '+bl+'대에 공항행 콜이 많았던 곳'}));
   if (!recs.length){
     box.appendChild(el('p',{cls:'hint', text:'이 시간대 기록이 아직 없어 공개 자료 기준 기본 순위를 보여줍니다. 지역을 누르면 지금 위치에서 '+naviAppName(getNaviApp())+'(으)로 길안내가 열립니다.'}));
@@ -1050,7 +1507,7 @@ function renderBoard(){
 function renderRecent(){
   var box=$('recent'), sorted=records.slice().sort(function(a,b){ return b.ts-a.ts; }), i, r, n=Math.min(8, sorted.length), meta;
   clear(box);
-  if (!n){ box.appendChild(el('div',{cls:'empty', text:'아직 기록이 없습니다. 공항행 콜을 받고 정차했을 때 노란 버튼을 누르세요.'})); return; }
+  if (!n){ box.appendChild(el('div',{cls:'empty', text:'아직 저장된 내역이 없습니다. 손님을 태우고 정차했을 때 노란 버튼을 누르세요.'})); return; }
   for (i=0;i<n;i++){
     r=sorted[i];
     meta=[dirLabel(r.dir), r.type];
@@ -1075,7 +1532,7 @@ var TRACKS_KEY = 'airportCallLog.tracks.v1';
 var LIVE_KEY = 'airportCallLog.live.v1';
 
 var mapKind = null, map = null, infoWin = null, mapBound = false, naverAuthFailed = false;
-var gZones = [], gHotels = [], gRecs = [], gTrack = [], meMarker = null;
+var gZones = [], gHotels = [], gRecs = [], gTrack = [], gSpots = [], meMarker = null;
 var tracks = [], live = null, watchId = null;
 
 /* 주행 경로 순수 계산 */
@@ -1176,7 +1633,7 @@ function loadKakaoSdk(key, cb){
   var done=false, s;
   if (typeof kakao!=='undefined' && kakao.maps && kakao.maps.Map){ cb(true); return; }
   s=document.createElement('script');
-  s.src='https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey='+encodeURIComponent(key);
+  s.src='https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&libraries=services&appkey='+encodeURIComponent(key);
   s.onload=function(){
     if (done) return; done=true;
     if (typeof kakao!=='undefined' && kakao.maps && kakao.maps.load){
@@ -1190,6 +1647,70 @@ function loadKakaoSdk(key, cb){
 }
 function kakaoLevel(zoom){ return Math.max(1, Math.min(14, 19-(zoom||12))); }
 
+/* 말한 내용을 카카오 장소·주소 검색으로 좌표화한다 */
+function kakaoServicesReady(){
+  return typeof kakao!=='undefined' && kakao.maps && kakao.maps.services && !!kakao.maps.services.Places;
+}
+function searchPlace(query, cb){
+  var key=getKakaoKey();
+  if (!query){ cb(null, '검색어가 없습니다'); return; }
+  if (!key){ cb(null, '데이터 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
+  function doSearch(){
+    if (!kakaoServicesReady()){ cb(null, '장소 검색을 불러오지 못했습니다. 새로고침해 보세요'); return; }
+    var ps=new kakao.maps.services.Places();
+    ps.keywordSearch(query, function(data, status){
+      if (status===kakao.maps.services.Status.OK && data && data.length){
+        cb({n:data[0].place_name, lat:parseFloat(data[0].y), lng:parseFloat(data[0].x),
+            addr:data[0].road_address_name || data[0].address_name || ''}, null);
+        return;
+      }
+      /* 장소로 못 찾으면 주소로 다시 */
+      var gc=new kakao.maps.services.Geocoder();
+      if (typeof gc.addressSearch!=='function'){ cb(null, '"'+query+'" 을(를) 찾지 못했습니다'); return; }
+      gc.addressSearch(query, function(res, st2){
+        if (st2===kakao.maps.services.Status.OK && res && res.length){
+          cb({n:query, lat:parseFloat(res[0].y), lng:parseFloat(res[0].x), addr:res[0].address_name||''}, null);
+        } else {
+          cb(null, '"'+query+'" 을(를) 찾지 못했습니다');
+        }
+      });
+    }, {size:5});
+  }
+  if (kakaoServicesReady()){ doSearch(); return; }
+  loadKakaoSdk(key, function(ok){
+    if (!ok){ cb(null, '카카오 장소 검색에 연결하지 못했습니다'); return; }
+    doSearch();
+  });
+}
+/* 좌표를 주소로 (카카오 역지오코딩) */
+function reverseGeocode(lat, lng, cb){
+  var key=getKakaoKey();
+  if (!key){ cb(null); return; }
+  function doIt(){
+    if (!kakaoServicesReady()){ cb(null); return; }
+    var gc=new kakao.maps.services.Geocoder();
+    if (typeof gc.coord2Address!=='function'){ cb(null); return; }
+    try { gc.coord2Address(lng, lat, function(res, st){
+      if (st===kakao.maps.services.Status.OK && res && res.length){
+        var r=res[0];
+        cb((r.road_address && r.road_address.address_name) || (r.address && r.address.address_name) || null);
+      } else cb(null);
+    }); } catch(e){ cb(null); }
+  }
+  if (kakaoServicesReady()){ doIt(); return; }
+  loadKakaoSdk(key, function(ok){ if (ok) doIt(); else cb(null); });
+}
+
+/* 좌표에서 가장 가까운 권역 (간선도로 안내용) */
+function nearestZone(lat, lng){
+  var best=null, bd=Infinity, i, d;
+  for (i=0;i<ZONES.length;i++){
+    d=km(lat,lng,ZONES[i].lat,ZONES[i].lng);
+    if (d<bd){ bd=d; best=ZONES[i].name; }
+  }
+  return best;
+}
+
 /* 엔진 공통 도우미 */
 function usesSetMap(){ return mapKind==='naver' || mapKind==='kakao'; }
 function clearStore(arr){
@@ -1199,6 +1720,16 @@ function clearStore(arr){
     else if (map) map.removeLayer(arr[i]);
   }
   arr.length=0;
+}
+/* 분류 선택에 맞는 관광지만 표시 */
+function showSpots(){
+  var on=$('lySpot').checked, cat=$('spotCat').value, i, vis;
+  for (i=0;i<gSpots.length;i++){
+    vis = on && (cat==='all' || SPOTS[i].cat===cat);
+    if (usesSetMap()) gSpots[i].setMap(vis?map:null);
+    else if (!map) continue;
+    else if (vis) gSpots[i].addTo(map); else map.removeLayer(gSpots[i]);
+  }
 }
 function showStore(arr, on){
   var i;
@@ -1289,6 +1820,15 @@ function setCenter(lat, lng, zoom){
 }
 
 /* 지도 만들기 */
+var layerDefaultsDone = false;
+/* 오전에는 호텔, 오후에는 관광지를 켠 상태로 시작 */
+function applyLayerDefaults(){
+  if (layerDefaultsDone) return;
+  layerDefaultsDone = true;
+  var morning = new Date().getHours() < 12;
+  $('lyHotel').checked = morning;
+  $('lySpot').checked = !morning;
+}
 function safeInvalidate(){
   if (mapKind==='leaflet' && map && map.invalidateSize) map.invalidateSize();
 }
@@ -1316,7 +1856,7 @@ function ensureMap(){
   });
 }
 function resetMap(){
-  gZones.length=0; gHotels.length=0; gRecs.length=0; gTrack.length=0;
+  gZones.length=0; gHotels.length=0; gRecs.length=0; gTrack.length=0; gSpots.length=0;
   meMarker=null; infoWin=null;
   if (map && mapKind==='leaflet'){ try { map.remove(); } catch(e){} }
   map=null; mapKind=null;
@@ -1329,16 +1869,17 @@ function buildMap(kind){
   if (kind==='naver' && !(typeof naver!=='undefined' && naver.maps && naver.maps.Map)) kind='leaflet';
   if (kind==='leaflet' && typeof L==='undefined'){ $('mapMsg').textContent='지도 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침하세요.'; return; }
   mapKind=kind;
+  applyLayerDefaults();
   var box=$('map'), i, z, h;
   if (kind==='kakao'){
-    map=new kakao.maps.Map(box, {center:new kakao.maps.LatLng(37.548,126.99), level:kakaoLevel(12)});
+    map=new kakao.maps.Map(box, {center:new kakao.maps.LatLng(MAP_HOME.lat,MAP_HOME.lng), level:MAP_HOME.kakaoLevel});
     try { map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT); } catch(e){}
     infoWin=new kakao.maps.InfoWindow({content:'', removable:true});
   } else if (kind==='naver'){
-    map=new naver.maps.Map(box, {center:new naver.maps.LatLng(37.548,126.99), zoom:12, mapTypeControl:false, scaleControl:false});
+    map=new naver.maps.Map(box, {center:new naver.maps.LatLng(MAP_HOME.lat,MAP_HOME.lng), zoom:MAP_HOME.zoom, mapTypeControl:false, scaleControl:false});
     infoWin=new naver.maps.InfoWindow({content:'', borderWidth:0, backgroundColor:'#fff', anchorSize:new naver.maps.Size(10,10)});
   } else {
-    map=L.map(box,{zoomControl:true}).setView([37.548,126.99],12);
+    map=L.map(box,{zoomControl:true}).setView([MAP_HOME.lat,MAP_HOME.lng],MAP_HOME.zoom);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
   }
   for (i=0;i<ZONES.length;i++){
@@ -1353,11 +1894,20 @@ function buildMap(kind){
     (function(h){
       var zn=assignZone(h.lat,h.lng);
       addDot(gHotels, h.lat, h.lng, {size:13, weight:3, stroke:zoneColor(zn), fill:'#262A30', z:40,
-        popup:'<b>'+escapeHtml(h.n)+'</b>'+escapeHtml(zn)+(h.note?'<br>'+escapeHtml(h.note):'')+(zn==='인천공항'?'':'<br>'+navLinkHtml(h.lat,h.lng,h.n))});
+        popup:'<b>'+escapeHtml(h.n)+'</b>'+escapeHtml(zn)+(h.note?'<br>'+escapeHtml(h.note):'')+(isIncheon(zn)?'':'<br>'+navLinkHtml(h.lat,h.lng,h.n))});
     })(h);
+  }
+  for (i=0;i<SPOTS.length;i++){
+    (function(sp){
+      addDot(gSpots, sp.lat, sp.lng, {size:15, weight:2, stroke:'#17191c', fill:spotCatColor(sp.cat), z:45,
+        popup:'<b>'+escapeHtml(sp.n)+'</b>'+escapeHtml(spotCatName(sp.cat))+' · '+escapeHtml(assignZone(sp.lat,sp.lng))+
+              (sp.note?'<br>'+escapeHtml(sp.note):'')+'<br>'+navLinkHtml(sp.lat,sp.lng,sp.n),
+        cat:sp.cat});
+    })(SPOTS[i]);
   }
   showStore(gZones, $('lyZone').checked);
   showStore(gHotels, $('lyHotel').checked);
+  showSpots();
   bindMapControls();
   if (kind==='leaflet') setTimeout(safeInvalidate, 60);
   if (kind==='kakao' || kind==='naver') setMapBanner('');
@@ -1368,6 +1918,11 @@ function bindMapControls(){
   mapBound=true;
   $('lyHotel').addEventListener('change', function(){ showStore(gHotels, this.checked); });
   $('lyZone').addEventListener('change', function(){ showStore(gZones, this.checked); });
+  $('lySpot').addEventListener('change', showSpots);
+  $('spotCat').addEventListener('change', function(){
+    if (!$('lySpot').checked){ $('lySpot').checked=true; }
+    showSpots();
+  });
   $('mapDays').addEventListener('change', drawRecords);
   $('mapDir').addEventListener('change', drawRecords);
   $('btnFit').addEventListener('click', fitRecords);
@@ -1445,7 +2000,7 @@ function updateTrackMsg(){
   }
   box.className='trackmsg';
   if (!t){ box.textContent = tracks.length ? '저장된 주행 '+tracks.length+'개' : '주행 경로를 기록하면 이동한 길이 지도에 그려집니다.'; return; }
-  box.textContent = fmtDate(t.start)+' 출발 · '+fmtDur((t.end||t.start)-t.start)+' · '+trackDist(t.pts).toFixed(1)+'km';
+  box.textContent = mdDay(t.start)+' '+hhmm(t.start)+' 출발 · '+fmtDur((t.end||t.start)-t.start)+' · '+trackDist(t.pts).toFixed(1)+'km';
 }
 function startTrack(){
   if (live) return;
@@ -1501,6 +2056,34 @@ function deleteSelectedTrack(){
       return;
     }
   }
+}
+
+function stars(n){
+  var s='', i;
+  for (i=0;i<5;i++) s += (i<n ? '★' : '☆');
+  return s;
+}
+function renderForeign(){
+  var box=$('foreignBox'), days=parseInt($('stDays').value,10)||0;
+  var recs=filterRecs(records, days, 'all'), list=foreignGap(recs), i, f, row, total=0;
+  clear(box);
+  for (i=0;i<recs.length;i++) total++;
+  box.appendChild(el('div',{cls:'tops', style:'margin:0 0 8px',
+    text: total ? '내 기록 '+total+'건과 비교했습니다. 밀집도가 높은데 내 기록이 적은 권역이 위로 옵니다.'
+                : '아직 기록이 없어 외국인 밀집도 순으로만 보여줍니다.'}));
+  for (i=0;i<list.length;i++){
+    f=list[i];
+    row=el('div',{cls: f.score>=4 ? 'fz hot' : 'fz'},[
+      el('div',{cls:'top'},[
+        el('span',{cls:'nm', text:f.zone}),
+        el('span',{cls:'st', text:stars(f.score)})
+      ]),
+      el('div',{cls:'nt', text:f.note})
+    ]);
+    if (f.mine) row.appendChild(el('div',{cls:'me', text:'내 기록 '+f.mine+'건'}));
+    box.appendChild(row);
+  }
+  box.appendChild(el('div',{cls:'tops', text:'별점은 서울AI재단 2025 외국인 유동인구 분석과 호텔 투숙 비중 자료를 바탕으로 매긴 상대 등급입니다.'}));
 }
 
 /* ───────── 귀로 계산 ───────── */
@@ -1621,12 +2204,12 @@ function renderStats(){
   clear(t);
   for (d=0;d<7;d++) for (b=0;b<8;b++){ if (g[d][b]>hm) hm=g[d][b]; if (g[d][b]>0) cells.push({d:d,b:b,c:g[d][b]}); }
   tr=el('tr',null,[el('th',{text:''})]);
-  for (b=0;b<8;b++) tr.appendChild(el('th',{text:BUCKETS[b].replace('시','')}));
+  for (b=0;b<8;b++) tr.appendChild(el('th',{text: BUCKET_SHORT[b]}));
   t.appendChild(tr);
   for (d=0;d<7;d++){
     tr=el('tr',null,[el('th',{text:DAYS[d]})]);
     for (b=0;b<8;b++){
-      td=el('td',{text:String(g[d][b]), title: DAYS[d]+'요일 '+BUCKETS[b]+'대 '+g[d][b]+'건'});
+      td=el('td',{text:String(g[d][b]), title: DAYS[d]+'요일 '+bucketRange(b)+' '+g[d][b]+'건'});
       if (!g[d][b]) td.className='zero';
       else td.setAttribute('style','background:rgba(255,200,30,'+(0.22+0.78*g[d][b]/hm).toFixed(2)+')');
       if (d===nd && b===nb) td.className=(td.className?td.className+' ':'')+'now';
@@ -1634,13 +2217,14 @@ function renderStats(){
     }
     t.appendChild(tr);
   }
+  renderForeign();
   cells.sort(function(a,b2){ return b2.c-a.c; });
   var tops=$('tops'); clear(tops);
   if (cells.length){
     tops.appendChild(document.createTextNode('많았던 시간대: '));
     for (i=0;i<Math.min(3,cells.length);i++){
       if (i) tops.appendChild(document.createTextNode(', '));
-      tops.appendChild(el('b',{text: DAYS[cells[i].d]+' '+BUCKETS[cells[i].b]+'대 '+cells[i].c+'건'}));
+      tops.appendChild(el('b',{text: DAYS[cells[i].d]+' '+bucketName(cells[i].b)+'대 '+cells[i].c+'건'}));
     }
     tops.appendChild(document.createTextNode('. 흰 테두리 칸이 지금 시간대입니다.'));
   } else {
@@ -1724,7 +2308,7 @@ function renderRush(){
   for (i=0;i<st.rows.length;i++){
     r=st.rows[i];
     row=el('div',{cls: r.now ? 'rushrow now' : 'rushrow'},[
-      el('span',{text: r.label+'~'+(r.bucket===7?'24시':BUCKETS[r.bucket+1])}),
+      el('span',{text: bucketRange(r.bucket)}),
       el('span',{cls:'track'},[el('i',{style:'width:'+Math.round(r.ratio*100)+'%'})]),
       el('span',{cls:'c num', text: r.count+'건'})
     ]);
@@ -1732,6 +2316,259 @@ function renderRush(){
     if (r.avgFare) box.appendChild(el('div',{cls:'tops', style:'margin:-2px 0 6px 92px', text:'평균 '+won(r.avgFare)}));
   }
   box.appendChild(el('div',{cls:'tops', text:'노란 줄이 지금 시간대입니다. 막대가 긴 시간대에 공항에 닿도록 시내 손님을 고르면 빈차 복귀가 줄어듭니다.'}));
+}
+
+/* ───────── 도로 화면 ───────── */
+var roadFilled=false;
+var lastHere=null;    /* 가장 최근에 확인한 현위치 */
+var voiceDest=null;   /* 음성으로 잡은 목적지 (권역 목록에 없는 곳) */
+var hereDest=null;    /* 현위치 주소 */
+var VOICE_VAL='__voice';
+var HERE_VAL='__here';
+/* 출발지 좌표·이름 */
+function fromPoint(){
+  var v=$('rdFrom').value;
+  if (v===HERE_VAL && hereDest) return hereDest;
+  return zonePoint(v);
+}
+function fromZoneName(){
+  var v=$('rdFrom').value, z;
+  if (v===HERE_VAL && hereDest){
+    z=assignZone(hereDest.lat, hereDest.lng);
+    return z===OTHER ? nearestZone(hereDest.lat, hereDest.lng) : z;
+  }
+  return v;
+}
+function setHereDest(pt){
+  hereDest=pt;
+  var sel=$('rdFrom'), opt=null, i;
+  for (i=0;i<sel.options.length;i++) if (sel.options[i].value===HERE_VAL) opt=sel.options[i];
+  if (!opt){ opt=el('option',{value:HERE_VAL},['']); sel.insertBefore(opt, sel.firstChild); }
+  opt.textContent='출발: '+pt.n;
+  sel.value=HERE_VAL;
+}
+/* 도착지 좌표: 음성으로 잡았으면 그 좌표, 아니면 권역 대표 지점 */
+function destPoint(){
+  var v=$('rdTo').value;
+  if (v===VOICE_VAL && voiceDest) return voiceDest;
+  return zonePoint(v);
+}
+/* 간선도로 안내에 쓸 도착 권역 */
+function destZoneName(){
+  var v=$('rdTo').value;
+  if (v===VOICE_VAL && voiceDest){
+    var z=assignZone(voiceDest.lat, voiceDest.lng);
+    return z===OTHER ? nearestZone(voiceDest.lat, voiceDest.lng) : z;
+  }
+  return v;
+}
+function setVoiceDest(pt){
+  voiceDest=pt;
+  var sel=$('rdTo'), opt=null, i;
+  for (i=0;i<sel.options.length;i++) if (sel.options[i].value===VOICE_VAL) opt=sel.options[i];
+  if (!opt){ opt=el('option',{value:VOICE_VAL},['']); sel.insertBefore(opt, sel.firstChild); }
+  opt.textContent='도착: '+pt.n;
+  sel.value=VOICE_VAL;
+}
+function fillRoadSelects(){
+  if (roadFilled) return;
+  roadFilled=true;
+  var a=$('rdFrom'), b=$('rdTo'), i, z;
+  for (i=0;i<ZONES.length;i++){
+    z=ZONES[i];
+    a.appendChild(el('option',{value:z.name},[z.name]));
+    b.appendChild(el('option',{value:z.name},[z.name]));
+  }
+  a.value='명동·을지로';
+  b.value='인천공항 T1';
+}
+/* 설명은 문장 단위로 줄을 나눠 보여준다 */
+function roadCard(r){
+  var tip=el('div',{cls:'rt'}), parts=String(r.tip).split('. '), i, t;
+  for (i=0;i<parts.length;i++){
+    t=parts[i];
+    if (!t) continue;
+    if (i<parts.length-1) t+='.';
+    tip.appendChild(el('span',{text:t}));
+  }
+  return el('div',{cls:'road'},[
+    el('div',{cls:'hd'},[el('span',{cls:'rn', text:r.n}), el('span',{cls:'rx', text:r.axis})]),
+    el('div',{cls:'rs', text:r.sec}),
+    tip
+  ]);
+}
+function renderRoadList(){
+  var box=$('roadList'), axis=$('roadAxis').value, i, r, shown=0;
+  clear(box);
+  for (i=0;i<ROADS.length;i++){
+    r=ROADS[i];
+    if (axis!=='all' && r.axis!==axis) continue;
+    box.appendChild(roadCard(r)); shown++;
+  }
+  if (!shown) box.appendChild(el('div',{cls:'empty', text:'해당하는 도로가 없습니다.'}));
+}
+function renderRoad(){
+  var box=$('roadResult'), from=fromZoneName(), to=destZoneName(), adv, line, i, r;
+  clear(box);
+  adv=routeAdvice(from, to);
+  if (!adv){
+    box.appendChild(el('div',{cls:'empty', text:'출발과 도착 권역을 다르게 고르세요.'}));
+    return;
+  }
+  var dp=destPoint(), fp=fromPoint();
+  box.appendChild(el('div',{cls:'tops', style:'margin:10px 0 0',
+    text: (fp?fp.n:from)+' → '+(dp?dp.n:to)+' ('+zoneArea(from)+' → '+zoneArea(to)+')'}));
+  line=el('div',{cls:'rstep'});
+  for (i=0;i<adv.steps.length;i++){
+    if (i) line.appendChild(el('i',{text:'→'}));
+    line.appendChild(el('b',{cls: adv.steps[i]===adv.bridge ? 'br' : '', text:adv.steps[i]}));
+  }
+  box.appendChild(line);
+  if (adv.alt && adv.alt.length){
+    box.appendChild(el('div',{cls:'ralt'},[document.createTextNode('막힐 때 우회: '), el('b',{text:adv.alt.join(', ')})]));
+  }
+  if (adv.caution) box.appendChild(el('div',{cls:'rcau', text:adv.caution}));
+  /* 카카오내비로 경로 미리보기 */
+  var pt=destPoint(), sp=fromPoint();
+  if (pt){
+    box.appendChild(el('button',{cls:'btn navi', type:'button', onclick:function(){ previewRoute(lastHere||sp, pt); }},
+      ['카카오맵으로 경로 미리보기 · '+pt.n]));
+  }
+  /* 경로에 나온 도로의 설명을 함께 */
+  for (i=0;i<adv.steps.length;i++){
+    r=roadByName(adv.steps[i]);
+    if (r) box.appendChild(roadCard(r));
+  }
+}
+
+/* 출발 권역을 현위치로 */
+function setFromHere(){
+  var btn=$('btnHere');
+  if (!navigator.geolocation || isInsecurePage()){ toast('현위치를 쓰려면 https 주소로 열어야 합니다'); return; }
+  btn.disabled=true; btn.textContent='확인 중';
+  navigator.geolocation.getCurrentPosition(function(pos){
+    btn.disabled=false; btn.textContent='현위치';
+    lastHere={lat:pos.coords.latitude, lng:pos.coords.longitude};
+    var la=pos.coords.latitude, ln=pos.coords.longitude;
+    var z=assignZone(la, ln);
+    if (z===OTHER) z=nearestZone(la, ln);
+    setHereDest({n:'현위치', lat:la, lng:ln});
+    renderRoad();
+    reverseGeocode(la, ln, function(addr){
+      setHereDest({n: addr || ('현위치 · '+z), lat:la, lng:ln});
+      renderRoad();
+      toast('출발지를 '+(addr || z)+'로 잡았습니다');
+    });
+  }, function(){
+    btn.disabled=false; btn.textContent='현위치';
+    toast('현재 위치를 확인하지 못했습니다');
+  }, {enableHighAccuracy:true, timeout:10000, maximumAge:20000});
+}
+/* 음성으로 도착 권역 말하기 */
+var voiceRec=null;
+function startVoice(){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition, btn=$('btnVoice'), msg=$('voiceMsg');
+  if (!SR){ msg.className='voicemsg'; msg.textContent='이 브라우저는 음성 인식을 지원하지 않습니다. 목록에서 골라 주세요.'; return; }
+  if (voiceRec){ try { voiceRec.stop(); } catch(e){} voiceRec=null; return; }
+  voiceRec=new SR();
+  voiceRec.lang='ko-KR';
+  voiceRec.interimResults=true;
+  voiceRec.maxAlternatives=3;
+  btn.className='mini mic on'; btn.textContent='듣는 중';
+  msg.className='voicemsg hear'; msg.textContent='어디로 갈까요? 예: 명동, 인천공항 T2, 홍대';
+  voiceRec.onresult=function(e){
+    var txt='', i, z;
+    for (i=0;i<e.results.length;i++) txt += e.results[i][0].transcript;
+    msg.textContent='"'+txt+'"';
+    if (e.results[e.results.length-1].isFinal){
+      /* 말한 장소를 그대로 찾는 것이 가장 정확하므로 검색을 먼저 한다 */
+      msg.textContent='"'+txt+'" 찾는 중…';
+      searchPlace(txt, function(pt, err){
+        if (pt){
+          setVoiceDest(pt); renderRoad();
+          msg.className='voicemsg hear';
+          msg.textContent='도착지: '+pt.n+(pt.addr?' ('+pt.addr+')':'');
+          toast('도착지를 '+pt.n+'로 잡았습니다');
+          return;
+        }
+        /* 검색이 안 되면 권역 이름으로 맞춰 본다 */
+        var zz=matchZoneByText(txt), alts=e.results[e.results.length-1], k;
+        for (k=0;k<alts.length && !zz;k++) zz=matchZoneByText(alts[k].transcript);
+        if (zz){
+          voiceDest=null; $('rdTo').value=zz; renderRoad();
+          msg.className='voicemsg hear'; msg.textContent='도착 권역: '+zz;
+          toast('도착지를 '+zz+'로 잡았습니다');
+        } else {
+          msg.className='voicemsg'; msg.textContent=(err||'찾지 못했습니다')+'. 목록에서 골라 주세요.';
+        }
+      });
+    }
+  };
+  voiceRec.onerror=function(ev){
+    msg.className='voicemsg';
+    msg.textContent = (ev && ev.error==='not-allowed')
+      ? '마이크 권한이 필요합니다. 브라우저 설정에서 허용하세요.'
+      : '음성을 알아듣지 못했습니다. 다시 시도하세요.';
+  };
+  voiceRec.onend=function(){
+    voiceRec=null;
+    btn.className='mini mic'; btn.textContent='🎤 말하기';
+  };
+  try { voiceRec.start(); } catch(e){ voiceRec=null; btn.className='mini mic'; btn.textContent='🎤 말하기'; }
+}
+
+/* 출발(현위치): 지금 위치로 출발 권역을 잡고, 간선도로를 거쳐야 하면 경로를 먼저 보여준다 */
+function startRide(){
+  var btn=$('btnRide');
+  if (!navigator.geolocation || isInsecurePage()){ rideSheet(null); return; }
+  btn.disabled=true; btn.textContent='위치 확인 중…';
+  navigator.geolocation.getCurrentPosition(function(pos){
+    btn.disabled=false; btn.textContent='출발 (현위치)';
+    lastHere={lat:pos.coords.latitude, lng:pos.coords.longitude};
+    rideSheet(assignZone(pos.coords.latitude, pos.coords.longitude));
+  }, function(){
+    btn.disabled=false; btn.textContent='출발 (현위치)';
+    rideSheet(null);
+  }, {enableHighAccuracy:true, timeout:10000, maximumAge:20000});
+}
+function rideSheet(hereZone){
+  var to=destZoneName(), pt=destPoint(), from, fp, adv, line, i, kids;
+  if (!pt){ toast('도착 권역을 고르세요'); return; }
+  if (hereZone && hereZone!=='기타' && $('rdFrom').value!==HERE_VAL){ $('rdFrom').value=hereZone; renderRoad(); }
+  from=fromZoneName(); fp=fromPoint();
+  adv=routeAdvice(from, to);
+
+  /* 기록 방향을 미리 맞춰 둔다 */
+  prefs.dir = isAirportZone(to) ? 'toAir'
+            : (isAirportZone(from) ? 'fromAir' : 'inCity');
+  savePrefs(); setDirSegs(prefs.dir); renderPlate();
+
+  kids=[
+    el('h4',{text: (fp?fp.n:from)+' → '+pt.n}),
+    el('p',{cls:'msg', text: hereZone ? '현위치는 '+hereZone+'로 잡았습니다. 목적지는 '+pt.n+'입니다.'
+                                      : '현위치를 확인하지 못해 고르신 출발 권역으로 계산했습니다. 목적지는 '+pt.n+'입니다.'})
+  ];
+  if (adv){
+    line=el('div',{cls:'rstep'});
+    for (i=0;i<adv.steps.length;i++){
+      if (i) line.appendChild(el('i',{text:'→'}));
+      line.appendChild(el('b',{cls: adv.steps[i]===adv.bridge ? 'br' : '', text:adv.steps[i]}));
+    }
+    kids.push(line);
+    if (adv.caution) kids.push(el('div',{cls:'rcau', text:adv.caution}));
+  } else {
+    kids.push(el('div',{cls:'ralt', text:'같은 권역이라 간선도로를 타지 않습니다. 바로 출발하세요.'}));
+  }
+  kids.push(el('div',{cls:'btns', style:'margin:12px 0 0'},[
+    adv ? el('button',{cls:'btn navi', type:'button', style:'margin-top:0', onclick:function(){
+      closeSheet(); previewRoute(lastHere, pt);
+    }},['카카오맵으로 경로 미리보기']) : null,
+    el('button',{cls:'btn ride', type:'button', onclick:function(){
+      closeSheet(); startKakaoNavi(pt.lat, pt.lng, pt.n);
+    }},['바로 출발 · 길안내 시작']),
+    el('button',{cls:'btn', type:'button', onclick:closeSheet},['닫기'])
+  ]));
+  openSheet(kids);
 }
 
 /* ───────── 데이터 ───────── */
@@ -1790,6 +2627,7 @@ function showTab(id){
   if (id==='v-map') ensureMap();
   if (id==='v-stat') renderStats();
   if (id==='v-ret'){ autoFare(); renderReturn(); }
+  if (id==='v-road'){ fillRoadSelects(); renderRoadList(); if (!$('roadResult').firstChild) renderRoad(); }
   if (id==='v-data') renderStore();
   window.scrollTo(0,0);
 }
@@ -1818,6 +2656,19 @@ function init(){
   $('scrim').addEventListener('click', function(e){ if (e.target===this) closeSheet(); });
   var tabs=document.querySelectorAll('.tabbar button'), i;
   for (i=0;i<tabs.length;i++) tabs[i].addEventListener('click', function(){ showTab(this.getAttribute('data-tab')); });
+  $('btnRoad').addEventListener('click', renderRoad);
+  $('btnRide').addEventListener('click', startRide);
+  $('btnHere').addEventListener('click', setFromHere);
+  $('btnVoice').addEventListener('click', startVoice);
+  $('rdFrom').addEventListener('change', function(){
+    if ($('rdFrom').value!==HERE_VAL) hereDest=null;
+    renderRoad();
+  });
+  $('rdTo').addEventListener('change', function(){
+    if ($('rdTo').value!==VOICE_VAL) voiceDest=null;
+    renderRoad();
+  });
+  $('roadAxis').addEventListener('change', renderRoadList);
   $('btnCalc').addEventListener('click', function(){ calcReturn(false); });
   $('btnRetSave').addEventListener('click', function(){
     var c=retSettings();
