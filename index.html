@@ -2770,32 +2770,14 @@ function clearStore(arr){
 /* 지금 켜 둔 층(호텔·관광지)이 덮는 곳으로 지도를 옮긴다.
    둘 다 켜면 둘을 함께 담고, 둘 다 끄면 손대지 않는다 */
 function fitLayers(){
-  var pts=[], i, cat, la=0, ln=0, hotel=$('lyHotel').checked, spot=$('lySpot').checked;
   if (!map) return;
-  if (hotel) for (i=0;i<HOTELS.length;i++) pts.push({lat:HOTELS[i].lat, lng:HOTELS[i].lng});
-  if (spot){
-    cat=$('spotCat').value;
-    for (i=0;i<SPOTS.length;i++){
-      if (cat==='all' || SPOTS[i].cat===cat) pts.push({lat:SPOTS[i].lat, lng:SPOTS[i].lng});
-    }
-  }
   /* 현위치 표시를 정리하고 버튼도 되돌린다 */
   meOn=false;
   if ($('btnMe')) $('btnMe').textContent='내 위치';
   if ($('meAddr')) $('meAddr').style.display='none';
   dropMarker(meMarker); meMarker=null;
-
-  /* 범위를 매번 다시 계산하면 켤 때마다 지도 크기가 달라진다.
-     체크된 곳들의 한가운데로만 옮기고, 배율은 늘 기본값으로 고정한다.
-     그래야 무엇을 켜든 같은 크기의 지도가 나온다 */
-  if (!pts.length){
-    setCenter(MAP_HOME.lat, MAP_HOME.lng, MAP_HOME.zoom);
-    return;
-  }
-  pts=trimOutliers(pts);
-  for (i=0;i<pts.length;i++){ la+=pts[i].lat; ln+=pts[i].lng; }
-  la/=pts.length; ln/=pts.length;
-  setTimeout(function(){ setCenter(la, ln, MAP_HOME.zoom); }, 60);
+  /* 무엇을 켜든 같은 화면. 켠 것들이 모두 이 안에 들어온다 */
+  setTimeout(goHomeView, 60);
 }
 function showSpots(){
   var on=$('lySpot').checked, cat=$('spotCat').value, i, vis;
@@ -2915,6 +2897,20 @@ function fitPoints(pts){
     map.fitBounds(ll, {padding:[30,30], maxZoom:15});
   }
   capZoomOut();
+}
+/* 기본 지도 화면. 층을 켜고 끄거나 '권역으로'를 누르면 늘 이 화면으로 돌아온다.
+   배율을 다시 계산하지 않고 MAP_HOME 에 적어 둔 값을 그대로 쓴다.
+   계산식이 한 칸 더 당겨진 값을 내놓아 화면이 매번 달라 보였다 */
+function goHomeView(){
+  if (!map) return;
+  try {
+    if (mapKind==='kakao'){
+      map.setCenter(new kakao.maps.LatLng(MAP_HOME.lat, MAP_HOME.lng));
+      map.setLevel(MAP_HOME.kakaoLevel);
+      return;
+    }
+  } catch(e){}
+  setCenter(MAP_HOME.lat, MAP_HOME.lng, MAP_HOME.zoom);
 }
 function setCenter(lat, lng, zoom){
   if (mapKind==='kakao'){ map.setCenter(new kakao.maps.LatLng(lat,lng)); if (zoom) map.setLevel(kakaoLevel(zoom)); return; }
@@ -3076,8 +3072,7 @@ function toggleMe(){
     meOn=false;
     if ($('meAddr')) $('meAddr').style.display='none';
     dropMarker(meMarker); meMarker=null;
-    if ($('lyHotel').checked || $('lySpot').checked) fitLayers();
-    else setCenter(MAP_HOME.lat, MAP_HOME.lng, 13);
+    goHomeView();
     meOn=false;
     if ($('btnMe')) $('btnMe').textContent='내 위치';
     return;
