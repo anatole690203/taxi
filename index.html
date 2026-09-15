@@ -354,6 +354,17 @@ a.brow:active{background:#2a2e34}
 .btn.speakbtn{background:#A8CBFF;border-color:#A8CBFF;color:#17191c;font-weight:700;font-size:19px;min-height:60px}
 .btn.speakbtn.on{background:var(--sign);border-color:var(--sign)}
 .btn.speakbtn[disabled]{opacity:.45}
+.btn.qrbtn{background:var(--panel);border-color:var(--line);color:var(--ink);font-weight:700;font-size:18px;min-height:56px}
+.btn.qrbtn[disabled]{opacity:.45}
+/* 승객이 자기 휴대폰으로 찍는 화면. 밝게 띄워야 카메라가 잘 잡는다 */
+.qrwrap{position:fixed;inset:0;z-index:2600;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.82);padding:18px}
+.qrwrap.on{display:flex}
+.qrbox{width:100%;max-width:380px;background:#fff;border-radius:8px;padding:18px;text-align:center}
+.qrcap{font-size:17px;font-weight:700;color:#17191c;line-height:1.35;margin-bottom:12px}
+.qrimg{display:flex;align-items:center;justify-content:center;min-height:240px}
+.qrimg img, .qrimg canvas{width:100%;max-width:280px;height:auto;image-rendering:pixelated}
+.qrsub{font-size:13.5px;color:#5B626B;line-height:1.5;margin:12px 0 14px}
+.qrbox .btn{background:#17191c;border-color:#17191c;color:#fff;margin:0}
 .toast{position:fixed;left:50%;bottom:calc(var(--tabh) + 14px + env(safe-area-inset-bottom));transform:translateX(-50%);width:calc(100% - 32px);max-width:528px;display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:var(--ink);color:#17191c;border-radius:4px;z-index:3000;font-weight:600}
 .toast.on{display:flex}
 .toast button{border:0;background:transparent;color:#17191c;text-decoration:underline;font-weight:700;min-height:36px}
@@ -796,6 +807,15 @@ a.brow:active{background:#2a2e34}
     <div class="gnote" id="gNote"></div>
   </div>
   <button class="btn speakbtn" type="button" id="gSpeak"></button>
+  <button class="btn qrbtn" type="button" id="gQr"></button>
+  <div class="qrwrap" id="qrWrap" aria-hidden="true">
+    <div class="qrbox">
+      <div class="qrcap" id="qrCap"></div>
+      <div class="qrimg" id="qrImg"></div>
+      <div class="qrsub" id="qrSub"></div>
+      <button class="btn" type="button" id="qrClose">닫기</button>
+    </div>
+  </div>
   <button class="btn" type="button" id="gClose">닫기</button>
 </div>
 
@@ -1249,6 +1269,8 @@ var GUIDE_TEXT = {
       voiceNT:'목적지는 %DEST%입니다. 예상 요금은 %FARE%입니다. %NOTE%',
       voiceNTMeter:'목적지는 %DEST%입니다. 요금은 미터기 기준입니다. %NOTE%',
       thanks:'감사합니다.', sex:'m',
+      welcome:'환영합니다',
+      qr:'📱 승객 휴대폰으로 보내기', qrCap:'휴대폰 카메라로 찍어 주세요', qrSub:'찍으면 목적지·예상 시간·요금이 손님 휴대폰에 열립니다.',
       sep:'. ', end:'.', lc:'ko-KR'},
   en:{to:'Destination', time:'Estimated time', fare:'Estimated fare', toll:'Toll not included',
       card:'Card payment accepted', meter:'Metered fare', approx:'approx.',
@@ -1259,6 +1281,8 @@ var GUIDE_TEXT = {
       voiceNT:'We are going to %DEST%. The fare is about %FARE%. %NOTE%',
       voiceNTMeter:'We are going to %DEST%. The fare is charged by the meter. %NOTE%',
       thanks:'Thank you.', sex:'',
+      welcome:'Welcome to Korea',
+      qr:'📱 Send to your phone', qrCap:'Scan with your phone camera', qrSub:'Your destination, travel time and fare will open on your phone.',
       sep:'. ', end:'.', lc:'en-US'},
   ja:{to:'目的地', time:'所要時間', fare:'予想料金', toll:'通行料は別途',
       card:'カード決済が可能です', meter:'メーター料金となります', approx:'約',
@@ -1269,6 +1293,8 @@ var GUIDE_TEXT = {
       voiceNT:'目的地は%DEST%です。料金は約%FARE%です。%NOTE%',
       voiceNTMeter:'目的地は%DEST%です。料金はメーターによる計算となります。%NOTE%',
       thanks:'ありがとうございます。', sex:'',
+      welcome:'韓国へようこそ',
+      qr:'📱 スマホで受け取る', qrCap:'スマホのカメラで読み取ってください', qrSub:'目的地・所要時間・料金がお客様のスマホに表示されます。',
       sep:'。', end:'。', lc:'ja-JP'},
   zh:{to:'目的地', time:'预计时间', fare:'预计车费', toll:'过路费另计',
       card:'可以刷卡支付', meter:'按计价器收费', approx:'约',
@@ -1279,6 +1305,8 @@ var GUIDE_TEXT = {
       voiceNT:'目的地是%DEST%。车费约%FARE%。%NOTE%',
       voiceNTMeter:'目的地是%DEST%。车费按计价器收取。%NOTE%',
       thanks:'谢谢。', sex:'m',
+      welcome:'欢迎来到韩国',
+      qr:'📱 发送到您的手机', qrCap:'请用手机相机扫描', qrSub:'目的地、预计时间和车费将显示在您的手机上。',
       sep:'。', end:'。', lc:'zh-CN'}
 };
 /* 승객이 자주 가는 곳의 이름. 화면에는 현지어를 크게, 한국어를 작게 함께 적는다 */
@@ -4012,6 +4040,7 @@ function openGuide(info){
 }
 function closeGuide(){
   stopGuideVoice();
+  closeQr();
   $('guide').className='guide';
   $('guide').setAttribute('aria-hidden','true');
 }
@@ -4030,7 +4059,7 @@ function renderGuide(){
   var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.ko, bs=$('gLang').getElementsByTagName('button'), i, fare, sub;
   for (i=0;i<bs.length;i++) bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-v')===guideLang ? 'true':'false');
   $('gkTo').textContent=t.to;
-  $('gvTo').textContent=guideDest(lastTrip.dest, guideLang);
+  $('gvTo').textContent=lastTrip.dest ? guideDest(lastTrip.dest, guideLang) : t.welcome;
   /* 현지어 이름을 크게 보여 주되, 한국어 이름도 작게 남겨 둔다.
      승객이 다른 사람에게 보여 주거나 기사가 눈으로 맞춰 볼 때 필요하다 */
   sub=$('gvToSub');
@@ -4045,6 +4074,7 @@ function renderGuide(){
   $('gNote').textContent= (lastTrip.toll ? t.toll+' · ' : '')+t.card;
   $('gClose').textContent=t.close;
   renderSpeakBtn();
+  renderQrBtn();
 }
 
 /* ── 음성 안내 ──
@@ -4083,7 +4113,7 @@ function pickVoice(lc, wantMale){
 }
 function guideVoiceText(){
   var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.ko,
-      dest=guideDest(lastTrip.dest, guideLang) || t.to,
+      dest=guideDest(lastTrip.dest, guideLang) || t.welcome,
       time=lastTrip.time ? guideMinutes(lastTrip.time, guideLang) : null,
       fare=speakFare(lastTrip.fare, guideLang),
       note=(lastTrip.toll ? t.toll+t.sep : '')+t.card+t.end,
@@ -4097,6 +4127,116 @@ function guideVoiceText(){
   /* 마지막은 인사로 맺는다. 일본어·중국어는 마침표 뒤에 공백을 두지 않는다 */
   return s + (t.end==='。' ? '' : ' ') + t.thanks;
 }
+/* ───────── QR로 승객 휴대폰에 보내기 ─────────
+   깃허브 페이지에는 자료를 주고받을 서버가 없다.
+   그래서 목적지·시간·요금을 주소 안에 실어 보낸다.
+   승객이 QR을 찍으면 자기 휴대폰에서 같은 화면이 열린다. */
+function b64u(str){
+  try { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+  catch(e){ return ''; }
+}
+function unb64u(str){
+  try {
+    var t=String(str).replace(/-/g,'+').replace(/_/g,'/');
+    while (t.length % 4) t+='=';
+    return decodeURIComponent(escape(atob(t)));
+  } catch(e){ return ''; }
+}
+function guideUrl(){
+  var base=location.href.split('?')[0].split('#')[0];
+  var o={d:lastTrip.dest||'', t:lastTrip.time||0, f:lastTrip.fare||0, o:lastTrip.toll?1:0};
+  return base+'?g='+b64u(JSON.stringify(o));
+}
+/* QR 그리는 도구는 처음 누를 때만 받아 온다. 한 번 받으면 휴대폰에 남는다 */
+var qrLibState=0;   /* 0 아직, 1 받는 중, 2 준비됨, 3 실패 */
+function loadQrLib(cb){
+  var sc;
+  if (qrLibState===2){ cb(true); return; }
+  if (qrLibState===3){ cb(false); return; }
+  if (qrLibState===1){ setTimeout(function(){ loadQrLib(cb); }, 300); return; }
+  qrLibState=1;
+  sc=document.createElement('script');
+  sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  sc.crossOrigin='anonymous';
+  sc.onload=function(){ qrLibState=2; cb(true); };
+  sc.onerror=function(){ qrLibState=3; cb(false); };
+  document.head.appendChild(sc);
+}
+function renderQrBtn(){
+  var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.ko, b=$('gQr');
+  if (!b) return;
+  b.textContent=t.qr;
+  b.disabled = !lastTrip || !lastTrip.dest;
+}
+function closeQr(){ var w=$('qrWrap'); if (w){ w.className='qrwrap'; w.setAttribute('aria-hidden','true'); } }
+function showQr(){
+  var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.ko, w=$('qrWrap'), box=$('qrImg'), url;
+  if (!lastTrip || !lastTrip.dest){ toast('목적지를 먼저 정하세요'); return; }
+  url=guideUrl();
+  $('qrCap').textContent=t.qrCap;
+  $('qrSub').textContent=t.qrSub;
+  clear(box);
+  box.appendChild(el('div',{cls:'empty', text:'…'}));
+  w.className='qrwrap on';
+  w.setAttribute('aria-hidden','false');
+  loadQrLib(function(ok){
+    clear(box);
+    if (!ok || typeof QRCode==='undefined'){
+      box.appendChild(el('div',{style:'font-size:13px;color:#5B626B;line-height:1.5;word-break:break-all',
+        text:'QR을 만들지 못했습니다. 인터넷 연결을 확인하세요.'}));
+      return;
+    }
+    try {
+      new QRCode(box, {text:url, width:280, height:280,
+        colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.L});
+    } catch(e){
+      box.appendChild(el('div',{style:'font-size:13px;color:#5B626B', text:'QR을 만들지 못했습니다.'}));
+    }
+  });
+}
+/* 승객이 QR을 찍고 들어온 경우. 바로 승객 화면을 띄운다.
+   ?g=... 는 기사 화면에서 그때그때 만든 QR (목적지·요금이 들어 있음)
+   ?p=1   은 차에 붙여 둔 고정 QR (요금은 미터기 기준으로 안내) */
+function autoSpeakOnce(){
+  /* 휴대폰은 손가락이 한 번 닿기 전에는 소리를 내주지 않는다.
+     그래서 곧바로 한 번 시도하고, 막히면 첫 터치에 다시 시도한다 */
+  var fired=false;
+  function go(){
+    if (fired) return;
+    fired=true;
+    document.removeEventListener('touchstart', go, true);
+    document.removeEventListener('click', go, true);
+    setTimeout(speakGuide, 120);
+  }
+  setTimeout(function(){
+    try { speakGuide(); } catch(e){}
+    if (!gSpeaking){
+      document.addEventListener('touchstart', go, true);
+      document.addEventListener('click', go, true);
+    }
+  }, 700);
+}
+function openFromQr(){
+  var m=/[?&]g=([^&]+)/.exec(location.search), o, pt;
+  if (m){
+    try { o=JSON.parse(unb64u(m[1])); } catch(e){ o=null; }
+    if (o && o.d){
+      guideLang='en';   /* 외국인 손님이 대부분이라 영어로 연다 */
+      openGuide({dest:o.d, time:o.t||0, fare:o.f||0, toll:!!o.o});
+      autoSpeakOnce();
+      return true;
+    }
+  }
+  if (/[?&]p=1/.test(location.search)){
+    guideLang='en';
+    pt=destPoint();
+    openGuide({dest:(pt&&pt.n)||'', time:0, fare:0, toll:false});
+    autoSpeakOnce();
+    return true;
+  }
+  return false;
+}
+
 function renderSpeakBtn(){
   var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.ko, b=$('gSpeak');
   if (!ttsOk()){ b.textContent=t.novoice; b.className='btn speakbtn'; b.disabled=true; return; }
@@ -4245,6 +4385,9 @@ function init(){
   });
   $('gClose').addEventListener('click', closeGuide);
   $('gSpeak').addEventListener('click', speakGuide);
+  if ($('gQr')) $('gQr').addEventListener('click', showQr);
+  if ($('qrClose')) $('qrClose').addEventListener('click', closeQr);
+  openFromQr();   /* QR을 찍고 들어왔으면 곧장 승객 화면 */
   primeVoices();
   $('btnRoad').addEventListener('click', renderRoad);
   $('btnRide').addEventListener('click', startRide);
