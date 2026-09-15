@@ -721,6 +721,17 @@ a.brow:active{background:#2a2e34}
       <div class="empty" id="verInfo">앱을 고쳐 올린 뒤에도 옛 화면이 보이면 아래를 누르세요. 저장해 둔 화면을 비우고 새로 받아옵니다. 운행 기록은 지워지지 않습니다.</div>
       <button class="btn navi" type="button" id="btnUpdate">새 버전 확인</button>
     </div>
+    <div class="sec"><h3>음성 안내 목소리</h3>
+      <div class="empty" id="voiceInfo">이 휴대폰에 깔린 목소리 중에서 고릅니다. 삼성 TTS 엔진 목소리는 <b>기기</b>로, 크롬이 인터넷으로 받아오는 것은 <b>온라인</b>으로 표시됩니다.</div>
+      <div class="field"><label class="hi" for="vcKo">한국어</label><select id="vcKo"></select></div>
+      <div class="field"><label class="hi" for="vcEn">영어</label><select id="vcEn"></select></div>
+      <div class="field"><label class="hi" for="vcJa">일본어</label><select id="vcJa"></select></div>
+      <div class="field"><label class="hi" for="vcZh">중국어</label><select id="vcZh"></select></div>
+      <div class="btn2">
+        <button class="btn primary" type="button" id="btnVcTest">골라둔 목소리 들어보기</button>
+        <button class="btn" type="button" id="btnVcReload">목록 새로고침</button>
+      </div>
+    </div>
     <div class="sec blue">
       <h3>지도 종류</h3>
       <div class="field">
@@ -2266,6 +2277,71 @@ function openGuideTop(){
     /* 아직 경로를 안 받았으면 미터기 기준으로 안내한다 */
     openGuide({dest:ep.n, time:0, fare:0, toll:false});
   }
+}
+
+/* 목소리 고르는 화면 채우기 */
+var VC_SLOTS=[{id:'vcKo', lc:'ko-KR', n:'한국어'},{id:'vcEn', lc:'en-US', n:'영어'},
+               {id:'vcJa', lc:'ja-JP', n:'일본어'},{id:'vcZh', lc:'zh-CN', n:'중국어'}];
+function fillVoicePicks(){
+  var vs=allVoices(), pick=loadVoicePick(), k, sel, i, base, list, v, label;
+  if (!$('vcKo')) return;
+  for (k=0;k<VC_SLOTS.length;k++){
+    sel=$(VC_SLOTS[k].id);
+    base=VC_SLOTS[k].lc.split('-')[0];
+    clear(sel);
+    sel.appendChild(el('option',{value:''},['자동으로 고르기']));
+    list=[];
+    for (i=0;i<vs.length;i++){
+      v=vs[i];
+      if (!v.lang) continue;
+      if (v.lang.split(/[-_]/)[0].toLowerCase()!==base) continue;
+      list.push(v);
+    }
+    for (i=0;i<list.length;i++){
+      v=list[i];
+      /* 기기 = 휴대폰에 깔린 엔진(삼성 TTS 등), 온라인 = 크롬이 인터넷으로 받아오는 것 */
+      label=v.name+'  ['+(v.localService ? '기기' : '온라인')+' · '+v.lang+']';
+      sel.appendChild(el('option',{value:v.voiceURI||v.name},[label]));
+    }
+    sel.value = pick[VC_SLOTS[k].lc] || '';
+    if (sel.value !== (pick[VC_SLOTS[k].lc]||'')) sel.value='';
+    if (!list.length){
+      clear(sel);
+      sel.appendChild(el('option',{value:''},['이 휴대폰에 '+VC_SLOTS[k].n+' 목소리가 없습니다']));
+    }
+  }
+  $('voiceInfo').textContent = vs.length
+    ? ('이 휴대폰에서 찾은 목소리 '+vs.length+'개. [기기]는 휴대폰에 깔린 엔진(삼성 TTS 등), [온라인]은 크롬이 인터넷으로 받아오는 것입니다. 고른 뒤 들어보기로 확인하세요.')
+    : '목소리 목록을 아직 못 받았습니다. 잠시 뒤 목록 새로고침을 눌러 보세요.';
+}
+function onVoicePick(slot){
+  return function(){
+    var p=loadVoicePick();
+    if (this.value) p[slot.lc]=this.value; else delete p[slot.lc];
+    saveVoicePick();
+    toast(slot.n+' 목소리를 저장했습니다');
+  };
+}
+/* 골라 둔 목소리로 한 문장씩 읽어 확인한다 */
+function testVoices(){
+  var say=[{lc:'ko-KR', t:'목적지는 인천공항 제1여객터미널입니다. 감사합니다.'},
+           {lc:'en-US', t:'We are going to Incheon Airport Terminal 1. Thank you.'},
+           {lc:'ja-JP', t:'目的地は仁川空港 第1旅客ターミナルです。ありがとうございます。'},
+           {lc:'zh-CN', t:'目的地是仁川机场 第一航站楼。谢谢。'}], i=0;
+  if (!ttsOk()){ toast('이 브라우저는 음성 안내를 지원하지 않습니다'); return; }
+  try { speechSynthesis.cancel(); } catch(e){}
+  function next(){
+    var s=say[i++], u, v;
+    if (!s) return;
+    u=new window.SpeechSynthesisUtterance(s.t);
+    u.lang=s.lc; u.rate=0.92;
+    v=pickVoice(s.lc, true);
+    if (v.v) u.voice=v.v;
+    u.pitch = v.male ? 1 : 0.7;
+    u.onend=next; u.onerror=next;
+    try { speechSynthesis.speak(u); } catch(e){}
+  }
+  next();
 }
 
 function forceUpdate(){
@@ -4093,8 +4169,31 @@ function voiceIsMale(v){
 }
 /* wantMale이면 남자 목소리를 먼저 찾는다. 결과의 male 값이 false면
    그 기기에 남자 목소리가 없다는 뜻이라, 음높이를 낮춰 대신한다 */
+var VOICE_PICK_KEY='airportCallLog.voicePick.v1';
+var voicePick=null;
+function loadVoicePick(){
+  if (voicePick) return voicePick;
+  try { voicePick=JSON.parse(sGet(VOICE_PICK_KEY)||'{}'); } catch(e){ voicePick={}; }
+  if (!voicePick) voicePick={};
+  return voicePick;
+}
+function saveVoicePick(){ sSet(VOICE_PICK_KEY, JSON.stringify(loadVoicePick())); }
+function allVoices(){
+  try { return window.speechSynthesis && speechSynthesis.getVoices ? (speechSynthesis.getVoices()||[]) : []; }
+  catch(e){ return []; }
+}
+/* 기사님이 직접 고른 목소리가 있으면 그것을 최우선으로 쓴다.
+   추측보다 직접 고른 쪽이 언제나 정확하다 */
+function chosenVoice(lc){
+  var pick=loadVoicePick()[lc], vs, i;
+  if (!pick) return null;
+  vs=allVoices();
+  for (i=0;i<vs.length;i++) if (vs[i].voiceURI===pick || vs[i].name===pick) return vs[i];
+  return null;
+}
 function pickVoice(lc, wantMale){
-  var vs, i, base=lc.split('-')[0], exact=[], near=[], pool, hit=null;
+  var vs, i, base=lc.split('-')[0], exact=[], near=[], pool, hit=null, mine=chosenVoice(lc);
+  if (mine) return {v:mine, male:true};   /* 직접 고른 것은 그대로 쓴다 */
   try { vs=window.speechSynthesis.getVoices()||[]; } catch(e){ return {v:null, male:false}; }
   for (i=0;i<vs.length;i++){
     if (!vs[i].lang) continue;
@@ -4262,7 +4361,8 @@ function speakGuide(){
   u.volume=1;
   v=pickVoice(t.lc, t.sex==='m');
   if (v.v) u.voice=v.v;
-  /* 남자 목소리를 못 찾았으면 음높이를 낮춰 남자 목소리에 가깝게 만든다 */
+  /* 남자 목소리를 못 찾았으면 음높이를 낮춰 남자 목소리에 가깝게 만든다.
+     직접 고른 목소리는 손대지 않는다 */
   u.pitch = (t.sex==='m' && !v.male) ? 0.7 : 1;
   u.onend=function(){ gSpeaking=false; renderSpeakBtn(); };
   u.onerror=function(){
@@ -4494,6 +4594,16 @@ function init(){
   initEnvBar();
   setPlateBg();
   if ($('btnUpdate')) $('btnUpdate').addEventListener('click', forceUpdate);
+  if ($('vcKo')){
+    for (var vi=0; vi<VC_SLOTS.length; vi++){
+      $(VC_SLOTS[vi].id).addEventListener('change', onVoicePick(VC_SLOTS[vi]));
+    }
+    $('btnVcTest').addEventListener('click', testVoices);
+    $('btnVcReload').addEventListener('click', function(){ fillVoicePicks(); toast('목록을 다시 읽었습니다'); });
+    fillVoicePicks();
+    /* 안드로이드는 목록을 늦게 준다. 준비되면 다시 채운다 */
+    if (window.speechSynthesis) speechSynthesis.onvoiceschanged=function(){ gVoicesReady=true; fillVoicePicks(); };
+  }
   if ($('btnGuideTop')) $('btnGuideTop').addEventListener('click', openGuideTop);
   setInterval(loadRouteWeather, 1800000);
 }
