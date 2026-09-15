@@ -503,7 +503,7 @@ a.brow:active{background:#2a2e34}
   <section class="view" id="v-map" aria-label="지도">
     <div class="mapbar">
       <select id="mapDays" aria-label="기간">
-        <option value="1">최근 1일</option>
+        <option value="1" selected>최근 1일</option>
         <option value="3">최근 3일</option>
         <option value="5">최근 5일</option>
         <option value="7">최근 7일</option>
@@ -513,7 +513,7 @@ a.brow:active{background:#2a2e34}
         <option value="90">최근 3개월</option>
         <option value="180">최근 6개월</option>
         <option value="270">최근 9개월</option>
-        <option value="365" selected>최근 12개월</option>
+        <option value="365">최근 12개월</option>
       </select>
       <select id="mapDir" aria-label="방향">
         <optgroup label="공항운행">
@@ -529,7 +529,7 @@ a.brow:active{background:#2a2e34}
         </optgroup>
         <option value="all">전체</option>
       </select>
-      <span class="lypair"><label><input type="checkbox" id="lyHotel" checked> 호텔</label><label><input type="checkbox" id="lySpot"> 관광지</label></span>
+      <span class="lypair"><label><input type="checkbox" id="lyHotel" checked> 호텔</label><label><input type="checkbox" id="lySpot" checked> 관광지</label></span>
       <select id="spotCat" aria-label="관광지 분류">
         <option value="all">전체</option>
         <option value="history">역사문화</option>
@@ -571,10 +571,18 @@ a.brow:active{background:#2a2e34}
   <section class="view" id="v-stat" aria-label="통계">
     <div class="filters">
       <select id="stDays" aria-label="기간">
-        <option value="0">전체 기간</option>
-        <option value="28">최근 4주</option>
-        <option value="14">최근 2주</option>
+        <option value="0" selected>전체 기간</option>
+        <option value="1">최근 1일</option>
+        <option value="3">최근 3일</option>
+        <option value="5">최근 5일</option>
         <option value="7">최근 7일</option>
+        <option value="10">최근 10일</option>
+        <option value="15">최근 15일</option>
+        <option value="30">최근 1개월</option>
+        <option value="90">최근 3개월</option>
+        <option value="180">최근 6개월</option>
+        <option value="270">최근 9개월</option>
+        <option value="365">최근 12개월</option>
       </select>
       <select id="stDir" aria-label="방향">
         <optgroup label="공항운행">
@@ -865,7 +873,6 @@ a.brow:active{background:#2a2e34}
       <div class="gpsl" id="gpsB"></div>
     </div>
     <div class="gpdots" id="gpDots"></div>
-    <div class="gptitle" id="gpTitle"></div>
     <div class="gpsub" id="gpSub"></div>
     <div class="gprow">
       <button class="btn speakbtn" type="button" id="gpAgain"></button>
@@ -1466,8 +1473,10 @@ function speakFare(won, lang){
 
 /* TMAP 실시간 경로 설정 */
 var TKEY_KEY = 'airportCallLog.tmapKey.v1';
+/* 가장 빠른 경로 카드 앞에 붙는 말. 바꾸고 싶으면 이 한 줄만 고치면 된다 */
+var BEST_ROUTE_TAG = 'AI추천 · ';
 var TMAP_OPTS = [
-  {v:'0', n:'교통최적 추천'},
+  {v:'0', n:'교통최적 경로'},
   {v:'2', n:'최소 시간'},
   {v:'1', n:'무료도로 우선'}
 ];
@@ -3076,13 +3085,12 @@ function setCenter(lat, lng, zoom){
 
 /* 지도 만들기 */
 var layerDefaultsDone = false;
-/* 오전에는 호텔, 오후에는 관광지를 켠 상태로 시작 */
+/* 호텔·관광지 모두 켠 상태로 시작 */
 function applyLayerDefaults(){
   if (layerDefaultsDone) return;
   layerDefaultsDone = true;
-  var morning = new Date().getHours() < 12;
-  $('lyHotel').checked = morning;
-  $('lySpot').checked = !morning;
+  $('lyHotel').checked = true;
+  $('lySpot').checked = true;
 }
 function safeInvalidate(){
   if (mapKind==='leaflet' && map && map.invalidateSize) map.invalidateSize();
@@ -3843,7 +3851,7 @@ function renderAi(results, sp, ep){
     card=el('div',{cls: 'ai-card '+optClass(r.opt.n)+' tap', title:'누르면 T맵 길안내가 시작됩니다',
       onclick:(function(p){ return function(){ startTmapNavi(p.lat, p.lng, p.n); }; })(ep)},[
       el('div',{cls:'hd'},[
-        el('span',{cls:'opt', text: (i===0?'추천 · ':'')+r.opt.n}),
+        el('span',{cls:'opt', text: (i===0?BEST_ROUTE_TAG:'')+r.opt.n}),
         el('span',{cls:'tm num', text: fmtMin(r.sum.time)})
       ]),
       el('div',{cls:'li', text: fmtKm(r.sum.dist)+(r.sum.toll?' · 통행료 '+r.sum.toll.toLocaleString('ko-KR')+'원':' · 통행료 없음')+(r.sum.taxi?' · 예상 요금 '+r.sum.taxi.toLocaleString('ko-KR')+'원':'')})
@@ -4176,7 +4184,6 @@ function pauseGuest(){
   closeQr();
   $('guide').className='guide';
   $('guide').setAttribute('aria-hidden','true');
-  $('gpTitle').textContent=t.pauseT;
   $('gpSub').textContent=t.pauseS;
   $('gpAgain').textContent=t.again;
   $('gpEnd').textContent=t.qrEnd;
