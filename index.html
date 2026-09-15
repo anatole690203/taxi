@@ -356,6 +356,20 @@ a.brow:active{background:#2a2e34}
 .btn.speakbtn[disabled]{opacity:.45}
 .btn.qrbtn{background:var(--panel);border-color:var(--line);color:var(--ink);font-weight:700;font-size:18px;min-height:56px}
 .btn.qrbtn[disabled]{opacity:.45}
+.gpause{position:fixed;inset:0;z-index:2600;display:none;align-items:center;justify-content:center;padding:24px;background:var(--slate)}
+.gpause.on{display:flex}
+.gpbox{width:100%;max-width:420px;display:flex;flex-direction:column;gap:16px;text-align:center}
+.gpicon{font-size:44px;color:var(--sign);letter-spacing:-6px}
+.gptitle{font-size:26px;font-weight:800;color:var(--ink)}
+.gpsub{font-size:17px;line-height:1.5;color:var(--muted,#9aa3ad)}
+.gmapbox{display:none;flex-direction:column;gap:8px;padding:12px;border:2px solid var(--sign);border-radius:6px;background:var(--panel)}
+.gmapbox.on{display:flex;animation:gmapIn .45s ease-out}
+.gmapcap{font-weight:700;font-size:17px;color:var(--ink);text-align:center}
+.gmaprow{display:flex;gap:8px}
+.btn.mapbtn{flex:1;min-height:60px;font-weight:700;font-size:18px}
+.btn.mapbtn.gm{background:#fff;border-color:#fff;color:#1a73e8}
+.btn.mapbtn.tm{background:#3D5AFE;border-color:#3D5AFE;color:#fff}
+@keyframes gmapIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 /* 승객이 자기 휴대폰으로 찍는 화면. 밝게 띄워야 카메라가 잘 잡는다 */
 .qrwrap{position:fixed;inset:0;z-index:2600;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.82);padding:18px}
 .qrwrap.on{display:flex}
@@ -819,6 +833,13 @@ a.brow:active{background:#2a2e34}
   </div>
   <button class="btn speakbtn" type="button" id="gSpeak"></button>
   <button class="btn qrbtn" type="button" id="gQr"></button>
+  <div class="gmapbox" id="gMap" aria-hidden="true">
+    <div class="gmapcap" id="gMapCap"></div>
+    <div class="gmaprow">
+      <button class="btn mapbtn gm" type="button" id="gGmap"></button>
+      <button class="btn mapbtn tm" type="button" id="gTmap"></button>
+    </div>
+  </div>
   <div class="qrwrap" id="qrWrap" aria-hidden="true">
     <div class="qrbox">
       <div class="qrcap" id="qrCap"></div>
@@ -828,6 +849,15 @@ a.brow:active{background:#2a2e34}
     </div>
   </div>
   <button class="btn" type="button" id="gClose">닫기</button>
+</div>
+
+<div class="gpause" id="gPause" aria-hidden="true">
+  <div class="gpbox">
+    <div class="gpicon">&#10074;&#10074;</div>
+    <div class="gptitle" id="gpTitle"></div>
+    <div class="gpsub" id="gpSub"></div>
+    <button class="btn speakbtn" type="button" id="gpAgain"></button>
+  </div>
 </div>
 
 <div class="scrim" id="scrim"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
@@ -1282,7 +1312,9 @@ var GUIDE_TEXT = {
       thanks:'감사합니다.', sex:'m',
       welcome:'환영합니다',
       qr:'📱 승객 휴대폰으로 보내기', qrCap:'휴대폰 카메라로 찍어 주세요', qrSub:'찍으면 목적지·예상 시간·요금이 손님 휴대폰에 열립니다.',
-      sep:'. ', end:'.', lc:'ko-KR'},
+      sep:'. ', end:'.', lc:'ko-KR',
+      mapCap:'지도로 확인하기', gmap:'Google 지도 위치', tmap:'T맵',
+      pauseT:'안내를 마쳤습니다', pauseS:'편안한 이동 되세요. 이 화면은 닫으셔도 됩니다.', again:'다시 보기'},
   en:{to:'Destination', time:'Estimated time', fare:'Estimated fare', toll:'Toll not included',
       card:'Card payment accepted', meter:'Metered fare', approx:'approx.',
       close:'Close', speak:'🔊 Play voice guide', stop:'■ Stop',
@@ -1294,7 +1326,9 @@ var GUIDE_TEXT = {
       thanks:'Thank you.', sex:'m',
       welcome:'Welcome to Korea',
       qr:'📱 Send to your phone', qrCap:'Scan with your phone camera', qrSub:'Your destination, travel time and fare will open on your phone.',
-      sep:'. ', end:'.', lc:'en-US'},
+      sep:'. ', end:'.', lc:'en-US',
+      mapCap:'Check on a map', gmap:'Google Maps (location)', tmap:'TMAP',
+      pauseT:'The guide has ended', pauseS:'Enjoy your ride. You may close this page.', again:'View again'},
   ja:{to:'目的地', time:'所要時間', fare:'予想料金', toll:'通行料は別途',
       card:'カード決済が可能です', meter:'メーター料金となります', approx:'約',
       close:'閉じる', speak:'🔊 音声案内', stop:'■ 停止',
@@ -1306,7 +1340,9 @@ var GUIDE_TEXT = {
       thanks:'ありがとうございます。', sex:'m',
       welcome:'韓国へようこそ',
       qr:'📱 スマホで受け取る', qrCap:'スマホのカメラで読み取ってください', qrSub:'目的地・所要時間・料金がお客様のスマホに表示されます。',
-      sep:'。', end:'。', lc:'ja-JP'},
+      sep:'。', end:'。', lc:'ja-JP',
+      mapCap:'地図で確認', gmap:'Google マップ（場所）', tmap:'TMAP',
+      pauseT:'案内を終了しました', pauseS:'どうぞごゆっくり。このページは閉じても大丈夫です。', again:'もう一度見る'},
   zh:{to:'目的地', time:'预计时间', fare:'预计车费', toll:'过路费另计',
       card:'可以刷卡支付', meter:'按计价器收费', approx:'约',
       close:'关闭', speak:'🔊 语音播报', stop:'■ 停止',
@@ -1318,7 +1354,9 @@ var GUIDE_TEXT = {
       thanks:'谢谢。', sex:'m',
       welcome:'欢迎来到韩国',
       qr:'📱 发送到您的手机', qrCap:'请用手机相机扫描', qrSub:'目的地、预计时间和车费将显示在您的手机上。',
-      sep:'。', end:'。', lc:'zh-CN'}
+      sep:'。', end:'。', lc:'zh-CN',
+      mapCap:'在地图上查看', gmap:'Google 地图位置', tmap:'TMAP',
+      pauseT:'介绍已结束', pauseS:'祝您乘车愉快。您可以关闭此页面。', again:'再看一次'}
 };
 /* 승객이 자주 가는 곳의 이름. 화면에는 현지어를 크게, 한국어를 작게 함께 적는다 */
 var DEST_I18N = {
@@ -2272,10 +2310,10 @@ function openGuideTop(){
   var ep=destPoint(), k=routeKey(fromPoint()||lastHere, ep);
   if (!ep){ toast('도착 권역을 먼저 고르세요'); return; }
   if (lastBest && lastBest.key===k){
-    openGuide({dest:lastBest.dest, time:lastBest.time, fare:lastBest.fare, toll:lastBest.toll});
+    openGuide({dest:lastBest.dest, time:lastBest.time, fare:lastBest.fare, toll:lastBest.toll, lat:ep.lat, lng:ep.lng});
   } else {
     /* 아직 경로를 안 받았으면 미터기 기준으로 안내한다 */
-    openGuide({dest:ep.n, time:0, fare:0, toll:false});
+    openGuide({dest:ep.n, time:0, fare:0, toll:false, lat:ep.lat, lng:ep.lng});
   }
 }
 
@@ -4114,7 +4152,29 @@ function openGuide(info){
   $('guide').className='guide on';
   $('guide').setAttribute('aria-hidden','false');
 }
+/* 손님 폰에서 닫기를 누르면 기사용 앱 화면을 보여 주지 않고 멈춤 화면을 띄운다 */
+var gPaused=false;
+function pauseGuest(){
+  var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.en;
+  gPaused=true;
+  stopGuideVoice();
+  closeQr();
+  $('guide').className='guide';
+  $('guide').setAttribute('aria-hidden','true');
+  $('gpTitle').textContent=t.pauseT;
+  $('gpSub').textContent=t.pauseS;
+  $('gpAgain').textContent=t.again;
+  $('gPause').className='gpause on';
+  $('gPause').setAttribute('aria-hidden','false');
+}
+function resumeGuest(){
+  gPaused=false;
+  $('gPause').className='gpause';
+  $('gPause').setAttribute('aria-hidden','true');
+  openGuide();
+}
 function closeGuide(){
+  if (guestMode){ pauseGuest(); return; }
   stopGuideVoice();
   closeQr();
   $('guide').className='guide';
@@ -4127,6 +4187,7 @@ function buildGuideLangs(){
     (function(l){
       box.appendChild(el('button',{type:'button','data-v':l.v, onclick:function(){
         stopGuideVoice(); guideLang=l.v; renderGuide();
+        speakGuideSoon();   /* 언어를 고르면 그 언어로 곧바로 읽어 준다 */
       }},[l.n]));
     })(GUIDE_LANGS[i]);
   }
@@ -4151,6 +4212,7 @@ function renderGuide(){
   $('gClose').textContent=t.close;
   renderSpeakBtn();
   renderQrBtn();
+  renderMapBtns();
 }
 
 /* ── 음성 안내 ──
@@ -4245,6 +4307,10 @@ function guideUrl(){
   var base=location.href.split('?')[0].split('#')[0];
   /* l: 기사가 고른 안내 언어. 손님 폰에서도 같은 언어로 연다 */
   var o={d:lastTrip.dest||'', t:lastTrip.time||0, f:lastTrip.fare||0, o:lastTrip.toll?1:0, l:guideLang||'ko'};
+  /* y·x: 목적지 위도·경도. 손님 폰에서 구글 지도·T맵을 열 때 쓴다 */
+  if (isNum(lastTrip.lat) && isNum(lastTrip.lng)){
+    o.y=Math.round(lastTrip.lat*1e5)/1e5; o.x=Math.round(lastTrip.lng*1e5)/1e5;
+  }
   return base+'?g='+b64u(JSON.stringify(o));
 }
 /* QR 그리는 도구는 처음 누를 때만 받아 온다. 한 번 받으면 휴대폰에 남는다 */
@@ -4267,6 +4333,8 @@ function renderQrBtn(){
   if (!b) return;
   b.textContent=t.qr;
   b.disabled = !lastTrip || !lastTrip.dest;
+  /* 손님 폰에서는 QR을 또 보낼 일이 없으니 숨긴다 */
+  b.style.display = guestMode ? 'none' : '';
 }
 function closeQr(){ var w=$('qrWrap'); if (w){ w.className='qrwrap'; w.setAttribute('aria-hidden','true'); } }
 function showQr(){
@@ -4323,7 +4391,10 @@ function openFromQr(){
     if (o && o.d){
       /* QR에 담긴 언어로 연다. 언어가 없는 예전 QR만 영어로 연다 */
       guideLang = GUIDE_TEXT[o.l] ? o.l : 'en';
-      openGuide({dest:o.d, time:o.t||0, fare:o.f||0, toll:!!o.o});
+      guestMode=true;
+      openGuide({dest:o.d, time:o.t||0, fare:o.f||0, toll:!!o.o,
+                 lat:isNum(o.y)?o.y:null, lng:isNum(o.x)?o.x:null});
+      armMapBtns();
       autoSpeakOnce();
       return true;
     }
@@ -4333,7 +4404,10 @@ function openFromQr(){
     pt=/[?&]l=(ko|en|ja|zh)\b/.exec(location.search);
     guideLang = pt ? pt[1] : 'en';
     pt=destPoint();
-    openGuide({dest:(pt&&pt.n)||'', time:0, fare:0, toll:false});
+    guestMode=true;
+    openGuide({dest:(pt&&pt.n)||'', time:0, fare:0, toll:false,
+               lat:pt&&isNum(pt.lat)?pt.lat:null, lng:pt&&isNum(pt.lng)?pt.lng:null});
+    armMapBtns();
     autoSpeakOnce();
     return true;
   }
@@ -4348,16 +4422,72 @@ function renderSpeakBtn(){
   b.className = gSpeaking ? 'btn speakbtn on' : 'btn speakbtn';
 }
 function stopGuideVoice(){
+  if (gLangTimer){ clearTimeout(gLangTimer); gLangTimer=null; }
+  gUtt=null;
   if (!ttsOk()) return;
   try { window.speechSynthesis.cancel(); } catch(e){}
   gSpeaking=false;
   if ($('gSpeak')) renderSpeakBtn();
+}
+/* ── 손님 폰: 음성 안내가 끝나면 구글 지도·T맵 버튼을 띄운다 ──
+   휴대폰 브라우저는 손님이 누르지 않으면 다른 앱을 열지 못하게 막는다.
+   그래서 저절로 열지 않고, 음성이 끝난 뒤 버튼을 크게 보여 준다.
+   기사 폰(손님에게 화면만 보여 줄 때)에서는 띄우지 않는다. */
+var guestMode=false, gMapShown=false;
+function tripHasPoint(){ return !!(lastTrip && isNum(lastTrip.lat) && isNum(lastTrip.lng)); }
+function renderMapBtns(){
+  var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.ko, box=$('gMap');
+  if (!box) return;
+  $('gMapCap').textContent=t.mapCap;
+  $('gGmap').textContent=t.gmap;
+  $('gTmap').textContent=t.tmap;
+  var on = guestMode && gMapShown && tripHasPoint();
+  box.className = on ? 'gmapbox on' : 'gmapbox';
+  box.setAttribute('aria-hidden', on ? 'false' : 'true');
+}
+function showMapBtns(){
+  if (!guestMode || gMapShown) return;
+  gMapShown=true;
+  renderMapBtns();
+  try { $('gMap').scrollIntoView({behavior:'smooth', block:'center'}); } catch(e){}
+}
+/* 음성이 막혀서 끝내 나오지 않는 경우를 대비해, 몇 초 지나도 말이 시작되지 않으면 버튼을 띄운다 */
+function armMapBtns(){
+  if (!ttsOk()){ showMapBtns(); return; }
+  setTimeout(function(){ if (!gSpeaking) showMapBtns(); }, 9000);
+}
+function openGoogleMap(){
+  if (!tripHasPoint()) return;
+  /* 구글 지도는 한국에서 자동차 길찾기를 내주지 않는다.
+     길찾기로 열면 자동차 칸이 비고 대중교통 경로가 대신 떠서 손님이 헷갈린다.
+     그래서 목적지 위치를 지도에 핀으로 찍어 보여 준다 */
+  var u='https://www.google.com/maps/search/?api=1&query='+lastTrip.lat+','+lastTrip.lng;
+  stopGuideVoice();
+  var w=null;
+  try { w=window.open(u, '_blank'); } catch(e){}
+  if (!w) window.location.href=u;
+}
+function openTmapGuest(){
+  if (!tripHasPoint()) return;
+  stopGuideVoice();
+  window.location.href=tmapNaviUrl(lastTrip.lat, lastTrip.lng, lastTrip.dest||'목적지');
+}
+var gUtt=null, gLangTimer=null;
+/* 멈춘 직후 곧바로 말을 시키면 안드로이드 크롬이 새 음성을 삼키는 경우가 있다. 잠깐 쉬고 읽는다 */
+function speakGuideSoon(){
+  if (gLangTimer) clearTimeout(gLangTimer);
+  gLangTimer=setTimeout(function(){
+    gLangTimer=null;
+    if (gSpeaking) stopGuideVoice();
+    speakGuide();
+  }, 200);
 }
 function speakGuide(){
   var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.ko, u, v;
   if (!ttsOk()){ toast('이 브라우저는 음성 안내를 지원하지 않습니다'); return; }
   if (gSpeaking){ stopGuideVoice(); return; }
   if (!lastTrip){ toast('먼저 경로를 계산하거나 목적지를 정하세요'); return; }
+  if (gPaused) return;   /* 손님 폰에서 안내를 닫은 뒤에는 말하지 않는다 */
   try { window.speechSynthesis.cancel(); } catch(e){}
   u=new window.SpeechSynthesisUtterance(guideVoiceText());
   u.lang=t.lc;
@@ -4368,9 +4498,13 @@ function speakGuide(){
   /* 남자 목소리를 못 찾았으면 음높이를 낮춰 남자 목소리에 가깝게 만든다.
      직접 고른 목소리는 손대지 않는다 */
   u.pitch = (t.sex==='m' && !v.male) ? 0.7 : 1;
-  u.onend=function(){ gSpeaking=false; renderSpeakBtn(); };
-  u.onerror=function(){
-    gSpeaking=false; renderSpeakBtn();
+  /* 언어를 빨리 바꾸면 앞 음성이 끊기면서 늦게 신호를 보낸다. 지금 음성의 신호만 받는다 */
+  gUtt=u;
+  u.onend=function(){ if (gUtt!==u) return; gUtt=null; gSpeaking=false; renderSpeakBtn(); showMapBtns(); };
+  u.onerror=function(e){
+    if (gUtt!==u) return;
+    gUtt=null; gSpeaking=false; renderSpeakBtn(); showMapBtns();
+    if (e && (e.error==='interrupted' || e.error==='canceled')) return;   /* 일부러 멈춘 것 */
     toast('음성을 내지 못했습니다. 소리 크기와 무음 모드를 확인하세요');
   };
   gSpeaking=true; renderSpeakBtn();
@@ -4490,7 +4624,10 @@ function init(){
   $('gClose').addEventListener('click', closeGuide);
   $('gSpeak').addEventListener('click', speakGuide);
   if ($('gQr')) $('gQr').addEventListener('click', showQr);
+  if ($('gGmap')) $('gGmap').addEventListener('click', openGoogleMap);
+  if ($('gTmap')) $('gTmap').addEventListener('click', openTmapGuest);
   if ($('qrClose')) $('qrClose').addEventListener('click', closeQr);
+  if ($('gpAgain')) $('gpAgain').addEventListener('click', resumeGuest);
   openFromQr();   /* QR을 찍고 들어왔으면 곧장 승객 화면 */
   primeVoices();
   $('btnRoad').addEventListener('click', renderRoad);
@@ -4595,8 +4732,10 @@ function init(){
   renderAll();
   updateTrackMsg();
   setInterval(renderClock, 15000);
-  initEnvBar();
-  setPlateBg();
+  if (!guestMode){   /* 손님 폰에서는 위치 권한을 묻거나 날씨를 받지 않는다 */
+    initEnvBar();
+    setPlateBg();
+  }
   if ($('btnUpdate')) $('btnUpdate').addEventListener('click', forceUpdate);
   if ($('vcKo')){
     for (var vi=0; vi<VC_SLOTS.length; vi++){
@@ -4609,12 +4748,12 @@ function init(){
     if (window.speechSynthesis) speechSynthesis.onvoiceschanged=function(){ gVoicesReady=true; fillVoicePicks(); };
   }
   if ($('btnGuideTop')) $('btnGuideTop').addEventListener('click', openGuideTop);
-  setInterval(loadRouteWeather, 1800000);
+  if (!guestMode) setInterval(loadRouteWeather, 1800000);
 }
 
 /* 앱을 휴대폰에 저장해 두면 터널 안에서도 열린다.
    파일로 직접 연 화면(file://)에서는 등록되지 않는다 */
-if (navigator.serviceWorker && location.protocol==='https:'){
+if (navigator.serviceWorker && location.protocol==='https:' && !/[?&](g|p)=/.test(location.search)){
   window.addEventListener('load', function(){
     navigator.serviceWorker.register('sw.js').catch(function(){});
   });
