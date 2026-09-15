@@ -2770,7 +2770,7 @@ function clearStore(arr){
 /* 지금 켜 둔 층(호텔·관광지)이 덮는 곳으로 지도를 옮긴다.
    둘 다 켜면 둘을 함께 담고, 둘 다 끄면 손대지 않는다 */
 function fitLayers(){
-  var pts=[], i, cat, hotel=$('lyHotel').checked, spot=$('lySpot').checked;
+  var pts=[], i, cat, la=0, ln=0, hotel=$('lyHotel').checked, spot=$('lySpot').checked;
   if (!map) return;
   if (hotel) for (i=0;i<HOTELS.length;i++) pts.push({lat:HOTELS[i].lat, lng:HOTELS[i].lng});
   if (spot){
@@ -2779,13 +2779,23 @@ function fitLayers(){
       if (cat==='all' || SPOTS[i].cat===cat) pts.push({lat:SPOTS[i].lat, lng:SPOTS[i].lng});
     }
   }
-  if (!pts.length) return;
-  meOn=false;   /* 지도를 옮겼으니 현위치 보기는 풀린 것으로 본다 */
+  /* 현위치 표시를 정리하고 버튼도 되돌린다 */
+  meOn=false;
   if ($('btnMe')) $('btnMe').textContent='내 위치';
   if ($('meAddr')) $('meAddr').style.display='none';
   dropMarker(meMarker); meMarker=null;
-  /* 체크를 막 켠 직후에는 지도가 아직 자리를 못 잡을 때가 있다. 한 박자 뒤에 맞춘다 */
-  setTimeout(function(){ fitPoints(trimOutliers(pts)); }, 60);
+
+  /* 범위를 매번 다시 계산하면 켤 때마다 지도 크기가 달라진다.
+     체크된 곳들의 한가운데로만 옮기고, 배율은 늘 기본값으로 고정한다.
+     그래야 무엇을 켜든 같은 크기의 지도가 나온다 */
+  if (!pts.length){
+    setCenter(MAP_HOME.lat, MAP_HOME.lng, MAP_HOME.zoom);
+    return;
+  }
+  pts=trimOutliers(pts);
+  for (i=0;i<pts.length;i++){ la+=pts[i].lat; ln+=pts[i].lng; }
+  la/=pts.length; ln/=pts.length;
+  setTimeout(function(){ setCenter(la, ln, MAP_HOME.zoom); }, 60);
 }
 function showSpots(){
   var on=$('lySpot').checked, cat=$('spotCat').value, i, vis;
