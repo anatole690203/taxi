@@ -2785,7 +2785,7 @@ function fitLayers(){
   if ($('meAddr')) $('meAddr').style.display='none';
   dropMarker(meMarker); meMarker=null;
   /* 체크를 막 켠 직후에는 지도가 아직 자리를 못 잡을 때가 있다. 한 박자 뒤에 맞춘다 */
-  setTimeout(function(){ fitPoints(pts); }, 60);
+  setTimeout(function(){ fitPoints(trimOutliers(pts)); }, 60);
 }
 function showSpots(){
   var on=$('lySpot').checked, cat=$('spotCat').value, i, vis;
@@ -2858,6 +2858,29 @@ function addLine(store, pts, color){
   if (store) store.push(m);
   return m;
 }
+/* 멀리 떨어진 한두 곳(인천공항 근처 호텔 같은) 때문에 지도가 통째로 벌어진다.
+   가장자리 5%를 잘라내고 몰려 있는 쪽에 맞춘다 */
+function trimOutliers(pts){
+  var la=[], ln=[], i, out=[], q, laLo, laHi, lnLo, lnHi;
+  if (pts.length < 6) return pts;
+  for (i=0;i<pts.length;i++){ la.push(pts[i].lat); ln.push(pts[i].lng); }
+  la.sort(function(a,b){ return a-b; });
+  ln.sort(function(a,b){ return a-b; });
+  q=function(arr, f){ return arr[Math.max(0, Math.min(arr.length-1, Math.round((arr.length-1)*f)))]; };
+  laLo=q(la,0.05); laHi=q(la,0.95); lnLo=q(ln,0.05); lnHi=q(ln,0.95);
+  for (i=0;i<pts.length;i++){
+    if (pts[i].lat>=laLo && pts[i].lat<=laHi && pts[i].lng>=lnLo && pts[i].lng<=lnHi) out.push(pts[i]);
+  }
+  return out.length>=3 ? out : pts;
+}
+/* 너무 넓게 벌어지지 않도록 막는다. 마커가 좁쌀만 해지면 볼 수가 없다 */
+function capZoomOut(){
+  try {
+    if (mapKind==='kakao'){ if (map.getLevel && map.getLevel()>8) map.setLevel(8); }
+    else if (mapKind==='naver'){ if (map.getZoom && map.getZoom()<10) map.setZoom(10); }
+    else if (map.getZoom && map.getZoom()<10) map.setZoom(10);
+  } catch(e){}
+}
 function fitPoints(pts){
   var minLa, maxLa, minLn, maxLn, i, ll=[], ok=[];
   if (!map || !pts || !pts.length) return;
@@ -2881,6 +2904,7 @@ function fitPoints(pts){
     for (i=0;i<pts.length;i++) ll.push([pts[i].lat, pts[i].lng]);
     map.fitBounds(ll, {padding:[30,30], maxZoom:15});
   }
+  capZoomOut();
 }
 function setCenter(lat, lng, zoom){
   if (mapKind==='kakao'){ map.setCenter(new kakao.maps.LatLng(lat,lng)); if (zoom) map.setLevel(kakaoLevel(zoom)); return; }
@@ -3023,7 +3047,7 @@ function fitRecords(){
   var pts=[], recs=mapRecs(), i;
   for (i=0;i<recs.length;i++) if (isNum(recs[i].lat)) pts.push({lat:recs[i].lat, lng:recs[i].lng});
   if (!pts.length){ toast('선택한 조건에 좌표가 있는 기록이 없습니다'); return; }
-  fitPoints(pts);
+  fitPoints(trimOutliers(pts));
 }
 function showMeAddr(la, ln, acc, addr, place){
   var box=$('meAddr');
