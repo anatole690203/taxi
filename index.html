@@ -359,7 +359,11 @@ a.brow:active{background:#2a2e34}
 .gpause{position:fixed;inset:0;z-index:2600;display:none;align-items:center;justify-content:center;padding:24px;background:var(--slate)}
 .gpause.on{display:flex}
 .gpbox{width:100%;max-width:420px;display:flex;flex-direction:column;gap:16px;text-align:center}
-.gpicon{font-size:44px;color:var(--sign);letter-spacing:-6px}
+.gpslide{position:relative;width:100%;aspect-ratio:25/21;border-radius:8px;overflow:hidden;background:#1b1e23;touch-action:pan-y;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.gps{position:absolute;inset:0;background-size:cover;background-position:center;transform:translateX(100%);transition:transform .7s ease}
+.gpdots{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:-4px}
+.gpdots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .3s,transform .3s}
+.gpdots i.on{background:var(--sign);transform:scale(1.35)}
 .gptitle{font-size:26px;font-weight:800;color:var(--ink)}
 .gpsub{font-size:17px;line-height:1.5;color:var(--muted,#9aa3ad)}
 .gmapbox{display:none;flex-direction:column;gap:8px;padding:12px;border:2px solid var(--sign);border-radius:6px;background:var(--panel)}
@@ -853,7 +857,11 @@ a.brow:active{background:#2a2e34}
 
 <div class="gpause" id="gPause" aria-hidden="true">
   <div class="gpbox">
-    <div class="gpicon">&#10074;&#10074;</div>
+    <div class="gpslide" id="gpSlide">
+      <div class="gps" id="gpsA"></div>
+      <div class="gps" id="gpsB"></div>
+    </div>
+    <div class="gpdots" id="gpDots"></div>
     <div class="gptitle" id="gpTitle"></div>
     <div class="gpsub" id="gpSub"></div>
     <button class="btn speakbtn" type="button" id="gpAgain"></button>
@@ -4166,8 +4174,76 @@ function pauseGuest(){
   $('gpAgain').textContent=t.again;
   $('gPause').className='gpause on';
   $('gPause').setAttribute('aria-hidden','false');
+  gpStart();
 }
+/* 멈춤 화면 사진 슬라이드. 첫 화면 배경에 넣어 둔 사진(PLATE_BGS)을 그대로 쓴다.
+   앱 안에 들어 있는 사진이라 손님 폰에서도 따로 받지 않고 바로 나온다 */
+var gpIdx=0, gpTop=false, gpTimer=null, gpBound=false, GP_MS=3500;
+function gpDots(){
+  var box=$('gpDots'), i, d;
+  if (!box) return;
+  if (box.childNodes.length!==PLATE_BGS.length){
+    clear(box);
+    for (i=0;i<PLATE_BGS.length;i++){ d=document.createElement('i'); box.appendChild(d); }
+  }
+  for (i=0;i<box.childNodes.length;i++) box.childNodes[i].className = i===gpIdx ? 'on' : '';
+}
+function gpShow(n, dir){
+  var N=PLATE_BGS.length, a=$('gpsA'), b=$('gpsB'), cur, nxt;
+  if (!N || !a || !b) return;
+  n=((n%N)+N)%N;
+  cur = gpTop ? b : a;
+  nxt = gpTop ? a : b;
+  /* 새 사진을 들어올 쪽 바깥에 먼저 놓고, 두 장을 함께 밀어 넘긴다 */
+  nxt.style.transition='none';
+  nxt.style.transform='translateX('+(dir<0?-100:100)+'%)';
+  nxt.style.backgroundImage='url("'+PLATE_BGS[n]+'")';
+  void nxt.offsetWidth;
+  nxt.style.transition='';
+  nxt.style.transform='translateX(0)';
+  cur.style.transform='translateX('+(dir<0?100:-100)+'%)';
+  gpTop=!gpTop; gpIdx=n;
+  gpDots();
+}
+function gpTick(){ gpShow(gpIdx+1, 1); }
+function gpRestart(){
+  if (gpTimer) clearInterval(gpTimer);
+  gpTimer = document.hidden ? null : setInterval(gpTick, GP_MS);
+}
+function gpStart(){
+  var a=$('gpsA'), b=$('gpsB'), sx=0, sy=0;
+  if (!PLATE_BGS.length || !a) return;
+  gpIdx=Math.floor(Math.random()*PLATE_BGS.length);
+  gpTop=false;
+  a.style.transition='none'; b.style.transition='none';
+  a.style.backgroundImage='url("'+PLATE_BGS[gpIdx]+'")';
+  a.style.transform='translateX(0)';
+  b.style.transform='translateX(100%)';
+  void a.offsetWidth;
+  a.style.transition=''; b.style.transition='';
+  gpDots();
+  gpRestart();
+  if (gpBound) return;
+  gpBound=true;
+  /* 손가락으로 밀어도 넘어간다 */
+  $('gpSlide').addEventListener('touchstart', function(e){
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+  }, {passive:true});
+  $('gpSlide').addEventListener('touchend', function(e){
+    var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy;
+    if (Math.abs(dx)<40 || Math.abs(dx)<Math.abs(dy)) return;
+    gpShow(gpIdx+(dx<0?1:-1), dx<0?1:-1);
+    gpRestart();
+  }, {passive:true});
+  document.addEventListener('visibilitychange', function(){
+    if (!gPaused) return;
+    if (document.hidden){ if (gpTimer){ clearInterval(gpTimer); gpTimer=null; } }
+    else gpRestart();
+  }, false);
+}
+function gpStop(){ if (gpTimer){ clearInterval(gpTimer); gpTimer=null; } }
 function resumeGuest(){
+  gpStop();
   gPaused=false;
   $('gPause').className='gpause';
   $('gPause').setAttribute('aria-hidden','true');
