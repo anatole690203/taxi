@@ -2426,6 +2426,14 @@ var LIVE_KEY = 'airportCallLog.live.v1';
 
 var mapKind = null, map = null, infoWin = null, mapBound = false, naverAuthFailed = false;
 var gZones = [], gHotels = [], gRecs = [], gTrack = [], gSpots = [], meMarker = null;
+/* 마커 하나를 지도에서 떼어낸다. 카카오·네이버는 setMap(null), 리플릿은 removeLayer */
+function dropMarker(m){
+  if (!m) return;
+  try {
+    if (usesSetMap()){ if (m.setMap) m.setMap(null); }
+    else if (map && map.removeLayer) map.removeLayer(m);
+  } catch(e){}
+}
 var tracks = [], live = null, watchId = null;
 
 /* 주행 경로 순수 계산 */
@@ -2772,8 +2780,12 @@ function fitLayers(){
     }
   }
   if (!pts.length) return;
-  fitPoints(pts);
   meOn=false;   /* 지도를 옮겼으니 현위치 보기는 풀린 것으로 본다 */
+  if ($('btnMe')) $('btnMe').textContent='내 위치';
+  if ($('meAddr')) $('meAddr').style.display='none';
+  dropMarker(meMarker); meMarker=null;
+  /* 체크를 막 켠 직후에는 지도가 아직 자리를 못 잡을 때가 있다. 한 박자 뒤에 맞춘다 */
+  setTimeout(function(){ fitPoints(pts); }, 60);
 }
 function showSpots(){
   var on=$('lySpot').checked, cat=$('spotCat').value, i, vis;
@@ -2847,7 +2859,11 @@ function addLine(store, pts, color){
   return m;
 }
 function fitPoints(pts){
-  var minLa, maxLa, minLn, maxLn, i, ll=[];
+  var minLa, maxLa, minLn, maxLn, i, ll=[], ok=[];
+  if (!map || !pts || !pts.length) return;
+  /* 좌표가 없는 항목이 하나라도 섞이면 범위 계산이 통째로 망가진다 */
+  for (i=0;i<pts.length;i++) if (isNum(pts[i].lat) && isNum(pts[i].lng)) ok.push(pts[i]);
+  pts=ok;
   if (!pts.length) return;
   if (pts.length===1){ setCenter(pts[0].lat, pts[0].lng, 15); return; }
   minLa=maxLa=pts[0].lat; minLn=maxLn=pts[0].lng;
@@ -2858,7 +2874,7 @@ function fitPoints(pts){
     if (pts[i].lng>maxLn) maxLn=pts[i].lng;
   }
   if (mapKind==='kakao'){
-    map.setBounds(new kakao.maps.LatLngBounds(new kakao.maps.LatLng(minLa,minLn), new kakao.maps.LatLng(maxLa,maxLn)));
+    map.setBounds(new kakao.maps.LatLngBounds(new kakao.maps.LatLng(minLa,minLn), new kakao.maps.LatLng(maxLa,maxLn)), 24, 24, 24, 24);
   } else if (mapKind==='naver'){
     map.fitBounds(new naver.maps.LatLngBounds(new naver.maps.LatLng(minLa,minLn), new naver.maps.LatLng(maxLa,maxLn)));
   } else {
@@ -2969,9 +2985,9 @@ function buildMap(kind){
 function bindMapControls(){
   if (mapBound) return;
   mapBound=true;
-  $('lyHotel').addEventListener('change', function(){ showStore(gHotels, this.checked); if (this.checked) fitLayers(); });
+  $('lyHotel').addEventListener('change', function(){ showStore(gHotels, this.checked); fitLayers(); });
   $('lyZone').addEventListener('change', function(){ showStore(gZones, this.checked); });
-  $('lySpot').addEventListener('change', function(){ showSpots(); if (this.checked) fitLayers(); });
+  $('lySpot').addEventListener('change', function(){ showSpots(); fitLayers(); });
   /* 같은 값을 다시 골라도 change 는 안 온다. 눌렀을 때부터 관광지를 켠다 */
   $('spotCat').addEventListener('click', function(){
     if (!$('lySpot').checked){ $('lySpot').checked=true; showSpots(); fitLayers(); }
@@ -3025,10 +3041,7 @@ function toggleMe(){
   if (meOn){
     meOn=false;
     if ($('meAddr')) $('meAddr').style.display='none';
-    if (meMarker){
-      if (mapKind==='naver') meMarker.setMap(null); else if (map) map.removeLayer(meMarker);
-      meMarker=null;
-    }
+    dropMarker(meMarker); meMarker=null;
     if ($('lyHotel').checked || $('lySpot').checked) fitLayers();
     else setCenter(MAP_HOME.lat, MAP_HOME.lng, 13);
     meOn=false;
@@ -3041,7 +3054,7 @@ function locateMe(){
   if (!navigator.geolocation){ toast('이 브라우저는 위치를 제공하지 않습니다'); return; }
   navigator.geolocation.getCurrentPosition(function(p){
     var la=p.coords.latitude, ln=p.coords.longitude, acc=p.coords.accuracy;
-    if (meMarker){ if (mapKind==='naver') meMarker.setMap(null); else map.removeLayer(meMarker); }
+    dropMarker(meMarker);
     meMarker=addDot(null, la, ln, {size:18, weight:3, stroke:'#fff', fill:'#69F0AE', z:90, popup:'<b>현재 위치</b>'+escapeHtml(assignZone(la,ln))});
     setCenter(la, ln, 16);
     showMeAddr(la, ln, acc, null, null);
