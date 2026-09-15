@@ -140,6 +140,7 @@ a.brow:active{background:#2a2e34}
 .empty{color:var(--muted);font-size:14px;padding:6px 0}
 
 /* 지도 */
+.lypair{display:inline-flex;align-items:center;gap:12px}
 .mapbar{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px 8px;align-items:center}
 .mapbar select,.mapbar button{min-height:42px;padding:0 10px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
 .mapbar label{display:flex;align-items:center;gap:4px;font-size:14px;min-height:42px;padding:0 6px}
@@ -470,10 +471,17 @@ a.brow:active{background:#2a2e34}
   <section class="view" id="v-map" aria-label="지도">
     <div class="mapbar">
       <select id="mapDays" aria-label="기간">
-        <option value="0">전체 기간</option>
-        <option value="28">최근 4주</option>
-        <option value="14">최근 2주</option>
+        <option value="1">최근 1일</option>
+        <option value="3">최근 3일</option>
+        <option value="5">최근 5일</option>
         <option value="7">최근 7일</option>
+        <option value="10">최근 10일</option>
+        <option value="15">최근 15일</option>
+        <option value="30">최근 1개월</option>
+        <option value="90">최근 3개월</option>
+        <option value="180">최근 6개월</option>
+        <option value="270">최근 9개월</option>
+        <option value="365" selected>최근 12개월</option>
       </select>
       <select id="mapDir" aria-label="방향">
         <optgroup label="공항운행">
@@ -489,8 +497,7 @@ a.brow:active{background:#2a2e34}
         </optgroup>
         <option value="all">전체</option>
       </select>
-      <label><input type="checkbox" id="lyHotel" checked> 호텔</label>
-      <label><input type="checkbox" id="lySpot"> 관광지</label>
+      <span class="lypair"><label><input type="checkbox" id="lyHotel" checked> 호텔</label><label><input type="checkbox" id="lySpot"> 관광지</label></span>
       <select id="spotCat" aria-label="관광지 분류">
         <option value="all">전체</option>
         <option value="history">역사문화</option>
@@ -2752,6 +2759,22 @@ function clearStore(arr){
   arr.length=0;
 }
 /* 분류 선택에 맞는 관광지만 표시 */
+/* 지금 켜 둔 층(호텔·관광지)이 덮는 곳으로 지도를 옮긴다.
+   둘 다 켜면 둘을 함께 담고, 둘 다 끄면 손대지 않는다 */
+function fitLayers(){
+  var pts=[], i, cat, hotel=$('lyHotel').checked, spot=$('lySpot').checked;
+  if (!map) return;
+  if (hotel) for (i=0;i<HOTELS.length;i++) pts.push({lat:HOTELS[i].lat, lng:HOTELS[i].lng});
+  if (spot){
+    cat=$('spotCat').value;
+    for (i=0;i<SPOTS.length;i++){
+      if (cat==='all' || SPOTS[i].cat===cat) pts.push({lat:SPOTS[i].lat, lng:SPOTS[i].lng});
+    }
+  }
+  if (!pts.length) return;
+  fitPoints(pts);
+  meOn=false;   /* 지도를 옮겼으니 현위치 보기는 풀린 것으로 본다 */
+}
 function showSpots(){
   var on=$('lySpot').checked, cat=$('spotCat').value, i, vis;
   for (i=0;i<gSpots.length;i++){
@@ -2946,21 +2969,21 @@ function buildMap(kind){
 function bindMapControls(){
   if (mapBound) return;
   mapBound=true;
-  $('lyHotel').addEventListener('change', function(){ showStore(gHotels, this.checked); });
+  $('lyHotel').addEventListener('change', function(){ showStore(gHotels, this.checked); if (this.checked) fitLayers(); });
   $('lyZone').addEventListener('change', function(){ showStore(gZones, this.checked); });
-  $('lySpot').addEventListener('change', showSpots);
+  $('lySpot').addEventListener('change', function(){ showSpots(); if (this.checked) fitLayers(); });
   /* 같은 값을 다시 골라도 change 는 안 온다. 눌렀을 때부터 관광지를 켠다 */
   $('spotCat').addEventListener('click', function(){
-    if (!$('lySpot').checked){ $('lySpot').checked=true; showSpots(); }
+    if (!$('lySpot').checked){ $('lySpot').checked=true; showSpots(); fitLayers(); }
   });
   $('spotCat').addEventListener('change', function(){
     if (!$('lySpot').checked){ $('lySpot').checked=true; }
-    showSpots();
+    showSpots(); fitLayers();
   });
   $('mapDays').addEventListener('change', drawRecords);
   $('mapDir').addEventListener('change', drawRecords);
   $('btnFit').addEventListener('click', fitRecords);
-  $('btnMe').addEventListener('click', locateMe);
+  $('btnMe').addEventListener('click', toggleMe);
   $('trackSel').addEventListener('change', drawSelectedTrack);
   $('btnTrackDel').addEventListener('click', deleteSelectedTrack);
 }
@@ -2996,6 +3019,24 @@ function showMeAddr(la, ln, acc, addr, place){
   box.appendChild(el('span',{text: assignZone(la,ln)+' · '+la.toFixed(5)+', '+ln.toFixed(5)
     + (acc ? ' · 오차 약 '+Math.round(acc)+'m' : '')}));
 }
+var meOn=false;
+/* 한 번 누르면 현위치로, 다시 누르면 원래 보던 권역으로 돌아간다 */
+function toggleMe(){
+  if (meOn){
+    meOn=false;
+    if ($('meAddr')) $('meAddr').style.display='none';
+    if (meMarker){
+      if (mapKind==='naver') meMarker.setMap(null); else if (map) map.removeLayer(meMarker);
+      meMarker=null;
+    }
+    if ($('lyHotel').checked || $('lySpot').checked) fitLayers();
+    else setCenter(MAP_HOME.lat, MAP_HOME.lng, 13);
+    meOn=false;
+    if ($('btnMe')) $('btnMe').textContent='내 위치';
+    return;
+  }
+  locateMe();
+}
 function locateMe(){
   if (!navigator.geolocation){ toast('이 브라우저는 위치를 제공하지 않습니다'); return; }
   navigator.geolocation.getCurrentPosition(function(p){
@@ -3004,6 +3045,8 @@ function locateMe(){
     meMarker=addDot(null, la, ln, {size:18, weight:3, stroke:'#fff', fill:'#69F0AE', z:90, popup:'<b>현재 위치</b>'+escapeHtml(assignZone(la,ln))});
     setCenter(la, ln, 16);
     showMeAddr(la, ln, acc, null, null);
+    meOn=true;
+    if ($('btnMe')) $('btnMe').textContent='권역으로';
     /* 도로명 주소와 건물 이름을 함께 찾는다. 기사에게는 건물 이름이 더 빨리 읽힌다 */
     lookupPlace(la, ln, function(addr, place){
       showMeAddr(la, ln, acc, addr, place);
