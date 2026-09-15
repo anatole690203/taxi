@@ -1,0 +1,19 @@
+{
+  "name": "공항콜 기록기",
+  "short_name": "공항콜",
+  "description": "택시 운행 기록과 실시간 경로 안내",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#17191c",
+  "theme_color": "#17191c",
+  "lang": "ko",
+  "dir": "ltr",
+  "categories": ["travel", "navigation", "productivity"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
