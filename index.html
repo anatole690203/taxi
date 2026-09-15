@@ -1280,7 +1280,7 @@ var GUIDE_TEXT = {
       voiceMeter:'We are going to %DEST%. The trip takes about %TIME%. The fare is charged by the meter. %NOTE%',
       voiceNT:'We are going to %DEST%. The fare is about %FARE%. %NOTE%',
       voiceNTMeter:'We are going to %DEST%. The fare is charged by the meter. %NOTE%',
-      thanks:'Thank you.', sex:'',
+      thanks:'Thank you.', sex:'m',
       welcome:'Welcome to Korea',
       qr:'📱 Send to your phone', qrCap:'Scan with your phone camera', qrSub:'Your destination, travel time and fare will open on your phone.',
       sep:'. ', end:'.', lc:'en-US'},
@@ -1292,7 +1292,7 @@ var GUIDE_TEXT = {
       voiceMeter:'目的地は%DEST%です。所要時間は約%TIME%です。料金はメーターによる計算となります。%NOTE%',
       voiceNT:'目的地は%DEST%です。料金は約%FARE%です。%NOTE%',
       voiceNTMeter:'目的地は%DEST%です。料金はメーターによる計算となります。%NOTE%',
-      thanks:'ありがとうございます。', sex:'',
+      thanks:'ありがとうございます。', sex:'m',
       welcome:'韓国へようこそ',
       qr:'📱 スマホで受け取る', qrCap:'スマホのカメラで読み取ってください', qrSub:'目的地・所要時間・料金がお客様のスマホに表示されます。',
       sep:'。', end:'。', lc:'ja-JP'},
@@ -4084,8 +4084,8 @@ var gSpeaking=false, gVoicesReady=false;
 function ttsOk(){ return !!(window.speechSynthesis && window.SpeechSynthesisUtterance); }
 /* 목소리 이름으로 성별을 가린다. 브라우저마다 이름이 제각각이라 아는 것만 적는다.
    female 안에 male이 들어 있으므로 여자 쪽을 반드시 먼저 걸러야 한다 */
-var VOICE_F = /female|女性|여성|kyoko|o-?ren|nanami|ayumi|haruka|mayu|yuna|sunhi|sun-?hi|heami|jimin|seoyeon|ting-?ting|sin-?ji|mei-?jia|xiaoxiao|xiaoyi|xiaochen|huihui|yaoyao|liangliang|zira|hanhan/i;
-var VOICE_M = /\bmale\b|男性|남성|otoya|ichiro|hattori|daichi|keita|naoki|injoon|in-?joon|bongjin|hyunsu|li-?mu|liangmu|yunxi|yunjian|yunyang|yunfeng|yunhao|kangkang|zhiyu|x-ism|x-kod|x-ccd|x-cce/i;
+var VOICE_F = /female|女性|여성|kyoko|o-?ren|nanami|ayumi|haruka|mayu|mizuki|yuna|sunhi|sun-?hi|heami|jimin|seoyeon|ting-?ting|sin-?ji|mei-?jia|xiaoxiao|xiaoyi|xiaochen|huihui|yaoyao|liangliang|zira|hanhan|samantha|victoria|karen|moira|tessa|fiona|allison|ava|susan|zoe|joanna|salli|kimberly|ivy|kendra|amy|emma|aria|jenny|michelle|sonia|libby|natasha|clara/i;
+var VOICE_M = /\bmale\b|男性|남성|otoya|ichiro|hattori|daichi|keita|naoki|takumi|injoon|in-?joon|bongjin|hyunsu|li-?mu|liangmu|yunxi|yunjian|yunyang|yunfeng|yunhao|kangkang|zhiyu|guy|davis|tony|jason|eric|steffan|brandon|christopher|roger|alex|daniel|fred|aaron|arthur|oliver|rishi|matthew|joey|justin|stephen|x-ism|x-kod|x-ccd|x-cce|x-iol|x-tpc|x-sfg/i;
 function voiceIsMale(v){
   var n=(v.name||'')+' '+(v.voiceURI||'');
   if (VOICE_F.test(n)) return false;
