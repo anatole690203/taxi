@@ -222,6 +222,14 @@ a.brow:active{background:#2a2e34}
 .ai-card.tap{cursor:pointer}
 .ai-card.tap:active{background:#26292f}
 .ai-card .go{font-size:12.5px;color:#A79BFF;margin-top:6px}
+.ai-card.c-time{border-left-color:var(--sign)}
+.ai-card.c-time .opt{color:var(--sign)}
+.ai-card.c-time .go{color:#FFE08A}
+.ai-card.c-best{border-left-color:#6C5CE7}
+.ai-card.c-best .opt{color:#A79BFF}
+.ai-card.c-free{border-left-color:#7A828C}
+.ai-card.c-free .opt{color:#A7ADB5}
+.ai-card.c-free .go{color:#A7ADB5}
 .btn.guidebtn{width:100%;margin-top:8px;background:#A8CBFF;border-color:#A8CBFF;color:#17191c;font-weight:700}
 .btn.tmap{width:100%;margin-top:8px;background:#2C7EF8;border-color:#2C7EF8;color:#fff;font-weight:700}
 .btn.nmapbtn{width:100%;margin-top:8px;background:#03C75A;border-color:#03C75A;color:#fff;font-weight:700}
@@ -691,6 +699,10 @@ a.brow:active{background:#2a2e34}
 
   <section class="view" id="v-data" aria-label="데이터">
     <div class="sec gray"><h3>저장 상태</h3><div class="empty" id="storeInfo"></div></div>
+    <div class="sec"><h3>앱 버전</h3>
+      <div class="empty" id="verInfo">앱을 고쳐 올린 뒤에도 옛 화면이 보이면 아래를 누르세요. 저장해 둔 화면을 비우고 새로 받아옵니다. 운행 기록은 지워지지 않습니다.</div>
+      <button class="btn navi" type="button" id="btnUpdate">새 버전 확인</button>
+    </div>
     <div class="sec blue">
       <h3>지도 종류</h3>
       <div class="field">
@@ -1362,6 +1374,13 @@ var TMAP_OPTS = [
   {v:'1', n:'무료도로 우선'}
 ];
 var JAM_NAME = ['정보없음','원활','서행','지체','정체'];
+/* 경로 종류별 색. 최소 시간은 노랑, 교통최적은 보라, 무료도로는 회색 */
+function optClass(name){
+  var n=String(name||'');
+  if (n.indexOf('최소 시간')>=0) return 'c-time';
+  if (n.indexOf('무료도로')>=0 || n.indexOf('최단 거리')>=0) return 'c-free';
+  return 'c-best';
+}
 /* 실시간 경로 제공자 */
 var RPROV_KEY = 'airportCallLog.routeProvider.v1';
 var KREST_KEY = 'airportCallLog.kakaoRestKey.v1';
@@ -2198,6 +2217,29 @@ function wxSheet(){
   ]));
   openSheet(kids);
 }
+/* 앱을 고쳐 올려도 옛 화면이 남을 때가 있다.
+   저장해 둔 것을 전부 비우고, 서비스 워커도 떼어낸 뒤 다시 받아온다.
+   운행 기록은 다른 저장소에 있어서 건드리지 않는다 */
+function forceUpdate(){
+  var btn=$('btnUpdate'), jobs=[];
+  if (btn){ btn.disabled=true; btn.textContent='새로 받는 중…'; }
+  if (window.caches && caches.keys){
+    jobs.push(caches.keys().then(function(ks){
+      return Promise.all(ks.map(function(k){ return caches.delete(k); }));
+    }).catch(function(){}));
+  }
+  if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations){
+    jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){
+      return Promise.all(rs.map(function(r){ return r.unregister(); }));
+    }).catch(function(){}));
+  }
+  Promise.all(jobs).then(function(){
+    /* 주소 뒤에 시각을 붙여 브라우저가 들고 있던 것도 못 쓰게 한다 */
+    var base=location.href.split('?')[0].split('#')[0];
+    location.replace(base+'?v='+Date.now());
+  }).catch(function(){ location.reload(); });
+}
+
 function initEnvBar(){
   var raw=sGet(WX_KEY), w;
   if (raw){ try { w=JSON.parse(raw); if (w && w.pts && Date.now()-w.ts < 3*3600000){ wxNow=w; paintWx(); } } catch(e){} }
@@ -3542,7 +3584,7 @@ function renderAi(results, sp, ep){
        el('span',{cls:'bl2', text:(sp.n||'출발')+' → '+(ep.n||'도착')+' · 빠른 순'})]));
   for (i=0;i<results.length;i++){
     r=results[i];
-    card=el('div',{cls: (i===0 ? 'ai-card best' : 'ai-card')+' tap', title:'누르면 T맵 길안내가 시작됩니다',
+    card=el('div',{cls: 'ai-card '+optClass(r.opt.n)+' tap', title:'누르면 T맵 길안내가 시작됩니다',
       onclick:(function(p){ return function(){ startTmapNavi(p.lat, p.lng, p.n); }; })(ep)},[
       el('div',{cls:'hd'},[
         el('span',{cls:'opt', text: (i===0?'추천 · ':'')+r.opt.n}),
@@ -4211,6 +4253,7 @@ function init(){
   setInterval(renderClock, 15000);
   initEnvBar();
   setPlateBg();
+  if ($('btnUpdate')) $('btnUpdate').addEventListener('click', forceUpdate);
   setInterval(loadRouteWeather, 1800000);
 }
 

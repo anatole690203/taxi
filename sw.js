@@ -1,9 +1,8 @@
-/* 공항콜 기록기 — 서비스 워커
+/* 공항콜 기록기 — 서비스 워커 v2
    앱을 휴대폰에 저장해 둔다. 지하차도나 터널에서도 열린다.
    앱을 새로 올릴 때는 아래 CACHE 번호를 하나 올린다. */
-var CACHE = 'airportcall-v1';
+var CACHE = 'airportcall-v2';
 
-/* 미리 받아 둘 것. 앱 본체와 아이콘 */
 var SHELL = [
   './',
   './index.html',
@@ -13,11 +12,9 @@ var SHELL = [
 ];
 
 self.addEventListener('install', function(e){
-  /* 새 버전을 받으면 기다리지 않고 바로 넘어간다 */
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE).then(function(c){
-      /* 한 개라도 실패하면 전체가 실패하므로 하나씩 담는다 */
       return Promise.all(SHELL.map(function(u){
         return c.add(u).catch(function(){});
       }));
@@ -35,6 +32,11 @@ self.addEventListener('activate', function(e){
   );
 });
 
+/* 앱에서 보낸 신호로 곧장 새 버전으로 넘어간다 */
+self.addEventListener('message', function(e){
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
+});
+
 self.addEventListener('fetch', function(e){
   var req = e.request, url;
   if (req.method !== 'GET') return;
@@ -44,13 +46,15 @@ self.addEventListener('fetch', function(e){
      오래된 교통정보를 보여주면 없느니만 못하다 */
   if (/openstreetmap|tile|dapi\.kakao|apis\.openapi\.sk|open-meteo|api\.anthropic/.test(url.href)) return;
 
-  /* 앱 화면은 새 것을 먼저 찾고, 안 되면 저장해 둔 것을 쓴다.
-     그래야 앱을 고쳐 올렸을 때 바로 반영되고, 터널에서도 열린다 */
+  /* 앱 화면은 늘 새 것을 받는다.
+     no-store 를 붙여야 한다. 깃허브 페이지가 10분간 캐시하라고 내려보내서,
+     그냥 fetch 하면 브라우저가 들고 있던 옛 파일을 그대로 돌려준다.
+     이게 앱을 고쳐 올려도 안 바뀌던 진짜 원인이었다 */
   if (req.mode === 'navigate' || /\.html($|\?)/.test(url.pathname)){
     e.respondWith(
-      fetch(req).then(function(res){
+      fetch(req.url, {cache:'no-store'}).then(function(res){
         var copy = res.clone();
-        caches.open(CACHE).then(function(c){ c.put(req, copy); });
+        caches.open(CACHE).then(function(c){ c.put('./index.html', copy); });
         return res;
       }).catch(function(){
         return caches.match(req).then(function(r){
@@ -61,7 +65,7 @@ self.addEventListener('fetch', function(e){
     return;
   }
 
-  /* 아이콘, 글꼴 같은 것은 저장해 둔 것을 먼저 쓴다. 빠르고 데이터도 아낀다 */
+  /* 아이콘 같은 것은 저장해 둔 것을 먼저 쓴다. 빠르고 데이터도 아낀다 */
   e.respondWith(
     caches.match(req).then(function(r){
       if (r) return r;
