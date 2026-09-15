@@ -4243,7 +4243,8 @@ function unb64u(str){
 }
 function guideUrl(){
   var base=location.href.split('?')[0].split('#')[0];
-  var o={d:lastTrip.dest||'', t:lastTrip.time||0, f:lastTrip.fare||0, o:lastTrip.toll?1:0};
+  /* l: 기사가 고른 안내 언어. 손님 폰에서도 같은 언어로 연다 */
+  var o={d:lastTrip.dest||'', t:lastTrip.time||0, f:lastTrip.fare||0, o:lastTrip.toll?1:0, l:guideLang||'ko'};
   return base+'?g='+b64u(JSON.stringify(o));
 }
 /* QR 그리는 도구는 처음 누를 때만 받아 온다. 한 번 받으면 휴대폰에 남는다 */
@@ -4320,14 +4321,17 @@ function openFromQr(){
   if (m){
     try { o=JSON.parse(unb64u(m[1])); } catch(e){ o=null; }
     if (o && o.d){
-      guideLang='en';   /* 외국인 손님이 대부분이라 영어로 연다 */
+      /* QR에 담긴 언어로 연다. 언어가 없는 예전 QR만 영어로 연다 */
+      guideLang = GUIDE_TEXT[o.l] ? o.l : 'en';
       openGuide({dest:o.d, time:o.t||0, fare:o.f||0, toll:!!o.o});
       autoSpeakOnce();
       return true;
     }
   }
   if (/[?&]p=1/.test(location.search)){
-    guideLang='en';
+    /* 고정 QR은 주소 끝에 &l=ja 처럼 언어를 붙일 수 있다. 없으면 영어 */
+    pt=/[?&]l=(ko|en|ja|zh)\b/.exec(location.search);
+    guideLang = pt ? pt[1] : 'en';
     pt=destPoint();
     openGuide({dest:(pt&&pt.n)||'', time:0, fare:0, toll:false});
     autoSpeakOnce();
