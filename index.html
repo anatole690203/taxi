@@ -614,7 +614,7 @@ a.brow:active{background:#2a2e34}
 
   <section class="view" id="v-road" aria-label="도로">
     <div class="sec">
-      <h3>어느 길로 갈까?</h3>
+      <button class="btn guidebtn" type="button" id="btnGuideTop" style="margin:0 0 12px">승객에게 요금·시간 보여주기</button>
       <div class="field">
         <label class="hi" for="rdFrom">출발 권역</label>
         <div class="pick"><select id="rdFrom"></select>
@@ -2220,6 +2220,19 @@ function wxSheet(){
 /* 앱을 고쳐 올려도 옛 화면이 남을 때가 있다.
    저장해 둔 것을 전부 비우고, 서비스 워커도 떼어낸 뒤 다시 받아온다.
    운행 기록은 다른 저장소에 있어서 건드리지 않는다 */
+/* 맨 위 버튼: 승객에게 요금·시간을 보여 준다.
+   경로를 받아 둔 게 있으면 그 값을, 없으면 목적지만 띄운다 */
+function openGuideTop(){
+  var ep=destPoint(), k=routeKey(fromPoint()||lastHere, ep);
+  if (!ep){ toast('도착 권역을 먼저 고르세요'); return; }
+  if (lastBest && lastBest.key===k){
+    openGuide({dest:lastBest.dest, time:lastBest.time, fare:lastBest.fare, toll:lastBest.toll});
+  } else {
+    /* 아직 경로를 안 받았으면 미터기 기준으로 안내한다 */
+    openGuide({dest:ep.n, time:0, fare:0, toll:false});
+  }
+}
+
 function forceUpdate(){
   var btn=$('btnUpdate'), jobs=[];
   if (btn){ btn.disabled=true; btn.textContent='새로 받는 중…'; }
@@ -3526,6 +3539,7 @@ var aiBusy=false;
 /* 실시간으로 받아 온 실제 경로. 이게 있으면 권역으로 어림한 간선도로 안내는 쓰지 않는다.
    TMAP이 헌릉로·강남순환로로 간다는데 화면은 올림픽대로라고 적혀 있으면 기사가 헷갈린다 */
 var realRoute=null;
+var lastBest=null;   /* 방금 받은 최적 경로. 승객용 화면에 쓴다 */
 function routeKey(sp, ep){
   if (!sp || !ep) return '';
   return sp.lat.toFixed(3)+','+sp.lng.toFixed(3)+'>'+ep.lat.toFixed(3)+','+ep.lng.toFixed(3);
@@ -3579,6 +3593,7 @@ function renderAi(results, sp, ep){
   results.sort(function(a,b){ return a.sum.time-b.sum.time; });
   best=results[0];
   realRoute={key:routeKey(sp, ep), roads:best.sum.roads.map(function(x){ return x.n; })};
+  lastBest={key:routeKey(sp, ep), dest:ep.n, time:best.sum.time, fare:best.sum.taxi, toll:best.sum.toll};
   renderRoad();   /* 어림 안내를 실제 경로로 바꿔 다시 그린다 */
   box.appendChild(el('div',{cls:'ai-note'},[el('span',{cls:'bl1', text:(getRouteProvider()==='kakao'?'카카오':'TMAP')+' 실시간 교통 기준'}),
        el('span',{cls:'bl2', text:(sp.n||'출발')+' → '+(ep.n||'도착')+' · 빠른 순'})]));
@@ -3605,9 +3620,6 @@ function renderAi(results, sp, ep){
     }
     box.appendChild(card);
   }
-  box.appendChild(el('button',{cls:'btn guidebtn', type:'button', style:'margin-top:0', onclick:function(){
-    openGuide({dest:ep.n, time:best.sum.time, fare:best.sum.taxi, toll:best.sum.toll});
-  }},['승객에게 요금·시간 보여주기']));
   /* 내비 세 개는 한 박스에 나란히 둔다. 손가락이 닿는 자리를 줄이지 않으려고 높이는 남겼다 */
   box.appendChild(el('div',{cls:'navibox'},[
     el('div',{cls:'cap', text:'경로안내'}),
@@ -4254,6 +4266,7 @@ function init(){
   initEnvBar();
   setPlateBg();
   if ($('btnUpdate')) $('btnUpdate').addEventListener('click', forceUpdate);
+  if ($('btnGuideTop')) $('btnGuideTop').addEventListener('click', openGuideTop);
   setInterval(loadRouteWeather, 1800000);
 }
 
