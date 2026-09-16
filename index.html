@@ -410,8 +410,8 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .gabinfo span{color:var(--muted)}
 .gabinfo b{font-weight:600;color:var(--ink)}
 .gabhd{font-size:16px;font-weight:700;color:var(--sign)}
-.gabslide{position:relative;aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#1b1e23;touch-action:pan-y}
-.gabslide .s{position:absolute;inset:0;background:center/cover no-repeat;transition:transform .6s ease}
+.gabslide{position:relative;aspect-ratio:1/1;max-height:68vh;width:100%;border-radius:8px;overflow:hidden;background:#15171b;touch-action:pan-y}
+.gabslide .s{position:absolute;inset:0;background:center/contain no-repeat;transition:transform .6s ease}
 .gabdots{display:flex;justify-content:center;flex-wrap:wrap;gap:6px}
 .gabdots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25)}
 .gabdots i.on{background:var(--sign)}
@@ -4360,6 +4360,8 @@ var PF_DEGS=[{v:'div',n:'목회학 석사학위 (목사)'},{v:'psy',n:'심리치
 var PF_CODE={fr:{'카카오':'k','우버':'u','온다':'o'}, lang:{ko:'k',en:'e',ja:'j',zh:'z'},
              pay:{'자동결제':'a','카드':'c','현금':'m'}, deg:{div:'d',psy:'p',sw:'s'}};
 var PF_MAX_ACTS=10;
+/* 앱 파일 안에 넣어 둔 활동 사진. 여기 들어 있으면 QR로 연 손님 폰에서도 슬라이드로 나온다 */
+var ACT_PHOTOS = [];
 var PF_TEXT={
   ko:{driver:'기사', about:'기사 소개', back:'돌아가기', sep:'·',
       deg:{div:'목회학 석사 (목사)', psy:'심리치료 석사', sw:'사회복지 석사'},
@@ -4631,7 +4633,7 @@ function openAbout(){
   row(pt.frLabel, pfJoin(gp, PF_FRS, 'fr', pt.fr, pt.sep));
   row(pt.speaks, pfJoin(gp, ['ko','en','ja','zh'], 'langs', pt.langn, pt.sep));
   row(pt.pay, pfJoin(gp, PF_PAYS, 'pay', pt.pays, pt.sep));
-  acts=gp.acts||[];
+  acts = (guestMode || !(gp.acts && gp.acts.length)) ? ACT_PHOTOS : gp.acts;
   $('gabCap').textContent=pt.act;
   $('gabActWrap').style.display = acts.length ? '' : 'none';
   gabBuild(acts);
