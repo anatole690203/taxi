@@ -4362,9 +4362,9 @@ var guideLang='ko';
 var PROFILE_KEY='airportCallLog.profile.v1';
 var PF_OPS=['개인','법인'], PF_FRS=['카카오','우버','온다'], PF_PAYS=['자동결제','카드','현금'];
 var PF_LANGS=[{v:'ko',n:'한국어'},{v:'en',n:'English'},{v:'ja',n:'日本語'},{v:'zh',n:'中文'}];
-var PF_DEGS=[{v:'div',n:'목회학 석사학위 (목사)'},{v:'psy',n:'심리치료 석사학위'},{v:'sw',n:'사회복지 석사학위'}];
+var PF_DEGS=[{v:'div',n:'목회학 석사학위 (목사)'},{v:'psy',n:'심리치료 석사학위'},{v:'sw',n:'사회복지 석사학위'},{v:'pa',n:'행정학사'}];
 var PF_CODE={fr:{'카카오':'k','우버':'u','온다':'o'}, lang:{ko:'k',en:'e',ja:'j',zh:'z'},
-             pay:{'자동결제':'a','카드':'c','현금':'m'}, deg:{div:'d',psy:'p',sw:'s'}};
+             pay:{'자동결제':'a','카드':'c','현금':'m'}, deg:{div:'d',psy:'p',sw:'s',pa:'a'}};
 var PF_MAX_ACTS=10;
 /* 앱 파일 안에 넣어 둔 활동 사진. 여기 들어 있으면 QR로 연 손님 폰에서도 슬라이드로 나온다 */
 var ACT_PHOTOS = [
@@ -4381,41 +4381,41 @@ var ACT_PHOTOS = [
 ];
 var PF_TEXT={
   ko:{driver:'기사', about:'기사 소개', back:'돌아가기', sep:'·',
-      deg:{div:'목회학 석사 (목사)', psy:'심리치료 석사', sw:'사회복지 석사'},
+      deg:{div:'목회학 석사 (목사)', psy:'심리치료 석사', sw:'사회복지 석사', pa:'행정학사'},
       opLabel:'운행', op:{'개인':'개인택시','법인':'법인택시'},
       frLabel:'가맹', fr:{'카카오':'카카오 T','우버':'우버','온다':'온다'},
       speaks:'가능한 언어', langn:{ko:'한국어',en:'영어',ja:'일본어',zh:'중국어'},
       pay:'결제', pays:{'자동결제':'앱 자동결제','카드':'카드','현금':'현금'}, payNote:'%P 결제 가능합니다',
       act:'나눔·봉사 활동', hint:'사진을 누르면 크게 볼 수 있습니다',
-      msg1:'여러분의 작은 후원의 손길이 어린아이들에게 사랑으로 전해집니다.',
-      msg2:'마음이 닿으시면 함께해 주세요. 부담 갖지 않으셔도 괜찮습니다.', donate:'후원하기'},
+      msg1:'여러분의 사랑의 도움이 세계 여러 나라의 가정 형편이 어려운 아이들에게 교육비와 생활비로 전해집니다.',
+      msg2:'마음이 닿으시면 함께해 주세요. 감사합니다.', donate:'후원하기'},
   en:{driver:'Your driver', about:'About your driver', back:'Back', sep:', ',
-      deg:{div:'Master of Divinity (Pastor)', psy:"Master's in Psychotherapy", sw:'Master of Social Work'},
+      deg:{div:'Master of Divinity (Pastor)', psy:"Master's in Psychotherapy", sw:'Master of Social Work', pa:'Bachelor of Public Administration'},
       opLabel:'Service', op:{'개인':'Private taxi','법인':'Company taxi'},
       frLabel:'Partner', fr:{'카카오':'Kakao T','우버':'Uber','온다':'onda'},
       speaks:'Languages', langn:{ko:'Korean',en:'English',ja:'Japanese',zh:'Chinese'},
       pay:'Payment', pays:{'자동결제':'In-app auto pay','카드':'Card','현금':'Cash'}, payNote:'%P accepted',
       act:'Charity & volunteer work', hint:'Tap a photo to view it full screen',
-      msg1:'Your small act of kindness will reach young children as love.',
-      msg2:"If it touches your heart, you're welcome to join. No pressure at all.", donate:'Support'},
+      msg1:'Your loving support reaches children from families in need around the world, helping with their school and living costs.',
+      msg2:'If it touches your heart, please join us. Thank you.', donate:'Support'},
   ja:{driver:'ドライバー', about:'ドライバー紹介', back:'戻る', sep:'・',
-      deg:{div:'牧会学修士（牧師）', psy:'心理療法学修士', sw:'社会福祉学修士'},
+      deg:{div:'牧会学修士（牧師）', psy:'心理療法学修士', sw:'社会福祉学修士', pa:'行政学学士'},
       opLabel:'運行', op:{'개인':'個人タクシー','법인':'法人タクシー'},
       frLabel:'加盟', fr:{'카카오':'カカオT','우버':'Uber','온다':'onda'},
       speaks:'対応言語', langn:{ko:'韓国語',en:'英語',ja:'日本語',zh:'中国語'},
       pay:'お支払い', pays:{'자동결제':'アプリ自動決済','카드':'カード','현금':'現金'}, payNote:'%Pでお支払いいただけます',
       act:'奉仕・支援活動', hint:'写真をタップすると拡大できます',
-      msg1:'皆さまの小さなご支援が、子どもたちへの愛として届けられます。',
-      msg2:'お気持ちがあれば、ぜひご協力ください。どうぞお気軽に。', donate:'支援する'},
+      msg1:'皆さまの温かいご支援は、世界各国の家庭環境が厳しい子どもたちに、教育費と生活費として届けられます。',
+      msg2:'お気持ちがあれば、ぜひご協力ください。ありがとうございます。', donate:'支援する'},
   zh:{driver:'您的司机', about:'司机介绍', back:'返回', sep:'、',
-      deg:{div:'道学硕士（牧师）', psy:'心理治疗硕士', sw:'社会工作硕士'},
+      deg:{div:'道学硕士（牧师）', psy:'心理治疗硕士', sw:'社会工作硕士', pa:'行政管理学学士'},
       opLabel:'运营', op:{'개인':'个人出租车','법인':'公司出租车'},
       frLabel:'加盟', fr:{'카카오':'Kakao T','우버':'Uber','온다':'onda'},
       speaks:'可用语言', langn:{ko:'韩语',en:'英语',ja:'日语',zh:'中文'},
       pay:'支付方式', pays:{'자동결제':'应用自动支付','카드':'刷卡','현금':'现金'}, payNote:'可使用%P支付',
       act:'爱心志愿服务活动', hint:'点击照片可放大查看',
-      msg1:'您的一份小小心意，将化作爱传递给孩子们。',
-      msg2:'如您愿意，欢迎一同参与，请不必有任何负担。', donate:'支持'}
+      msg1:'您充满爱心的帮助，将作为教育费和生活费，送到世界各地家境困难的孩子们手中。',
+      msg2:'如您愿意，欢迎一同参与。谢谢您。', donate:'支持'}
 };
 /* 한글로 적은 차종·색상을 손님 언어로. 모르는 차종은 적은 그대로 둔다 */
 var CAR_I18N=[['아이오닉5','Hyundai IONIQ 5'],['아이오닉6','Hyundai IONIQ 6'],['아이오닉','Hyundai IONIQ'],
@@ -4456,7 +4456,7 @@ var profile=null, pfDraft=null, guestProfile=null;
 function pfOwn(o,k){ return Object.prototype.hasOwnProperty.call(o,k); }
 function emptyProfile(){
   return {nameKo:'', nameEn:'', plate:'', carModel:'', carColor:'', op:'개인', fr:[], langs:['ko'], pay:['카드','현금'],
-          deg:{div:true, psy:true, sw:true}, photo:'', acts:[], donate:'', show:true};
+          deg:{div:true, psy:true, sw:true, pa:true}, photo:'', acts:[], donate:'', show:true};
 }
 function pfStr(v, n){ return typeof v==='string' ? v.trim().slice(0, n||40) : ''; }
 function pfPick(arr, allowed){
@@ -4476,7 +4476,7 @@ function normProfile(p){
   if (pfOwn(p,'fr')) e.fr=pfPick(p.fr, PF_FRS);
   if (pfOwn(p,'langs')) e.langs=pfPick(p.langs, ['ko','en','ja','zh']);
   if (pfOwn(p,'pay')) e.pay=pfPick(p.pay, PF_PAYS);
-  if (p.deg && typeof p.deg==='object') for (i=0;i<PF_DEGS.length;i++) e.deg[PF_DEGS[i].v]=!!p.deg[PF_DEGS[i].v];
+  if (p.deg && typeof p.deg==='object') for (i=0;i<PF_DEGS.length;i++) if (pfOwn(p.deg, PF_DEGS[i].v)) e.deg[PF_DEGS[i].v]=!!p.deg[PF_DEGS[i].v];
   e.photo=pfImg(p.photo);
   if (Object.prototype.toString.call(p.acts)==='[object Array]'){
     for (i=0;i<p.acts.length && e.acts.length<PF_MAX_ACTS;i++) if (pfImg(p.acts[i])) e.acts.push(p.acts[i]);
