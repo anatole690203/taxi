@@ -445,12 +445,14 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .btn.qrbtn[disabled]{opacity:.45}
 .gpause{position:fixed;inset:0;z-index:2600;display:none;align-items:center;justify-content:center;padding:14px;background:var(--slate)}
 .gpause.on{display:flex}
-/* 손님 폰 나가기 화면. 창을 닫으면 휴대폰이 QR 스캐너로 되돌아가므로 이 화면에 머문다 */
-.gend{position:fixed;inset:0;z-index:2700;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px 18px;background:var(--slate);text-align:center}
+/* 손님 폰 나가기 화면: 태극 문양 사진 위에 감사 인사를 띄우고 곧 창을 닫는다 */
+.gend{position:fixed;inset:0;z-index:2700;display:none;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;padding:24px 20px calc(9vh + env(safe-area-inset-bottom));background:#2a1917 center top/auto 70vh no-repeat;text-align:center;color:#fff}
+/* 사진은 태극 원이 잘리지 않게 위쪽 70%에 두고, 아래는 대문 색으로 이어 글자를 얹는다 */
+.gend::before{content:'';position:absolute;inset:0;background:linear-gradient(to top, #2a1917 0, #2a1917 30vh, rgba(42,25,23,0) 46vh);pointer-events:none}
 .gend.on{display:flex}
-.gend .gendt{font-size:26px;font-weight:700;line-height:1.3}
-.gend .gends{max-width:30em;font-size:17px;color:var(--muted);line-height:1.5}
-.gend .btn{margin-top:18px;min-width:160px;padding:0 20px;color:var(--muted);background:transparent}
+.gend>*{position:relative}
+.gend .gendt{font-size:clamp(28px,8vw,40px);font-weight:700;line-height:1.25;text-shadow:0 2px 12px rgba(0,0,0,.55)}
+.gend .gends{font-size:19px;line-height:1.5;color:rgba(255,255,255,.88);text-shadow:0 1px 8px rgba(0,0,0,.55)}
 .gpbox{width:100%;max-width:560px;display:flex;flex-direction:column;gap:16px;text-align:center}
 .gpslide{position:relative;width:100%;aspect-ratio:1/1;max-height:64vh;border-radius:8px;overflow:hidden;background:#1b1e23;touch-action:pan-y;box-shadow:0 6px 24px rgba(0,0,0,.35)}
 .gpsl{position:absolute;inset:0;background-size:cover;background-position:center;transform:translateX(100%);transition:transform .7s ease}
@@ -1040,7 +1042,6 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 <div class="gend" id="gEnd" aria-hidden="true">
   <div class="gendt" id="gEndT"></div>
   <div class="gends" id="gEndS"></div>
-  <button class="btn" type="button" id="gEndBack"></button>
 </div>
 
 <div class="gpause" id="gPause" aria-hidden="true">
@@ -1517,7 +1518,7 @@ var GUIDE_TEXT = {
       sep:'. ', end:'.', lc:'ko-KR',
       mapCap:'지도로 확인하기', gmap:'Google 지도 위치', tmap:'T맵',
       pauseT:'안내를 마쳤습니다', pauseS:'편안한 이동 되세요. 이 화면은 닫으셔도 됩니다.', again:'이전',
-      endS:'편안한 이동 되세요. 이제 홈 화면으로 나가셔도 됩니다.'},
+      endS:'편안한 이동 되세요'},
   en:{to:'Destination', time:'Estimated time', fare:'Estimated fare', toll:'Toll not included',
       card:'Card payment accepted', meter:'Metered fare', approx:'approx.',
       close:'Close', gallery:'Photo gallery', qrEnd:'Close', exit:'Exit', speak:'🔊 Play voice guide', stop:'■ Stop',
@@ -1532,7 +1533,7 @@ var GUIDE_TEXT = {
       sep:'. ', end:'.', lc:'en-US',
       mapCap:'Check on a map', gmap:'Google Maps (location)', tmap:'TMAP',
       pauseT:'The guide has ended', pauseS:'Enjoy your ride. You may close this page.', again:'Back',
-      endS:'Enjoy your ride. You can go to your home screen now.'},
+      endS:'Enjoy your ride'},
   ja:{to:'目的地', time:'所要時間', fare:'予想料金', toll:'通行料は別途',
       card:'カード決済が可能です', meter:'メーター料金となります', approx:'約',
       close:'閉じる', gallery:'フォトギャラリー', qrEnd:'閉じる', exit:'終了', speak:'🔊 音声案内', stop:'■ 停止',
@@ -1547,7 +1548,7 @@ var GUIDE_TEXT = {
       sep:'。', end:'。', lc:'ja-JP',
       mapCap:'地図で確認', gmap:'Google マップ（場所）', tmap:'TMAP',
       pauseT:'案内を終了しました', pauseS:'どうぞごゆっくり。このページは閉じても大丈夫です。', again:'戻る',
-      endS:'どうぞごゆっくり。ホーム画面に戻っても大丈夫です。'},
+      endS:'どうぞごゆっくり'},
   zh:{to:'目的地', time:'预计时间', fare:'预计车费', toll:'过路费另计',
       card:'可以刷卡支付', meter:'按计价器收费', approx:'约',
       close:'关闭', gallery:'图片画廊', qrEnd:'关闭', exit:'退出', speak:'🔊 语音播报', stop:'■ 停止',
@@ -1562,7 +1563,7 @@ var GUIDE_TEXT = {
       sep:'。', end:'。', lc:'zh-CN',
       mapCap:'在地图上查看', gmap:'Google 地图位置', tmap:'TMAP',
       pauseT:'介绍已结束', pauseS:'祝您乘车愉快。您可以关闭此页面。', again:'返回',
-      endS:'祝您乘车愉快。现在可以返回主屏幕。'}
+      endS:'祝您乘车愉快'}
 };
 /* 승객이 자주 가는 곳의 이름. 화면에는 현지어를 크게, 한국어를 작게 함께 적는다 */
 var DEST_I18N = {
@@ -4962,7 +4963,7 @@ function resumeGuest(){
 }
 /* 갤러리의 QR 닫기.
    기사 폰: 안내 화면을 모두 닫고 앱으로 돌아온다.
-   손님 폰: 창을 닫지 않고 마침 화면을 띄운다 (창을 닫으면 QR 스캐너로 되돌아간다) */
+   손님 폰: 감사 인사 화면을 띄운 뒤 창을 닫는다 */
 function endGallery(){
   gpStop();
   gPaused=false;
@@ -4972,25 +4973,55 @@ function endGallery(){
   showGuestEnd();
 }
 /* 손님 폰 나가기.
-   QR 스캐너가 연 창을 닫거나 뒤로 가면 휴대폰이 QR 스캐너 화면으로 되돌아간다.
-   웹 페이지는 카메라 앱을 닫을 수 없으므로, 창을 닫지 않고 마침 화면을 띄운다 */
+   태극 문양 사진 위에 감사 인사를 띄우고 소리로도 인사한 뒤 창을 닫는다.
+   인사가 끝나면(늦어도 3.5초 뒤) 닫고, 인사가 짧아도 1.5초는 보여 준다 */
+var TAEGEUK_FP='PTiIezNK1AAkRISW4AA1JrS9NyMq8Ml0r9gAsSvG4VXw8b6WgADd5cMeH/';   /* 첫 화면 사진(PLATE_BGS) 중 태극 문양 대문 사진의 끝부분 */
+var gEndDone=false;
+function taegeukBg(){
+  for (var i=0;i<PLATE_BGS.length;i++) if (PLATE_BGS[i].indexOf(TAEGEUK_FP)>=0) return PLATE_BGS[i];
+  return '';
+}
 function showGuestEnd(){
-  var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.en;
+  var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.en, bg=taegeukBg(), shownAt=Date.now(), u, v;
   closeGuide();
-  $('gEndT').textContent=t.pauseT;
+  gPaused=true;   /* 이 뒤로는 안내 음성을 다시 틀지 않는다 */
+  gEndDone=false;
+  $('gEnd').style.backgroundImage = bg ? 'url("'+bg+'")' : '';
+  $('gEndT').textContent=t.thanks.replace(/[.。]$/, '');
   $('gEndS').textContent=t.endS;
-  $('gEndBack').textContent='← '+t.again;
   $('gEnd').className='gend on';
   $('gEnd').setAttribute('aria-hidden','false');
+  function finish(){
+    var wait=Math.max(0, 1500-(Date.now()-shownAt));
+    if (gEndDone) return;
+    gEndDone=true;
+    setTimeout(closeGuestPage, wait+300);
+  }
+  setTimeout(finish, 3500);
+  if (!ttsOk()){ finish(); return; }
+  try {
+    window.speechSynthesis.cancel();
+    u=new window.SpeechSynthesisUtterance(t.thanks);
+    u.lang=t.lc; u.rate=0.92; u.volume=1;
+    v=pickVoice(t.lc, t.sex==='m');
+    if (v.v) u.voice=v.v;
+    u.pitch=(t.sex==='m' && !v.male) ? 0.7 : 1;
+    u.onend=finish; u.onerror=finish;
+    window.speechSynthesis.speak(u);
+  } catch(e){ finish(); }
 }
-function hideGuestEnd(){
-  $('gEnd').className='gend';
-  $('gEnd').setAttribute('aria-hidden','true');
-  openGuide();
+/* 창을 닫는다. 브라우저가 막으면 이전 페이지로 가고, 그것도 없으면 감사 화면에 머문다 */
+function closeGuestPage(){
+  try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch(e){}
+  try { window.close(); } catch(e){}
+  setTimeout(function(){
+    if (window.closed) return;
+    if (window.history.length>1) window.history.back();
+  }, 400);
 }
 /* 맨 아래 버튼.
    기사 폰: 이전 — 안내 화면을 닫고 안내를 열었던 앱 화면으로 돌아간다.
-   손님 폰: 나가기 — 안내를 멈추고 마침 화면을 띄운다 (QR 스캐너로 되돌아가지 않는다) */
+   손님 폰: 나가기 — 태극 문양 화면에 감사 인사를 띄운 뒤 창을 닫는다 */
 function guideBack(){
   if (!guestMode){ closeGuide(); return; }
   showGuestEnd();
@@ -5518,7 +5549,6 @@ function init(){
   }
   if ($('gpAgain')) $('gpAgain').addEventListener('click', resumeGuest);
   if ($('gpEnd')) $('gpEnd').addEventListener('click', endGallery);
-  $('gEndBack').addEventListener('click', hideGuestEnd);
   openFromQr();   /* QR을 찍고 들어왔으면 곧장 승객 화면 */
   primeVoices();
   $('btnRoad').addEventListener('click', renderRoad);
