@@ -347,6 +347,13 @@ a.brow:active{background:#2a2e34}
 .guide{position:fixed;inset:0;z-index:2500;display:none;flex-direction:column;gap:14px;padding:18px;background:var(--slate);overflow:auto}
 .guide.on{display:flex}
 .glang{display:flex;gap:6px}
+/* 승객 안내 맨 위 줄: 왼쪽에 이전 버튼, 오른쪽에 언어 버튼 */
+.gtop{display:flex;gap:6px;align-items:stretch}
+.gtop .glang{flex:1;min-width:0}
+.gtop .glang button{min-width:0;padding:0 2px;font-size:14px;white-space:nowrap}
+.gback{flex:none;min-height:46px;padding:0 12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:4px;font-weight:700;font-size:15px;white-space:nowrap}
+.gback:active,.btn.gbackbtn:active{background:#3A3F46}
+.btn.gbackbtn{color:var(--muted);background:transparent}
 .glang button{flex:1;min-height:46px;border:1px solid var(--line);background:var(--panel);border-radius:4px;font-weight:600;font-size:15px}
 .glang button[aria-pressed="true"]{border-color:var(--sign);color:var(--sign);box-shadow:inset 0 0 0 1px var(--sign)}
 .gbody{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px}
@@ -968,7 +975,10 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 </div></nav>
 
 <div class="guide" id="guide" aria-hidden="true">
-  <div class="glang" id="gLang"></div>
+  <div class="gtop">
+    <button type="button" class="gback" id="gBackTop">← 이전</button>
+    <div class="glang" id="gLang"></div>
+  </div>
   <div class="gdrv" id="gDrv">
     <div class="dav" id="gDrvAv"></div>
     <div class="tx"><div class="k best" id="gDrvK">Best Taxi Driver</div><div class="n" id="gDrvN"></div><div class="c" id="gDrvC"></div><div class="d" id="gDrvD"></div></div>
@@ -1002,6 +1012,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
     </div>
   </div>
   <button class="btn" type="button" id="gClose">닫기</button>
+  <button class="btn gbackbtn" type="button" id="gBackBottom">← 이전</button>
 </div>
 
 <div class="gabout" id="gAbout" aria-hidden="true">
@@ -4950,6 +4961,19 @@ function endGallery(){
     else window.location.replace('about:blank');
   }, 300);
 }
+/* 이전 버튼(맨 위·맨 아래).
+   기사 폰: 안내 화면을 닫고 안내를 열었던 앱 화면으로 돌아간다.
+   손님 폰: 기사용 앱 화면은 보여 주지 않고, QR을 찍기 전 화면으로 돌아간다 */
+function guideBack(){
+  if (!guestMode){ closeGuide(); return; }
+  closeAbout();
+  stopGuideVoice();
+  closeQr();
+  if (window.history.length>1){ window.history.back(); return; }
+  try { window.close(); } catch(e){}
+  /* 돌아갈 곳도 없고 창도 닫히지 않으면 사진 화면을 띄운다 */
+  setTimeout(function(){ if (!window.closed) pauseGuest(); }, 300);
+}
 function closeGuide(){
   closeAbout();
   stopGuideVoice();
@@ -4988,6 +5012,8 @@ function renderGuide(){
   $('gNote').textContent= (lastTrip.toll ? t.toll+' · ' : '')+payNote(t);
   renderDriverCard();
   $('gClose').textContent=t.gallery;   /* 닫기 대신 사진 갤러리를 연다 */
+  $('gBackTop').textContent='← '+t.again;
+  $('gBackBottom').textContent='← '+t.again;
   renderSpeakBtn();
   renderQrBtn();
   renderMapBtns();
@@ -5449,6 +5475,8 @@ function init(){
     download('장부_'+stamp()+'.csv', ledgerToCSV(ledger), 'text/csv;charset=utf-8');
   });
   $('gClose').addEventListener('click', openGallery);
+  $('gBackTop').addEventListener('click', guideBack);
+  $('gBackBottom').addEventListener('click', guideBack);
   $('gSpeak').addEventListener('click', speakGuide);
   if ($('gQr')) $('gQr').addEventListener('click', showQr);
   if ($('gGmap')) $('gGmap').addEventListener('click', openGoogleMap);
