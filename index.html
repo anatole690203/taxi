@@ -1493,7 +1493,7 @@ var GUIDE_LANGS = [
 var GUIDE_TEXT = {
   ko:{to:'목적지', time:'예상 시간', fare:'예상 요금', toll:'통행료 별도',
       card:'카드 결제 가능합니다', meter:'미터기 요금 기준입니다', approx:'약',
-      close:'닫기', gallery:'갤러리 사진', qrEnd:'QR 닫기', speak:'🔊 음성 안내', stop:'■ 멈추기',
+      close:'닫기', gallery:'갤러리 사진', qrEnd:'QR 닫기', exit:'나가기', speak:'🔊 음성 안내', stop:'■ 멈추기',
       novoice:'이 브라우저는 음성 안내를 지원하지 않습니다',
       voice:'목적지는 %DEST%입니다. 예상 시간은 %TIME%, 예상 요금은 %FARE%입니다. %NOTE%',
       voiceMeter:'목적지는 %DEST%입니다. 예상 시간은 %TIME%입니다. 요금은 미터기 기준입니다. %NOTE%',
@@ -1507,7 +1507,7 @@ var GUIDE_TEXT = {
       pauseT:'안내를 마쳤습니다', pauseS:'편안한 이동 되세요. 이 화면은 닫으셔도 됩니다.', again:'이전'},
   en:{to:'Destination', time:'Estimated time', fare:'Estimated fare', toll:'Toll not included',
       card:'Card payment accepted', meter:'Metered fare', approx:'approx.',
-      close:'Close', gallery:'Photo gallery', qrEnd:'Close', speak:'🔊 Play voice guide', stop:'■ Stop',
+      close:'Close', gallery:'Photo gallery', qrEnd:'Close', exit:'Exit', speak:'🔊 Play voice guide', stop:'■ Stop',
       novoice:'This browser does not support voice guidance',
       voice:'We are going to %DEST%. The trip takes about %TIME%, and the fare is about %FARE%. %NOTE%',
       voiceMeter:'We are going to %DEST%. The trip takes about %TIME%. The fare is charged by the meter. %NOTE%',
@@ -1521,7 +1521,7 @@ var GUIDE_TEXT = {
       pauseT:'The guide has ended', pauseS:'Enjoy your ride. You may close this page.', again:'Back'},
   ja:{to:'目的地', time:'所要時間', fare:'予想料金', toll:'通行料は別途',
       card:'カード決済が可能です', meter:'メーター料金となります', approx:'約',
-      close:'閉じる', gallery:'フォトギャラリー', qrEnd:'閉じる', speak:'🔊 音声案内', stop:'■ 停止',
+      close:'閉じる', gallery:'フォトギャラリー', qrEnd:'閉じる', exit:'終了', speak:'🔊 音声案内', stop:'■ 停止',
       novoice:'このブラウザは音声案内に対応していません',
       voice:'目的地は%DEST%です。所要時間は約%TIME%、料金は約%FARE%です。%NOTE%',
       voiceMeter:'目的地は%DEST%です。所要時間は約%TIME%です。料金はメーターによる計算となります。%NOTE%',
@@ -1535,7 +1535,7 @@ var GUIDE_TEXT = {
       pauseT:'案内を終了しました', pauseS:'どうぞごゆっくり。このページは閉じても大丈夫です。', again:'戻る'},
   zh:{to:'目的地', time:'预计时间', fare:'预计车费', toll:'过路费另计',
       card:'可以刷卡支付', meter:'按计价器收费', approx:'约',
-      close:'关闭', gallery:'图片画廊', qrEnd:'关闭', speak:'🔊 语音播报', stop:'■ 停止',
+      close:'关闭', gallery:'图片画廊', qrEnd:'关闭', exit:'退出', speak:'🔊 语音播报', stop:'■ 停止',
       novoice:'此浏览器不支持语音播报',
       voice:'目的地是%DEST%。预计需要%TIME%，车费约%FARE%。%NOTE%',
       voiceMeter:'目的地是%DEST%。预计需要%TIME%。车费按计价器收取。%NOTE%',
@@ -4961,18 +4961,14 @@ function endGallery(){
     else window.location.replace('about:blank');
   }, 300);
 }
-/* 이전 버튼(맨 위·맨 아래).
-   기사 폰: 안내 화면을 닫고 안내를 열었던 앱 화면으로 돌아간다.
-   손님 폰: 기사용 앱 화면은 보여 주지 않고, QR을 찍기 전 화면으로 돌아간다 */
+/* 맨 아래 버튼.
+   기사 폰: 이전 — 안내 화면을 닫고 안내를 열었던 앱 화면으로 돌아간다.
+   손님 폰: 나가기 — QR로 열린 창을 닫아 화면에서 없앤다.
+   브라우저가 창 닫기를 막으면 이전 페이지로, 그것도 없으면 빈 화면으로 비운다 */
 function guideBack(){
   if (!guestMode){ closeGuide(); return; }
-  closeAbout();
-  stopGuideVoice();
-  closeQr();
-  if (window.history.length>1){ window.history.back(); return; }
-  try { window.close(); } catch(e){}
-  /* 돌아갈 곳도 없고 창도 닫히지 않으면 사진 화면을 띄운다 */
-  setTimeout(function(){ if (!window.closed) pauseGuest(); }, 300);
+  closeGuide();
+  endGallery();
 }
 function closeGuide(){
   closeAbout();
@@ -5012,8 +5008,16 @@ function renderGuide(){
   $('gNote').textContent= (lastTrip.toll ? t.toll+' · ' : '')+payNote(t);
   renderDriverCard();
   $('gClose').textContent=t.gallery;   /* 닫기 대신 사진 갤러리를 연다 */
-  $('gBackTop').textContent='← '+t.again;
-  $('gBackBottom').textContent='← '+t.again;
+  /* 손님 폰(QR로 들어온 화면): 맨 위 이전 버튼은 없애고, 맨 아래는 나가기로 쓴다.
+     기사 폰: 맨 위·맨 아래 모두 이전 버튼 */
+  if (guestMode){
+    $('gBackTop').style.display='none';
+    $('gBackBottom').textContent=t.exit;
+  } else {
+    $('gBackTop').style.display='';
+    $('gBackTop').textContent='← '+t.again;
+    $('gBackBottom').textContent='← '+t.again;
+  }
   renderSpeakBtn();
   renderQrBtn();
   renderMapBtns();
