@@ -187,6 +187,12 @@ a.brow:active{background:#2a2e34}
 .fz.hot .nm{color:var(--sign)}
 .pick{display:flex;gap:6px;align-items:stretch}
 .pick select,.pick input{flex:1 1 auto;min-width:0;text-overflow:ellipsis}
+.bname{color:var(--sign);font-weight:700}
+.selwrap{position:relative;flex:1 1 auto;min-width:0;display:flex}
+.selwrap select{flex:1 1 auto;width:100%}
+.sellabel{display:none;position:absolute;left:1px;top:1px;bottom:1px;right:30px;padding:0 0 0 11px;align-items:center;
+  pointer-events:none;background:var(--panel);border-radius:4px 0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sellabel.on{display:block;line-height:44px}
 .pick input{min-height:46px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
 .mini{flex:none;min-height:46px;padding:0 10px;border-radius:4px;border:1px solid var(--line);background:var(--panel);font-size:13px;font-weight:600;white-space:nowrap}
 .mini.gps{color:#A8CBFF;border-color:#A8CBFF}
@@ -676,7 +682,7 @@ a.brow:active{background:#2a2e34}
       <button class="btn guidebtn" type="button" id="btnGuideTop" style="margin:0 0 12px">승객에게 요금·시간 보여주기</button>
       <div class="field">
         <label class="hi" for="rdFrom">출발 권역</label>
-        <div class="pick"><select id="rdFrom"></select>
+        <div class="pick"><div class="selwrap"><select id="rdFrom"></select><div class="sellabel" id="rdFromLabel" aria-hidden="true"></div></div>
           <button type="button" id="btnHere" class="mini gps" title="현위치로 잡기">현위치</button></div>
       </div>
       <div class="field">
@@ -3682,6 +3688,17 @@ function setHereDest(pt){
   if (!opt){ opt=el('option',{value:HERE_VAL},['']); sel.insertBefore(opt, sel.firstChild); }
   opt.textContent='출발: '+pt.n;
   sel.value=HERE_VAL;
+  paintFromLabel();
+}
+function paintFromLabel(){
+  var lb=$('rdFromLabel');
+  if (!lb) return;
+  clear(lb);
+  if ($('rdFrom').value===HERE_VAL && hereDest && hereDest.place){
+    lb.appendChild(document.createTextNode('출발: '));
+    ptNodes(hereDest).forEach(function(x){ lb.appendChild(typeof x==='string'?document.createTextNode(x):x); });
+    lb.className='sellabel on';
+  } else lb.className='sellabel';
 }
 /* 도착지 좌표: 음성으로 잡았으면 그 좌표, 아니면 권역 대표 지점 */
 function destPoint(){
@@ -3771,6 +3788,7 @@ function renderRoadList(){
 }
 function renderRoad(){
   var box=$('roadResult'), from=fromZoneName(), to=destZoneName(), adv, line, i, r, real;
+  paintFromLabel();   /* 출발 선택이 코드로 바뀌어도 노란 건물명 표시를 맞춘다 */
   clear(box);
   adv=routeAdvice(from, to);
   real=realRoadsNow();
@@ -3779,8 +3797,8 @@ function renderRoad(){
     return;
   }
   var dp=destPoint(), fp=fromPoint();
-  box.appendChild(el('div',{cls:'tops', style:'margin:10px 0 0',
-    text: (fp?fp.n:from)+' → '+(dp?dp.n:to)+' ('+zoneArea(from)+' → '+zoneArea(to)+')'}));
+  box.appendChild(el('div',{cls:'tops', style:'margin:10px 0 0'},
+    ptNodes(fp, from).concat([' → '+(dp?dp.n:to)+' ('+zoneArea(from)+' → '+zoneArea(to)+')'])));
   if (real){
     /* 실시간으로 받아 온 길 그대로 보여 준다. 권역으로 어림한 우회로·주의 문구는 이 경로와
        맞지 않을 수 있으므로 아예 붙이지 않는다 */
@@ -3851,7 +3869,7 @@ function runAiRoute(){
   if (!sp || !ep){ toast('출발지와 도착지를 확인하세요'); return; }
   aiBusy=true; btn.disabled=true; btn.textContent='실시간 교통 확인 중…';
   clear(box);
-  box.appendChild(el('div',{cls:'ai-note', text:(sp.n||'출발')+' → '+(ep.n||'도착')+' 경로를 비교하는 중입니다.'}));
+  box.appendChild(el('div',{cls:'ai-note'}, ptNodes(sp,'출발').concat([' → '+(ep.n||'도착')+' 경로를 비교하는 중입니다.'])));
   function next(){
     if (idx>=opts.length){ aiBusy=false; btn.disabled=false; btn.textContent='AI 최적 경로 (T맵 실시간 교통반영)'; renderAi(results, sp, ep); return; }
     var o=opts[idx++];
@@ -3880,7 +3898,7 @@ function renderAi(results, sp, ep){
   lastBest={key:routeKey(sp, ep), dest:ep.n, time:best.sum.time, fare:best.sum.taxi, toll:best.sum.toll};
   renderRoad();   /* 어림 안내를 실제 경로로 바꿔 다시 그린다 */
   box.appendChild(el('div',{cls:'ai-note'},[el('span',{cls:'bl1', text:(getRouteProvider()==='kakao'?'카카오':'TMAP')+' 실시간 교통 기준'}),
-       el('span',{cls:'bl2', text:(sp.n||'출발')+' → '+(ep.n||'도착')+' · 빠른 순'})]));
+       el('span',{cls:'bl2'}, ptNodes(sp,'출발').concat([' → '+(ep.n||'도착')+' · 빠른 순']))]));
   for (i=0;i<results.length;i++){
     r=results[i];
     card=el('div',{cls: 'ai-card '+optClass(r.opt.n)+' tap', title:'누르면 T맵 길안내가 시작됩니다',
@@ -3965,6 +3983,20 @@ function pasteDest(){
   }
 }
 
+/* "(건물명) 주소". 건물명이 주소에 이미 들어 있거나 없으면 주소만 */
+function herePlace(addr, place){
+  var p=String(place||'').trim();
+  return (!p || String(addr).indexOf(p)>=0) ? '' : p;
+}
+function hereLabel(addr, place){
+  var p=herePlace(addr, place);
+  return p ? '('+p+') '+addr : addr;
+}
+/* 화면에 쓸 조각: 건물명은 노란색 span, 주소는 그대로 */
+function ptNodes(pt, fallback){
+  if (pt && pt.place && pt.addr) return [el('span',{cls:'bname', text:'('+pt.place+')'}), ' '+pt.addr];
+  return [(pt && pt.n) || fallback];
+}
 /* 출발 권역을 현위치로 */
 function setFromHere(){
   var btn=$('btnHere');
@@ -3978,10 +4010,13 @@ function setFromHere(){
     if (z===OTHER) z=nearestZone(la, ln);
     setHereDest({n:'현위치', lat:la, lng:ln});
     renderRoad();
-    reverseGeocode(la, ln, function(addr){
-      setHereDest({n: addr || ('현위치 · '+z), lat:la, lng:ln});
+    /* 건물 이름(아파트·빌라·상가·빌딩 등)이 있으면 주소 앞에 붙인다 */
+    lookupPlace(la, ln, function(addr, place){
+      var name = addr ? hereLabel(addr, place) : null;
+      setHereDest({n: name || ('현위치 · '+z), lat:la, lng:ln,
+                   place: addr ? herePlace(addr, place) : '', addr: addr||''});
       renderRoad();
-      toast('출발지를 '+(addr || z)+'로 잡았습니다');
+      toast('출발지를 '+(name || z)+'로 잡았습니다');
     });
   }, function(){
     btn.disabled=false; btn.textContent='현위치';
@@ -4783,6 +4818,7 @@ function init(){
   $('destText').addEventListener('keydown', function(e){ if (e.keyCode===13){ e.preventDefault(); findTypedDest(); } });
   $('rdFrom').addEventListener('change', function(){
     if ($('rdFrom').value!==HERE_VAL) hereDest=null;
+    paintFromLabel();
     renderRoad(); loadRouteWeather();
   });
   $('rdTo').addEventListener('change', function(){
