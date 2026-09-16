@@ -433,6 +433,8 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .gabinfo span{color:var(--muted)}
 .gabinfo b{font-weight:600;color:var(--ink)}
 .gabhd{font-size:16px;font-weight:700;color:var(--sign)}
+/* 갤러리 제목: 위 약력 블록(보라·노랑)과 같은 모양의 회색 세로줄 */
+.gabhd.gabcap{padding:10px 14px;background:var(--panel);border-left:5px solid #7A828C}
 .gabslide{position:relative;aspect-ratio:3/4;max-height:72vh;cursor:zoom-in;width:100%;border-radius:8px;overflow:hidden;background:#15171b;touch-action:pan-y}
 .gabslide .s{position:absolute;inset:0;background:center/contain no-repeat;transform:translateX(100%);transition:transform .7s ease}
 .gabhint{text-align:center;font-size:13px;color:var(--muted);margin-top:4px}
@@ -1035,10 +1037,9 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 <div class="gabout" id="gAbout" aria-hidden="true">
   <div class="gab">
     <div class="hd"><div class="dav" id="gabAv"></div><div style="min-width:0"><div class="best">Best Taxi Driver</div><div class="n" id="gabN"></div><div class="tag" id="gabTag"></div></div></div>
-    <div class="gabhd" id="gabDegCap"></div>
     <ul class="gabdeg srv" id="gabSrv"></ul>
     <ul class="gabdeg edu" id="gabDeg"></ul>
-    <div class="gabhd" id="gabCap"></div>
+    <div class="gabhd gabcap" id="gabCap"></div>
     <div id="gabActWrap"><div class="gabslide" id="gabSlide"></div><div class="gabdots" id="gabDots" style="margin-top:8px"></div><div class="gabhint" id="gabHint"></div></div>
     <div class="gabmsg"><p id="gabMsg1"></p><p id="gabMsg2"></p><p id="gabMsg3"></p></div>
     <div class="gabbtns">
@@ -4446,7 +4447,7 @@ var PF_TEXT={
       frLabel:'가맹', fr:{'카카오':'카카오 T','우버':'우버','온다':'온다'},
       speaks:'가능한 언어', langn:{ko:'한국어',en:'영어',ja:'일본어',zh:'중국어'},
       pay:'결제', pays:{'자동결제':'앱 자동결제','카드':'카드','현금':'현금'}, payNote:'%P 결제 가능합니다',
-      act:'나눔 사랑 갤러리', hint:'사진을 누르면 크게 볼 수 있습니다',
+      act:'나눔과 섬김', hint:'사진을 누르면 크게 볼 수 있습니다',
       bio:'약력', serve:['베트남 보육아동 선교', '우간다 선교 후원', '성남 지역아동센터 후원'],
       msg1:'작은 나눔이 모여 가정 형편이 어려운 아이들의 교육비와 생활비가 되고 있습니다.',
       msg2:'마음이 닿으시면 함께해 주세요.', msg3:'감사합니다.', donate:'후원하기'},
@@ -4456,7 +4457,7 @@ var PF_TEXT={
       frLabel:'Partner', fr:{'카카오':'Kakao T','우버':'Uber','온다':'onda'},
       speaks:'Languages', langn:{ko:'Korean',en:'English',ja:'Japanese',zh:'Chinese'},
       pay:'Payment', pays:{'자동결제':'In-app auto pay','카드':'Card','현금':'Cash'}, payNote:'%P accepted',
-      act:'Gallery of Love and Sharing', hint:'Tap a photo to view it full screen',
+      act:'Sharing and Serving', hint:'Tap a photo to view it full screen',
       bio:'Background', serve:['Mission for children in care in Vietnam', 'Mission support in Uganda', 'Support for a community children\'s center in Seongnam'],
       msg1:'Small gifts add up to cover school and living costs for children from families in need.',
       msg2:'If it touches your heart, please join us.', msg3:'Thank you.', donate:'Support'},
@@ -4466,7 +4467,7 @@ var PF_TEXT={
       frLabel:'加盟', fr:{'카카오':'カカオT','우버':'Uber','온다':'onda'},
       speaks:'対応言語', langn:{ko:'韓国語',en:'英語',ja:'日本語',zh:'中国語'},
       pay:'お支払い', pays:{'자동결제':'アプリ自動決済','카드':'カード','현금':'現金'}, payNote:'%Pでお支払いいただけます',
-      act:'分かち合いと愛のギャラリー', hint:'写真をタップすると拡大できます',
+      act:'分かち合いと奉仕', hint:'写真をタップすると拡大できます',
       bio:'略歴', serve:['ベトナム養護児童宣教', 'ウガンダ宣教支援', '城南市の地域児童センター支援'],
       msg1:'小さな分かち合いが集まり、家庭環境の厳しい子どもたちの教育費と生活費になっています。',
       msg2:'お気持ちがあれば、ぜひご協力ください。', msg3:'ありがとうございます。', donate:'支援する'},
@@ -4476,7 +4477,7 @@ var PF_TEXT={
       frLabel:'加盟', fr:{'카카오':'Kakao T','우버':'Uber','온다':'onda'},
       speaks:'可用语言', langn:{ko:'韩语',en:'英语',ja:'日语',zh:'中文'},
       pay:'支付方式', pays:{'자동결제':'应用自动支付','카드':'刷卡','현금':'现金'}, payNote:'可使用%P支付',
-      act:'爱心分享画廊', hint:'点击照片可放大查看',
+      act:'分享与奉献', hint:'点击照片可放大查看',
       bio:'个人简介', serve:['越南福利院儿童宣教', '乌干达宣教资助', '资助城南社区儿童中心'],
       msg1:'点滴爱心汇聚起来，正成为家境困难孩子们的教育费和生活费。',
       msg2:'如您愿意，欢迎一同参与。', msg3:'谢谢您。', donate:'支持'}
@@ -4757,7 +4758,6 @@ function openAbout(){
   degs=degList(gp, pt);
   degs.forEach(function(d){ ul.appendChild(el('li',{text:d})); });
   ul.style.display = degs.length ? '' : 'none';
-  $('gabDegCap').textContent=pt.bio;
   acts = ACT_PHOTOS.length ? ACT_PHOTOS : (guestMode ? [] : (gp.acts||[]));
   $('gabCap').textContent=pt.act;
   $('gabHint').textContent=pt.hint;
