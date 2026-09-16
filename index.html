@@ -461,12 +461,14 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 /* 승객이 자기 휴대폰으로 찍는 화면. 밝게 띄워야 카메라가 잘 잡는다 */
 .qrwrap{position:fixed;inset:0;z-index:2600;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.82);padding:18px}
 .qrwrap.on{display:flex}
-.qrbox{width:100%;max-width:380px;background:#fff;border-radius:8px;padding:18px;text-align:center}
-.qrcap{font-size:17px;font-weight:700;color:#17191c;line-height:1.35;margin-bottom:4px}
-.qrimg{display:flex;align-items:center;justify-content:center;min-height:300px;padding:22px;background:#fff}
-.qrimg img, .qrimg canvas{display:block;width:100%;max-width:300px;height:auto;image-rendering:pixelated}
-.qrsub{font-size:13.5px;color:#5B626B;line-height:1.5;margin:4px 0 14px}
-.qrbox .btn{background:#17191c;border-color:#17191c;color:#fff;margin:0}
+.qrbox{width:100%;max-width:380px;background:#2B2F36;border:1px solid #3a3f47;border-radius:10px;padding:20px 18px;text-align:center}
+.qrcap{font-size:17px;font-weight:700;color:#fff;line-height:1.35;margin-bottom:18px}
+/* QR과 둘레 여백만 흰색. 제목·안내 글씨와 같은 흰 바탕에 붙어 있으면 휴대폰이 글씨까지 QR 칸으로 잡는다 */
+.qrimg{display:inline-flex;align-items:center;justify-content:center;padding:18px;background:#fff;border-radius:0;max-width:100%}
+.qrimg img, .qrimg canvas{display:block;width:100%;max-width:290px;height:auto;image-rendering:pixelated}
+.qrimg .empty, .qrimg div{color:#5B626B}
+.qrsub{font-size:13.5px;color:#C9CDD3;line-height:1.5;margin:18px 0 16px}
+.qrbox .btn{background:var(--sign);border-color:var(--sign);color:#17191c;margin:0;min-width:120px;font-weight:700}
 .toast{position:fixed;left:50%;bottom:calc(var(--tabh) + 14px + env(safe-area-inset-bottom));transform:translateX(-50%);width:calc(100% - 32px);max-width:528px;display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:var(--ink);color:#17191c;border-radius:4px;z-index:3000;font-weight:600}
 .toast.on{display:flex}
 .toast button{border:0;background:transparent;color:#17191c;text-decoration:underline;font-weight:700;min-height:36px}
@@ -989,9 +991,8 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 
 <div class="gabout" id="gAbout" aria-hidden="true">
   <div class="gab">
-    <div class="hd"><div class="dav" id="gabAv"></div><div style="min-width:0"><div class="k" id="gabK"></div><div class="n" id="gabN"></div><div class="c" id="gabC"></div></div></div>
+    <div class="hd"><div class="dav" id="gabAv"></div><div style="min-width:0"><div class="n" id="gabN"></div></div></div>
     <ul class="gabdeg" id="gabDeg"></ul>
-    <div class="gabinfo" id="gabInfo"></div>
     <div class="gabhd" id="gabCap"></div>
     <div id="gabActWrap"><div class="gabslide" id="gabSlide"></div><div class="gabdots" id="gabDots" style="margin-top:8px"></div><div class="gabhint" id="gabHint"></div></div>
     <div class="gabmsg"><p id="gabMsg1"></p><p id="gabMsg2"></p></div>
@@ -4362,7 +4363,7 @@ var guideLang='ko';
 var PROFILE_KEY='airportCallLog.profile.v1';
 var PF_OPS=['개인','법인'], PF_FRS=['카카오','우버','온다'], PF_PAYS=['자동결제','카드','현금'];
 var PF_LANGS=[{v:'ko',n:'한국어'},{v:'en',n:'English'},{v:'ja',n:'日本語'},{v:'zh',n:'中文'}];
-var PF_DEGS=[{v:'div',n:'목회학 석사학위 (목사)'},{v:'psy',n:'심리치료 석사학위'},{v:'sw',n:'사회복지 석사학위'},{v:'pa',n:'행정학사'}];
+var PF_DEGS=[{v:'div',n:'목회학 석사 (목사)'},{v:'psy',n:'상담학 석사'},{v:'sw',n:'사회복지학 석사'},{v:'pa',n:'행정학 학사'}];
 var PF_CODE={fr:{'카카오':'k','우버':'u','온다':'o'}, lang:{ko:'k',en:'e',ja:'j',zh:'z'},
              pay:{'자동결제':'a','카드':'c','현금':'m'}, deg:{div:'d',psy:'p',sw:'s',pa:'a'}};
 var PF_MAX_ACTS=10;
@@ -4381,39 +4382,39 @@ var ACT_PHOTOS = [
 ];
 var PF_TEXT={
   ko:{driver:'기사', about:'기사 소개', back:'돌아가기', sep:'·',
-      deg:{div:'목회학 석사 (목사)', psy:'심리치료 석사', sw:'사회복지 석사', pa:'행정학사'},
+      deg:{div:'목회학 석사 (목사)', psy:'상담학 석사', sw:'사회복지학 석사', pa:'행정학 학사'},
       opLabel:'운행', op:{'개인':'개인택시','법인':'법인택시'},
       frLabel:'가맹', fr:{'카카오':'카카오 T','우버':'우버','온다':'온다'},
       speaks:'가능한 언어', langn:{ko:'한국어',en:'영어',ja:'일본어',zh:'중국어'},
       pay:'결제', pays:{'자동결제':'앱 자동결제','카드':'카드','현금':'현금'}, payNote:'%P 결제 가능합니다',
-      act:'나눔·봉사 활동', hint:'사진을 누르면 크게 볼 수 있습니다',
+      act:'사랑의 나눔·봉사', hint:'사진을 누르면 크게 볼 수 있습니다',
       msg1:'여러분의 사랑의 도움이 세계 여러 나라의 가정 형편이 어려운 아이들에게 교육비와 생활비로 전해집니다.',
       msg2:'마음이 닿으시면 함께해 주세요. 감사합니다.', donate:'후원하기'},
   en:{driver:'Your driver', about:'About your driver', back:'Back', sep:', ',
-      deg:{div:'Master of Divinity (Pastor)', psy:"Master's in Psychotherapy", sw:'Master of Social Work', pa:'Bachelor of Public Administration'},
+      deg:{div:'Master of Divinity (Pastor)', psy:"Master's in Counseling", sw:'Master of Social Work', pa:'Bachelor of Public Administration'},
       opLabel:'Service', op:{'개인':'Private taxi','법인':'Company taxi'},
       frLabel:'Partner', fr:{'카카오':'Kakao T','우버':'Uber','온다':'onda'},
       speaks:'Languages', langn:{ko:'Korean',en:'English',ja:'Japanese',zh:'Chinese'},
       pay:'Payment', pays:{'자동결제':'In-app auto pay','카드':'Card','현금':'Cash'}, payNote:'%P accepted',
-      act:'Charity & volunteer work', hint:'Tap a photo to view it full screen',
+      act:'Sharing love & volunteer work', hint:'Tap a photo to view it full screen',
       msg1:'Your loving support reaches children from families in need around the world, helping with their school and living costs.',
       msg2:'If it touches your heart, please join us. Thank you.', donate:'Support'},
   ja:{driver:'ドライバー', about:'ドライバー紹介', back:'戻る', sep:'・',
-      deg:{div:'牧会学修士（牧師）', psy:'心理療法学修士', sw:'社会福祉学修士', pa:'行政学学士'},
+      deg:{div:'牧会学修士（牧師）', psy:'カウンセリング学修士', sw:'社会福祉学修士', pa:'行政学学士'},
       opLabel:'運行', op:{'개인':'個人タクシー','법인':'法人タクシー'},
       frLabel:'加盟', fr:{'카카오':'カカオT','우버':'Uber','온다':'onda'},
       speaks:'対応言語', langn:{ko:'韓国語',en:'英語',ja:'日本語',zh:'中国語'},
       pay:'お支払い', pays:{'자동결제':'アプリ自動決済','카드':'カード','현금':'現金'}, payNote:'%Pでお支払いいただけます',
-      act:'奉仕・支援活動', hint:'写真をタップすると拡大できます',
+      act:'愛の分かち合い・奉仕', hint:'写真をタップすると拡大できます',
       msg1:'皆さまの温かいご支援は、世界各国の家庭環境が厳しい子どもたちに、教育費と生活費として届けられます。',
       msg2:'お気持ちがあれば、ぜひご協力ください。ありがとうございます。', donate:'支援する'},
   zh:{driver:'您的司机', about:'司机介绍', back:'返回', sep:'、',
-      deg:{div:'道学硕士（牧师）', psy:'心理治疗硕士', sw:'社会工作硕士', pa:'行政管理学学士'},
+      deg:{div:'道学硕士（牧师）', psy:'心理咨询学硕士', sw:'社会工作硕士', pa:'行政管理学学士'},
       opLabel:'运营', op:{'개인':'个人出租车','법인':'公司出租车'},
       frLabel:'加盟', fr:{'카카오':'Kakao T','우버':'Uber','온다':'onda'},
       speaks:'可用语言', langn:{ko:'韩语',en:'英语',ja:'日语',zh:'中文'},
       pay:'支付方式', pays:{'자동결제':'应用自动支付','카드':'刷卡','현금':'现金'}, payNote:'可使用%P支付',
-      act:'爱心志愿服务活动', hint:'点击照片可放大查看',
+      act:'爱心分享与志愿服务', hint:'点击照片可放大查看',
       msg1:'您充满爱心的帮助，将作为教育费和生活费，送到世界各地家境困难的孩子们手中。',
       msg2:'如您愿意，欢迎一同参与。谢谢您。', donate:'支持'}
 };
@@ -4650,20 +4651,11 @@ function openAbout(){
   if (!gp) return;
   stopGuideVoice();
   paintAvatar($('gabAv'), gp, guideLang);
-  v=pfJoin(gp, PF_FRS, 'fr', pt.fr, pt.sep);
-  $('gabK').textContent=pt.driver+(v ? ' · '+v : '');
   $('gabN').textContent=pfName(gp, guideLang);
-  $('gabC').textContent=[gp.plate, carText(gp, guideLang)].filter(function(x){ return x; }).join(' · ');
   clear(ul);
   degs=degList(gp, pt);
   degs.forEach(function(d){ ul.appendChild(el('li',{text:d})); });
   ul.style.display = degs.length ? '' : 'none';
-  clear(info);
-  function row(k, val){ if (val){ info.appendChild(el('span',{text:k})); info.appendChild(el('b',{text:val})); } }
-  row(pt.opLabel, pt.op[gp.op]);
-  row(pt.frLabel, pfJoin(gp, PF_FRS, 'fr', pt.fr, pt.sep));
-  row(pt.speaks, pfJoin(gp, ['ko','en','ja','zh'], 'langs', pt.langn, pt.sep));
-  row(pt.pay, pfJoin(gp, PF_PAYS, 'pay', pt.pays, pt.sep));
   acts = ACT_PHOTOS.length ? ACT_PHOTOS : (guestMode ? [] : (gp.acts||[]));
   $('gabCap').textContent=pt.act;
   $('gabHint').textContent=pt.hint;
@@ -5105,6 +5097,7 @@ function showQr(){
   url=guideUrl();
   $('qrCap').textContent=t.qrCap;
   $('qrSub').textContent=t.qrSub;
+  $('qrClose').textContent=t.close||'닫기';
   clear(box);
   box.appendChild(el('div',{cls:'empty', text:'…'}));
   w.className='qrwrap on';
@@ -5117,7 +5110,7 @@ function showQr(){
       return;
     }
     try {
-      new QRCode(box, {text:url, width:300, height:300,
+      new QRCode(box, {text:url, width:290, height:290,
         colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.L});
     } catch(e){
       box.appendChild(el('div',{style:'font-size:13px;color:#5B626B', text:'QR을 만들지 못했습니다.'}));
