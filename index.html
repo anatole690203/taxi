@@ -418,8 +418,10 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
   padding:0 6px 2px 0;background:linear-gradient(90deg,#FFE08A 0%,#FFB36B 45%,#FF7EB3 75%,#B69CFF 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;display:inline-block}
 .gab .c{font-size:15px;color:var(--muted)}
+.gab .tag{font-size:15px;line-height:1.4;color:#A8CBFF;margin-top:2px}
+.gabmsg p+p+p{margin-top:2px}
 .gabdeg{margin:0;padding:12px 14px;list-style:none;background:var(--panel);border-left:5px solid #6C5CE7;border-radius:0}
-.gabdeg li{font-size:17px;line-height:1.7;color:var(--ink)}
+.gabdeg li{font-size:17px;line-height:1.7;color:var(--ink);white-space:pre-line}   /* 문구 안의 줄바꿈을 그대로 보여 준다 */
 .gabinfo{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:15px}
 .gabinfo span{color:var(--muted)}
 .gabinfo b{font-weight:600;color:var(--ink)}
@@ -1025,11 +1027,12 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 
 <div class="gabout" id="gAbout" aria-hidden="true">
   <div class="gab">
-    <div class="hd"><div class="dav" id="gabAv"></div><div style="min-width:0"><div class="best">Best Taxi Driver</div><div class="n" id="gabN"></div></div></div>
+    <div class="hd"><div class="dav" id="gabAv"></div><div style="min-width:0"><div class="best">Best Taxi Driver</div><div class="n" id="gabN"></div><div class="tag" id="gabTag"></div></div></div>
+    <div class="gabhd" id="gabDegCap"></div>
     <ul class="gabdeg" id="gabDeg"></ul>
     <div class="gabhd" id="gabCap"></div>
     <div id="gabActWrap"><div class="gabslide" id="gabSlide"></div><div class="gabdots" id="gabDots" style="margin-top:8px"></div><div class="gabhint" id="gabHint"></div></div>
-    <div class="gabmsg"><p id="gabMsg1"></p><p id="gabMsg2"></p></div>
+    <div class="gabmsg"><p id="gabMsg1"></p><p id="gabMsg2"></p><p id="gabMsg3"></p></div>
     <div class="gabbtns">
       <a class="btn primary" id="gabDonate" target="_blank" rel="noopener"></a>
       <button class="btn" type="button" id="gabClose"></button>
@@ -4436,8 +4439,9 @@ var PF_TEXT={
       speaks:'가능한 언어', langn:{ko:'한국어',en:'영어',ja:'일본어',zh:'중국어'},
       pay:'결제', pays:{'자동결제':'앱 자동결제','카드':'카드','현금':'현금'}, payNote:'%P 결제 가능합니다',
       act:'사랑의 나눔·봉사', hint:'사진을 누르면 크게 볼 수 있습니다',
-      msg1:'여러분의 사랑의 도움이 세계 여러 나라의 가정 형편이 어려운 아이들에게 교육비와 생활비로 전해집니다.',
-      msg2:'마음이 닿으시면 함께해 주세요. 감사합니다.', donate:'후원하기'},
+      bio:'약력', serve:['우간다·베트남\n보육아동 선교 후원', '성남 보육원 후원'],
+      msg1:'작은 나눔이 모여 가정 형편이 어려운 아이들의 교육비와 생활비가 되고 있습니다.',
+      msg2:'마음이 닿으시면 함께해 주세요.', msg3:'감사합니다.', donate:'후원하기'},
   en:{driver:'Your driver', about:'About your driver', back:'Back', sep:', ',
       deg:{div:'Master of Divinity (Pastor)', psy:'Master of Arts in Counseling', sw:'Master of Social Work', pa:'Bachelor of Public Administration'},
       opLabel:'Service', op:{'개인':'Private taxi','법인':'Company taxi'},
@@ -4445,8 +4449,9 @@ var PF_TEXT={
       speaks:'Languages', langn:{ko:'Korean',en:'English',ja:'Japanese',zh:'Chinese'},
       pay:'Payment', pays:{'자동결제':'In-app auto pay','카드':'Card','현금':'Cash'}, payNote:'%P accepted',
       act:'Sharing love & volunteer work', hint:'Tap a photo to view it full screen',
-      msg1:'Your loving support reaches children from families in need around the world, helping with their school and living costs.',
-      msg2:'If it touches your heart, please join us. Thank you.', donate:'Support'},
+      bio:'Background', serve:['Uganda and Vietnam\nMission support for children in care', 'Support for a children\'s home in Seongnam'],
+      msg1:'Small gifts add up to cover school and living costs for children from families in need.',
+      msg2:'If it touches your heart, please join us.', msg3:'Thank you.', donate:'Support'},
   ja:{driver:'ドライバー', about:'ドライバー紹介', back:'戻る', sep:'・',
       deg:{div:'牧会学修士（牧師）', psy:'カウンセリング修士', sw:'社会福祉学修士', pa:'行政学学士'},
       opLabel:'運行', op:{'개인':'個人タクシー','법인':'法人タクシー'},
@@ -4454,8 +4459,9 @@ var PF_TEXT={
       speaks:'対応言語', langn:{ko:'韓国語',en:'英語',ja:'日本語',zh:'中国語'},
       pay:'お支払い', pays:{'자동결제':'アプリ自動決済','카드':'カード','현금':'現金'}, payNote:'%Pでお支払いいただけます',
       act:'愛の分かち合い・奉仕', hint:'写真をタップすると拡大できます',
-      msg1:'皆さまの温かいご支援は、世界各国の家庭環境が厳しい子どもたちに、教育費と生活費として届けられます。',
-      msg2:'お気持ちがあれば、ぜひご協力ください。ありがとうございます。', donate:'支援する'},
+      bio:'略歴', serve:['ウガンダ・ベトナム\n養護児童宣教支援', '城南市の児童養護施設支援'],
+      msg1:'小さな分かち合いが集まり、家庭環境の厳しい子どもたちの教育費と生活費になっています。',
+      msg2:'お気持ちがあれば、ぜひご協力ください。', msg3:'ありがとうございます。', donate:'支援する'},
   zh:{driver:'您的司机', about:'司机介绍', back:'返回', sep:'、',
       deg:{div:'道学硕士（牧师）', psy:'心理咨询硕士', sw:'社会工作硕士', pa:'行政管理学士'},
       opLabel:'运营', op:{'개인':'个人出租车','법인':'公司出租车'},
@@ -4463,8 +4469,9 @@ var PF_TEXT={
       speaks:'可用语言', langn:{ko:'韩语',en:'英语',ja:'日语',zh:'中文'},
       pay:'支付方式', pays:{'자동결제':'应用自动支付','카드':'刷卡','현금':'现金'}, payNote:'可使用%P支付',
       act:'爱心分享与志愿服务', hint:'点击照片可放大查看',
-      msg1:'您充满爱心的帮助，将作为教育费和生活费，送到世界各地家境困难的孩子们手中。',
-      msg2:'如您愿意，欢迎一同参与。谢谢您。', donate:'支持'}
+      bio:'个人简介', serve:['乌干达、越南\n资助福利院儿童宣教事工', '资助城南儿童福利院'],
+      msg1:'点滴爱心汇聚起来，正成为家境困难孩子们的教育费和生活费。',
+      msg2:'如您愿意，欢迎一同参与。', msg3:'谢谢您。', donate:'支持'}
 };
 /* 한글로 적은 차종·색상을 손님 언어로. 모르는 차종은 적은 그대로 둔다 */
 var CAR_I18N=[['아이오닉5','Hyundai IONIQ 5'],['아이오닉6','Hyundai IONIQ 6'],['아이오닉','Hyundai IONIQ'],
@@ -4712,10 +4719,12 @@ function openAbout(){
   stopGuideVoice();
   paintAvatar($('gabAv'), gp, guideLang);
   $('gabN').textContent=pfName(gp, guideLang);
+  $('gabTag').textContent=DRV_TAGLINE[guideLang]||DRV_TAGLINE.ko;
   clear(ul);
-  degs=degList(gp, pt);
+  /* 약력: 학위 아래에 선교·보육원 후원을 붙인다 */
+  degs=degList(gp, pt).concat(pt.serve);
   degs.forEach(function(d){ ul.appendChild(el('li',{text:d})); });
-  ul.style.display = degs.length ? '' : 'none';
+  $('gabDegCap').textContent=pt.bio;
   acts = ACT_PHOTOS.length ? ACT_PHOTOS : (guestMode ? [] : (gp.acts||[]));
   $('gabCap').textContent=pt.act;
   $('gabHint').textContent=pt.hint;
@@ -4723,6 +4732,7 @@ function openAbout(){
   gabBuild(acts);
   $('gabMsg1').textContent=pt.msg1;
   $('gabMsg2').textContent=pt.msg2;
+  $('gabMsg3').textContent=pt.msg3;
   if (validDonate(gp.donate)){ dn.href=gp.donate; dn.textContent=pt.donate; dn.style.display=''; }
   else { dn.removeAttribute('href'); dn.style.display='none'; }
   $('gabClose').textContent=pt.back;
