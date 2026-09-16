@@ -377,6 +377,14 @@ a.brow:active{background:#2a2e34}
 .pfsw:checked::after{left:24px}
 .pfphotos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0}
 .pfphotos div{position:relative;aspect-ratio:4/3;border-radius:4px;background:#1b1e23 center/cover no-repeat}
+.pfphotos label.pfadd{aspect-ratio:4/3;border-radius:4px;border:2px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--sign);font-size:14px;font-weight:700;cursor:pointer;background:var(--slate)}
+.pfphotos label.pfadd b{font-size:26px;line-height:1}
+.field .pftog{display:flex;font-size:15px;color:var(--ink);margin:0}
+.field input.pfsw{width:48px;min-height:0;height:28px;padding:0;border:0;border-radius:14px;background:var(--line)}
+.field input.pfsw:checked{background:var(--sign)}
+.pffile{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+label.btn{display:inline-flex;align-items:center;justify-content:center;padding:0 14px;cursor:pointer}
+#pfPhotoView{cursor:pointer}
 .pfphotos button{position:absolute;top:3px;right:3px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:15px;line-height:28px;padding:0}
 /* 기사 프로필: 승객 안내 화면 카드 */
 .gdrv{display:none;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px}
@@ -817,10 +825,10 @@ a.brow:active{background:#2a2e34}
     <div class="sec" id="pfSec"><h3>기사 프로필</h3>
       <div class="empty">승객 안내 화면에 기사 소개로 나옵니다. 전화번호·면허번호 같은 개인정보는 넣지 마세요.</div>
       <div class="pfav">
-        <div class="dav" id="pfPhotoView"></div>
-        <button class="btn" type="button" id="pfPhotoBtn">프로필 사진</button>
+        <label class="dav" id="pfPhotoView" for="pfPhotoFile"></label>
+        <label class="btn" id="pfPhotoBtn" for="pfPhotoFile">프로필 사진 고르기</label>
         <button class="btn" type="button" id="pfPhotoDel">지우기</button>
-        <input type="file" id="pfPhotoFile" accept="image/*" hidden>
+        <input type="file" id="pfPhotoFile" class="pffile" accept="image/*">
       </div>
       <div class="pfrow2">
         <div class="field"><label for="pfNameKo">이름</label><input id="pfNameKo" maxlength="20" placeholder="홍길동"></div>
@@ -839,8 +847,8 @@ a.brow:active{background:#2a2e34}
       <div class="field"><label>활동 사진 (베트남 봉사)</label>
         <div class="empty">아이 얼굴이나 교회 간판이 뚜렷한 사진은 피해 주세요. 사진은 이 휴대폰에만 저장되어, 기사님 폰으로 보여 줄 때 나옵니다.</div>
         <div class="pfphotos" id="pfPhotos"></div>
-        <button class="btn" type="button" id="pfActBtn">활동 사진 추가</button>
-        <input type="file" id="pfActFile" accept="image/*" multiple hidden>
+        <div class="empty" id="pfActCount"></div>
+        <input type="file" id="pfActFile" class="pffile" accept="image/*" multiple>
       </div>
       <div class="field"><label for="pfDonate">후원 페이지 주소 (선택)</label>
         <input id="pfDonate" type="url" inputmode="url" placeholder="https://">
@@ -4696,8 +4704,11 @@ function pfPaintPhotos(){
       el('button',{type:'button','aria-label':'사진 지우기', onclick:function(){ pfDraft.acts.splice(i,1); pfPaintPhotos(); }},['✕'])
     ]));
   });
-  box.style.display = pfDraft.acts.length ? '' : 'none';
-  $('pfActBtn').textContent = '활동 사진 추가 ('+pfDraft.acts.length+'/'+PF_MAX_ACTS+')';
+  /* 빈 칸을 누르면 바로 휴대폰 사진 고르기가 열린다 */
+  if (pfDraft.acts.length<PF_MAX_ACTS){
+    box.appendChild(el('label',{cls:'pfadd', 'for':'pfActFile'},[el('b',{text:'+'}), '사진 추가']));
+  }
+  $('pfActCount').textContent = '활동 사진 '+pfDraft.acts.length+'/'+PF_MAX_ACTS+'장 · 여러 장을 한 번에 고를 수 있습니다. 다 넣은 뒤 아래 프로필 저장을 눌러 주세요.';
 }
 function pfFill(){
   var i, box=$('pfDeg');
@@ -4741,7 +4752,6 @@ function initProfileForm(){
   if (!$('pfSec')) return;
   pfFill();
   $('pfNameKo').addEventListener('input', function(){ if (!pfDraft.photo) pfPaintPhotos(); });
-  $('pfPhotoBtn').addEventListener('click', function(){ $('pfPhotoFile').click(); });
   $('pfPhotoDel').addEventListener('click', function(){ pfDraft.photo=''; pfPaintPhotos(); });
   $('pfPhotoFile').addEventListener('change', function(){
     var f=this.files && this.files[0], inp=this;
@@ -4752,16 +4762,12 @@ function initProfileForm(){
       pfDraft.photo=src; pfPaintPhotos();
     });
   });
-  $('pfActBtn').addEventListener('click', function(){
-    if (pfDraft.acts.length>=PF_MAX_ACTS){ toast('활동 사진은 '+PF_MAX_ACTS+'장까지 넣을 수 있습니다'); return; }
-    $('pfActFile').click();
-  });
   $('pfActFile').addEventListener('change', function(){
     var files=Array.prototype.slice.call(this.files||[]), inp=this, room=PF_MAX_ACTS-pfDraft.acts.length;
     if (files.length>room){ toast('활동 사진은 '+PF_MAX_ACTS+'장까지라 '+room+'장만 넣습니다'); files=files.slice(0, room); }
     (function next(){
       var f=files.shift();
-      if (!f){ inp.value=''; pfPaintPhotos(); return; }
+      if (!f){ inp.value=''; pfPaintPhotos(); toast('활동 사진을 넣었습니다. 프로필 저장을 눌러야 저장됩니다'); return; }
       pfResize(f, 720, false, function(src){ if (src) pfDraft.acts.push(src); next(); });
     })();
   });
