@@ -4974,31 +4974,26 @@ function endGallery(){
 }
 /* 손님 폰 나가기.
    태극 문양 사진 위에 감사 인사를 띄우고 소리로도 인사한 뒤 창을 닫는다.
-   인사가 끝나면(늦어도 3.5초 뒤) 닫고, 인사가 짧아도 1.5초는 보여 준다 */
+   음성 길이와 상관없이 화면은 5초 동안 보여 주고 닫는다 */
+var GEND_MS=5000;
 var TAEGEUK_FP='PTiIezNK1AAkRISW4AA1JrS9NyMq8Ml0r9gAsSvG4VXw8b6WgADd5cMeH/';   /* 첫 화면 사진(PLATE_BGS) 중 태극 문양 대문 사진의 끝부분 */
-var gEndDone=false;
+var gEndTimer=null;
 function taegeukBg(){
   for (var i=0;i<PLATE_BGS.length;i++) if (PLATE_BGS[i].indexOf(TAEGEUK_FP)>=0) return PLATE_BGS[i];
   return '';
 }
 function showGuestEnd(){
-  var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.en, bg=taegeukBg(), shownAt=Date.now(), u, v;
+  var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.en, bg=taegeukBg(), u, v;
   closeGuide();
   gPaused=true;   /* 이 뒤로는 안내 음성을 다시 틀지 않는다 */
-  gEndDone=false;
   $('gEnd').style.backgroundImage = bg ? 'url("'+bg+'")' : '';
   $('gEndT').textContent=t.thanks.replace(/[.。]$/, '');
   $('gEndS').textContent=t.endS;
   $('gEnd').className='gend on';
   $('gEnd').setAttribute('aria-hidden','false');
-  function finish(){
-    var wait=Math.max(0, 1500-(Date.now()-shownAt));
-    if (gEndDone) return;
-    gEndDone=true;
-    setTimeout(closeGuestPage, wait+300);
-  }
-  setTimeout(finish, 3500);
-  if (!ttsOk()){ finish(); return; }
+  if (gEndTimer) clearTimeout(gEndTimer);
+  gEndTimer=setTimeout(function(){ gEndTimer=null; closeGuestPage(); }, GEND_MS);
+  if (!ttsOk()) return;
   try {
     window.speechSynthesis.cancel();
     u=new window.SpeechSynthesisUtterance(t.thanks);
@@ -5006,9 +5001,8 @@ function showGuestEnd(){
     v=pickVoice(t.lc, t.sex==='m');
     if (v.v) u.voice=v.v;
     u.pitch=(t.sex==='m' && !v.male) ? 0.7 : 1;
-    u.onend=finish; u.onerror=finish;
     window.speechSynthesis.speak(u);
-  } catch(e){ finish(); }
+  } catch(e){}
 }
 /* 창을 닫는다. 브라우저가 막으면 이전 페이지로 가고, 그것도 없으면 감사 화면에 머문다 */
 function closeGuestPage(){
