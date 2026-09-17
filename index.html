@@ -516,6 +516,21 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .sec.airT2{border-left-color:#2C7EF8}
 .sec.airT1{border-left-color:#6C5CE7}
 #airListT1 .airgrp:first-child{margin-top:0}
+/* 입국장 예상 인원 */
+.paxtabs{display:flex;gap:6px;margin:0 0 8px}
+.paxtabs button{flex:1;min-height:40px;border:1px solid var(--line);background:var(--board);border-radius:4px;font-weight:600}
+.paxtabs button[aria-pressed="true"]{border-color:var(--sign);color:var(--sign);box-shadow:inset 0 0 0 1px var(--sign)}
+.paxhd,.paxrow{display:grid;grid-template-columns:52px 1fr 1fr;gap:8px;align-items:center}
+.paxhd{font-size:12px;color:var(--muted);padding:0 0 4px}
+.paxrow{padding:5px 0;border-top:1px solid var(--line);font-size:14px}
+.paxrow.now{background:rgba(255,200,30,.08)}
+.paxrow .h{font-weight:700}
+.paxrow.now .h{color:var(--sign)}
+.paxbar{position:relative;height:22px;border-radius:3px;background:var(--board);overflow:hidden}
+.paxbar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;opacity:.55}
+.paxbar.t1 i{background:#6C5CE7}
+.paxbar.t2 i{background:#2C7EF8}
+.paxbar b{position:relative;display:block;padding:0 6px;line-height:22px;font-size:13px;font-variant-numeric:tabular-nums}
 .airgrp{margin:12px 0 4px;font-size:14px;font-weight:700;color:var(--muted)}
 .airrow{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:8px 6px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);text-align:left}
 .airrow:active{background:#2a2e34}
@@ -1046,7 +1061,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
     </div>
     <div class="sec" id="airSrvSec"><h3>공항 정보 서버</h3>
       <div class="empty">공항 탭의 입국 예상 인원과 항공사 터미널 업데이트에 씁니다. Cloudflare Workers로 만든 주소를 넣으세요.</div>
-      <div class="field"><label for="airSrv">공항 정보 서버 주소</label><input id="airSrv" type="url" inputmode="url" placeholder="https://taxi-airport.○○○.workers.dev"></div>
+      <div class="field"><label for="airSrv">공항 정보 서버 주소</label><input id="airSrv" type="url" inputmode="url" placeholder="https://taxi-airportrt.caous98.workers.dev"></div>
       <button class="btn" type="button" id="airSrvSave" style="width:100%">저장</button>
     </div>
     <div class="sec" id="tbSec"><h3>태블릿 안내 화면</h3>
@@ -5590,7 +5605,9 @@ var AIR_DEST={
   T1:{dep:{n:'인천공항 제1여객터미널 출국장 (3층)', lat:37.4487, lng:126.4506}},
   T2:{dep:{n:'인천공항 제2여객터미널 출국장 (3층)', lat:37.4692, lng:126.4334}}
 };
-function airServer(){ var u=sGet(AIR_SRV_KEY)||''; return /^https:\/\/[^\s]+$/.test(u) ? u.replace(/\/+$/,'') : ''; }
+/* 기사님 Cloudflare 서버. 설정에서 한 번도 바꾸지 않았으면 이 주소를 쓴다(지우면 빈 값으로 저장돼 꺼진다) */
+var AIR_SRV_DEFAULT='https://taxi-airportrt.caous98.workers.dev';
+function airServer(){ var st=sGet(AIR_SRV_KEY), u=(st===null ? AIR_SRV_DEFAULT : st)||''; return /^https:\/\/[^\s]+$/.test(u) ? u.replace(/\/+$/,'') : ''; }
 function airOverride(){
   var raw=sGet(AIR_OVR_KEY), o=null;
   if (raw){ try { o=JSON.parse(raw); } catch(e){ o=null; } }
@@ -5696,15 +5713,59 @@ function airUpdate(){
     toast('업데이트하지 못했습니다. 서버 주소와 인터넷 연결을 확인하세요');
   }).then(function(){ btn.disabled=false; btn.textContent='오늘 운항편으로 업데이트'; });
 }
+/* 입국장 시간대별 예상 인원: 서버 /pax?day=0|1 → {at, day, rows:[{date,hour,t1,t2}]} */
+var paxDay='0', paxCache={};
+function paxHour(h){ var m=String(h).match(/^(\d{1,2})/); return m ? parseInt(m[1],10) : -1; }
+function renderPax(){
+  var box=$('paxBox'), srv=airServer(), d=paxCache[paxDay], rows, max=1, i, r, now=new Date().getHours(), list;
+  if (!box) return;
+  clear(box);
+  if (!srv){
+    box.appendChild(el('div',{cls:'empty'},['공항 정보 서버를 연결하면 제1·2터미널 입국장의 시간대별 예상 인원이 여기에 나옵니다. 설정 탭의 ', el('b',{text:'공항 정보 서버 주소'}), '에 주소를 넣어 주세요.']));
+    return;
+  }
+  box.appendChild(el('div',{cls:'paxtabs'},[
+    el('button',{type:'button','aria-pressed':paxDay==='0'?'true':'false', onclick:function(){ paxDay='0'; loadPax(); }},['오늘']),
+    el('button',{type:'button','aria-pressed':paxDay==='1'?'true':'false', onclick:function(){ paxDay='1'; loadPax(); }},['내일'])
+  ]));
+  if (!d){ box.appendChild(el('div',{cls:'empty', text:'받는 중…'})); return; }
+  if (d.err){ box.appendChild(el('div',{cls:'empty', text:'예상 인원을 받지 못했습니다. 서버 주소와 인터넷 연결을 확인하세요. ('+d.err+')'})); return; }
+  rows=(d.rows||[]).slice().sort(function(a,b){ return paxHour(a.hour)-paxHour(b.hour); });
+  list = paxDay==='0' ? rows.filter(function(x){ return paxHour(x.hour)>=now; }) : rows;
+  if (!list.length){ box.appendChild(el('div',{cls:'empty', text:'표시할 시간대 자료가 없습니다.'})); return; }
+  for (i=0;i<rows.length;i++){ max=Math.max(max, rows[i].t1||0, rows[i].t2||0); }
+  box.appendChild(el('div',{cls:'paxhd'},[el('span',{text:'시간'}), el('span',{text:'T1 입국장'}), el('span',{text:'T2 입국장'})]));
+  for (i=0;i<list.length;i++){
+    r=list[i];
+    box.appendChild(el('div',{cls:'paxrow'+(paxDay==='0' && paxHour(r.hour)===now ? ' now':'')},[
+      el('span',{cls:'h num', text:paxHour(r.hour)+'시'}),
+      el('span',{cls:'paxbar t1'},[el('i',{style:'width:'+Math.round((r.t1||0)/max*100)+'%'}), el('b',{text:(r.t1||0).toLocaleString('ko-KR')+'명'})]),
+      el('span',{cls:'paxbar t2'},[el('i',{style:'width:'+Math.round((r.t2||0)/max*100)+'%'}), el('b',{text:(r.t2||0).toLocaleString('ko-KR')+'명'})])
+    ]));
+  }
+  box.appendChild(el('div',{cls:'empty', style:'margin-top:8px', text:'인천공항공사 예상치입니다. 지연·결항이 생기면 실제와 다를 수 있습니다. 받은 시각 '+new Date(d.at).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}));
+}
+function loadPax(){
+  var srv=airServer(), day=paxDay, c=paxCache[day];
+  if (!srv){ renderPax(); return; }
+  if (c && !c.err && Date.now()-c.got < 600000){ renderPax(); return; }
+  delete paxCache[day]; renderPax();
+  fetch(srv+'/pax?day='+day, {cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){
+    if (!j || j.error || !j.rows) throw new Error(j && j.error ? j.error : 'empty');
+    paxCache[day]={at:j.at||Date.now(), got:Date.now(), rows:j.rows};
+  }).catch(function(e){
+    paxCache[day]={err:String(e && e.message || e).slice(0,60), got:Date.now()};
+  }).then(function(){ if (paxDay===day) renderPax(); });
+}
 function bindAir(){
   if (!$('airQ')) return;
   $('airQ').addEventListener('input', renderAir);
   $('airUpd').addEventListener('click', airUpdate);
-  $('airSrv').value=sGet(AIR_SRV_KEY)||'';
+  $('airSrv').value=airServer();
   $('airSrvSave').addEventListener('click', function(){
     var v=$('airSrv').value.trim();
     if (v && !/^https:\/\/[^\s]+$/.test(v)){ toast('https:// 로 시작하는 주소를 넣어 주세요'); return; }
-    sSet(AIR_SRV_KEY, v); toast(v ? '공항 정보 서버 주소를 저장했습니다' : '서버 주소를 지웠습니다');
+    sSet(AIR_SRV_KEY, v); paxCache={}; toast(v ? '공항 정보 서버 주소를 저장했습니다' : '서버 주소를 지웠습니다');
   });
   renderAir();
 }
@@ -6361,7 +6422,7 @@ function showTab(id){
   if (id==='v-ret'){ autoFare(); renderReturn(); }
   if (id==='v-road'){ fillRoadSelects(); renderRoadList(); if (!$('roadResult').firstChild) renderRoad(); }
   if (id==='v-book') renderBook();
-  if (id==='v-air') renderAir();
+  if (id==='v-air'){ renderAir(); loadPax(); }
   if (id==='v-data') renderStore();
   window.scrollTo(0,0);
 }
