@@ -64,58 +64,46 @@ button{cursor:pointer}
 .plate>*{position:relative;z-index:1}
 .plate .pbg{position:absolute;left:0;top:0;right:0;bottom:0;z-index:0;border-radius:4px;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;transition:opacity 1s ease}
 .plate:active{transform:translateY(2px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)}
-/* 첫 화면 이륙 장면: 원근(3D)으로 활주로를 달리다 기수를 들고 멀어진다. 한 번에 7초 */
-.plate .sky3d{position:relative;display:block;width:230px;max-width:100%;height:104px;perspective:560px;perspective-origin:18% 100%;pointer-events:none}
-.sky3d .rw3{position:absolute;left:-6px;right:-6px;bottom:4px;height:34px;transform-origin:50% 100%;transform:rotateX(62deg);
-  background:linear-gradient(to right,rgba(40,44,50,.0),rgba(40,44,50,.55) 12%,rgba(40,44,50,.55) 88%,rgba(40,44,50,0));
-  border-top:2px solid rgba(255,255,255,.55);border-bottom:3px solid rgba(255,255,255,.85);border-radius:2px}
-.sky3d .rw3::before{content:'';position:absolute;left:4%;right:4%;top:50%;height:3px;margin-top:-1.5px;
-  background:repeating-linear-gradient(to right,rgba(255,255,255,.9) 0 16px,transparent 16px 30px)}
-.sky3d .rw3::after{content:'';position:absolute;left:3%;right:3%;bottom:-6px;height:3px;
-  background:repeating-linear-gradient(to right,#FFD27A 0 3px,transparent 3px 22px);filter:drop-shadow(0 0 3px #FFB547)}
-.sky3d .sh3{position:absolute;left:12px;bottom:7px;width:64px;height:10px;border-radius:50%;
-  background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,0));filter:blur(1.5px);
-  animation:sh3 7s linear infinite}
-.sky3d .pl3{position:absolute;left:0;bottom:3px;width:84px;height:52px;transform-style:preserve-3d;transform-origin:42% 92%;
-  animation:tk3 7s linear infinite;will-change:transform,opacity}
-.sky3d .pl3 svg{position:absolute;left:0;top:0;width:84px;height:52px;overflow:visible;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
-.sky3d .gear{animation:gear3 7s linear infinite}
-.sky3d .jet{position:absolute;right:88%;top:52%;height:3px;width:70px;border-radius:3px;transform-origin:100% 50%;
-  background:linear-gradient(to left,rgba(255,255,255,.85),rgba(255,255,255,0));animation:jet3 7s linear infinite}
-.sky3d .jet.b{top:62%;height:2px;animation-delay:-.06s;opacity:.7}
-.sky3d .heat{position:absolute;right:92%;top:46%;width:22px;height:14px;border-radius:50%;
-  background:radial-gradient(closest-side,rgba(255,255,255,.35),rgba(255,255,255,0));animation:heat3 7s linear infinite}
+/* 첫 화면 이륙 장면: 사진 칸 왼쪽 끝에서 시작하는 짧은 활주로를 달려 이륙하고,
+   오를수록 원근감으로 서서히 작아지며 멀어진다. 한 번에 9초 */
+.plate .sky3d{position:relative;display:block;width:170px;height:120px;margin:-2px 0 0 -20px;perspective:420px;perspective-origin:75% 0%;pointer-events:none}
+.sky3d .rw3{position:absolute;left:-2px;bottom:6px;width:95px;height:22px;transform-origin:0 100%;transform:rotateX(64deg);background:rgba(20,24,30,.55);border-bottom:2px solid rgba(255,255,255,.8)}
+.sky3d .rw3::before{content:'';position:absolute;left:4px;right:7%;top:50%;height:2px;margin-top:-1px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.85) 0 9px,transparent 9px 17px)}
+.sky3d .rw3::after{content:'';position:absolute;left:4px;right:5%;bottom:-5px;height:2px;background:repeating-linear-gradient(90deg,#FFD27A 0 2px,transparent 2px 14px)}
+.sky3d .sh3{position:absolute;left:11px;bottom:9px;width:47px;height:5px;border-radius:50%;background:rgba(0,0,0,.45);animation:sh3 9s linear infinite}
+.sky3d .pl3{position:absolute;left:6px;bottom:8px;width:54px;height:18px;transform-origin:45% 95%;animation:tk3 9s linear infinite;will-change:transform,opacity}
+.sky3d .pl3 svg{position:absolute;left:0;top:0;width:54px;height:18px;overflow:visible}
+.sky3d .gear{animation:gear3 9s linear infinite}
+.sky3d .jet{position:absolute;right:62%;top:62%;width:41px;height:2px;transform-origin:100% 50%;background:linear-gradient(to left,rgba(255,255,255,.8),rgba(255,255,255,0));animation:jet3 9s linear infinite}
 @keyframes tk3{
-  0%{transform:translate3d(-4px,0,0) rotateZ(0);opacity:0}
-  6%{transform:translate3d(-4px,0,0) rotateZ(0);opacity:1;animation-timing-function:ease-in}
-  13%{transform:translate3d(0,0,0) rotateZ(0);animation-timing-function:cubic-bezier(.5,0,.85,.55)}
-  46%{transform:translate3d(92px,0,0) rotateZ(0);animation-timing-function:linear}
-  54%{transform:translate3d(118px,-1px,0) rotateZ(-12deg);animation-timing-function:cubic-bezier(.2,.4,.6,1)}
-  62%{transform:translate3d(142px,-14px,-40px) rotateZ(-15deg) rotateX(4deg)}
-  78%{transform:translate3d(176px,-44px,-190px) rotateZ(-16deg) rotateX(12deg)}
-  92%{transform:translate3d(206px,-68px,-420px) rotateZ(-13deg) rotateX(18deg);opacity:.9}
-  99%{transform:translate3d(216px,-76px,-520px) rotateZ(-12deg) rotateX(20deg);opacity:0}
-  100%{transform:translate3d(-4px,0,0) rotateZ(0);opacity:0}
+  0%{transform:translate3d(2px,0,0) rotateZ(0);opacity:0}
+  4.4%{transform:translate3d(2px,0,0) rotateZ(0);opacity:1}
+  9.8%{transform:translate3d(2px,0,0) rotateZ(0);animation-timing-function:cubic-bezier(.5,0,.85,.5)}
+  33.8%{transform:translate3d(24px,0,0) rotateZ(0);animation-timing-function:linear}
+  40%{transform:translate3d(36px,-2px,0) rotateZ(-10deg);animation-timing-function:ease-out}
+  50%{transform:translate3d(54px,-16px,-8px) rotateZ(-13deg)}
+  60%{transform:translate3d(76px,-38px,-34px) rotateZ(-14deg)}
+  71%{transform:translate3d(100px,-64px,-90px) rotateZ(-15deg)}
+  83%{transform:translate3d(124px,-92px,-180px) rotateZ(-14deg);opacity:1}
+  97%{transform:translate3d(148px,-124px,-320px) rotateZ(-13deg);opacity:.2}
+  100%{transform:translate3d(148px,-124px,-320px);opacity:0}
 }
 @keyframes sh3{
-  0%{transform:translateX(-4px);opacity:0}
-  6%{transform:translateX(-4px);opacity:.9;animation-timing-function:ease-in}
-  13%{transform:translateX(0);animation-timing-function:cubic-bezier(.5,0,.85,.55)}
-  46%{transform:translateX(92px) scale(1);opacity:.9}
-  54%{transform:translateX(116px) scale(.95);opacity:.8}
-  64%{transform:translateX(138px) scale(.7,.6);opacity:.35}
-  74%{transform:translateX(152px) scale(.45,.4);opacity:0}
-  100%{transform:translateX(-4px);opacity:0}
+  0%{transform:translateX(2px);opacity:0}
+  4.4%,9.8%{transform:translateX(2px);opacity:1;animation-timing-function:cubic-bezier(.5,0,.85,.5)}
+  33.8%{transform:translateX(24px);opacity:1}
+  40%{transform:translateX(34px) scale(.9);opacity:.8}
+  48%{transform:translateX(48px) scale(.6);opacity:.3}
+  53%,100%{transform:translateX(56px) scale(.4);opacity:0}
 }
-@keyframes gear3{0%,58%{opacity:1}66%,99%{opacity:0}100%{opacity:1}}
-@keyframes jet3{0%,50%{transform:scaleX(0);opacity:0}58%{transform:scaleX(.5);opacity:.6}80%{transform:scaleX(1);opacity:.55}96%,100%{transform:scaleX(1.1);opacity:0}}
-@keyframes heat3{0%,8%{opacity:0;transform:scale(.6)}14%{opacity:.8}30%{transform:scale(1.3,.9)}46%{opacity:.9;transform:scale(1.6,.8)}56%,100%{opacity:0}}
+@keyframes gear3{0%,46%{opacity:1}53%,99%{opacity:0}100%{opacity:1}}
+@keyframes jet3{0%,40%{transform:scaleX(0);opacity:0}50%{transform:scaleX(.6);opacity:.6}80%{transform:scaleX(1);opacity:.5}97%,100%{transform:scaleX(1);opacity:0}}
 .plate .hid{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);opacity:0}
-.plate .welcome{display:block;text-align:left}
+.plate .welcome{display:block;text-align:center}
 .plate .welcome .en{display:block;font-family:'Great Vibes','Snell Roundhand','Apple Chancery','Segoe Script',cursive;
-  font-size:42px;line-height:1.1;color:#fff;letter-spacing:.5px;text-shadow:0 2px 10px rgba(0,0,0,.55)}
+  font-size:42px;line-height:1.1;color:#fff;letter-spacing:.5px;text-shadow:0 2px 10px rgba(0,0,0,.55);transform:translateX(-10px)}
 .plate .welcome .ja{display:block;margin-top:8px;font-family:'Shippori Mincho','Noto Serif JP','Nanum Myeongjo',serif;
-  font-size:14.5px;line-height:1.55;color:rgba(255,255,255,.92);letter-spacing:.4px;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+  font-size:14.5px;line-height:1.55;color:rgba(255,255,255,.92);letter-spacing:.4px;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .plate.busy{opacity:.7}
 .plate.saved{animation:saved .7s ease-out}
 @keyframes saved{0%{box-shadow:0 0 0 0 var(--ok)}40%{box-shadow:0 0 0 8px var(--ok)}100%{box-shadow:0 0 0 0 rgba(105,240,174,0)}}
@@ -627,7 +615,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
   .plate.saved{animation:none;box-shadow:0 0 0 6px var(--ok)}
   .plate:active{transform:none}
   .sky3d .pl3,.sky3d .sh3,.sky3d .gear{animation:none;opacity:1;transform:none}
-  .sky3d .jet,.sky3d .heat{animation:none;opacity:0}
+  .sky3d .jet{animation:none;opacity:0}
 }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -675,19 +663,21 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
         <span class="rw3"></span>
         <span class="sh3"></span>
         <span class="pl3">
-          <span class="heat"></span><span class="jet"></span><span class="jet b"></span>
-          <svg viewBox="5 13 57 40">
-            <g class="gear" fill="#2A2F36"><rect x="23.4" y="37" width="1.4" height="6.5"/><rect x="39.4" y="37" width="1.4" height="5.5"/><circle cx="24.1" cy="44.2" r="2"/><circle cx="40.1" cy="43.2" r="1.8"/><rect x="54" y="36" width="1.1" height="5"/><circle cx="54.5" cy="42" r="1.4"/></g>
-            <path fill="#E8EBEF" d="M12 35.5 L7 43 L11.5 43 L20 36.5 Z"/>
-            <path fill="#FFFFFF" d="M13 31 L7.5 15 L12.5 15 L21 30 Z"/>
-            <path fill="#2C7EF8" d="M9.2 17.5 L12 17.5 L17 26 L13.4 26 Z" opacity=".85"/>
-            <path fill="#D7DCE3" d="M33 34.5 L19 51 L27 51 L43 36 Z"/>
-            <path fill="#FFFFFF" d="M11 30.8 L45 29.8 C51.5 29.8 57 31.4 60.5 33.6 C57 35.8 51.5 37.4 45 37.4 L11 36.4 C8.6 36.2 8.6 31 11 30.8 Z"/>
-            <path fill="#2C7EF8" d="M13 34.6 L46 34.2 C51 34.2 55.5 34.8 58.8 35.6 C55.6 36.7 50.8 37.4 45 37.4 L13 36.4 Z"/>
-            <path fill="#3C4450" d="M52.5 31.6 C55 32 57 32.8 58.6 33.7 L54.2 33.9 Z"/>
-            <g fill="#9AA3AF"><circle cx="22" cy="33.2" r="1"/><circle cx="27" cy="33.1" r="1"/><circle cx="32" cy="33" r="1"/><circle cx="37" cy="33" r="1"/><circle cx="42" cy="32.9" r="1"/></g>
-            <path fill="#C3CAD3" d="M30 37.2 L37 37.2 C39.2 37.2 39.2 41.6 37 41.6 L30 41.6 C27.8 41.6 27.8 37.2 30 37.2 Z"/>
-            <ellipse cx="30.5" cy="39.4" rx="1.6" ry="1.8" fill="#6B7480"/>
+          <span class="jet"></span>
+          <svg viewBox="0 0 120 40">
+            <g class="gear" fill="#2A2F36"><rect x="56" y="22" width="1.6" height="7"/><rect x="61" y="22" width="1.6" height="7"/><circle cx="56.8" cy="30" r="2.2"/><circle cx="61.8" cy="30" r="2.2"/><rect x="100" y="21.5" width="1.3" height="6"/><circle cx="100.6" cy="28.6" r="1.7"/></g>
+            <path fill="#D9DEE5" d="M11 19 L3 23.5 L8.5 23.5 L22 19.6 Z"/>
+            <path fill="#FFFFFF" d="M15 15 L6.5 1.5 L13.5 1.5 L30 14.6 Z"/>
+            <path fill="#1F6FE5" d="M9 3.2 L13 3.2 L24 12.6 L18.5 12.6 Z"/>
+            <path fill="#C9D0D9" d="M58 19.5 L39 31 L46.5 31 L74 20.4 Z"/>
+            <path fill="#1F6FE5" d="M39 31 L36.5 27 L38.6 27 L43 30.2 Z"/>
+            <path fill="#FFFFFF" d="M9 18.2 C9 15.6 11 14.6 15 14.6 L97 14.2 C105 14.2 111 15.8 117 18.4 C111 21.2 105 22.2 97 22.2 L15 22.2 C11 22.2 9 20.8 9 18.2 Z"/>
+            <path fill="#1F6FE5" d="M15 20 L98 19.7 C104.5 19.8 109.5 20.4 113.2 21 C109.5 21.8 104.5 22.2 97 22.2 L15 22.2 C12.4 22.2 11 21.4 10.4 20.4 Z"/>
+            <path fill="#2E3540" d="M105 15.4 C108.6 16 111.4 16.9 114 18 L107.6 17.8 Z"/>
+            <g fill="#8C96A3"><circle cx="24" cy="17.2" r=".6"/><circle cx="28" cy="17.2" r=".6"/><circle cx="32" cy="17.1" r=".6"/><circle cx="36" cy="17.1" r=".6"/><circle cx="40" cy="17.1" r=".6"/><circle cx="44" cy="17" r=".6"/><circle cx="48" cy="17" r=".6"/><circle cx="52" cy="17" r=".6"/><circle cx="66" cy="16.9" r=".6"/><circle cx="70" cy="16.9" r=".6"/><circle cx="74" cy="16.9" r=".6"/><circle cx="78" cy="16.8" r=".6"/><circle cx="82" cy="16.8" r=".6"/><circle cx="86" cy="16.8" r=".6"/><circle cx="90" cy="16.8" r=".6"/><circle cx="94" cy="16.8" r=".6"/><circle cx="98" cy="16.8" r=".6"/></g>
+            <path fill="#E6EAEF" d="M62 21.2 L74 21.2 C77 21.2 77.5 27.2 74 27.2 L62 27.2 C60 27.2 60 21.2 62 21.2 Z"/>
+            <ellipse cx="75.6" cy="24.2" rx="1.2" ry="2.6" fill="#3A424D"/>
+            <path fill="#1F6FE5" d="M62 25.6 L74.6 25.6 L74 27.2 L62 27.2 C61 27.2 60.6 26.6 60.6 26.2 Z"/>
           </svg>
         </span>
       </span>
