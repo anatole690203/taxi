@@ -512,6 +512,10 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .airlegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
 .airlegend i.t1,.airbadge.t1{background:#6C5CE7}   /* T1 보라 */
 .airlegend i.t2,.airbadge.t2{background:#2C7EF8}   /* T2 파랑 */
+/* 공항 탭: T2 구획은 파란 줄, T1 구획은 보라 줄. 두 구획은 따로 떨어진 칸 */
+.sec.airT2{border-left-color:#2C7EF8}
+.sec.airT1{border-left-color:#6C5CE7}
+#airListT1 .airgrp:first-child{margin-top:0}
 .airgrp{margin:12px 0 4px;font-size:14px;font-weight:700;color:var(--muted)}
 .airrow{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:8px 6px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);text-align:left}
 .airrow:active{background:#2a2e34}
@@ -742,12 +746,15 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
   </section>
 
   <section class="view" id="v-air" aria-label="공항">
-    <div class="sec" id="airSec"><h3>항공사 → 터미널</h3>
+    <div class="sec airT2" id="airSec"><h3>항공사 → 터미널</h3>
       <div class="field" style="margin-bottom:8px">
         <input id="airQ" type="search" autocomplete="off" placeholder="항공사 이름·코드·편명 (예: 델타, DL, OZ102)">
       </div>
       <div class="airlegend"><span><i class="t1"></i>제1여객터미널 (T1)</span><span><i class="t2"></i>제2여객터미널 (T2)</span></div>
       <div id="airList"></div>
+    </div>
+    <div class="sec airT1" id="airSecT1">
+      <div id="airListT1"></div>
       <div class="empty" id="airBase"></div>
       <button class="btn" type="button" id="airUpd" style="width:100%;margin-top:6px">오늘 운항편으로 업데이트</button>
       <div class="empty" style="margin-top:6px">공동운항(코드셰어) 편은 <b>실제로 비행기를 띄우는 항공사</b>의 터미널로 가야 합니다. 손님 항공권의 "Operated by"를 확인하세요.</div>
@@ -910,7 +917,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
       </div>
       <button class="btn" type="button" id="btnRetSave">기준값 저장</button>
       <div class="note" style="margin:12px 0 0">
-        <p>기본값은 <b>기아 스포티지 2.0 LPG</b> 기준입니다(복합연비 8.5km/L). 실제 주행 연비와 충전 단가를 넣으면 계산이 정확해집니다.</p>
+        <p>기본값은 <b>2027 스포티지 2.0 LPG 19인치</b> 기준입니다(복합연비 8.6km/L · 도심 7.6 · 고속도로 10.1). 실제 주행 연비와 충전 단가를 넣으면 계산이 정확해집니다.</p>
         <p>평균 요금은 공항→서울 기록이 쌓이면 그 평균으로 자동 갱신됩니다. 승객이 통행료를 내는 경우가 많아 태웠을 때의 통행료는 계산에서 뺐습니다.</p>
       </div>
     </div>
@@ -3936,7 +3943,7 @@ var RET_DEFAULT = {
   feePct:0,        /* 플랫폼 수수료(%) */
   km:45,           /* 공항↔서울 편도 거리 */
   min:50,          /* 편도 주행 시간(분) */
-  kmpl:8.5,        /* 스포티지 2.0 LPG 복합연비 */
+  kmpl:8.6,        /* 2027 스포티지 2.0 LPG 19인치 복합연비 (기아 공식) */
   fuel:1100,       /* LPG 단가(원/L) */
   toll:6600,       /* 빈차 복귀 시 본인 부담 통행료 */
   hourly:20000,    /* 시내 영업 시간당 순수입 */
@@ -3951,6 +3958,8 @@ function retSettings(){
       for (k in o){ if (Object.prototype.hasOwnProperty.call(o,k) && isNum(v[k])) o[k]=v[k]; }
       /* 예전 버전(1분당 대수)에서 넘어온 값 변환 */
       if (!isNum(v.rate10) && isNum(v.rate)) o.rate10=v.rate*10;
+      /* 예전 기본 연비(8.5)를 그대로 쓰던 경우 19인치 공식 연비로 바꾼다. 직접 넣은 다른 값은 건드리지 않는다 */
+      if (o.kmpl===8.5) o.kmpl=8.6;
     } catch(e){}
   }
   return o;
@@ -5627,15 +5636,16 @@ function airRow(a){
   ]);
 }
 function renderAir(){
-  var box=$('airList'), q=$('airQ').value, list=airList(), i, hits=[], ovr=airOverride();
-  clear(box);
+  var box=$('airList'), box1=$('airListT1'), q=$('airQ').value, list=airList(), i, hits=[], ovr=airOverride();
+  clear(box); clear(box1);
   for (i=0;i<list.length;i++) if (airMatch(list[i], q)) hits.push(list[i]);
   if (!hits.length){
     box.appendChild(el('div',{cls:'empty', text:'표에 없는 항공사입니다. 손님 항공권이나 인천공항 홈페이지에서 터미널을 확인하세요.'}));
   } else if (!airNorm(q)){
     ['T2','T1'].forEach(function(t){
-      box.appendChild(el('div',{cls:'airgrp', text: t==='T2' ? '제2여객터미널 (T2)' : '제1여객터미널 (T1)'}));
-      hits.filter(function(a){ return a.t===t; }).forEach(function(a){ box.appendChild(airRow(a)); });
+      var b = t==='T2' ? box : box1;
+      b.appendChild(el('div',{cls:'airgrp', text: t==='T2' ? '제2여객터미널 (T2)' : '제1여객터미널 (T1)'}));
+      hits.filter(function(a){ return a.t===t; }).forEach(function(a){ b.appendChild(airRow(a)); });
     });
   } else {
     hits.forEach(function(a){ box.appendChild(airRow(a)); });
