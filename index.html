@@ -270,6 +270,27 @@ a.brow:active{background:#2a2e34}
 .envbar .wx .ic{font-size:26px;line-height:1;flex:none;width:34px;text-align:center}
 .envbar .wx.wet{border-color:#8AB6F9}
 .envbar .wx.wet .cd b{color:#8AB6F9}
+/* 날씨 칸을 누르면 여는 창 (네이버 지도 날씨처럼) */
+.wxd{text-align:center;padding:2px 0 4px}
+.wxd .wxtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;text-align:left}
+.wxd .wxtop b{font-size:20px;font-weight:800;color:var(--ink)}
+.wxd .wxx{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:var(--panel);color:var(--ink);font-size:20px;line-height:40px}
+.wxd .wxnow{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px 0 2px}
+.wxd .wxnow .ic{font-size:58px;line-height:1}
+.wxd .wxnow .tp{font-size:64px;font-weight:800;line-height:1;letter-spacing:-2px;color:var(--ink)}
+.wxd .wxword{font-size:19px;font-weight:800;margin-top:8px;color:var(--ink)}
+.wxd .wxsub{font-size:15px;font-weight:600;color:var(--ink);margin-top:4px;line-height:1.5}
+.wxd .wxsub .dot{color:var(--muted);margin:0 6px}
+.wxd .aq1{color:#5B9BFF}.wxd .aq2{color:#3DDC84}.wxd .aq3{color:#FFB547}.wxd .aq4{color:#FF6B6B}.wxd .aq0{color:var(--muted)}
+.wxd .wxhours{margin:16px 0 0;background:var(--board);border:1px solid var(--line);border-radius:10px;padding:12px 8px 14px}
+.wxd .wxhours h5{margin:0 6px 10px;font-size:15px;text-align:left;color:var(--ink);padding-bottom:9px;border-bottom:1px solid var(--line)}
+.wxd .wxhrow{display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+.wxd .wxh{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:14px;color:var(--muted)}
+.wxd .wxh .hi{font-size:26px;line-height:1.1}
+.wxd .wxh b{font-size:16px;color:var(--ink)}
+.wxd .wxsrc{font-size:12px;color:var(--muted);margin:10px 2px 0;text-align:left}
+.wxd .wxroute{margin-top:14px;text-align:left}
+.wxd .wxroute h5{margin:0 0 2px;font-size:15px;color:var(--ink)}
 .wxrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 2px;border-bottom:1px solid var(--line)}
 .wxrow:last-child{border-bottom:0}
 .wxrow .wl{font-size:14px;color:var(--muted)}
@@ -397,7 +418,8 @@ a.brow:active{background:#2a2e34}
 .field .pftog{display:flex;font-size:15px;color:var(--ink);margin:0}
 .field input.pfsw{width:48px;min-height:0;height:28px;padding:0;border:0;border-radius:14px;background:var(--line)}
 .field input.pfsw:checked{background:var(--sign)}
-.pffile{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+.pffile,.field input.pffile{position:absolute;left:0;top:0;width:1px;height:1px;min-height:0;padding:0;border:0;opacity:0;overflow:hidden;pointer-events:none}
+html,body{overflow-x:hidden}
 label.btn{display:inline-flex;align-items:center;justify-content:center;padding:0 14px;cursor:pointer}
 #pfPhotoView{cursor:pointer}
 .pfphotos button{position:absolute;top:3px;right:3px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:15px;line-height:28px;padding:0}
@@ -2530,6 +2552,7 @@ function startCompass(){
    그래서 출발·도착을 잇는 선 위의 네 지점을 한 번에 받아 한 줄로 보여 준다. */
 var WX_KEY='airportCallLog.wx.v2';
 var wxNow=null, wxBusy=false, hereName=null, hereAcc=null, wxAt=null;
+var WXH_KEY='airportCallLog.wxhere.v1', wxHere=null, wxHereBusy=false, hereRegion=null;
 function wxIcon(rain, code, snow){
   if (snow>0 || (code>=71 && code<=77) || code===85 || code===86) return '🌨';
   if (rain>0 || (code>=51 && code<=67) || (code>=80 && code<=82)) return '🌧';
@@ -2538,6 +2561,99 @@ function wxIcon(rain, code, snow){
   if (code===0) return '☀';
   if (code<=2) return '⛅';
   return '☁';
+}
+/* 밤이면 맑음·구름 조금을 달 아이콘으로 */
+function wxIconDN(code, day, rain, snow){
+  var ic=wxIcon(rain||0, code, snow||0);
+  if (!day && (ic==='☀' || ic==='⛅')) return ic==='☀' ? '🌙' : '☁';
+  return ic;
+}
+/* 미세먼지(PM10)·초미세먼지(PM2.5) 한국 환경부 기준 */
+function aqGrade(v, fine){
+  var b = fine ? [15,35,75] : [30,80,150];
+  if (v===null || v===undefined || isNaN(v)) return {t:'정보 없음', c:0};
+  if (v<=b[0]) return {t:'좋음', c:1};
+  if (v<=b[1]) return {t:'보통', c:2};
+  if (v<=b[2]) return {t:'나쁨', c:3};
+  return {t:'매우나쁨', c:4};
+}
+function xhrJson(url, cb){
+  var x=new XMLHttpRequest(), done=false;
+  function fin(o){ if (done) return; done=true; cb(o); }
+  try { x.open('GET', url, true); } catch(e){ fin(null); return; }
+  x.timeout=9000;
+  x.onload=function(){ var o=null; if (x.status>=200 && x.status<300){ try { o=JSON.parse(x.responseText); } catch(e){} } fin(o); };
+  x.onerror=function(){ fin(null); };
+  x.ontimeout=function(){ fin(null); };
+  try { x.send(); } catch(e){ fin(null); }
+}
+/* 지금 있는 곳의 날씨: 체감온도, 미세먼지, 앞으로 6시간 */
+function loadHereWeather(){
+  var sp=lastHere||MAP_HOME, lat=sp.lat.toFixed(3), lng=sp.lng.toFixed(3), got={}, left=2;
+  if (wxHereBusy) return;
+  wxHereBusy=true;
+  function end(){
+    var c, h, i, start, hours=[], now;
+    if (--left>0) return;
+    wxHereBusy=false;
+    c=got.f && got.f.current; h=got.f && got.f.hourly;
+    if (!c) return;
+    if (h && h.time){
+      now=c.time ? c.time.slice(0,13) : '';
+      start=0;
+      for (i=0;i<h.time.length;i++){ if (h.time[i].slice(0,13)>now){ start=i; break; } }
+      for (i=start;i<h.time.length && hours.length<6;i++){
+        hours.push({h:parseInt(h.time[i].slice(11,13),10), temp:h.temperature_2m[i], code:h.weather_code[i],
+          day:h.is_day ? h.is_day[i] : 1, rain:h.precipitation ? h.precipitation[i] : 0});
+      }
+    }
+    wxHere={lat:sp.lat, lng:sp.lng, temp:c.temperature_2m, feel:c.apparent_temperature, code:c.weather_code,
+      day:c.is_day, rain:c.precipitation||0, snow:c.snowfall||0, hours:hours,
+      pm10: got.a && got.a.current ? got.a.current.pm10 : null,
+      pm25: got.a && got.a.current ? got.a.current.pm2_5 : null,
+      ts:Date.now()};
+    sSet(WXH_KEY, JSON.stringify(wxHere));
+    paintWx();
+    if ($('wxDetail')) wxSheet();
+  }
+  xhrJson('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lng
+    +'&current=temperature_2m,apparent_temperature,precipitation,snowfall,weather_code,is_day'
+    +'&hourly=temperature_2m,weather_code,is_day,precipitation&forecast_hours=8&timezone=Asia%2FSeoul',
+    function(o){ got.f=o; end(); });
+  xhrJson('https://air-quality-api.open-meteo.com/v1/air-quality?latitude='+lat+'&longitude='+lng
+    +'&current=pm10,pm2_5&timezone=Asia%2FSeoul',
+    function(o){ got.a=o; end(); });
+}
+/* 창 제목에 쓸 동네 이름 (예: 마포구 서교동). 카카오 키가 있으면 카카오, 없으면 OSM */
+function nameRegion(lat, lng){
+  var key=getKakaoKey();
+  function osm(){
+    xhrJson('https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=ko&zoom=16&lat='+lat+'&lon='+lng, function(o){
+      var a=o && o.address, gu, dong;
+      if (!a) return;
+      gu=a.borough || a.city_district || a.county || a.city || '';
+      dong=a.quarter || a.suburb || a.neighbourhood || a.village || '';
+      if (gu || dong){ hereRegion=(gu+' '+dong).replace(/\s+/g,' ').trim(); if ($('wxDetail')) wxSheet(); }
+    });
+  }
+  function kakaoIt(){
+    var gc;
+    if (!kakaoServicesReady()){ osm(); return; }
+    gc=new kakao.maps.services.Geocoder();
+    if (typeof gc.coord2RegionCode!=='function'){ osm(); return; }
+    try { gc.coord2RegionCode(lng, lat, function(res, st){
+      var i, r=null;
+      if (st===kakao.maps.services.Status.OK && res && res.length){
+        for (i=0;i<res.length;i++){ if (res[i].region_type==='H'){ r=res[i]; break; } }
+        r=r||res[0];
+        hereRegion=(r.region_2depth_name+' '+r.region_3depth_name).replace(/\s+/g,' ').trim();
+        if ($('wxDetail')) wxSheet();
+      } else osm();
+    }); } catch(e){ osm(); }
+  }
+  if (!key){ osm(); return; }
+  if (kakaoServicesReady()){ kakaoIt(); return; }
+  loadKakaoSdk(key, function(ok){ if (ok) kakaoIt(); else osm(); });
 }
 function wxWord(rain, code, snow){
   if (snow>0 || (code>=71 && code<=77) || code===85 || code===86) return '눈';
@@ -2572,7 +2688,15 @@ function wxSamplePoints(){
 /* 화면의 한 칸: 경로 전체를 한눈에. 비가 오는 곳이 있으면 그곳을 먼저 알린다 */
 function paintWx(){
   var ic=$('envWxIc'), t=$('envWxT'), sub=$('envWxS'), btn=$('envWx'), pts, i, wet=null, lo, hi, w;
-  if (!ic||!wxNow||!wxNow.pts.length) return;
+  if (!ic) return;
+  if ((!wxNow || !wxNow.pts.length) && wxHere){
+    ic.textContent = wxIconDN(wxHere.code, wxHere.day, wxHere.rain, wxHere.snow);
+    t.textContent = Math.round(wxHere.temp)+'°';
+    sub.textContent = '체감 '+Math.round(wxHere.feel)+'° · 미세 '+aqGrade(wxHere.pm10,false).t;
+    btn.className='wx';
+    return;
+  }
+  if (!wxNow||!wxNow.pts.length) return;
   pts=wxNow.pts;
   lo=hi=pts[0].temp;
   for (i=0;i<pts.length;i++){
@@ -2585,7 +2709,13 @@ function paintWx(){
   t.textContent = (Math.round(lo)===Math.round(hi))
     ? Math.round(pts[0].temp)+'°'
     : Math.round(pts[0].temp)+'° → '+Math.round(pts[pts.length-1].temp)+'°';
-  if (pts.length===1) sub.textContent = (pts[0].place||'현위치')+' '+wxWord(pts[0].rain, pts[0].code, pts[0].snow);
+  if (pts.length===1){
+    if (wxHere && Date.now()-wxHere.ts < 3*3600000){
+      ic.textContent = wxIconDN(wxHere.code, wxHere.day, wxHere.rain, wxHere.snow);
+      t.textContent = Math.round(wxHere.temp)+'°';
+      sub.textContent = '체감 '+Math.round(wxHere.feel)+'° · 미세 '+aqGrade(wxHere.pm10,false).t;
+    } else sub.textContent = (pts[0].place||'현위치')+' '+wxWord(pts[0].rain, pts[0].code, pts[0].snow);
+  }
   else if (wet) sub.textContent = (wet.place||wet.label)+' 부근 '+wxWord(wet.rain, wet.code, wet.snow);
   else sub.textContent = '경로 내내 '+wxWord(0, pts[0].code, 0);
   if (hereAcc!==null && hereAcc>1000 && pts.length===1) sub.textContent='위치 대략 '+Math.round(hereAcc/1000)+'km 오차';
@@ -2593,6 +2723,7 @@ function paintWx(){
 }
 function loadRouteWeather(){
   var pts=wxSamplePoints(), lat=[], lng=[], i, xhr, url;
+  loadHereWeather();
   if (wxBusy) return;
   for (i=0;i<pts.length;i++){ lat.push(pts[i].lat.toFixed(3)); lng.push(pts[i].lng.toFixed(3)); }
   url='https://api.open-meteo.com/v1/forecast?latitude='+lat.join(',')+'&longitude='+lng.join(',')
@@ -2622,24 +2753,62 @@ function loadRouteWeather(){
   xhr.ontimeout=function(){ wxBusy=false; };
   try { xhr.send(); } catch(e){ wxBusy=false; }
 }
-/* 눌렀을 때: 지점별로 펼쳐 본다 */
+/* 눌렀을 때: 지금 있는 곳의 날씨를 크게 (네이버 지도 날씨처럼). 경로가 있으면 아래에 경로 날씨 */
 function wxSheet(){
-  var kids, i, w;
-  if (!wxNow){ toast('날씨를 아직 받지 못했습니다'); loadRouteWeather(); return; }
-  kids=[el('h4',{text:'경로 날씨'}),
-        el('p',{cls:'msg', text:'출발지에서 도착지까지 네 곳을 찍어 받은 값입니다. 기상 모델 자료라 실제와 다를 수 있습니다.'})];
-  for (i=0;i<wxNow.pts.length;i++){
-    w=wxNow.pts[i];
-    kids.push(el('div',{cls:'wxrow'},[
-      el('span',{cls:'wl'},[el('b',{text:w.place||w.label}), document.createTextNode(w.label)]),
-      el('span',{cls:'wv'},[el('i',{text:wxIcon(w.rain,w.code,w.snow)}),
-        document.createTextNode(Math.round(w.temp)+'° · '+wxWord(w.rain,w.code,w.snow)
-          + (w.rain>0 ? ' '+w.rain+'mm' : ''))])
+  var w=wxHere, kids=[], box, g10, g25, hrow, i, hh, up, rt;
+  if (!w && !wxNow){ toast('날씨를 받는 중입니다'); loadRouteWeather(); return; }
+  if (!hereRegion && lastHere && !wxSheet.asked){ wxSheet.asked=true; nameRegion(lastHere.lat, lastHere.lng); }
+  box=el('div',{cls:'wxd', id:'wxDetail'});
+  box.appendChild(el('div',{cls:'wxtop'},[
+    el('b',{text: hereRegion || hereName || '현위치'}),
+    el('button',{cls:'wxx', type:'button', 'aria-label':'닫기', onclick:closeSheet},['✕'])
+  ]));
+  if (w){
+    g10=aqGrade(w.pm10,false); g25=aqGrade(w.pm25,true);
+    box.appendChild(el('div',{cls:'wxnow'},[
+      el('span',{cls:'ic', text:wxIconDN(w.code, w.day, w.rain, w.snow)}),
+      el('span',{cls:'tp num', text:Math.round(w.temp)+'°'})
     ]));
+    box.appendChild(el('div',{cls:'wxword', text:wxWord(w.rain, w.code, w.snow)}));
+    box.appendChild(el('div',{cls:'wxsub'},[
+      '체감온도 '+(Math.round(w.feel*10)/10)+'°',
+      el('span',{cls:'dot', text:'·'}), '미세 ', el('span',{cls:'aq'+g10.c, text:g10.t}),
+      el('span',{cls:'dot', text:'·'}), '초미세 ', el('span',{cls:'aq'+g25.c, text:g25.t})
+    ]));
+    if (w.hours && w.hours.length){
+      hrow=el('div',{cls:'wxhrow'});
+      for (i=0;i<w.hours.length;i++){
+        hh=w.hours[i];
+        hrow.appendChild(el('div',{cls:'wxh'},[
+          el('span',{text:hh.h+'시'}),
+          el('span',{cls:'hi', text:wxIconDN(hh.code, hh.day, hh.rain, 0)}),
+          el('b',{cls:'num', text:Math.round(hh.temp)+'°'})
+        ]));
+      }
+      box.appendChild(el('div',{cls:'wxhours'},[el('h5',{text:'시간대별'}), hrow]));
+    }
+    up=new Date(w.ts);
+    box.appendChild(el('div',{cls:'wxsrc', text:'제공 Open-Meteo · '+(up.getMonth()+1)+'.'+up.getDate()+' '
+      +('0'+up.getHours()).slice(-2)+':'+('0'+up.getMinutes()).slice(-2)+' 업데이트 · 기상 모델 자료라 기상청과 1~2° 다를 수 있습니다'}));
+  } else {
+    box.appendChild(el('p',{cls:'msg', style:'margin-top:10px', text:'지금 있는 곳의 날씨를 받는 중입니다…'}));
   }
-  kids.push(el('div',{cls:'btns', style:'margin:12px 0 0'},[
+  if (wxNow && wxNow.pts.length>1){
+    rt=el('div',{cls:'wxroute'},[el('h5',{text:'경로 날씨'})]);
+    for (i=0;i<wxNow.pts.length;i++){
+      hh=wxNow.pts[i];
+      rt.appendChild(el('div',{cls:'wxrow'},[
+        el('span',{cls:'wl'},[el('b',{text:hh.place||hh.label}), document.createTextNode(hh.label)]),
+        el('span',{cls:'wv'},[el('i',{text:wxIcon(hh.rain,hh.code,hh.snow)}),
+          document.createTextNode(Math.round(hh.temp)+'° · '+wxWord(hh.rain,hh.code,hh.snow)+(hh.rain>0 ? ' '+hh.rain+'mm' : ''))])
+      ]));
+    }
+    box.appendChild(rt);
+  }
+  kids.push(box);
+  kids.push(el('div',{cls:'btns', style:'margin:14px 0 0'},[
     el('button',{cls:'btn navi', type:'button', style:'margin-top:0', onclick:function(){
-      loadRouteWeather(); toast('날씨를 다시 받는 중입니다');
+      wxHereBusy=false; loadRouteWeather(); if (lastHere) nameRegion(lastHere.lat, lastHere.lng); toast('날씨를 다시 받는 중입니다');
     }},['새로 받기']),
     el('button',{cls:'btn', type:'button', onclick:closeSheet},['닫기'])
   ]));
@@ -2748,7 +2917,9 @@ function forceUpdate(){
 
 function initEnvBar(){
   var raw=sGet(WX_KEY), w;
-  if (raw){ try { w=JSON.parse(raw); if (w && w.pts && Date.now()-w.ts < 3*3600000){ wxNow=w; paintWx(); } } catch(e){} }
+  try { w=JSON.parse(sGet(WXH_KEY)||'null'); if (w && w.ts && Date.now()-w.ts < 3*3600000) wxHere=w; } catch(e){}
+  if (raw){ try { w=JSON.parse(raw); if (w && w.pts && Date.now()-w.ts < 3*3600000){ wxNow=w; } } catch(e){} }
+  paintWx();
   if ($('envCompass')) $('envCompass').addEventListener('click', startCompass);
   if ($('envWx')) $('envWx').addEventListener('click', wxSheet);
   startHereWatch();
@@ -2779,6 +2950,7 @@ function startHereWatch(){
 }
 /* 있는 곳의 진짜 주소를 받아 둔다. 못 받으면 이름 없이 둔다 */
 function nameHere(lat, lng){
+  nameRegion(lat, lng);
   reverseGeocode(lat, lng, function(addr){
     var p;
     if (!addr){ hereName=null; return; }
