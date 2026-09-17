@@ -64,19 +64,52 @@ button{cursor:pointer}
 .plate>*{position:relative;z-index:1}
 .plate .pbg{position:absolute;left:0;top:0;right:0;bottom:0;z-index:0;border-radius:4px;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;transition:opacity 1s ease}
 .plate:active{transform:translateY(2px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)}
-.plate .pict{width:74px;height:74px;overflow:visible}
-.plate .pict .plane{transform-box:fill-box;transform-origin:center;animation:takeoff 3.4s cubic-bezier(.4,0,.5,1) infinite}
-.plate .pict .trail rect{fill:#FFFFFF;opacity:.5;animation:trail 3.4s linear infinite}
-.plate .pict .trail rect:nth-child(2){animation-delay:.12s}
-.plate .pict .trail rect:nth-child(3){animation-delay:.24s}
-@keyframes takeoff{
-  0%{transform:translate(-14px,12px) rotate(-4deg);opacity:0}
-  12%{opacity:1}
-  55%{transform:translate(4px,-2px) rotate(0deg);opacity:1}
-  85%{transform:translate(18px,-16px) rotate(6deg);opacity:.9}
-  100%{transform:translate(26px,-26px) rotate(8deg);opacity:0}
+/* 첫 화면 이륙 장면: 원근(3D)으로 활주로를 달리다 기수를 들고 멀어진다. 한 번에 7초 */
+.plate .sky3d{position:relative;display:block;width:230px;max-width:100%;height:104px;perspective:560px;perspective-origin:18% 100%;pointer-events:none}
+.sky3d .rw3{position:absolute;left:-6px;right:-6px;bottom:4px;height:34px;transform-origin:50% 100%;transform:rotateX(62deg);
+  background:linear-gradient(to right,rgba(40,44,50,.0),rgba(40,44,50,.55) 12%,rgba(40,44,50,.55) 88%,rgba(40,44,50,0));
+  border-top:2px solid rgba(255,255,255,.55);border-bottom:3px solid rgba(255,255,255,.85);border-radius:2px}
+.sky3d .rw3::before{content:'';position:absolute;left:4%;right:4%;top:50%;height:3px;margin-top:-1.5px;
+  background:repeating-linear-gradient(to right,rgba(255,255,255,.9) 0 16px,transparent 16px 30px)}
+.sky3d .rw3::after{content:'';position:absolute;left:3%;right:3%;bottom:-6px;height:3px;
+  background:repeating-linear-gradient(to right,#FFD27A 0 3px,transparent 3px 22px);filter:drop-shadow(0 0 3px #FFB547)}
+.sky3d .sh3{position:absolute;left:12px;bottom:7px;width:64px;height:10px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,0));filter:blur(1.5px);
+  animation:sh3 7s linear infinite}
+.sky3d .pl3{position:absolute;left:0;bottom:3px;width:84px;height:52px;transform-style:preserve-3d;transform-origin:42% 92%;
+  animation:tk3 7s linear infinite;will-change:transform,opacity}
+.sky3d .pl3 svg{position:absolute;left:0;top:0;width:84px;height:52px;overflow:visible;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+.sky3d .gear{animation:gear3 7s linear infinite}
+.sky3d .jet{position:absolute;right:88%;top:52%;height:3px;width:70px;border-radius:3px;transform-origin:100% 50%;
+  background:linear-gradient(to left,rgba(255,255,255,.85),rgba(255,255,255,0));animation:jet3 7s linear infinite}
+.sky3d .jet.b{top:62%;height:2px;animation-delay:-.06s;opacity:.7}
+.sky3d .heat{position:absolute;right:92%;top:46%;width:22px;height:14px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,255,255,.35),rgba(255,255,255,0));animation:heat3 7s linear infinite}
+@keyframes tk3{
+  0%{transform:translate3d(-4px,0,0) rotateZ(0);opacity:0}
+  6%{transform:translate3d(-4px,0,0) rotateZ(0);opacity:1;animation-timing-function:ease-in}
+  13%{transform:translate3d(0,0,0) rotateZ(0);animation-timing-function:cubic-bezier(.5,0,.85,.55)}
+  46%{transform:translate3d(92px,0,0) rotateZ(0);animation-timing-function:linear}
+  54%{transform:translate3d(118px,-1px,0) rotateZ(-12deg);animation-timing-function:cubic-bezier(.2,.4,.6,1)}
+  62%{transform:translate3d(142px,-14px,-40px) rotateZ(-15deg) rotateX(4deg)}
+  78%{transform:translate3d(176px,-44px,-190px) rotateZ(-16deg) rotateX(12deg)}
+  92%{transform:translate3d(206px,-68px,-420px) rotateZ(-13deg) rotateX(18deg);opacity:.9}
+  99%{transform:translate3d(216px,-76px,-520px) rotateZ(-12deg) rotateX(20deg);opacity:0}
+  100%{transform:translate3d(-4px,0,0) rotateZ(0);opacity:0}
 }
-@keyframes trail{0%,40%{opacity:0}55%{opacity:.3}100%{opacity:0}}
+@keyframes sh3{
+  0%{transform:translateX(-4px);opacity:0}
+  6%{transform:translateX(-4px);opacity:.9;animation-timing-function:ease-in}
+  13%{transform:translateX(0);animation-timing-function:cubic-bezier(.5,0,.85,.55)}
+  46%{transform:translateX(92px) scale(1);opacity:.9}
+  54%{transform:translateX(116px) scale(.95);opacity:.8}
+  64%{transform:translateX(138px) scale(.7,.6);opacity:.35}
+  74%{transform:translateX(152px) scale(.45,.4);opacity:0}
+  100%{transform:translateX(-4px);opacity:0}
+}
+@keyframes gear3{0%,58%{opacity:1}66%,99%{opacity:0}100%{opacity:1}}
+@keyframes jet3{0%,50%{transform:scaleX(0);opacity:0}58%{transform:scaleX(.5);opacity:.6}80%{transform:scaleX(1);opacity:.55}96%,100%{transform:scaleX(1.1);opacity:0}}
+@keyframes heat3{0%,8%{opacity:0;transform:scale(.6)}14%{opacity:.8}30%{transform:scale(1.3,.9)}46%{opacity:.9;transform:scale(1.6,.8)}56%,100%{opacity:0}}
 .plate .hid{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);opacity:0}
 .plate .welcome{display:block;text-align:left}
 .plate .welcome .en{display:block;font-family:'Great Vibes','Snell Roundhand','Apple Chancery','Segoe Script',cursive;
@@ -593,7 +626,8 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 @media (prefers-reduced-motion:reduce){
   .plate.saved{animation:none;box-shadow:0 0 0 6px var(--ok)}
   .plate:active{transform:none}
-  .plate .pict .plane,.plate .pict .trail rect{animation:none;opacity:1;transform:none}
+  .sky3d .pl3,.sky3d .sh3,.sky3d .gear{animation:none;opacity:1;transform:none}
+  .sky3d .jet,.sky3d .heat{animation:none;opacity:0}
 }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -637,20 +671,26 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
     <button class="plate" id="recBtn" type="button">
       <span class="pbg" id="plateBgA" aria-hidden="true"></span>
       <span class="pbg" id="plateBgB" aria-hidden="true"></span>
-      <svg class="pict" viewBox="0 0 64 64" aria-hidden="true">
-        <g class="trail"><rect x="6" y="50" width="14" height="3" rx="1.5"/><rect x="24" y="50" width="10" height="3" rx="1.5"/><rect x="38" y="50" width="6" height="3" rx="1.5"/></g>
-        <g class="plane"><g transform="rotate(-17 32 32)">
-          <path fill="#E8EBEF" d="M12 35.5 L7 43 L11.5 43 L20 36.5 Z"/>
-          <path fill="#FFFFFF" d="M13 31 L7.5 15 L12.5 15 L21 30 Z"/>
-          <path fill="#D7DCE3" d="M33 34.5 L19 51 L27 51 L43 36 Z"/>
-          <path fill="#FFFFFF" d="M11 30.8 L45 29.8 C51.5 29.8 57 31.4 60.5 33.6 C57 35.8 51.5 37.4 45 37.4 L11 36.4 C8.6 36.2 8.6 31 11 30.8 Z"/>
-          <path fill="#2C7EF8" d="M13 34.6 L46 34.2 C51 34.2 55.5 34.8 58.8 35.6 C55.6 36.7 50.8 37.4 45 37.4 L13 36.4 Z"/>
-          <path fill="#3C4450" d="M52.5 31.6 C55 32 57 32.8 58.6 33.7 L54.2 33.9 Z"/>
-          <g fill="#9AA3AF"><circle cx="22" cy="33.2" r="1"/><circle cx="27" cy="33.1" r="1"/><circle cx="32" cy="33" r="1"/><circle cx="37" cy="33" r="1"/><circle cx="42" cy="32.9" r="1"/></g>
-          <path fill="#C3CAD3" d="M30 37.2 L37 37.2 C39.2 37.2 39.2 41.6 37 41.6 L30 41.6 C27.8 41.6 27.8 37.2 30 37.2 Z"/>
-        </g></g>
-        <rect class="runway" x="4" y="57" width="56" height="4" rx="2" fill="#FFFFFF"/>
-      </svg>
+      <span class="sky3d" aria-hidden="true">
+        <span class="rw3"></span>
+        <span class="sh3"></span>
+        <span class="pl3">
+          <span class="heat"></span><span class="jet"></span><span class="jet b"></span>
+          <svg viewBox="5 13 57 40">
+            <g class="gear" fill="#2A2F36"><rect x="23.4" y="37" width="1.4" height="6.5"/><rect x="39.4" y="37" width="1.4" height="5.5"/><circle cx="24.1" cy="44.2" r="2"/><circle cx="40.1" cy="43.2" r="1.8"/><rect x="54" y="36" width="1.1" height="5"/><circle cx="54.5" cy="42" r="1.4"/></g>
+            <path fill="#E8EBEF" d="M12 35.5 L7 43 L11.5 43 L20 36.5 Z"/>
+            <path fill="#FFFFFF" d="M13 31 L7.5 15 L12.5 15 L21 30 Z"/>
+            <path fill="#2C7EF8" d="M9.2 17.5 L12 17.5 L17 26 L13.4 26 Z" opacity=".85"/>
+            <path fill="#D7DCE3" d="M33 34.5 L19 51 L27 51 L43 36 Z"/>
+            <path fill="#FFFFFF" d="M11 30.8 L45 29.8 C51.5 29.8 57 31.4 60.5 33.6 C57 35.8 51.5 37.4 45 37.4 L11 36.4 C8.6 36.2 8.6 31 11 30.8 Z"/>
+            <path fill="#2C7EF8" d="M13 34.6 L46 34.2 C51 34.2 55.5 34.8 58.8 35.6 C55.6 36.7 50.8 37.4 45 37.4 L13 36.4 Z"/>
+            <path fill="#3C4450" d="M52.5 31.6 C55 32 57 32.8 58.6 33.7 L54.2 33.9 Z"/>
+            <g fill="#9AA3AF"><circle cx="22" cy="33.2" r="1"/><circle cx="27" cy="33.1" r="1"/><circle cx="32" cy="33" r="1"/><circle cx="37" cy="33" r="1"/><circle cx="42" cy="32.9" r="1"/></g>
+            <path fill="#C3CAD3" d="M30 37.2 L37 37.2 C39.2 37.2 39.2 41.6 37 41.6 L30 41.6 C27.8 41.6 27.8 37.2 30 37.2 Z"/>
+            <ellipse cx="30.5" cy="39.4" rx="1.6" ry="1.8" fill="#6B7480"/>
+          </svg>
+        </span>
+      </span>
       <span class="hid"><span id="recLabel"></span><span id="recSub"></span></span>
       <span class="welcome">
         <span class="en">Welcome to Korea</span>
