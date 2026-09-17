@@ -584,7 +584,19 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tb-tag-en{margin-top:-1.4vh;font-size:clamp(15px,2.4vh,24px);color:#7F9CC4;letter-spacing:.2px}
 .tb-phone{margin-top:2vh;min-height:48px;padding:0 22px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#C9CED4;font-size:16px}
 /* 운행 중 화면: 목적지·시간·요금 + 사진 슬라이드 + 손님이 찍는 QR */
-.tbpane.trip{justify-content:flex-start;gap:1.6vh;padding:3vh 4vw 5vh;text-align:left;align-items:stretch}
+.tbpane.trip{justify-content:center;gap:2.4vh;padding:5vh 6vw;text-align:left;align-items:stretch}
+.tbpane.trip .tt-dest{font-size:clamp(34px,6vh,68px)}
+.tbpane.trip .tt-v{font-size:clamp(34px,6vh,68px)}
+.tbpane.trip .tt-row{grid-template-columns:1fr;gap:3vh;margin-top:3vh}
+.tt-v{white-space:nowrap}
+.tbpane.gal{justify-content:flex-start;gap:1.6vh;padding:3vh 4vw 5vh;align-items:stretch}
+.tbpane.gal .tt-slide{flex:1 1 auto}
+.tt-galdest{font-size:clamp(16px,2.4vh,26px);color:#C9CED4;text-align:left}
+.tt-galdest b{color:#fff}
+/* 기사 폰: 태블릿 음성 켜고 끄기 */
+.tbvoice{display:none;align-items:center;gap:10px;margin:8px 16px 0;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:var(--panel);font-size:16px;font-weight:600}
+.tbvoice.on{display:flex}
+.tbvoice input{width:24px;height:24px;accent-color:#FFC61E}
 .tt-top{display:flex;flex-direction:column;gap:.6vh}
 .tt-k{font-size:clamp(14px,2vh,20px);color:#8B939C}
 .tt-dest{font-size:clamp(28px,4.8vh,52px);font-weight:700;line-height:1.2;word-break:keep-all}
@@ -602,7 +614,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tt-qr{display:flex;align-items:center;gap:3vw;padding:1.6vh 3vw;border-radius:10px;background:#1E2126}
 .tt-qrbox{flex:none;width:clamp(150px,21vh,250px);height:clamp(150px,21vh,250px);padding:10px;background:#fff;border-radius:6px;box-sizing:border-box}
 .tt-qrbox img,.tt-qrbox canvas{width:100%!important;height:100%!important;display:block}
-.tt-qrtxt{display:flex;flex-direction:column;gap:.8vh;word-break:keep-all}
+.tt-qrtxt{display:flex;flex-direction:column;gap:.8vh;word-break:keep-all;text-align:left}
 .tt-qrtxt b{font-size:clamp(20px,3.2vh,34px);color:#fff;line-height:1.25}
 .tt-qrtxt span{font-size:clamp(14px,2.1vh,22px);color:#C9CED4;line-height:1.35}
 .tbstat{position:absolute;right:14px;bottom:10px;font-size:13px;color:#5B626B}
@@ -757,6 +769,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
       <button class="btn" type="button" id="tbRideBtn">🚕 승차 안내</button>
       <button class="btn alight" type="button" id="tbAlightBtn">👋 하차 안내</button>
     </div>
+    <label class="tbvoice" id="tbVoiceRow"><input type="checkbox" id="tbVoice"> 🔊 태블릿에서 음성도 함께 (끄면 화면만)</label>
     <div class="opts">
       <div class="grp"><div class="lab air">공항운행</div>
         <div class="seg dirseg" id="segDirAir">
@@ -1105,13 +1118,14 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
       <button class="btn" type="button" id="airSrvSave" style="width:100%">저장</button>
     </div>
     <div class="sec" id="tbSec"><h3>태블릿 안내 화면</h3>
-      <div class="empty">뒷좌석 태블릿에 승차·하차 안내를 글자와 소리로 띄웁니다. 내비(카카오내비·T맵·네이버)로 출발하면 승차 안내가, 태블릿이 목적지 가까이 오면 하차 안내가 나옵니다.</div>
+      <div class="empty">뒷좌석 태블릿에 승차·하차 안내를 글자와 소리로 띄웁니다. 목적지를 정하고 내비(카카오내비·T맵·네이버)로 출발하면 곧바로 승차 안내, 3분 뒤 요금·시간, 5분 뒤 갤러리 사진과 손님용 QR이 저절로 나옵니다. 태블릿이 목적지 가까이 오면 하차 안내가 나옵니다. 태블릿 크롬에서 ⋮ → 홈 화면에 추가로 설치해 열면 주소창 없이 전체 화면으로 나옵니다.</div>
       <div class="empty" id="tbInfo"></div>
       <button class="btn primary" type="button" id="tbPair" style="width:100%;margin-top:8px">태블릿 연결 QR 보기</button>
       <div class="pfrow2" style="margin-top:8px">
         <button class="btn" type="button" id="tbTestRide">승차 안내 시험</button>
         <button class="btn" type="button" id="tbTestAlight">하차 안내 시험</button>
       </div>
+      <label class="tbvoice on" style="margin:8px 0 0"><input type="checkbox" id="tbVoice2"> 🔊 태블릿에서 음성도 함께 (끄면 화면만)</label>
       <button class="btn" type="button" id="tbUnpair" style="width:100%;margin-top:8px">연결 끊기</button>
       <div class="empty" style="margin-top:6px">승차·하차 신호는 무료 알림 서버(ntfy.sh)를 거쳐 태블릿으로 갑니다. 목적지 이름과 좌표만 보내며, 연결 코드를 아는 기기만 받을 수 있습니다.</div>
     </div>
@@ -1320,6 +1334,9 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
       </div>
       <div class="tt-note" id="ttNote"></div>
     </div>
+  </div>
+  <div class="tbpane gal" id="tbGal">
+    <div class="tt-galdest" id="ttGalDest"></div>
     <div class="tt-slide" id="ttSlide"></div>
     <div class="tt-qr">
       <div class="tt-qrbox" id="ttQr"></div>
@@ -5852,7 +5869,9 @@ var TB_ARRIVE_DELAY=1000;   /* 도착을 알아챈 뒤 하차 안내까지 (내�
 /* 승차·하차 안내 모두 20초 보여 준 뒤 첫 화면으로 */
 var TB_RIDE_SHOW=20000, TB_ALIGHT_SHOW=20000;
 /* 승차 안내 뒤 폰이 운행 정보를 다시 보내는 때(4분), 태블릿이 운행 화면을 띄우는 때(5분) */
-var TB_TRIP_SEND=4*60000, TB_TRIP_SHOW=5*60000;
+var TB_TRIP_SEND=2*60000, TB_TRIP_SHOW=3*60000, TB_GAL_SHOW=5*60000;
+var TB_VOICE_KEY='airportCallLog.tabletVoice.v1';
+function tbVoiceOn(){ return sGet(TB_VOICE_KEY)!=='0'; }
 var guideOpenedAt=0;
 var TB_TEXT={
   ko:{ride:['안전을 위해 안전벨트를 매 주세요.','목적지까지 편안하게 모시겠습니다.'],
@@ -5880,7 +5899,7 @@ var tbLastRide={key:'', at:0};
 function tbSend(type, dest, lang, trip){
   var code=tbPairCode(), msg;
   if (!code) return null;
-  msg={v:1, type:type, ts:Date.now(), lang:lang||''};
+  msg={v:1, type:type, ts:Date.now(), lang:lang||'', voice:tbVoiceOn()?1:0};
   if (trip) msg.trip=trip;
   if (dest && isNum(dest.lat) && isNum(dest.lng)) msg.dest={n:String(dest.n||'').slice(0,60), lat:Math.round(dest.lat*1e5)/1e5, lng:Math.round(dest.lng*1e5)/1e5};
   try {
@@ -5889,18 +5908,32 @@ function tbSend(type, dest, lang, trip){
   } catch(e){ return null; }
 }
 /* 태블릿 운행 화면에 쓸 목적지·시간·요금과 손님 QR 주소 */
-function tbTripPayload(){
-  var u, g;
-  if (!lastTrip || !lastTrip.dest) return null;
-  try { u=guideUrl(); } catch(e){ return null; }
-  g=u.split('?g=')[1]||'';
-  return {g:g, d:String(lastTrip.dest).slice(0,60), t:lastTrip.time||0, f:lastTrip.fare||0, o:lastTrip.toll?1:0};
+function tbTripPayload(lat, lng, name){
+  var dp=destPoint(), tr=null, o, g;
+  if (!isNum(lat) && dp){ lat=dp.lat; lng=dp.lng; name=dp.n; }
+  function near(a, b){ return isNum(a) && isNum(b) && isNum(lat) && isNum(lng) && km(a, b, lat, lng) < 0.5; }
+  /* 1) 방금 받은 경로(시간·요금)가 이 목적지면 그 값 */
+  if (lastBest && lastBest.dest && dp && near(dp.lat, dp.lng) && lastBest.dest===dp.n)
+    tr={dest:lastBest.dest, time:lastBest.time, fare:lastBest.fare, toll:lastBest.toll, lat:dp.lat, lng:dp.lng};
+  /* 2) 승객 안내 화면에 띄웠던 값이 이 목적지면 그 값 */
+  else if (lastTrip && lastTrip.dest && (near(lastTrip.lat, lastTrip.lng) || lastTrip.dest===name))
+    tr=lastTrip;
+  /* 3) 둘 다 없으면 목적지만 (요금은 미터기 기준으로 안내) */
+  else if (name) tr={dest:name, time:0, fare:0, toll:false, lat:lat, lng:lng};
+  if (!tr || !tr.dest) return null;
+  o={d:tr.dest, t:tr.time||0, f:tr.fare||0, l:guideLang||'ko'};
+  if (tr.toll) o.o=1;
+  if (isNum(tr.lat) && isNum(tr.lng)){ o.y=Math.round(tr.lat*1e5)/1e5; o.x=Math.round(tr.lng*1e5)/1e5; }
+  try { if (guideProfile()) o.p=profileToQr(guideProfile()); } catch(e){}
+  g=b64u(JSON.stringify(o));
+  return {g:g, d:String(tr.dest).slice(0,60), t:tr.time||0, f:tr.fare||0, o:tr.toll?1:0};
 }
 var tbTripTimer=null;
-function tbRideSent(){
+function tbRideSent(lat, lng, name){
   if (tbTripTimer) clearTimeout(tbTripTimer);
-  /* 내비 앱으로 넘어가 있으면 폰이 늦게 보낼 수 있다. 그래서 승차 안내에도 같은 정보를 실어 두었다 */
-  tbTripTimer=setTimeout(function(){ var t=tbTripPayload(); tbTripTimer=null; if (t) tbSend('trip', null, tbRideLang(), t); }, TB_TRIP_SEND);
+  /* 승차 안내에 운행 정보를 실어 보냈다. 내비 앱으로 넘어가 폰이 늦을 수 있으니,
+     그 사이 경로 값이 새로 생겼을 때만 2분 뒤 한 번 더 보낸다 (화면 시간은 태블릿이 센다) */
+  tbTripTimer=setTimeout(function(){ var t=tbTripPayload(lat, lng, name); tbTripTimer=null; if (t) tbSend('trip', null, tbRideLang(), t); }, TB_TRIP_SEND);
 }
 /* 이번 운행의 손님 언어: 30분 안에 승객 안내 화면을 열었으면 그때 고른 언어 */
 function tbRideLang(){ return (guideOpenedAt && Date.now()-guideOpenedAt < 30*60000) ? (guideLang||'') : ''; }
@@ -5911,16 +5944,16 @@ function navStarted(lat, lng, name){
   /* 같은 목적지로 내비를 다시 열 때마다 승차 안내가 반복되지 않게 3분은 한 번만 */
   if (tbLastRide.key===key && Date.now()-tbLastRide.at < 3*60000) return;
   tbLastRide={key:key, at:Date.now()};
-  tbSend('ride', {n:name, lat:lat, lng:lng}, tbRideLang(), tbTripPayload());
-  tbRideSent();
+  tbSend('ride', {n:name, lat:lat, lng:lng}, tbRideLang(), tbTripPayload(lat, lng, name));
+  tbRideSent(lat, lng, name);
 }
 function tbManual(type){
   var p;
   if (!tbPairCode()){ toast('설정 탭에서 태블릿을 먼저 연결하세요'); return; }
   p = type==='ride' ? destPoint() : null;
   if (type==='ride') tbLastRide={key:p ? Math.round(p.lat*1e4)+','+Math.round(p.lng*1e4) : '', at:Date.now()};
-  p=tbSend(type, p, tbRideLang(), type==='ride' ? tbTripPayload() : null);
-  if (type==='ride') tbRideSent();
+  p=tbSend(type, p, tbRideLang(), type==='ride' && p ? tbTripPayload(p.lat, p.lng, p.n) : null);
+  if (type==='ride' && tbLastRide.key) { var dp=destPoint(); if (dp) tbRideSent(dp.lat, dp.lng, dp.n); }
   else if (tbTripTimer){ clearTimeout(tbTripTimer); tbTripTimer=null; }
   if (p && p.then) p.then(function(r){ toast(r && r.ok ? (type==='ride'?'승차':'하차')+' 안내를 태블릿으로 보냈습니다' : '보내지 못했습니다. 인터넷 연결을 확인하세요'); },
                           function(){ toast('보내지 못했습니다. 인터넷 연결을 확인하세요'); });
@@ -5935,6 +5968,9 @@ function renderTabletPhone(){
   if ($('tbInfo')) $('tbInfo').textContent = code ? '연결 코드: '+code+' · 태블릿에서 이 QR을 한 번 찍어 두었으면 연결되어 있습니다.' : '아직 연결하지 않았습니다. 아래 버튼을 눌러 나오는 QR을 태블릿 카메라로 찍으세요.';
   if ($('tbUnpair')) $('tbUnpair').style.display = code ? '' : 'none';
   if ($('tbRow')) $('tbRow').className = code ? 'tbrow on' : 'tbrow';
+  if ($('tbVoiceRow')) $('tbVoiceRow').className = code ? 'tbvoice on' : 'tbvoice';
+  if ($('tbVoice')) $('tbVoice').checked=tbVoiceOn();
+  if ($('tbVoice2')) $('tbVoice2').checked=tbVoiceOn();
 }
 function showPairQr(){
   var code=tbPairCode(), url, box;
@@ -5965,6 +6001,13 @@ function bindTabletPhone(){
   $('tbTestRide').addEventListener('click', function(){ tbManual('ride'); });
   $('tbTestAlight').addEventListener('click', function(){ tbManual('alight'); });
   $('tbRideBtn').addEventListener('click', function(){ tbManual('ride'); });
+  ['tbVoice','tbVoice2'].forEach(function(id){
+    if (!$(id)) return;
+    $(id).addEventListener('change', function(){
+      sSet(TB_VOICE_KEY, this.checked ? '1' : '0'); renderTabletPhone();
+      toast(this.checked ? '태블릿에서 화면과 음성을 함께 냅니다' : '태블릿에는 화면만 나옵니다');
+    });
+  });
   $('tbAlightBtn').addEventListener('click', function(){ tbManual('alight'); });
   renderTabletPhone();
 }
@@ -5972,7 +6015,7 @@ function bindTabletPhone(){
 /* ── 태블릿 쪽 ── */
 var tb={on:false, code:'', name:'', es:null, wake:null, watch:null, pos:null,
         ride:null, alightAt:0, backTimer:null, clockTimer:null, seen:{}, speakQ:[],
-        trip:null, tripTimer:null, slideTimer:null, slideIdx:0};
+        trip:null, tripTimer:null, galTimer:null, slideTimer:null, slideIdx:0, voice:true};
 function tbMode(){
   var raw=sGet(TB_MODE_KEY), o=null;
   if (raw){ try { o=JSON.parse(raw); } catch(e){ o=null; } }
@@ -6005,6 +6048,8 @@ function tabletBoot(){
   $('tbName').textContent=tb.name;
   tbPane('tbStart');
   $('tbGo').addEventListener('click', tbStart);
+  /* 손님이나 기사가 화면을 한 번이라도 누르면 전체 화면으로 되돌린다 */
+  $('tabScr').addEventListener('click', tbFull, false);
   $('tbNotTablet').addEventListener('click', function(){
     try { localStorage.removeItem(TB_MODE_KEY); } catch(e){}
     location.replace(location.href.split('?')[0]);
@@ -6013,12 +6058,20 @@ function tabletBoot(){
   return true;
 }
 function tbPane(id){
-  var ps=['tbStart','tbIdle','tbMsg','tbTrip'], i;
-  if (id!=='tbTrip' && tb.slideTimer){ clearInterval(tb.slideTimer); tb.slideTimer=null; }
+  var ps=['tbStart','tbIdle','tbMsg','tbTrip','tbGal'], i;
+  if (id!=='tbGal' && tb.slideTimer){ clearInterval(tb.slideTimer); tb.slideTimer=null; }
+  tbFull();
   for (i=0;i<ps.length;i++){
     var n=$(ps[i]);
     n.className = n.className.replace(/\s*\bon\b/g,'') + (ps[i]===id ? ' on' : '');
   }
+}
+/* 주소창을 숨긴다: 전체 화면으로. 브라우저가 거절하면 다음 누름 때 다시 시도한다 */
+function tbFull(){
+  var d=document.documentElement;
+  try {
+    if (!document.fullscreenElement && d.requestFullscreen) d.requestFullscreen({navigationUI:'hide'}).catch(function(){});
+  } catch(e){}
 }
 function tbStat(){
   var n=$('tbStat'), es=tb.es, ok=es && es.readyState===1, gps=tb.pos ? 'GPS 켜짐' : 'GPS 없음';
@@ -6071,7 +6124,7 @@ function tbConnect(){
     try { m=JSON.parse(d.message); } catch(x){ return; }
     if (!m || !m.type || !isNum(m.ts) || Date.now()-m.ts > 90000) return;   /* 늦게 도착한 옛 신호는 버린다 */
     if (m.type==='ride') tbRide(m);
-    else if (m.type==='alight') tbAlight(m.lang);
+    else if (m.type==='alight'){ if (m.voice!==undefined) tb.voice=!!m.voice; tbAlight(m.lang); }
     else if (m.type==='trip') tbTripMsg(m);
   };
   setTimeout(tbStat, 1500);
@@ -6105,26 +6158,34 @@ function tbShow(kind, icon, koMain, koSub, fx, lang){
 function tbRide(m){
   var t=TB_TEXT.ko, lang=m.lang||'';
   tb.ride=null;
+  tb.voice = m.voice===undefined ? true : !!m.voice;
   if (m.dest && isNum(m.dest.lat) && isNum(m.dest.lng)){
     tb.ride={lat:m.dest.lat, lng:m.dest.lng, n:m.dest.n||'', at:Date.now(), far:false, fired:false};
     tbCheckArrive();
   }
   tbShow('ride', '🚕', t.ride[0], t.ride[1], function(x){ return x.ride.join(' '); }, lang);
-  tbSpeak(t.ride.join(' '), lang, function(x){ return x.ride.join(' '); });
+  if (tb.voice) tbSpeak(t.ride.join(' '), lang, function(x){ return x.ride.join(' '); });
+  else { tb.lastLang=lang; tb.rideLang=lang; try { window.speechSynthesis.cancel(); } catch(e){} }
   if (tb.backTimer) clearTimeout(tb.backTimer);
   tb.backTimer=setTimeout(tbIdle, TB_RIDE_SHOW);
-  /* 운행 정보: 승차 안내 5분 뒤 운행 화면으로 */
+  /* 운행 정보: 승차 안내 3분 뒤 요금·시간, 5분 뒤 갤러리 사진과 손님 QR */
   tb.trip = m.trip && m.trip.d ? m.trip : null;
   tb.tripLang = lang;
+  tbTripTimers(TB_TRIP_SHOW, TB_GAL_SHOW);
+}
+function tbTripTimers(tripMs, galMs){
   if (tb.tripTimer) clearTimeout(tb.tripTimer);
-  tb.tripTimer=setTimeout(function(){ tb.tripTimer=null; tbShowTrip(); }, TB_TRIP_SHOW);
+  if (tb.galTimer) clearTimeout(tb.galTimer);
+  tb.tripTimer=setTimeout(function(){ tb.tripTimer=null; tbShowTrip(); }, tripMs);
+  tb.galTimer=setTimeout(function(){ tb.galTimer=null; tbShowGal(); }, galMs);
 }
 /* 폰이 4분 뒤 다시 보낸 운행 정보. 승차 안내를 못 받았으면 1분 뒤 띄운다 */
 function tbTripMsg(m){
   if (!m.trip || !m.trip.d) return;
   tb.trip=m.trip; if (m.lang) tb.tripLang=m.lang;
   if ($('tbTrip').className.indexOf(' on')>=0){ tbShowTrip(); return; }
-  if (!tb.tripTimer) tb.tripTimer=setTimeout(function(){ tb.tripTimer=null; tbShowTrip(); }, 60000);
+  if ($('tbGal').className.indexOf(' on')>=0){ tbShowGal(); return; }
+  if (!tb.tripTimer && !tb.galTimer) tbTripTimers(60000, 180000);
 }
 function tbShowTrip(){
   var tr=tb.trip, ko=GUIDE_TEXT.ko, L=(tb.tripLang && tb.tripLang!=='ko' && GUIDE_TEXT[tb.tripLang]) ? tb.tripLang : 'en',
@@ -6143,6 +6204,18 @@ function tbShowTrip(){
   $('ttFare').textContent= f1 ? ko.approx+' '+f1 : ko.meter;
   $('ttFare2').textContent= f2 ? x.approx+' '+f2 : x.meter;
   $('ttNote').textContent= tr.o ? ko.toll+' · '+x.toll : '';
+  tbPane('tbTrip');
+  tbStat();
+}
+/* 5분 뒤: 갤러리 사진 슬라이드 + 아래에 손님용 QR */
+function tbShowGal(){
+  var tr=tb.trip, ko=GUIDE_TEXT.ko, L=(tb.tripLang && tb.tripLang!=='ko' && GUIDE_TEXT[tb.tripLang]) ? tb.tripLang : 'en',
+      x=GUIDE_TEXT[L]||GUIDE_TEXT.en, url, box;
+  if (!tr || !tr.d) return;
+  if ($('tbMsg').className.indexOf(' on')>=0 && tb.backTimer){ tb.galTimer=setTimeout(function(){ tb.galTimer=null; tbShowGal(); }, 5000); return; }
+  clear($('ttGalDest'));
+  $('ttGalDest').appendChild(document.createTextNode(ko.to+' · '));
+  $('ttGalDest').appendChild(el('b',{text:tr.d}));
   $('ttQrCap').textContent=ko.qrCap;
   $('ttQrSub').textContent=x.qrCap;
   $('ttQrSub2').textContent=ko.qrSub;
@@ -6154,7 +6227,7 @@ function tbShowTrip(){
     try { clear(box); new QRCode(box, {text:url, width:320, height:320, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
   });
   tbSlideStart();
-  tbPane('tbTrip');
+  tbPane('tbGal');
   tbStat();
 }
 /* 갤러리 사진(첫 화면 사진)을 천천히 넘긴다 */
@@ -6182,9 +6255,10 @@ function tbAlight(lang){
   tb.ride=null;
   tb.trip=null;
   if (tb.tripTimer){ clearTimeout(tb.tripTimer); tb.tripTimer=null; }
+  if (tb.galTimer){ clearTimeout(tb.galTimer); tb.galTimer=null; }
   lang = lang || tb.lastLang || '';
   tbShow('alight', '👋', t.alight, t[g], function(x){ return x.alight+' '+x[g]; }, lang);
-  tbSpeak(t.alight+' '+t[g], lang, function(x){ return x.alight+' '+x[g]; });
+  if (tb.voice) tbSpeak(t.alight+' '+t[g], lang, function(x){ return x.alight+' '+x[g]; });
   if (tb.backTimer) clearTimeout(tb.backTimer);
   tb.backTimer=setTimeout(tbIdle, TB_ALIGHT_SHOW);
 }
