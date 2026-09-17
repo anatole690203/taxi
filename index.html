@@ -761,6 +761,9 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
   </section>
 
   <section class="view" id="v-air" aria-label="공항">
+    <div class="sec gray" id="paxSec"><h3>인천공항 예상 인원</h3>
+      <div id="paxBox"><div class="empty">공항 정보 서버를 연결하면 제1·2터미널 입국장·출국장의 시간대별 예상 인원이 여기에 나옵니다. 설정 탭의 <b>공항 정보 서버 주소</b>에 주소를 넣어 주세요.</div></div>
+    </div>
     <div class="sec airT2" id="airSec"><h3>항공사 → 터미널</h3>
       <div class="field" style="margin-bottom:8px">
         <input id="airQ" type="search" autocomplete="off" placeholder="항공사 이름·코드·편명 (예: 델타, DL, OZ102)">
@@ -773,9 +776,6 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
       <div class="empty" id="airBase"></div>
       <button class="btn" type="button" id="airUpd" style="width:100%;margin-top:6px">오늘 운항편으로 업데이트</button>
       <div class="empty" style="margin-top:6px">공동운항(코드셰어) 편은 <b>실제로 비행기를 띄우는 항공사</b>의 터미널로 가야 합니다. 손님 항공권의 "Operated by"를 확인하세요.</div>
-    </div>
-    <div class="sec gray" id="paxSec"><h3>인천공항 입국 예상 인원</h3>
-      <div id="paxBox"><div class="empty">공항 정보 서버를 연결하면 제1·2터미널 입국장의 시간대별 예상 인원이 여기에 나옵니다. 설정 탭의 <b>공항 정보 서버 주소</b>에 주소를 넣어 주세요.</div></div>
     </div>
   </section>
 
@@ -5714,7 +5714,7 @@ function airUpdate(){
   }).then(function(){ btn.disabled=false; btn.textContent='오늘 운항편으로 업데이트'; });
 }
 /* 입국장 시간대별 예상 인원: 서버 /pax?day=0|1 → {at, day, rows:[{date,hour,t1,t2}]} */
-var paxDay='0', paxCache={};
+var paxDay='0', paxKind='in', paxCache={};
 function paxHour(h){ var m=String(h).match(/^(\d{1,2})/); return m ? parseInt(m[1],10) : -1; }
 function renderPax(){
   var box=$('paxBox'), srv=airServer(), d=paxCache[paxDay], rows, max=1, i, r, now=new Date().getHours(), list;
@@ -5725,6 +5725,10 @@ function renderPax(){
     return;
   }
   box.appendChild(el('div',{cls:'paxtabs'},[
+    el('button',{type:'button','aria-pressed':paxKind==='in'?'true':'false', onclick:function(){ paxKind='in'; renderPax(); }},['입국 (도착)']),
+    el('button',{type:'button','aria-pressed':paxKind==='out'?'true':'false', onclick:function(){ paxKind='out'; renderPax(); }},['출국 (출발)'])
+  ]));
+  box.appendChild(el('div',{cls:'paxtabs'},[
     el('button',{type:'button','aria-pressed':paxDay==='0'?'true':'false', onclick:function(){ paxDay='0'; loadPax(); }},['오늘']),
     el('button',{type:'button','aria-pressed':paxDay==='1'?'true':'false', onclick:function(){ paxDay='1'; loadPax(); }},['내일'])
   ]));
@@ -5733,10 +5737,14 @@ function renderPax(){
   rows=(d.rows||[]).slice().sort(function(a,b){ return paxHour(a.hour)-paxHour(b.hour); });
   list = paxDay==='0' ? rows.filter(function(x){ return paxHour(x.hour)>=now; }) : rows;
   if (!list.length){ box.appendChild(el('div',{cls:'empty', text:'표시할 시간대 자료가 없습니다.'})); return; }
-  for (i=0;i<rows.length;i++){ max=Math.max(max, rows[i].t1||0, rows[i].t2||0); }
-  box.appendChild(el('div',{cls:'paxhd'},[el('span',{text:'시간'}), el('span',{text:'T1 입국장'}), el('span',{text:'T2 입국장'})]));
+  var out = paxKind==='out', k1 = out ? 'd1' : 't1', k2 = out ? 'd2' : 't2', hall = out ? '출국장' : '입국장';
+  if (out && rows.length && rows[0].d1===undefined){
+    box.appendChild(el('div',{cls:'empty', text:'출국 인원은 서버 코드를 새로 넣어야 나옵니다. Cloudflare에 새 worker.js를 배포해 주세요.'})); return;
+  }
+  for (i=0;i<rows.length;i++){ max=Math.max(max, rows[i][k1]||0, rows[i][k2]||0); }
+  box.appendChild(el('div',{cls:'paxhd'},[el('span',{text:'시간'}), el('span',{text:'T1 '+hall}), el('span',{text:'T2 '+hall})]));
   for (i=0;i<list.length;i++){
-    r=list[i];
+    r=list[i]; r={hour:r.hour, t1:r[k1], t2:r[k2]};
     box.appendChild(el('div',{cls:'paxrow'+(paxDay==='0' && paxHour(r.hour)===now ? ' now':'')},[
       el('span',{cls:'h num', text:paxHour(r.hour)+'시'}),
       el('span',{cls:'paxbar t1'},[el('i',{style:'width:'+Math.round((r.t1||0)/max*100)+'%'}), el('b',{text:(r.t1||0).toLocaleString('ko-KR')+'명'})]),
