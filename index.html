@@ -41,7 +41,9 @@ button{cursor:pointer}
 .app{max-width:560px;margin:0 auto;padding-bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom))}
 .view{display:none}
 /* 상단 탭(입력·공항·네비·지도): 호출 유형 버튼과 같은 색·모양 */
-.toptabs{position:sticky;top:0;z-index:1000;background:var(--slate);padding:calc(8px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid var(--line)}
+/* 입력 탭에서는 사진 아래·승차 안내 위, 다른 탭에서는 화면 맨 위(따라 내려오지 않음) */
+.toptabs{margin:14px 16px 0}
+.view>.toptabs:first-child{margin-top:12px}
 .toptabs .seg button[aria-selected="true"]{border-color:var(--sign);color:var(--sign);background:#3A3F46;box-shadow:inset 0 0 0 1px var(--sign)}
 #map{position:relative;z-index:0}
 .view.on{display:block}
@@ -508,7 +510,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tbstat b.bad{background:#e74c3c}
 .tbexit{position:absolute;left:0;top:0;width:90px;height:90px;border:0;background:transparent;opacity:0}
 /* 입력 탭: 태블릿으로 승차·하차 안내를 직접 보내는 버튼 */
-.tbrow{display:none;gap:8px;margin:14px 16px 0}
+.tbrow{display:none;gap:8px;margin:10px 16px 0}
 .tbrow.on{display:flex}
 .tbrow .btn{flex:1;min-height:52px;font-size:16px;font-weight:700}
 .tbrow .btn.alight{background:#3a2f45;border-color:#5b4a6b;color:#fff}
@@ -578,12 +580,6 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 </head>
 <body>
 <div class="app">
-  <nav class="toptabs" aria-label="주요 화면"><div class="seg" role="tablist">
-    <button type="button" role="tab" data-tab="v-rec" aria-selected="true">입력</button>
-    <button type="button" role="tab" data-tab="v-air" aria-selected="false">공항</button>
-    <button type="button" role="tab" data-tab="v-road" aria-selected="false">네비</button>
-    <button type="button" role="tab" data-tab="v-map" aria-selected="false">지도</button>
-  </div></nav>
 
   <section class="view on" id="v-rec" aria-label="기록">
     <div class="top">
@@ -640,6 +636,12 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
       </span>
     </button>
 
+    <nav class="toptabs" aria-label="주요 화면"><div class="seg" role="tablist">
+      <button type="button" role="tab" data-tab="v-rec" aria-selected="true">입력</button>
+      <button type="button" role="tab" data-tab="v-air" aria-selected="false">공항</button>
+      <button type="button" role="tab" data-tab="v-road" aria-selected="false">네비</button>
+      <button type="button" role="tab" data-tab="v-map" aria-selected="false">지도</button>
+    </div></nav>
     <div class="tbrow" id="tbRow">
       <button class="btn" type="button" id="tbRideBtn">🚕 승차 안내</button>
       <button class="btn alight" type="button" id="tbAlightBtn">👋 하차 안내</button>
@@ -6135,6 +6137,12 @@ function showTab(id){
   var views=document.querySelectorAll('.view'), tabs=document.querySelectorAll('.tabbar button, .toptabs button'), i;
   for (i=0;i<views.length;i++) views[i].className = views[i].id===id ? 'view on' : 'view';
   for (i=0;i<tabs.length;i++) tabs[i].setAttribute('aria-selected', tabs[i].getAttribute('data-tab')===id ? 'true':'false');
+  (function(){
+    var nav=document.querySelector('.toptabs'), v=$(id), tb=$('tbRow');
+    if (!nav || !v) return;
+    if (id==='v-rec' && tb) { if (nav.nextSibling!==tb) tb.parentNode.insertBefore(nav, tb); }
+    else if (v.firstChild!==nav) v.insertBefore(nav, v.firstChild);
+  })();
   currentTab=id;
   if (id==='v-map') ensureMap();
   if (id==='v-stat') renderStats();
