@@ -330,6 +330,9 @@ a.brow:active{background:#2a2e34}
 .tabbar .in{display:flex;width:100%;max-width:560px}
 .tabbar button{flex:1;height:var(--tabh);border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;border-top:3px solid transparent;padding:0 1px;letter-spacing:-.5px}
 .tabbar button[aria-selected="true"]{color:var(--sign);border-top-color:var(--sign)}
+/* 네비 탭: 누르지 않았을 때도 노란 글자와 보라 테두리로 눈에 띄게 */
+.tabbar button.navtab{color:var(--sign);font-weight:800;margin:7px 2px;height:calc(var(--tabh) - 14px);border:2px solid #6C5CE7;border-radius:8px;background:rgba(108,92,231,.14)}
+.tabbar button.navtab[aria-selected="true"]{background:rgba(108,92,231,.34);box-shadow:0 0 0 1px #6C5CE7}
 
 /* 시트·토스트 */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;display:none;align-items:flex-end;justify-content:center}
@@ -459,8 +462,8 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 /* ───── 공항 탭: 항공사 코드 배지 ───── */
 .airlegend{display:flex;gap:14px;margin:2px 2px 10px;font-size:13px;color:var(--muted)}
 .airlegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
-.airlegend i.t1,.airbadge.t1{background:#2C7EF8}
-.airlegend i.t2,.airbadge.t2{background:#12A37F}
+.airlegend i.t1,.airbadge.t1{background:#6C5CE7}   /* T1 보라 */
+.airlegend i.t2,.airbadge.t2{background:#2C7EF8}   /* T2 파랑 */
 .airgrp{margin:12px 0 4px;font-size:14px;font-weight:700;color:var(--muted)}
 .airrow{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:8px 6px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);text-align:left}
 .airrow:active{background:#2a2e34}
@@ -470,8 +473,8 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .airrow .nm b{display:block;font-size:16px;font-weight:700}
 .airrow .nm small{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .airrow .tt{flex:none;font-size:15px;font-weight:800}
-.airrow .tt.t1{color:#6FA8FF}
-.airrow .tt.t2{color:#3FD4A8}
+.airrow .tt.t1{color:#A99BFF}
+.airrow .tt.t2{color:#6FA8FF}
 .airnote{font-size:12px;color:var(--sign)}
 .airhd{display:flex;align-items:center;gap:14px;margin-bottom:10px}
 .airhd .big-t{font-size:30px;font-weight:800;line-height:1.15}
@@ -1073,11 +1076,11 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 <nav class="tabbar" aria-label="화면 전환"><div class="in" role="tablist">
   <button type="button" role="tab" data-tab="v-rec" aria-selected="true">입력</button>
   <button type="button" role="tab" data-tab="v-air" aria-selected="false">공항</button>
-  <button type="button" role="tab" data-tab="v-road" aria-selected="false">도로</button>
+  <button type="button" role="tab" data-tab="v-road" aria-selected="false" class="navtab">네비</button>
   <button type="button" role="tab" data-tab="v-map" aria-selected="false">지도</button>
-  <button type="button" role="tab" data-tab="v-stat" aria-selected="false">통계</button>
   <button type="button" role="tab" data-tab="v-ret" aria-selected="false">귀로</button>
-  <button type="button" role="tab" data-tab="v-book" aria-selected="false">장부</button>
+  <button type="button" role="tab" data-tab="v-stat" aria-selected="false">통계</button>
+  <button type="button" role="tab" data-tab="v-book" aria-selected="false">차계부</button>
   <button type="button" role="tab" data-tab="v-data" aria-selected="false">설정</button>
 </div></nav>
 
@@ -2047,7 +2050,7 @@ function naverNaviUrl(sp, ep, android){
 function startNaverNavi(sp, ep){ var u=naverNaviUrl(sp, ep); if (u){ if (ep) navStarted(ep.lat, ep.lng, ep.n); window.location.href=u; } }
 function startKakaoNavi(lat, lng, name){
   var u=kakaoNaviUrl(lat, lng, name);
-  if (!u){ toast('데이터 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
+  if (!u){ toast('설정 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
   navStarted(lat, lng, name);
   window.location.href=u;
 }
@@ -3050,7 +3053,7 @@ function kakaoServicesReady(){
 function searchPlace(query, cb){
   var key=getKakaoKey();
   if (!query){ cb(null, '검색어가 없습니다'); return; }
-  if (!key){ cb(null, '데이터 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
+  if (!key){ cb(null, '설정 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
   function doSearch(){
     if (!kakaoServicesReady()){ cb(null, '장소 검색을 불러오지 못했습니다. 새로고침해 보세요'); return; }
     var ps=new kakao.maps.services.Places();
@@ -4147,12 +4150,12 @@ function runAiRoute(){
   if (aiBusy) return;
   if (prov==='tmap' && !getTmapKey()){
     clear(box);
-    box.appendChild(el('div',{cls:'ai-note', text:'데이터 탭에서 TMAP appKey를 먼저 저장하세요. openapi.sk.com에서 무료로 발급됩니다.'}));
+    box.appendChild(el('div',{cls:'ai-note', text:'설정 탭에서 TMAP appKey를 먼저 저장하세요. openapi.sk.com에서 무료로 발급됩니다.'}));
     return;
   }
   if (prov==='kakao' && !getKakaoRestKey()){
     clear(box);
-    box.appendChild(el('div',{cls:'ai-note', text:'데이터 탭에서 카카오 REST 키를 먼저 저장하세요. 카카오 길찾기는 사용 권한 승인도 필요합니다.'}));
+    box.appendChild(el('div',{cls:'ai-note', text:'설정 탭에서 카카오 REST 키를 먼저 저장하세요. 카카오 길찾기는 사용 권한 승인도 필요합니다.'}));
     return;
   }
   if (!sp || !ep){ toast('출발지와 도착지를 확인하세요'); return; }
