@@ -571,8 +571,23 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 /* 승차 안내: 택시가 달리는 모습 (택시 그림이 왼쪽을 보고 있어 길 점선은 오른쪽으로 흘러간다) */
 .tb-road{display:none}
 .tbpane.ride .tb-icon{position:relative;animation:tbBob .42s ease-in-out infinite alternate}
-.tbpane.ride .tb-icon::after{content:'';position:absolute;left:92%;top:44%;width:.55em;height:.05em;border-radius:.03em;background:rgba(255,255,255,.55);
-  box-shadow:.12em .16em 0 rgba(255,255,255,.35),-.05em -.15em 0 rgba(255,255,255,.3);animation:tbWind .55s linear infinite}
+.tbpane.ride .tb-icon .pf{position:absolute;left:calc(50% + .38em);top:64%;width:.08em;height:.08em;border-radius:50%;background:#F6F7FC;
+  box-shadow:.05em -.03em 0 .008em #F1F3F9,.045em .03em 0 0 #ECEFF6;
+  opacity:0;transform-origin:30% 60%;animation:tbSmoke 2.4s ease-out infinite}
+.tbpane.ride .tb-icon .pf.b,.tbpane.ride .tb-icon .pf.c{display:none}
+.tbpane.ride .tb-icon .pf.b{animation-delay:.9s}
+.tbpane.ride .tb-icon .pf.c{animation-delay:1.8s}
+.tbpane.ride .tb-icon .hb{position:absolute;right:calc(50% + .4em);width:1.5em;height:.34em;
+  clip-path:polygon(100% 42%,100% 58%,0 100%,0 0);
+  background:linear-gradient(to left,rgba(255,248,190,.9),rgba(255,236,150,.35) 55%,rgba(255,230,120,0));filter:blur(1.5px);animation:tbBeam 2.4s ease-in-out infinite}
+.tbpane.ride .tb-icon .hb.a{top:calc(60% - .2em)}
+.tbpane.ride .tb-icon .hb.b{top:calc(60% - .08em);opacity:.8}
+/* 승차 안내 문구를 반 줄 아래로 */
+.tbpane.ride .tb-ko,.tbpane.ride .tb-fx{position:relative;top:18px}
+@keyframes tbSmoke{0%{transform:translate(0,0) scale(.4);opacity:0}15%{transform:translate(.05em,-.01em) scale(1);opacity:.9}55%{transform:translate(.16em,-.06em) scale(1.12);opacity:.75}100%{transform:translate(.28em,-.12em) scale(1.25);opacity:0}}
+.tbpane.ride .tb-icon .sd{position:absolute;left:calc(50% + .01em);top:66%;transform:translate(-50%,-50%);padding:.012em .035em;border-radius:.02em;
+  background:#FFD21F;color:#15171a;font:900 .085em/1.1 'Pretendard','Noto Sans KR',system-ui,sans-serif;letter-spacing:.02em;white-space:nowrap}
+@keyframes tbBeam{0%,100%{opacity:.85}50%{opacity:1}}
 .tbpane.ride .tb-road{display:block;width:min(72vw,560px);height:8px;margin-top:-1.6vh;border-radius:4px;opacity:.85;
   background:repeating-linear-gradient(90deg,#FFD24A 0 46px,transparent 46px 92px);animation:tbRoad .5s linear infinite}
 @keyframes tbBob{from{transform:translate(0,0) rotate(0)}to{transform:translate(-4px,-5px) rotate(-1.5deg)}}
@@ -658,28 +673,30 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 @keyframes tbAckPop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
 .tbreq{position:absolute;inset:0;z-index:18;display:none;flex-direction:column;background:#101215;padding:3vh 3vw}
 .tbreq.on{display:flex}
-.tbreq-top{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:2vh}
+.tbreq-top{display:flex;align-items:center;flex-wrap:nowrap;gap:10px;margin-bottom:2vh}
 .tbreq-top b{flex:1;font-size:clamp(20px,3.2vh,32px)}
 .tbreq-lang{display:flex;gap:6px}
-.tbreq-lang button{min-height:48px;padding:0 14px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#C9CED4;font-size:16px}
+.tbreq-lang button{min-height:48px;padding:0 12px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#C9CED4;font-size:15px;white-space:nowrap}
+.tbreq-lang{flex:none}
 .tbreq-lang button.on{background:#FFC61E;border-color:#FFC61E;color:#17191c;font-weight:700}
 .tbreq-x{min-height:48px;padding:0 18px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#fff;font-size:17px}
-.tbreq-grid{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.4vh 1.4vw;align-content:start;overflow-y:auto;padding-bottom:3vh}
+.tbreq-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1vh 1.4vw;align-content:start;overflow-y:auto;padding-bottom:1vh}
 .tbreq-drv{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:14px;padding:1vh 16px;border:1px solid #3A3F46;border-radius:12px;background:#1E2126}
 .tbreq-drv .dav{width:clamp(56px,7vh,76px)!important;height:clamp(56px,7vh,76px)!important;font-size:24px!important;border:2px solid #3A3F46!important;flex:none}
 .tbreq-drv .tx{min-width:0}
 .tbreq-drv .k{font-family:'Playball','Great Vibes','Snell Roundhand',cursive;font-size:clamp(17px,2.3vh,24px);line-height:1.2;background:linear-gradient(90deg,#FFD66B,#FF9A6B 45%,#F06BB5 75%,#B98CFF);-webkit-background-clip:text;background-clip:text;color:transparent}
-.tbreq-drv .n{font-size:clamp(18px,2.5vh,26px);font-weight:800;line-height:1.25}
+.tbreq-drv .n{font-size:clamp(17px,2.3vh,24px);font-weight:800;line-height:1.25;word-break:keep-all}
+.tbreq-drv .e{font-size:clamp(12px,1.6vh,16px);font-weight:700;color:#C9CED4;letter-spacing:.3px}
 .tbreq-drv .c{font-size:clamp(12px,1.6vh,16px);color:#9AA0A8}
 .tbreq-drv .d{font-size:clamp(13px,1.7vh,17px);color:#A8CBFF;margin-top:2px}
 .tbreq-top{align-items:center}
-.tbreq-grid .rqsec{grid-column:1/-1;margin:1vh 2px 0;padding:0;border:0;background:none;font-size:clamp(14px,1.9vh,19px);font-weight:800;color:#FFC61E;letter-spacing:.3px}
+.tbreq-grid .rqsec{grid-column:1/-1;margin:.6vh 2px 0;padding:0;border:0;background:none;font-size:clamp(14px,1.9vh,19px);font-weight:800;color:#FFC61E;letter-spacing:.3px}
 .tbreq-grid .rqsec:first-child{margin-top:0}
-.tbreq-grid button{min-height:clamp(52px,6.6vh,76px)!important;padding:8px 12px!important;gap:10px!important}
-.tbreq-grid .ic{font-size:clamp(22px,3.2vh,32px)!important}
-.tbreq-grid .tx b{font-size:clamp(15px,2.1vh,21px)!important;white-space:pre-line}
+.tbreq-grid button{min-height:clamp(42px,5.2vh,60px)!important;padding:6px 10px!important;gap:8px!important}
+.tbreq-grid .ic{font-size:clamp(20px,2.7vh,28px)!important}
+.tbreq-grid .tx b{font-size:clamp(14px,1.9vh,19px)!important;white-space:pre-line}
 .tbreq-grid .tx i{font-size:clamp(12px,1.6vh,15px)!important}
-.tbreq-grid button.close{grid-column:1/-1;justify-self:center;width:min(440px,100%);margin-top:1vh}
+.tbreq-grid button.close{grid-column:1/-1;justify-self:center;width:min(440px,100%);margin-top:calc(.6vh + 30px)}
 .tbreq-grid button.close{justify-content:center;background:#17191c;border:2px solid #FFC61E;color:#FFC61E;font-size:clamp(18px,2.6vh,26px);font-weight:800;letter-spacing:.5px}
 .tbreq-grid button.close:active{background:#2A2410}
 .tbreq-grid button{display:flex;align-items:center;gap:12px;min-height:clamp(70px,10vh,110px);padding:10px 14px;border:1px solid #3A3F46;border-radius:10px;background:#1E2126;color:#fff;text-align:left}
@@ -705,11 +722,17 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tt-eta .v2{font-size:clamp(13px,1.9vh,20px);color:#C9CED4}
 .tt-eta .bar{grid-column:1/-1;height:10px;border-radius:5px;background:#2A2E34;overflow:hidden}
 .tt-eta .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#6C5CE7,#FFC61E);transition:width 1s}
-.tt-map{flex:1 1 auto;min-height:24vh;border-radius:10px;overflow:hidden;background:#1b1e23}
+.tt-map{flex:1 1 auto;min-height:24vh;border-radius:10px;overflow:hidden;background:#1b1e23;position:relative;z-index:0;isolation:isolate}
 .tt-share{display:flex;align-items:center;gap:2.5vw;padding:1.2vh 2vw;border-radius:10px;background:#1E2126}
 .tt-share .qb{flex:none;width:clamp(110px,15vh,170px);height:clamp(110px,15vh,170px);padding:8px;background:#fff;border-radius:6px;box-sizing:border-box}
 .tt-share .qb img,.tt-share .qb canvas{width:100%!important;height:100%!important;display:block}
 .tt-share b{display:block;font-size:clamp(18px,2.8vh,30px)}
+.tt-share b.shttl{display:flex;align-items:center;gap:.35em}
+.tt-share b.shttl span{display:block;margin:0;color:#fff;font-size:inherit;line-height:1.3;text-align:center}
+.tt-share .lh{flex:none;width:1.5em;height:1.8em}
+.tt-share .lh .bl{animation:tbBl 2.4s ease-in-out infinite}
+.tt-share .lh .br{animation:tbBl 2.4s ease-in-out -1.2s infinite}
+@keyframes tbBl{0%,100%{opacity:.08}25%,40%{opacity:.95}60%{opacity:.08}}
 .tt-share span{display:block;font-size:clamp(14px,2vh,20px);color:#C9CED4;margin-top:.6vh;line-height:1.5;word-break:keep-all}
 .tt-v2.tt-fx{color:#A8CBFF}
 .tt-galeta{display:block;margin-top:.4vh;font-size:clamp(14px,2vh,22px);color:#FFC61E}
@@ -820,6 +843,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .shv .st{font-size:14px;color:#9AA0A8;line-height:1.5}
 .shv .done{padding:18px;border-radius:8px;background:#2ecc71;color:#0d2416;font-size:22px;font-weight:800;text-align:center}
 .shv .shb{min-height:52px;border:0;border-radius:8px;background:#FFC61E;color:#17191c;font-size:17px;font-weight:800}
+.shv .shb2{min-height:48px;border:1px solid #FFC61E;border-radius:8px;background:transparent;color:#FFC61E;font-size:16px;font-weight:800}
 .shv .shfull{min-height:46px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#fff;font-size:16px;font-weight:700}
 .shv:fullscreen .shfull{display:none}
 .tmf{border:0;width:100%;height:100%;display:block}
@@ -917,7 +941,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .toast.on{display:flex}
 .toast button{border:0;background:transparent;color:#17191c;text-decoration:underline;font-weight:700;min-height:36px}
 @media (prefers-reduced-motion:reduce){
-  .tbpane.ride .tb-icon,.tbpane.alight .tb-icon,.tbpane.ride .tb-road,.tbpane.ride .tb-icon::after{animation:none}
+  .tbpane.ride .tb-icon,.tbpane.alight .tb-icon,.tbpane.ride .tb-road,.tbpane.ride .tb-icon .pf,.tbpane.ride .tb-icon .hb{animation:none}
   .plate.saved{animation:none;box-shadow:0 0 0 6px var(--ok)}
   .plate:active{transform:none}
   .sky3d .pl3,.sky3d .sh3,.sky3d .gear{animation:none;opacity:1;transform:none}
@@ -1607,7 +1631,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
       <div class="tt-map" id="ttMap" style="display:none"></div>
       <div class="tt-share" id="ttShare" style="display:none">
         <div class="qb" id="ttShareQr"></div>
-        <div><b>📍 가족에게 도착 예정 알리기</b><span>휴대폰 카메라로 QR을 찍으면 지금 위치와 도착 예정 시각이 나옵니다. 그 화면을 가족에게 보내 주세요.</span></div>
+        <div><b class="shttl"><svg class="lh" viewBox="0 0 40 48" aria-hidden="true"><path class="bl" d="M20 9 L2 2 L2 16 Z" fill="#FFE27A"/><path class="br" d="M20 9 L38 2 L38 16 Z" fill="#FFE27A"/><path d="M15 6 h10 l1 6 h-12 z" fill="#3A3F46"/><rect x="15" y="8" width="10" height="4" fill="#FFD84A"/><path d="M14 12 h12 l3 32 h-18 z" fill="#E8453C"/><path d="M13.4 20 h13.2 l.6 6 h-14.4 z" fill="#fff"/><path d="M12.5 32 h15 l.6 6 h-16.2 z" fill="#fff"/><path d="M18 38 h4 v6 h-4 z" fill="#8B3A2F"/><rect x="8" y="44" width="24" height="3" rx="1.5" fill="#6B7280"/></svg><span>가족·연인에게<br>안심도착 문자보내기</span></b><span>휴대폰 카메라로 QR을 찍고 [💌 안심도착 문자보내기]를 누르면 지금 위치와 도착 예정 시각을 문자로 보낼 수 있습니다.</span></div>
       </div>
     </div>
   </div>
@@ -6488,7 +6512,7 @@ var TB_REQ=[
   {id:'acdn',  ic:'🌬️', ko:'에어컨 약하게 해 주세요',      en:'Could you turn down the A/C?',          ja:'エアコンを弱くしてください',             zh:'请把空调开小一点'},
   {id:'heat',  ic:'🔥', ko:'히터 틀어 주세요',             en:'Could you turn on the heater?',         ja:'暖房をつけてください',                   zh:'请打开暖风'},
   {id:'heatdn',ic:'🌡️', ko:'히터 줄여 주세요',             en:'Could you turn down the heater?',       ja:'暖房を弱くしてください',                 zh:'请把暖风调小一点'},
-  {id:'light', ic:'💡', ko:'실내등을 켜 주세요',           en:'Could you turn on the interior light?', ja:'室内灯をつけてください',                 zh:'请打开车内灯'},
+  {id:'light', ic:'💡', ko:'실내등 켜 주세요',           en:'Could you turn on the interior light?', ja:'室内灯をつけてください',                 zh:'请打开车内灯'},
   {id:'music', ic:'🔉', ko:'음악 소리 줄여 주세요',        en:'Could you lower the music?',            ja:'音楽の音量を下げてください',             zh:'请把音乐声音调小一点'},
   {id:'stop',  ic:'🛑', ko:'여기서 세워 주세요',           en:'Please stop here.',                     ja:'ここで止めてください',                   zh:'请在这里停车'},
   {id:'more',  ic:'➡️', ko:'조금만 더 가서 세워 주세요',   en:'A little further, please.',             ja:'もう少し先で止めてください',             zh:'请再往前开一点停车'},
@@ -6643,7 +6667,7 @@ function tbReqBuild(){
     });
   });
   grid.appendChild(el('button',{type:'button', cls:'close', onclick:function(e){ e.stopPropagation(); tbReqClose(); }},
-    [L==='ko' ? '✕ 닫기 · Close' : L==='en' ? '✕ Close' : '✕ '+ui.close+' · Close']));
+    [L==='ko' ? '닫기 · Close' : L==='en' ? 'Close' : ui.close+' · Close']));
 }
 /* 부탁하기 화면 맨 위: 기사 소개 (운행 정보에 실려 온 프로필, 없으면 연결 때 받은 이름) */
 function tbReqDrvPaint(L){
@@ -6657,7 +6681,8 @@ function tbReqDrvPaint(L){
   box.appendChild(av);
   box.appendChild(el('div',{cls:'tx'},[
     el('div',{cls:'k', text:'Best Taxi Driver'}),
-    el('div',{cls:'n', text:nm}),
+    el('div',{cls:'n', text:nm.split(' / ')[0]}),
+    nm.indexOf(' / ')>0 ? el('div',{cls:'e', text:nm.split(' / ').slice(1).join(' / ')}) : null,
     car ? el('div',{cls:'c', text:car}) : null,
     el('div',{cls:'d', text: sub[L]||sub.en})
   ]));
@@ -7196,7 +7221,7 @@ function shareBoot(){
   if (!m) return false;
   tok=m[1];
   box=el('div',{cls:'shv'},[
-    el('h2',{text:'🚕 택시 도착 예정 안내'}),
+    el('h2',{text:'🚕 안심도착 안내'}),
     el('div',{cls:'dst', id:'shDst', text:'정보를 받는 중입니다…'}),
     el('div',{cls:'row'},[
       el('div',{},[el('span',{text:'도착 예정'}), el('b',{id:'shEta', text:'–'})]),
@@ -7211,16 +7236,21 @@ function shareBoot(){
     }},['⛶ 크게 보기 (주소창 없이)']),
     el('div',{cls:'map', id:'shMap'}),
     el('div',{cls:'st', id:'shSt', text:'택시 태블릿이 2분마다 위치를 알려 줍니다. 이 화면을 열어 두면 저절로 바뀝니다.'}),
-    el('button',{cls:'shb', type:'button', id:'shShare', onclick:function(){
+    el('button',{cls:'shb', type:'button', id:'shSms', onclick:function(){
+      var u=location.href, body='택시 안심도착 안내입니다. 지금 위치와 도착 예정 시각을 여기서 볼 수 있어요: '+u,
+          ios=/iPhone|iPad|iPod/i.test(navigator.userAgent||'');
+      location.href='sms:'+(ios ? '&' : '?')+'body='+encodeURIComponent(body);
+    }},['💌 안심도착 문자보내기']),
+    el('button',{cls:'shb2', type:'button', id:'shShare', onclick:function(){
       var u=location.href;
       try {
-        if (navigator.share){ navigator.share({title:'택시 도착 예정', text:'택시 도착 예정 시각과 현재 위치입니다', url:u}).catch(function(){}); return; }
+        if (navigator.share){ navigator.share({title:'안심도착 안내', text:'택시 안심도착 안내입니다. 지금 위치와 도착 예정 시각을 볼 수 있어요', url:u}).catch(function(){}); return; }
       } catch(e){}
       try { navigator.clipboard.writeText(u).then(function(){ alert('주소를 복사했습니다. 카카오톡에 붙여 넣어 보내 주세요.'); }); } catch(e){ prompt('이 주소를 복사해 보내 주세요', u); }
-    }},['📤 가족에게 이 화면 보내기'])
+    }},['카카오톡·다른 앱으로 보내기'])
   ]);
   document.body.appendChild(box);
-  document.title='택시 도착 예정 안내';
+  document.title='안심도착 안내';
   function paint(){
     var ago;
     if (st.d) $('shDst').textContent='목적지: '+st.d;
@@ -7412,6 +7442,10 @@ function tbShow(kind, icon, koMain, koSub, fx, lang){
   $('tbMsg').className='tbpane '+kind;
   if ($('tbTour')){ clear($('tbTour')); $('tbTour').className='tb-tour'; }
   $('tbIcon').textContent=icon;
+  if (kind==='ride'){
+    ['hb a','hb b','pf a','pf b','pf c'].forEach(function(c){ $('tbIcon').appendChild(el('span',{cls:c, 'aria-hidden':'true'})); });
+    $('tbIcon').appendChild(el('span',{cls:'sd', 'aria-hidden':'true', text:'Best Seoul Taxi'}));   /* 차 옆면 글자 */
+  }
   clear($('tbKo'));
   $('tbKo').appendChild(document.createTextNode(koMain));
   if (koSub) $('tbKo').appendChild(el('span',{cls:'sub', text:koSub}));
