@@ -673,15 +673,15 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 @keyframes tbAckPop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
 .tbreq{position:absolute;inset:0;z-index:18;display:none;flex-direction:column;background:#101215;padding:3vh 3vw}
 .tbreq.on{display:flex}
-.tbreq-top{display:flex;align-items:center;flex-wrap:nowrap;gap:10px;margin-bottom:2vh}
+.tbreq-top{display:flex;align-items:center;flex-wrap:nowrap;gap:10px;margin-bottom:calc(2vh + 30px)}
 .tbreq-top b{flex:1;font-size:clamp(20px,3.2vh,32px)}
 .tbreq-lang{display:flex;gap:6px}
 .tbreq-lang button{min-height:48px;padding:0 12px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#C9CED4;font-size:15px;white-space:nowrap}
-.tbreq-lang{flex:none}
+.tbreq-lang{flex:none;margin-right:32px}
 .tbreq-lang button.on{background:#FFC61E;border-color:#FFC61E;color:#17191c;font-weight:700}
 .tbreq-x{min-height:48px;padding:0 18px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#fff;font-size:17px}
 .tbreq-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1vh 1.4vw;align-content:start;overflow-y:auto;padding-bottom:1vh}
-.tbreq-drv{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:14px;padding:1vh 16px;border:1px solid #3A3F46;border-radius:12px;background:#1E2126}
+.tbreq-drv{flex:1 1 auto;min-width:0;margin-right:32px;display:flex;align-items:center;gap:14px;padding:1vh 16px;border:1px solid #3A3F46;border-radius:12px;background:#1E2126}
 .tbreq-drv .dav{width:clamp(56px,7vh,76px)!important;height:clamp(56px,7vh,76px)!important;font-size:24px!important;border:2px solid #3A3F46!important;flex:none}
 .tbreq-drv .tx{min-width:0}
 .tbreq-drv .k{font-family:'Playball','Great Vibes','Snell Roundhand',cursive;font-size:clamp(17px,2.3vh,24px);line-height:1.2;background:linear-gradient(90deg,#FFD66B,#FF9A6B 45%,#F06BB5 75%,#B98CFF);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -726,9 +726,13 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tt-share{display:flex;align-items:center;gap:2.5vw;padding:1.2vh 2vw;border-radius:10px;background:#1E2126}
 .tt-share .qb{flex:none;width:clamp(110px,15vh,170px);height:clamp(110px,15vh,170px);padding:8px;background:#fff;border-radius:6px;box-sizing:border-box}
 .tt-share .qb img,.tt-share .qb canvas{width:100%!important;height:100%!important;display:block}
-.tt-share b{display:block;font-size:clamp(18px,2.8vh,30px)}
+.tt-share{--tf:clamp(18px,2.8vh,30px)}
+.tt-share b{display:block;font-size:var(--tf)}
+/* 설명 글을 제목 둘째 줄(안심도착 문자보내기) 시작 위치에 맞춤: 등대 폭 1.5em + 간격 .35em */
+.tt-share span.shdesc{padding-left:calc(var(--tf) * 1.85)}
 .tt-share b.shttl{display:flex;align-items:center;gap:.35em}
-.tt-share b.shttl span{display:block;margin:0;color:#fff;font-size:inherit;line-height:1.3;text-align:center}
+.tt-share b.shttl span{display:block;margin:0;color:#fff;font-size:inherit;line-height:1.3;text-align:left}
+.tt-share b.shttl .l1{font-style:normal;padding-left:1em}
 .tt-share .lh{flex:none;width:1.5em;height:1.8em}
 .tt-share .lh .bl{animation:tbBl 2.4s ease-in-out infinite}
 .tt-share .lh .br{animation:tbBl 2.4s ease-in-out -1.2s infinite}
@@ -826,7 +830,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
   .tt-map{min-height:10vh}
   .tt-share{padding:1vh 2.5vw}
   .tt-share .qb{width:clamp(96px,10vh,140px);height:clamp(96px,10vh,140px)}
-  .tt-share b{font-size:clamp(17px,2.4vh,26px)}
+  .tt-share{--tf:clamp(17px,2.4vh,26px)}
   .tt-share span{font-size:clamp(13px,1.8vh,18px)}
   /* 큰 글씨는 시간·요금을 다시 위아래로 */
   .tabscr.big .tbpane.trip .tt-row{grid-template-columns:1fr}
@@ -1631,7 +1635,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
       <div class="tt-map" id="ttMap" style="display:none"></div>
       <div class="tt-share" id="ttShare" style="display:none">
         <div class="qb" id="ttShareQr"></div>
-        <div><b class="shttl"><svg class="lh" viewBox="0 0 40 48" aria-hidden="true"><path class="bl" d="M20 9 L2 2 L2 16 Z" fill="#FFE27A"/><path class="br" d="M20 9 L38 2 L38 16 Z" fill="#FFE27A"/><path d="M15 6 h10 l1 6 h-12 z" fill="#3A3F46"/><rect x="15" y="8" width="10" height="4" fill="#FFD84A"/><path d="M14 12 h12 l3 32 h-18 z" fill="#E8453C"/><path d="M13.4 20 h13.2 l.6 6 h-14.4 z" fill="#fff"/><path d="M12.5 32 h15 l.6 6 h-16.2 z" fill="#fff"/><path d="M18 38 h4 v6 h-4 z" fill="#8B3A2F"/><rect x="8" y="44" width="24" height="3" rx="1.5" fill="#6B7280"/></svg><span>가족·연인에게<br>안심도착 문자보내기</span></b><span>휴대폰 카메라로 QR을 찍고 [💌 안심도착 문자보내기]를 누르면 지금 위치와 도착 예정 시각을 문자로 보낼 수 있습니다.</span></div>
+        <div><b class="shttl"><svg class="lh" viewBox="0 0 40 48" aria-hidden="true"><path class="bl" d="M20 9 L2 2 L2 16 Z" fill="#FFE27A"/><path class="br" d="M20 9 L38 2 L38 16 Z" fill="#FFE27A"/><path d="M15 6 h10 l1 6 h-12 z" fill="#3A3F46"/><rect x="15" y="8" width="10" height="4" fill="#FFD84A"/><path d="M14 12 h12 l3 32 h-18 z" fill="#E8453C"/><path d="M13.4 20 h13.2 l.6 6 h-14.4 z" fill="#fff"/><path d="M12.5 32 h15 l.6 6 h-16.2 z" fill="#fff"/><path d="M18 38 h4 v6 h-4 z" fill="#8B3A2F"/><rect x="8" y="44" width="24" height="3" rx="1.5" fill="#6B7280"/></svg><span><i class="l1">가족·연인에게</i><br>안심도착 문자보내기</span></b><span class="shdesc">QR 찍고 안심도착 문자보내기<br>(현재 위치, 도착 예정 시각)</span></div>
       </div>
     </div>
   </div>
