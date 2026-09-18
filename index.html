@@ -656,7 +656,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tbreqbtn.ack{background:#2ecc71;color:#0d2416;animation:tbAckPop .7s ease 2}
 @keyframes tbHi{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(18deg)}82%{transform:rotate(-12deg)}88%{transform:rotate(14deg)}94%{transform:rotate(-6deg)}}
 @keyframes tbAckPop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
-.tbreq{position:absolute;inset:0;z-index:18;display:none;flex-direction:column;background:rgba(16,18,21,.97);padding:3vh 3vw}
+.tbreq{position:absolute;inset:0;z-index:18;display:none;flex-direction:column;background:#101215;padding:3vh 3vw}
 .tbreq.on{display:flex}
 .tbreq-top{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:2vh}
 .tbreq-top b{flex:1;font-size:clamp(20px,3.2vh,32px)}
@@ -665,6 +665,21 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tbreq-lang button.on{background:#FFC61E;border-color:#FFC61E;color:#17191c;font-weight:700}
 .tbreq-x{min-height:48px;padding:0 18px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#fff;font-size:17px}
 .tbreq-grid{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.4vh 1.4vw;align-content:start;overflow-y:auto;padding-bottom:3vh}
+.tbreq-drv{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:14px;padding:1vh 16px;border:1px solid #3A3F46;border-radius:12px;background:#1E2126}
+.tbreq-drv .dav{width:clamp(56px,7vh,76px)!important;height:clamp(56px,7vh,76px)!important;font-size:24px!important;border:2px solid #3A3F46!important;flex:none}
+.tbreq-drv .tx{min-width:0}
+.tbreq-drv .k{font-family:'Playball','Great Vibes','Snell Roundhand',cursive;font-size:clamp(17px,2.3vh,24px);line-height:1.2;background:linear-gradient(90deg,#FFD66B,#FF9A6B 45%,#F06BB5 75%,#B98CFF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tbreq-drv .n{font-size:clamp(18px,2.5vh,26px);font-weight:800;line-height:1.25}
+.tbreq-drv .c{font-size:clamp(12px,1.6vh,16px);color:#9AA0A8}
+.tbreq-drv .d{font-size:clamp(13px,1.7vh,17px);color:#A8CBFF;margin-top:2px}
+.tbreq-top{align-items:center}
+.tbreq-grid .rqsec{grid-column:1/-1;margin:1vh 2px 0;padding:0;border:0;background:none;font-size:clamp(14px,1.9vh,19px);font-weight:800;color:#FFC61E;letter-spacing:.3px}
+.tbreq-grid .rqsec:first-child{margin-top:0}
+.tbreq-grid button{min-height:clamp(52px,6.6vh,76px)!important;padding:8px 12px!important;gap:10px!important}
+.tbreq-grid .ic{font-size:clamp(22px,3.2vh,32px)!important}
+.tbreq-grid .tx b{font-size:clamp(15px,2.1vh,21px)!important;white-space:pre-line}
+.tbreq-grid .tx i{font-size:clamp(12px,1.6vh,15px)!important}
+.tbreq-grid button.close{grid-column:1/-1;justify-self:center;width:min(440px,100%);margin-top:1vh}
 .tbreq-grid button.close{justify-content:center;background:#17191c;border:2px solid #FFC61E;color:#FFC61E;font-size:clamp(18px,2.6vh,26px);font-weight:800;letter-spacing:.5px}
 .tbreq-grid button.close:active{background:#2A2410}
 .tbreq-grid button{display:flex;align-items:center;gap:12px;min-height:clamp(70px,10vh,110px);padding:10px 14px;border:1px solid #3A3F46;border-radius:10px;background:#1E2126;color:#fff;text-align:left}
@@ -760,7 +775,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tbreqbtn.pos-idle{top:78px}
 /* 공항 예상 인원: 제목을 한 줄 아래로, 버튼은 맨 아래에서 두 줄 위 가운데 */
 #tabScr .tbpane.air{padding-top:max(5vh,114px);padding-bottom:max(5vh,168px)}
-.tbreqbtn.pos-air{top:auto;right:auto;left:50%;bottom:72px;transform:translateX(-50%)}
+.tbreqbtn.pos-air{top:auto;right:auto;left:50%;bottom:108px;transform:translateX(-50%)}
 .tbreqbtn.pos-air.ack{animation:none}
 /* 요금·시간 화면: 기사 프로필을 위에서 두 줄 아래에, 버튼은 프로필 상자 안 오른쪽 */
 #tabScr .tbpane.trip{padding-top:64px}
@@ -1620,7 +1635,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
   </div>
   <button class="tbreqbtn" type="button" id="tbReqBtn" style="display:none"></button>
   <div class="tbreq" id="tbReq">
-    <div class="tbreq-top"><b id="tbReqTitle"></b><div class="tbreq-lang" id="tbReqLang"></div></div>
+    <div class="tbreq-top"><div class="tbreq-drv" id="tbReqDrv"></div><div class="tbreq-lang" id="tbReqLang"></div></div>
     <div class="tbreq-grid" id="tbReqGrid"></div>
     <div class="tbreq-done" id="tbReqDone"></div>
   </div>
@@ -6464,7 +6479,7 @@ function tbReqPlace(id){
   if (inCard){ if (b.parentNode!==card) card.appendChild(b); }
   else if (b.parentNode!==$('tabScr')) $('tabScr').insertBefore(b, $('tbReq'));
   b.className=b.className.replace(/\s*\b(pos-\w+|incard)\b/g,'')+
-    (inCard ? ' incard' : id==='tbIdle' ? ' pos-idle' : id==='tbGal' ? ' pos-gal' : id==='tbAir' ? ' pos-air' : '');
+    (inCard ? ' incard' : id==='tbIdle' ? ' pos-idle' : (id==='tbGal' || id==='tbMsg') ? ' pos-gal' : id==='tbAir' ? ' pos-air' : '');
 }
 
 /* 손님 요청 문구 */
@@ -6472,16 +6487,23 @@ var TB_REQ=[
   {id:'acup',  ic:'❄️', ko:'에어컨 세게 해 주세요',        en:'Could you turn up the A/C?',            ja:'エアコンを強くしてください',             zh:'请把空调开大一点'},
   {id:'acdn',  ic:'🌬️', ko:'에어컨 약하게 해 주세요',      en:'Could you turn down the A/C?',          ja:'エアコンを弱くしてください',             zh:'请把空调开小一点'},
   {id:'heat',  ic:'🔥', ko:'히터 틀어 주세요',             en:'Could you turn on the heater?',         ja:'暖房をつけてください',                   zh:'请打开暖风'},
+  {id:'heatdn',ic:'🌡️', ko:'히터 줄여 주세요',             en:'Could you turn down the heater?',       ja:'暖房を弱くしてください',                 zh:'请把暖风调小一点'},
+  {id:'light', ic:'💡', ko:'실내등을 켜 주세요',           en:'Could you turn on the interior light?', ja:'室内灯をつけてください',                 zh:'请打开车内灯'},
   {id:'music', ic:'🔉', ko:'음악 소리 줄여 주세요',        en:'Could you lower the music?',            ja:'音楽の音量を下げてください',             zh:'请把音乐声音调小一点'},
-  {id:'quiet', ic:'🤫', ko:'조용히 가고 싶어요',           en:"I'd like a quiet ride, please.",        ja:'静かに乗っていたいです',                 zh:'我想安静地乘车'},
   {id:'stop',  ic:'🛑', ko:'여기서 세워 주세요',           en:'Please stop here.',                     ja:'ここで止めてください',                   zh:'请在这里停车'},
   {id:'more',  ic:'➡️', ko:'조금만 더 가서 세워 주세요',   en:'A little further, please.',             ja:'もう少し先で止めてください',             zh:'请再往前开一点停车'},
   {id:'wc',    ic:'🚻', ko:'화장실에 들렀다 가고 싶어요',  en:'I need a restroom stop.',               ja:'トイレに寄りたいです',                   zh:'我想去一下洗手间'},
   {id:'trunk', ic:'🧳', ko:'트렁크에 짐이 있어요',         en:'I have luggage in the trunk.',          ja:'トランクに荷物があります',               zh:'后备箱里有行李'},
-  {id:'card',  ic:'💳', ko:'해외 카드로 결제되나요?',      en:'Can I pay with a foreign card?',        ja:'海外のカードで支払えますか？',           zh:'可以用境外银行卡支付吗？'},
+  {id:'card',  ic:'📱', ko:'QR 결제되나요?',               en:'Can I pay by QR code?',                 ja:'QRコードで支払えますか？',               zh:'可以扫码支付吗？'},
   {id:'rcpt',  ic:'🧾', ko:'영수증 주세요',                en:'Receipt, please.',                      ja:'領収書をください',                       zh:'请给我收据'},
-  {id:'sick',  ic:'🤢', ko:'멀미가 나요, 천천히 가 주세요', en:'I feel carsick. Please drive slowly.',  ja:'車酔いしそうです。ゆっくり走ってください', zh:'我有点晕车，请开慢一点'},
+  {id:'sick',  ic:'🤢', ko:'멀미가 나요\n천천히 가 주세요', en:'I feel carsick.\nPlease drive slowly.', ja:'車酔いしそうです\nゆっくり走ってください', zh:'我有点晕车\n请开慢一点'},
   {id:'chg',   ic:'🔌', ko:'휴대폰 충전할 수 있나요?',     en:'Can I charge my phone?',                ja:'スマホを充電できますか？',               zh:'可以给手机充电吗？'}
+];
+/* 부탁 문구 분류 (보여 주는 순서) */
+var TB_REQ_GROUPS=[
+  {ic:'🌡️', ko:'실내 환경', en:'Comfort',            ja:'車内の環境',   zh:'车内环境',   ids:['acup','acdn','heat','heatdn','light','music']},
+  {ic:'🚏', ko:'정차·이동', en:'Stops & driving',    ja:'停車・走行',   zh:'停车与行驶', ids:['stop','more','wc','sick']},
+  {ic:'🧳', ko:'짐·결제·기타', en:'Luggage, payment & more', ja:'荷物・支払い・その他', zh:'行李、支付及其他', ids:['trunk','card','rcpt','chg']}
 ];
 var TB_REQ_UI={
   ko:{title:'기사님, 부탁해요', sent:'기사님께 전달했습니다', ack:'기사님이 확인했습니다', close:'닫기'},
@@ -6601,22 +6623,44 @@ function tbReqBind(){
   tbReqBtnPaint();
 }
 function tbReqBuild(){
-  var L=tb.reqLang||tbLang(), ui=TB_REQ_UI[L]||TB_REQ_UI.en, grid=$('tbReqGrid'), langs=$('tbReqLang');
-  $('tbReqTitle').textContent = ui.title + (L==='ko' ? '' : ' · '+TB_REQ_UI.ko.title);
+  var L=tb.reqLang||tbLang(), ui=TB_REQ_UI[L]||TB_REQ_UI.en, grid=$('tbReqGrid'), langs=$('tbReqLang'), byId={};
+  tbReqDrvPaint(L);
   clear(langs);
   [['ko','한국어'],['en','English'],['ja','日本語'],['zh','中文']].forEach(function(a){
     langs.appendChild(el('button',{type:'button', cls: a[0]===L ? 'on' : '', onclick:function(e){ e.stopPropagation(); tb.reqLang=a[0]; tbReqBuild(); tbReqKeep(); }},[a[1]]));
   });
   clear(grid);
-  TB_REQ.forEach(function(r){
-    grid.appendChild(el('button',{type:'button', onclick:function(e){ e.stopPropagation(); tbReqSend(r, L); }},[
-      el('span',{cls:'ic', text:r.ic}),
-      el('span',{cls:'tx'},[el('b',{text:r[L]||r.en}), L==='ko' ? null : el('i',{text:r.ko})])
-    ]));
+  TB_REQ.forEach(function(r){ byId[r.id]=r; });
+  TB_REQ_GROUPS.forEach(function(g){
+    grid.appendChild(el('div',{cls:'rqsec'},[g.ic+' '+(g[L]||g.en)]));
+    g.ids.forEach(function(id){
+      var r=byId[id];
+      if (!r) return;
+      grid.appendChild(el('button',{type:'button', onclick:function(e){ e.stopPropagation(); tbReqSend(r, L); }},[
+        el('span',{cls:'ic', text:r.ic}),
+        el('span',{cls:'tx'},[el('b',{text:r[L]||r.en})])
+      ]));
+    });
   });
-  /* 닫기: 맨 마지막 칸 (세로 화면에서는 '멀미가 나요' 바로 아래) */
   grid.appendChild(el('button',{type:'button', cls:'close', onclick:function(e){ e.stopPropagation(); tbReqClose(); }},
-    [L==='ko' ? '✕ 닫기 · Close' : '✕ '+ui.close+' · 닫기']));
+    [L==='ko' ? '✕ 닫기 · Close' : L==='en' ? '✕ Close' : '✕ '+ui.close+' · Close']));
+}
+/* 부탁하기 화면 맨 위: 기사 소개 (운행 정보에 실려 온 프로필, 없으면 연결 때 받은 이름) */
+function tbReqDrvPaint(L){
+  var box=$('tbReqDrv'), av=el('span',{cls:'dav'}), src=$('ttDrvAv') && $('ttDrvAv').style.backgroundImage,
+      nm=($('ttDrvN') && $('ttDrvN').textContent) || tb.name || '', car=($('ttDrvC') && $('ttDrvC').textContent) || '',
+      sub={ko:'편하게 부탁해 주세요', en:'Feel free to ask me anything', ja:'お気軽にお申し付けください', zh:'有需要请随时告诉我'};
+  if (!box) return;
+  clear(box);
+  try { paintAvatar(av, {nameKo:tb.name}, 'ko'); } catch(e){}
+  if (src){ av.style.backgroundImage=src; av.textContent=''; }
+  box.appendChild(av);
+  box.appendChild(el('div',{cls:'tx'},[
+    el('div',{cls:'k', text:'Best Taxi Driver'}),
+    el('div',{cls:'n', text:nm}),
+    car ? el('div',{cls:'c', text:car}) : null,
+    el('div',{cls:'d', text: sub[L]||sub.en})
+  ]));
 }
 /* 오른쪽 위 부탁하기 버튼 (평소 모습) */
 function tbReqBtnPaint(){
@@ -6637,7 +6681,7 @@ function tbReqSend(r, L){
   if (now-(tb.reqAt||0) < 2500) return;                                           /* 두 번 눌림 막기 */
   if (tb.reqLast===r.id && now-(tb.reqAt||0) < 15000){ tbReqSentView(r, L, ui); return; }   /* 같은 요청 되풀이 막기 */
   tb.reqAt=now; tb.reqLast=r.id;
-  body={topic:tbRqTopic(tb.code), title:'🔔 손님 요청', message:r.ko, priority:5, tags:['bell'],
+  body={topic:tbRqTopic(tb.code), title:'🔔 손님 요청', message:r.ko.replace(/\n/g,', '), priority:5, tags:['bell'],
         actions:[{action:'http', label:'알겠습니다', url:TB_RELAY+tbTopic(tb.code), method:'POST',
                   body:JSON.stringify({v:1, type:'ack', ts:now}), clear:true}]};
   try { fetch(TB_RELAY, {method:'POST', body:JSON.stringify(body), mode:'cors'}).catch(function(){}); } catch(e){}
@@ -6647,8 +6691,8 @@ function tbReqSentView(r, L, ui){
   var b=$('tbReqDone');
   clear(b);
   b.appendChild(el('div',{cls:'big', text:'✅ '+ui.sent}));
-  b.appendChild(el('div',{cls:'what', text:r.ic+' '+(r[L]||r.en)}));
-  if (L!=='ko') b.appendChild(el('div',{cls:'sub', text:TB_REQ_UI.ko.sent+' · '+r.ko}));
+  b.appendChild(el('div',{cls:'what', text:r.ic+' '+String(r[L]||r.en).replace(/\n/g,' ')}));
+  if (L!=='ko') b.appendChild(el('div',{cls:'sub', text:TB_REQ_UI.ko.sent+' · '+r.ko.replace(/\n/g,' ')}));
   $('tbReq').className='tbreq on sent';
   if (tb.reqTimer) clearTimeout(tb.reqTimer);
   tb.reqTimer=setTimeout(tbReqClose, 5000);
