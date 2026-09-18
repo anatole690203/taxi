@@ -604,7 +604,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tbpane.air{justify-content:flex-start;gap:0;padding:7vh 4vw 4vh;align-items:stretch;text-align:left}
 .ta-h{font-size:clamp(24px,4vh,44px);font-weight:700;line-height:1.25;padding:0;margin:0}
 .ta-h2{font-size:clamp(15px,2.2vh,24px);color:#9AA0A8;margin:1.8vh 0 0;padding:0}
-#taRows{margin-top:9vh}
+#taRows{margin-top:calc(9vh - 18px)}
 .ta-two{margin-top:0}
 .ta-two{display:grid;grid-template-columns:1fr 1fr;gap:3vw;margin-top:1vh}
 .ta-two h5{margin:0 0 1vh;font-size:clamp(16px,2.4vh,26px);font-weight:700}
@@ -755,11 +755,11 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 #tabScr .tbpane.gal{padding-top:28px;padding-bottom:max(5.5vh,56px)}
 #tabScr .tbpane.gal .tt-galdest{word-break:keep-all}
 #tabScr .tbpane.gal .tt-galdest::before{content:'';float:right;width:min(250px,36vw);height:64px}
-.tbreqbtn.pos-gal{top:16px}
+.tbreqbtn.pos-gal{top:48px}
 /* 대기 화면: 버튼을 두 줄 아래로 */
 .tbreqbtn.pos-idle{top:78px}
 /* 공항 예상 인원: 제목을 한 줄 아래로, 버튼은 맨 아래에서 두 줄 위 가운데 */
-#tabScr .tbpane.air{padding-top:max(8vh,132px);padding-bottom:max(5vh,150px)}
+#tabScr .tbpane.air{padding-top:max(5vh,114px);padding-bottom:max(5vh,168px)}
 .tbreqbtn.pos-air{top:auto;right:auto;left:50%;bottom:72px;transform:translateX(-50%)}
 .tbreqbtn.pos-air.ack{animation:none}
 /* 요금·시간 화면: 기사 프로필을 위에서 두 줄 아래에, 버튼은 프로필 상자 안 오른쪽 */
@@ -6484,7 +6484,7 @@ var TB_REQ=[
   {id:'chg',   ic:'🔌', ko:'휴대폰 충전할 수 있나요?',     en:'Can I charge my phone?',                ja:'スマホを充電できますか？',               zh:'可以给手机充电吗？'}
 ];
 var TB_REQ_UI={
-  ko:{title:'기사님께 부탁하기', sent:'기사님께 전달했습니다', ack:'기사님이 확인했습니다', close:'닫기'},
+  ko:{title:'기사님, 부탁해요', sent:'기사님께 전달했습니다', ack:'기사님이 확인했습니다', close:'닫기'},
   en:{title:'Ask the driver',    sent:'Sent to the driver',     ack:'The driver got it!',     close:'Close'},
   ja:{title:'運転手へのお願い',   sent:'運転手に伝えました',     ack:'運転手が確認しました',   close:'閉じる'},
   zh:{title:'向司机提出请求',     sent:'已告知司机',             ack:'司机已确认',             close:'关闭'}
