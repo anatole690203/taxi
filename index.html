@@ -584,7 +584,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tb-tag-en{margin-top:-1.4vh;font-size:clamp(15px,2.4vh,24px);color:#7F9CC4;letter-spacing:.2px}
 .tb-phone{margin-top:2vh;min-height:48px;padding:0 22px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#C9CED4;font-size:16px}
 /* 운행 중 화면: 목적지·시간·요금 + 사진 슬라이드 + 손님이 찍는 QR */
-.tbpane.trip{justify-content:center;gap:2.4vh;padding:5vh 6vw;text-align:left;align-items:stretch}
+.tbpane.trip{justify-content:flex-start;gap:1.2vh;padding:4.5vh 6vw 5vh;text-align:left;align-items:stretch}
 .tbpane.trip .tt-dest{font-size:clamp(34px,6vh,68px)}
 .tbpane.trip .tt-v{font-size:clamp(34px,6vh,68px)}
 .tbpane.trip .tt-row{grid-template-columns:1fr;gap:3vh;margin-top:3vh}
@@ -600,9 +600,18 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tt-drv .n{font-size:clamp(20px,3vh,34px);font-weight:700;line-height:1.3}
 .tt-drv .c{font-size:clamp(14px,2vh,22px);color:#9AA0A8}
 .tt-drv .d{font-size:clamp(14px,2vh,22px);color:#A8CBFF}
-.tbpane.air{justify-content:flex-start;gap:1.4vh;padding:3vh 4vw 4vh;align-items:stretch;text-align:left}
+.tbpane.air{justify-content:flex-start;gap:0;padding:7vh 4vw 4vh;align-items:stretch;text-align:left}
 .ta-h{font-size:clamp(24px,4vh,44px);font-weight:700;line-height:1.25}
-.ta-h2{font-size:clamp(15px,2.2vh,24px);color:#9AA0A8}
+.ta-h2{font-size:clamp(15px,2.2vh,24px);color:#9AA0A8;margin-top:1.8vh}
+#taRows{margin-top:5vh}
+.ta-two{display:grid;grid-template-columns:1fr 1fr;gap:3vw;margin-top:1vh}
+.ta-two h5{margin:0 0 1vh;font-size:clamp(16px,2.4vh,26px);font-weight:700}
+.ta-two h5 span{display:block;font-size:clamp(12px,1.7vh,18px);color:#9AA0A8;font-weight:400}
+.ta-two .ta-row{grid-template-columns:52px 1fr;font-size:clamp(13px,1.9vh,20px);padding:.7vh 0}
+.ta-two .ta-bar{height:clamp(24px,3.2vh,36px)}
+.ta-two .ta-bar b{line-height:clamp(24px,3.2vh,36px);font-size:clamp(13px,1.9vh,20px);padding:0 7px}
+.ta-two .ta-bar.in i{background:#6C5CE7}
+.ta-two .ta-bar.out i{background:#2C7EF8}
 .ta-row{display:grid;grid-template-columns:70px 1fr;gap:2vw;align-items:center;padding:.9vh 0;border-top:1px solid #2A2E34;font-size:clamp(16px,2.4vh,26px)}
 .ta-row.now{background:rgba(255,200,30,.08)}
 .ta-row .h{font-weight:700}
@@ -612,7 +621,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .ta-bar.in i{background:#6C5CE7}
 .ta-bar.out i{background:#2C7EF8}
 .ta-bar b{position:relative;display:block;padding:0 10px;line-height:clamp(28px,4vh,44px);font-size:clamp(16px,2.4vh,26px)}
-.ta-note{font-size:clamp(13px,1.9vh,20px);color:#8B939C;margin-top:.6vh}
+.ta-note{font-size:clamp(13px,1.9vh,20px);color:#8B939C;margin-top:2vh}
 .tt-qrtxt span{white-space:pre-line}
 .tt-galdest b{color:#fff}
 /* 기사 폰: 태블릿 음성 켜고 끄기 */
@@ -629,7 +638,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tt-v{font-size:clamp(26px,4.4vh,48px);font-weight:700;line-height:1.15}
 .tt-v.fare{color:#FFC61E}
 .tt-v2{font-size:clamp(14px,2vh,22px);color:#C9CED4}
-.tt-note{font-size:clamp(14px,2vh,20px);color:#A8CBFF}
+.tt-note{font-size:clamp(14px,2vh,20px);color:#A8CBFF;margin-top:2.4vh}
 .tt-slide{position:relative;flex:1 1 auto;min-height:18vh;border-radius:10px;overflow:hidden;background:#1b1e23}
 .tt-slide .s{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s ease}
 .tt-slide .s.on{opacity:1}
@@ -6078,7 +6087,7 @@ function bindTabletPhone(){
 /* ── 태블릿 쪽 ── */
 var tb={on:false, code:'', name:'', es:null, wake:null, watch:null, pos:null,
         ride:null, alightAt:0, backTimer:null, clockTimer:null, seen:{}, speakQ:[],
-        trip:null, tripTimer:null, galTimer:null, airTimer:null, rideTimer:null, slideTimer:null, slideIdx:0, voice:true, stage:0};
+        trip:null, tripTimer:null, galTimer:null, airTimer:null, rideTimer:null, slideTimer:null, slideIdx:0, voice:true, stage:0, pax:null};
 function tbMode(){
   var raw=sGet(TB_MODE_KEY), o=null;
   if (raw){ try { o=JSON.parse(raw); } catch(e){ o=null; } }
@@ -6253,11 +6262,42 @@ function tbTripTimers(tripMs, airMs, galMs){
   if (airMs) tb.airTimer=setTimeout(function(){ tb.airTimer=null; tbShowAirFirst(); }, airMs);
   tb.galTimer=setTimeout(function(){ tb.galTimer=null; tbShowGal(); }, galMs);
 }
-/* 공항 목적지일 때: 사진을 먼저 보여 준 뒤 예상 인원표로 */
+/* 공항 목적지일 때: 사진 → 입국장·출국장 두 표 → 10초 뒤 목적지에 맞는 표 */
+var TB_AIR_BOTH=10000;
 function tbShowAirFirst(){
   if (!tb.trip || !tb.trip.ap) return;
   tbShowGal();
-  tb.airTimer=setTimeout(function(){ tb.airTimer=null; tbShowAir(); }, TB_AIR_PHOTO);
+  tb.airTimer=setTimeout(function(){
+    tb.airTimer=null;
+    tbShowAir('both');
+    tb.airTimer=setTimeout(function(){ tb.airTimer=null; tbShowAir(); }, TB_AIR_BOTH);
+  }, TB_AIR_PHOTO);
+}
+/* 받아 둔 예상 인원에서 지금 시각부터 7시간을 골라 준다 */
+function tbAirList(rows, key){
+  var now=new Date().getHours(), list=[], max=1, i;
+  function hh(h){ var m=String(h).match(/^(\d{1,2})/); return m ? parseInt(m[1],10) : -1; }
+  rows=rows.slice().sort(function(a,b){ return hh(a.hour)-hh(b.hour); });
+  for (i=0;i<rows.length;i++){
+    if (hh(rows[i].hour)>=now && list.length<7) list.push(rows[i]);
+    max=Math.max(max, rows[i][key]||0);
+  }
+  return {list:list, max:max, now:now, hh:hh};
+}
+function tbAirRows(box, rows, key, kind){
+  var d=tbAirList(rows, key), i, r;
+  clear(box);
+  if (!d.list.length){ box.appendChild(el('div',{cls:'ta-note', text:'지금은 표시할 시간대 자료가 없습니다'})); return; }
+  for (i=0;i<d.list.length;i++){
+    r=d.list[i];
+    box.appendChild(el('div',{cls:'ta-row'+(d.hh(r.hour)===d.now?' now':'')},[
+      el('span',{cls:'h num', text:d.hh(r.hour)+'시'}),
+      el('span',{cls:'ta-bar '+kind},[
+        el('i',{style:'width:'+Math.round((r[key]||0)/d.max*100)+'%'}),
+        el('b',{text:(r[key]||0).toLocaleString('ko-KR')+'명(pax)'})
+      ])
+    ]));
+  }
 }
 var TB_AIR_TEXT={
   in:{ko:'입국장 예상 인원', en:'Estimated arrivals'},
@@ -6265,36 +6305,39 @@ var TB_AIR_TEXT={
   T1:{ko:'인천공항 제1여객터미널', en:'Incheon Airport Terminal 1'},
   T2:{ko:'인천공항 제2여객터미널', en:'Incheon Airport Terminal 2'}
 };
-function tbShowAir(){
-  var ap=tb.trip && tb.trip.ap, srv=airServer(), tm, kd;
+function tbShowAir(mode){
+  var ap=tb.trip && tb.trip.ap, srv=airServer(), tm, kd, both=(mode==='both');
   if (!ap || !srv) return;
   if (tb.stage>2) return;
   tb.stage=2;
   tm=TB_AIR_TEXT[ap.t]||TB_AIR_TEXT.T1; kd=TB_AIR_TEXT[ap.k]||TB_AIR_TEXT.in;
-  $('taH').textContent=tm.ko+' '+kd.ko;
-  $('taH2').textContent=tm.en+' · '+kd.en;
+  $('taH').textContent = both ? (tm.ko+' 예상 인원') : (tm.ko+' '+kd.ko);
+  $('taH2').textContent = both ? (tm.en+' · Estimated passengers') : (tm.en+' · '+kd.en);
   $('taNote').textContent='인천공항공사 예상치입니다 · Estimated by Incheon Airport';
   clear($('taRows'));
   tbPane('tbAir');
   tbStat();
-  fetch(srv+'/pax?day=0', {cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){
-    var rows=(j&&j.rows)||[], now=new Date().getHours(), k1= ap.k==='out' ? 'd1' : 't1', k2= ap.k==='out' ? 'd2' : 't2',
-        key = ap.t==='T2' ? k2 : k1, list=[], max=1, i, r, box=$('taRows');
-    function hh(h){ var m2=String(h).match(/^(\d{1,2})/); return m2 ? parseInt(m2[1],10) : -1; }
-    rows.sort(function(a,b){ return hh(a.hour)-hh(b.hour); });
-    for (i=0;i<rows.length;i++){ if (hh(rows[i].hour)>=now && list.length<7) list.push(rows[i]); max=Math.max(max, rows[i][key]||0); }
+  function draw(rows){
+    var box=$('taRows'), wrap, cIn, cOut,
+        kIn = ap.t==='T2' ? 't2' : 't1', kOut = ap.t==='T2' ? 'd2' : 'd1';
     clear(box);
-    if (!list.length){ box.appendChild(el('div',{cls:'ta-note', text:'지금은 표시할 시간대 자료가 없습니다'})); return; }
-    for (i=0;i<list.length;i++){
-      r=list[i];
-      box.appendChild(el('div',{cls:'ta-row'+(hh(r.hour)===now?' now':'')},[
-        el('span',{cls:'h num', text:hh(r.hour)+'시'}),
-        el('span',{cls:'ta-bar '+(ap.k==='out'?'out':'in')},[
-          el('i',{style:'width:'+Math.round((r[key]||0)/max*100)+'%'}),
-          el('b',{text:(r[key]||0).toLocaleString('ko-KR')+'명'})
-        ])
-      ]));
-    }
+    if (!both){ tbAirRows(box, rows, ap.k==='out' ? kOut : kIn, ap.k==='out' ? 'out' : 'in'); return; }
+    cIn=el('div',{cls:'ta-col'},[el('h5',{},[document.createTextNode('입국장'), el('span',{text:'Arrivals'})])]);
+    cOut=el('div',{cls:'ta-col'},[el('h5',{},[document.createTextNode('출국장'), el('span',{text:'Departures'})])]);
+    wrap=el('div',{cls:'ta-two'},[cIn, cOut]);
+    box.appendChild(wrap);
+    (function(){
+      var bIn=el('div',{}), bOut=el('div',{});
+      cIn.appendChild(bIn); cOut.appendChild(bOut);
+      tbAirRows(bIn, rows, kIn, 'in');
+      tbAirRows(bOut, rows, kOut, 'out');
+    })();
+  }
+  if (tb.pax && Date.now()-tb.pax.at < 600000){ draw(tb.pax.rows); return; }
+  fetch(srv+'/pax?day=0', {cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){
+    var rows=(j&&j.rows)||[];
+    tb.pax={rows:rows, at:Date.now()};
+    draw(rows);
   }).catch(function(){
     $('taRows').appendChild(el('div',{cls:'ta-note', text:'예상 인원을 받지 못했습니다'}));
   });
@@ -6350,7 +6393,10 @@ function tbDrvCard(tr, L){
   if (!pr && tb.name){ try { pr=emptyProfile(); pr.nameKo=tb.name; } catch(e){ pr=null; } }
   if (!pr){ box.style.display='none'; return; }
   paintAvatar($('ttDrvAv'), pr, L);
-  $('ttDrvN').textContent=pfName(pr, 'ko')||pfName(pr, L)||'';
+  (function(){
+    var ko=pfName(pr, 'ko')||'', en=pr.nameEn||'';
+    $('ttDrvN').textContent = (ko && en && ko!==en) ? (ko+' / '+en) : (ko||en);
+  })();
   try { $('ttDrvC').textContent=carText(pr, 'ko', true)||''; } catch(e){ $('ttDrvC').textContent=''; }
   $('ttDrvD').textContent=DRV_TAGLINE.ko||'';
   box.style.display='flex';
