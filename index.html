@@ -601,9 +601,9 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tt-drv .c{font-size:clamp(14px,2vh,22px);color:#9AA0A8}
 .tt-drv .d{font-size:clamp(14px,2vh,22px);color:#A8CBFF}
 .tbpane.air{justify-content:flex-start;gap:0;padding:7vh 4vw 4vh;align-items:stretch;text-align:left}
-.ta-h{font-size:clamp(24px,4vh,44px);font-weight:700;line-height:1.25}
-.ta-h2{font-size:clamp(15px,2.2vh,24px);color:#9AA0A8;margin-top:1.8vh}
-#taRows{margin-top:5vh}
+.ta-h{font-size:clamp(24px,4vh,44px);font-weight:700;line-height:1.25;padding:0;margin:0}
+.ta-h2{font-size:clamp(15px,2.2vh,24px);color:#9AA0A8;margin:1.8vh 0 0;padding:0}
+#taRows{margin-top:9vh}
 .ta-two{display:grid;grid-template-columns:1fr 1fr;gap:3vw;margin-top:1vh}
 .ta-two h5{margin:0 0 1vh;font-size:clamp(16px,2.4vh,26px);font-weight:700}
 .ta-two h5 span{display:block;font-size:clamp(12px,1.7vh,18px);color:#9AA0A8;font-weight:400}
@@ -628,7 +628,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tbvoice{display:none;align-items:center;gap:10px;margin:8px 16px 0;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:var(--panel);font-size:16px;font-weight:600}
 .tbvoice.on{display:flex}
 .tbvoice input{width:24px;height:24px;accent-color:#FFC61E}
-.tt-top{display:flex;flex-direction:column;gap:.6vh}
+.tt-top{display:flex;flex-direction:column;gap:.6vh;margin-top:3vh}
 .tt-k{font-size:clamp(14px,2vh,20px);color:#8B939C}
 .tt-dest{font-size:clamp(28px,4.8vh,52px);font-weight:700;line-height:1.2;word-break:keep-all}
 .tt-dsub{font-size:clamp(16px,2.4vh,26px);color:#C9CED4}
@@ -6263,7 +6263,7 @@ function tbTripTimers(tripMs, airMs, galMs){
   tb.galTimer=setTimeout(function(){ tb.galTimer=null; tbShowGal(); }, galMs);
 }
 /* 공항 목적지일 때: 사진 → 입국장·출국장 두 표 → 10초 뒤 목적지에 맞는 표 */
-var TB_AIR_BOTH=10000;
+var TB_AIR_BOTH=15000;
 function tbShowAirFirst(){
   if (!tb.trip || !tb.trip.ap) return;
   tbShowGal();
