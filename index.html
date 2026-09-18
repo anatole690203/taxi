@@ -838,6 +838,8 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 /* ── 도착 예정 공유 페이지 (가족 폰) ── */
 .shv{position:fixed;inset:0;z-index:7000;display:flex;flex-direction:column;background:#101215;color:#fff;padding:16px;gap:10px;overflow-y:auto}
 .shv h2{margin:0;font-size:22px}
+.shv .shtop{display:flex;align-items:center;gap:3em}
+.shv .shx{flex:none;min-height:40px;padding:0 12px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:15px;font-weight:700}
 .shv .dst{font-size:16px;color:#C9CED4}
 .shv .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .shv .row div{padding:12px;border-radius:8px;background:#1E2126}
@@ -7225,7 +7227,10 @@ function shareBoot(){
   if (!m) return false;
   tok=m[1];
   box=el('div',{cls:'shv'},[
-    el('h2',{text:'🚕 안심도착 안내'}),
+    el('div',{cls:'shtop'},[
+      el('button',{cls:'shx', type:'button', 'aria-label':'닫기', onclick:function(e){ e.stopPropagation(); shClose(); }},['닫기']),
+      el('h2',{text:'🚕 안심도착 안내'})
+    ]),
     el('div',{cls:'dst', id:'shDst', text:'정보를 받는 중입니다…'}),
     el('div',{cls:'row'},[
       el('div',{},[el('span',{text:'도착 예정'}), el('b',{id:'shEta', text:'–'})]),
@@ -7237,7 +7242,7 @@ function shareBoot(){
       /* 카카오톡 안의 브라우저면 크롬으로 넘겨 연다 */
       if (/KAKAOTALK/i.test(navigator.userAgent||'')){ location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(u); return; }
       try { if (box.requestFullscreen) box.requestFullscreen().catch(function(){}); else if (box.webkitRequestFullscreen) box.webkitRequestFullscreen(); } catch(e){}
-    }},['⛶ 크게 보기 (주소창 없이)']),
+    }},['큰 화면으로 보기']),
     el('div',{cls:'map', id:'shMap'}),
     el('div',{cls:'st', id:'shSt', text:'택시 태블릿이 2분마다 위치를 알려 줍니다. 이 화면을 열어 두면 저절로 바뀝니다.'}),
     el('button',{cls:'shb', type:'button', id:'shSms', onclick:function(){
@@ -7250,10 +7255,31 @@ function shareBoot(){
       try {
         if (navigator.share){ navigator.share({title:'안심도착 안내', text:'택시 안심도착 안내입니다. 지금 위치와 도착 예정 시각을 볼 수 있어요', url:u}).catch(function(){}); return; }
       } catch(e){}
-      try { navigator.clipboard.writeText(u).then(function(){ alert('주소를 복사했습니다. 카카오톡에 붙여 넣어 보내 주세요.'); }); } catch(e){ prompt('이 주소를 복사해 보내 주세요', u); }
+      try { navigator.clipboard.writeText(u).then(function(){ alert('주소를 복사했습니다. 카카오톡에 붙여 넣어 보내 주세요.'); }, function(){ prompt('이 주소를 복사해 보내 주세요', u); }); } catch(e){ prompt('이 주소를 복사해 보내 주세요', u); }
     }},['카카오톡·다른 앱으로 보내기'])
   ]);
   document.body.appendChild(box);
+  /* 주소창 없애기: 손님이 화면을 처음 누르는 순간 전체 화면으로 (브라우저가 누르기 전에는 허락하지 않음) */
+  function goFull(e){
+    /* 문자보내기·카카오톡 보내기·닫기 버튼은 다른 화면으로 넘어가는 버튼이라 제외 */
+    if (e && e.target && e.target.closest && e.target.closest('#shSms,#shShare,.shx')) return;
+    if (/KAKAOTALK/i.test(navigator.userAgent||'')) return;   /* 카톡 안에서는 [크게 보기]로 크롬에 넘김 */
+    try {
+      if (document.fullscreenElement || document.webkitFullscreenElement) return;
+      if (box.requestFullscreen) box.requestFullscreen({navigationUI:'hide'}).catch(function(){});
+      else if (box.webkitRequestFullscreen) box.webkitRequestFullscreen();
+    } catch(e){}
+  }
+  box.addEventListener('pointerdown', goFull, true);
+  /* 닫기: 브라우저는 손님이 연 탭을 페이지가 직접 닫지 못하게 해서, 닫기 → 전체 화면 끄기 → 뒤로 가기 순서로 시도 */
+  function shClose(){
+    try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); } catch(e){}
+    try { window.close(); } catch(e){}
+    setTimeout(function(){
+      if (history.length>1){ history.back(); return; }
+      alert('이 화면은 휴대폰의 뒤로 가기(＜) 버튼이나 브라우저 탭 닫기로 닫아 주세요.');
+    }, 300);
+  }
   document.title='안심도착 안내';
   function paint(){
     var ago;
