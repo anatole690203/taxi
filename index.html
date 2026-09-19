@@ -1050,7 +1050,7 @@ body.solo{overflow:hidden;background:#101215}
 .gmaprow{display:flex;gap:8px}
 .btn.mapbtn{flex:1;min-height:60px;font-weight:700;font-size:18px}
 .btn.mapbtn.gm{background:#fff;border-color:#fff;color:#1a73e8}
-.btn.mapbtn.tm{background:#3D5AFE;border-color:#3D5AFE;color:#fff}
+.btn.mapbtn.tm{background:#03C75A;border-color:#03C75A;color:#fff}
 @keyframes gmapIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 /* 승객이 자기 휴대폰으로 찍는 화면. 밝게 띄워야 카메라가 잘 잡는다 */
 .qrwrap{position:fixed;inset:0;z-index:2600;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.82);padding:18px}
@@ -2277,7 +2277,7 @@ var GUIDE_TEXT = {
       welcome:'환영합니다',
       qr:'📱 승객 휴대폰으로 보내기', qrCap:'휴대폰 카메라로 찍어 주세요', qrSub:'찍으면 목적지·예상 시간·요금이 손님 휴대폰에 열립니다.',
       sep:'. ', end:'.', lc:'ko-KR',
-      mapCap:'지도로 확인하기', gmap:'Google 지도 위치', tmap:'T맵',
+      mapCap:'지도로 확인하기', gmap:'Google 지도 위치', tmap:'네이버 지도 경로',
       pauseT:'안내를 마쳤습니다', pauseS:'편안한 이동 되세요. 이 화면은 닫으셔도 됩니다.', again:'이전',
       endS:'편안한 이동 되세요'},
   en:{to:'Destination', time:'Estimated time', fare:'Estimated fare', toll:'Toll not included',
@@ -2292,7 +2292,7 @@ var GUIDE_TEXT = {
       welcome:'Welcome to Korea',
       qr:'📱 Send to your phone', qrCap:'Scan with your phone camera', qrSub:'Your destination, travel time and fare will open on your phone.',
       sep:'. ', end:'.', lc:'en-US',
-      mapCap:'Check on a map', gmap:'Google Maps (location)', tmap:'TMAP',
+      mapCap:'Check on a map', gmap:'Google Maps (location)', tmap:'Naver Map route',
       pauseT:'The guide has ended', pauseS:'Enjoy your ride. You may close this page.', again:'Back',
       endS:'Enjoy your ride'},
   ja:{to:'目的地', time:'所要時間', fare:'予想料金', toll:'通行料は別途',
@@ -2307,7 +2307,7 @@ var GUIDE_TEXT = {
       welcome:'韓国へようこそ',
       qr:'📱 スマホで受け取る', qrCap:'スマホのカメラで読み取ってください', qrSub:'目的地・所要時間・料金がお客様のスマホに表示されます。',
       sep:'。', end:'。', lc:'ja-JP',
-      mapCap:'地図で確認', gmap:'Google マップ（場所）', tmap:'TMAP',
+      mapCap:'地図で確認', gmap:'Google マップ（場所）', tmap:'NAVER地図 ルート',
       pauseT:'案内を終了しました', pauseS:'どうぞごゆっくり。このページは閉じても大丈夫です。', again:'戻る',
       endS:'どうぞごゆっくり'},
   zh:{to:'目的地', time:'预计时间', fare:'预计车费', toll:'过路费另计',
@@ -2322,7 +2322,7 @@ var GUIDE_TEXT = {
       welcome:'欢迎来到韩国',
       qr:'📱 发送到您的手机', qrCap:'请用手机相机扫描', qrSub:'目的地、预计时间和车费将显示在您的手机上。',
       sep:'。', end:'。', lc:'zh-CN',
-      mapCap:'在地图上查看', gmap:'Google 地图位置', tmap:'TMAP',
+      mapCap:'在地图上查看', gmap:'Google 地图位置', tmap:'NAVER地图 路线',
       pauseT:'介绍已结束', pauseS:'祝您乘车愉快。您可以关闭此页面。', again:'返回',
       endS:'祝您乘车愉快'}
 };
@@ -2653,19 +2653,20 @@ function previewRoute(sp, ep){
 }
 var TMAP_PKG = 'com.skt.tmap.ku';
 var TMAP_STORE = 'https://play.google.com/store/apps/details?id='+TMAP_PKG;
-/* T맵 앱으로 길안내 시작 (출발지는 현재 위치를 T맵이 잡는다) */
+/* T맵 앱으로 곧바로 길안내 시작 (출발지는 현재 위치를 T맵이 잡는다) */
 function tmapNaviUrl(lat, lng, name, android){
   var nm=encodeURIComponent(name||'목적지');
-  /* goalname 계열이 안드로이드·iOS 모두에서 목적지를 잡는다. rGo 계열은 예비로 함께 붙인다 */
-  var q='goalname='+nm+'&goalx='+lng+'&goaly='+lat+
-        '&rGoName='+nm+'&rGoX='+lng+'&rGoY='+lat;
+  /* route = 경로 선택 화면만 열고 기사가 [안내 시작]을 눌러야 했다.
+     navigate = 추천 경로로 곧바로 음성 길안내를 시작한다 (예비로 goalname 계열도 함께 붙인다) */
+  var q='referrer=com.skt.Tmap&name='+nm+'&lon='+lng+'&lat='+lat+
+        '&goalname='+nm+'&goalx='+lng+'&goaly='+lat;
   if (android===undefined) android=isAndroid();
   if (android){
-    return 'intent://route?'+q+'#Intent;scheme=tmap;action=android.intent.action.VIEW;'+
+    return 'intent://navigate?'+q+'#Intent;scheme=tmap;action=android.intent.action.VIEW;'+
            'category=android.intent.category.BROWSABLE;package='+TMAP_PKG+
            ';S.browser_fallback_url='+encodeURIComponent(TMAP_STORE)+';end';
   }
-  return 'tmap://route?'+q;
+  return 'tmap://navigate?'+q;
 }
 function startTmapNavi(lat, lng, name){ navStarted(lat, lng, name); window.location.href=tmapNaviUrl(lat, lng, name); }
 /* 네이버 지도 길안내 (출발지를 아는 경우 함께 넘긴다) */
@@ -7139,7 +7140,7 @@ function tbMapReset(){
 var TMAP_DOC='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
   '<style>html,body,#m{margin:0;padding:0;width:100%;height:100%;background:#1b1e23;overflow:hidden}</style>'+
   '<script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=%KEY%"><\/script></head><body><div id="m"></div><script>'+
-  'var map,car,dst,line,lineId=-1,ready=false,q=null;'+
+  'var map,car,dst,line,lineId=-1,ready=false,q=null,nz=0;'+
   'function ic(c){return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(\'<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="10" fill="\'+c+\'" stroke="#fff" stroke-width="3"/></svg>\');}'+
   'function LL(a){return new Tmapv2.LatLng(a[0],a[1]);}'+
   'function mk(a,c){return new Tmapv2.Marker({position:LL(a),icon:ic(c),iconSize:new Tmapv2.Size(26,26),map:map});}'+
@@ -7149,7 +7150,7 @@ var TMAP_DOC='<!doctype html><html><head><meta charset="utf-8"><meta name="viewp
   ' if(d.car){if(car)car.setPosition(LL(d.car));else car=mk(d.car,"#3D8BFF");}'+
   ' if(d.line&&d.line.length>1&&d.lineId!==lineId){if(line)line.setMap(null);ps=[];for(i=0;i<d.line.length;i++)ps.push(LL(d.line[i]));'+
   '  line=new Tmapv2.Polyline({path:ps,strokeColor:"#FFC61E",strokeWeight:6,map:map});lineId=d.lineId;}'+
-  ' if(d.near&&d.car){map.setCenter(LL(d.car));if(map.getZoom()!==d.near)map.setZoom(d.near);}'+
+  ' if(d.near&&d.car){if(!nz){map.setZoom(d.near);nz=1;}map.setCenter(LL(d.car));}'+
   ' else if(d.fit){b=new Tmapv2.LatLngBounds();if(d.car)b.extend(LL(d.car));if(d.dest)b.extend(LL(d.dest));'+
   '  if(d.line)for(i=0;i<d.line.length;i+=10)b.extend(LL(d.line[i]));'+
   '  try{map.fitBounds(b,{left:40,top:40,right:40,bottom:40});}catch(e){try{map.fitBounds(b);}catch(x){}}}}'+
@@ -7416,6 +7417,8 @@ function pageEnd(L){
     }, 450);
   }, 250);
 }
+/* 안심도착 화면 지도 확대 크기 (16 = 동네 도로·큰 건물이 보이는 크기) */
+var SH_MAP_NEAR=16;
 /* 가족 폰에서 여는 화면 (?s=주소) */
 function shareBoot(){
   var m=/[?&]s=([a-z0-9]{16,40})\b/.exec(location.search), tok, box, st={}, map=null, car=null, dst=null, es, pingT, tmf=null, tmFail=false, tmFit=false;
@@ -7484,7 +7487,8 @@ function shareBoot(){
     if (st.at){ ago=Math.max(0, Math.round((Date.now()-st.at)/60000)); $('shSt').textContent=(ago ? ago+'분 전' : '방금')+' 확인한 위치입니다. 이 화면을 열어 두면 저절로 바뀝니다.'; }
     if (st.mk && !tmFail){
       if (!tmf) tmf=tmapFrame($('shMap'), st.mk, function(){ tmFail=true; tmf=null; paint(); }, true);
-      tmf.set({car: isNum(st.lat) ? [st.lat, st.lng] : null, dest: isNum(st.dy) ? [st.dy, st.dx] : null, fit:!tmFit});
+      /* 지금 차가 지나는 곳을 가까이 (도로·건물이 보이게). 처음 한 번만 확대하고, 그 뒤로는 가족이 직접 넓히거나 좁힌 크기를 그대로 두고 차를 따라간다 */
+      tmf.set({car: isNum(st.lat) ? [st.lat, st.lng] : null, dest: isNum(st.dy) ? [st.dy, st.dx] : null, fit:!tmFit, near: isNum(st.lat) ? SH_MAP_NEAR : 0});
       tmFit=true;
       return;
     }
@@ -7493,7 +7497,8 @@ function shareBoot(){
     var pts=[];
     if (isNum(st.lat)){ if (!car) car=L.circleMarker([st.lat, st.lng], {radius:10, color:'#fff', weight:3, fillColor:'#3D8BFF', fillOpacity:1}).addTo(map); else car.setLatLng([st.lat, st.lng]); pts.push([st.lat, st.lng]); }
     if (isNum(st.dy)){ if (!dst) dst=L.circleMarker([st.dy, st.dx], {radius:11, color:'#fff', weight:3, fillColor:'#FF5A5F', fillOpacity:1}).addTo(map); else dst.setLatLng([st.dy, st.dx]); pts.push([st.dy, st.dx]); }
-    if (pts.length){ try { map.fitBounds(L.latLngBounds(pts), {padding:[40,40], maxZoom:16}); } catch(e){} }
+    if (isNum(st.lat)){ try { if (!map.__near){ map.setView([st.lat, st.lng], SH_MAP_NEAR); map.__near=true; } else map.panTo([st.lat, st.lng]); } catch(e){} }
+    else if (pts.length){ try { map.fitBounds(L.latLngBounds(pts), {padding:[40,40], maxZoom:16}); } catch(e){} }
   }
   function ping(){
     try { fetch(TB_RELAY+tbShareTopic(tok)+'-w', {method:'POST', body:'{"v":1,"type":"watch"}', mode:'cors'}).catch(function(){}); } catch(e){}
@@ -8844,10 +8849,22 @@ function openGoogleMap(){
   try { w=window.open(u, '_blank'); } catch(e){}
   if (!w) window.location.href=u;
 }
+/* 손님 폰 '경로 보기': 소리 나는 길안내 없이 경로만 보여 준다.
+   T맵 링크는 누르자마자 음성 길안내가 시작되고, 링크로 소리를 끄는 방법이 없다.
+   네이버 지도 '자동차 경로'는 경로 전체 모습만 보여 주고, 손님이 [안내 시작]을 누르기 전에는 말하지 않는다 */
 function openTmapGuest(){
   if (!tripHasPoint()) return;
   stopGuideVoice();
-  window.location.href=tmapNaviUrl(lastTrip.lat, lastTrip.lng, lastTrip.dest||'목적지');
+  var nm=encodeURIComponent(lastTrip.dest||'목적지'),
+      q='dlat='+lastTrip.lat+'&dlng='+lastTrip.lng+'&dname='+nm+'&appname='+encodeURIComponent(naverAppName()),
+      web='https://map.naver.com/p/directions/-/'+lastTrip.lng+','+lastTrip.lat+','+nm+',,/-/car';
+  if (isAndroid()){
+    window.location.href='intent://route/car?'+q+'#Intent;scheme=nmap;action=android.intent.action.VIEW;'+
+      'category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap;S.browser_fallback_url='+encodeURIComponent(web)+';end';
+    return;
+  }
+  window.location.href='nmap://route/car?'+q;
+  setTimeout(function(){ if (!document.hidden) window.location.href=web; }, 1500);   /* 앱이 없으면 웹 지도 */
 }
 var gUtt=null, gLangTimer=null;
 /* 멈춘 직후 곧바로 말을 시키면 안드로이드 크롬이 새 음성을 삼키는 경우가 있다. 잠깐 쉬고 읽는다 */
