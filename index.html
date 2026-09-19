@@ -2267,7 +2267,7 @@ var GUIDE_LANGS = [
 var GUIDE_TEXT = {
   ko:{to:'목적지', time:'예상 시간', fare:'예상 요금', toll:'통행료 별도',
       card:'카드 결제 가능합니다', meter:'미터기 요금 기준입니다', approx:'약',
-      close:'닫기', gallery:'갤러리 사진', qrEnd:'QR 닫기', exit:'나가기', speak:'🔊 음성 안내', stop:'■ 멈추기',
+      close:'닫기', gallery:'갤러리 사진', qrEnd:'QR 닫기', exit:'닫기', speak:'🔊 음성 안내', stop:'■ 멈추기',
       novoice:'이 브라우저는 음성 안내를 지원하지 않습니다',
       voice:'목적지는 %DEST%입니다. 예상 시간은 %TIME%, 예상 요금은 %FARE%입니다. %NOTE%',
       voiceMeter:'목적지는 %DEST%입니다. 예상 시간은 %TIME%입니다. 요금은 미터기 기준입니다. %NOTE%',
@@ -2282,7 +2282,7 @@ var GUIDE_TEXT = {
       endS:'편안한 이동 되세요'},
   en:{to:'Destination', time:'Estimated time', fare:'Estimated fare', toll:'Toll not included',
       card:'Card payment accepted', meter:'Metered fare', approx:'approx.',
-      close:'Close', gallery:'Photo gallery', qrEnd:'Close', exit:'Exit', speak:'🔊 Play voice guide', stop:'■ Stop',
+      close:'Close', gallery:'Photo gallery', qrEnd:'Close', exit:'Close', speak:'🔊 Play voice guide', stop:'■ Stop',
       novoice:'This browser does not support voice guidance',
       voice:'We are going to %DEST%. The trip takes about %TIME%, and the fare is about %FARE%. %NOTE%',
       voiceMeter:'We are going to %DEST%. The trip takes about %TIME%. The fare is charged by the meter. %NOTE%',
@@ -2297,7 +2297,7 @@ var GUIDE_TEXT = {
       endS:'Enjoy your ride'},
   ja:{to:'目的地', time:'所要時間', fare:'予想料金', toll:'通行料は別途',
       card:'カード決済が可能です', meter:'メーター料金となります', approx:'約',
-      close:'閉じる', gallery:'フォトギャラリー', qrEnd:'閉じる', exit:'終了', speak:'🔊 音声案内', stop:'■ 停止',
+      close:'閉じる', gallery:'フォトギャラリー', qrEnd:'閉じる', exit:'閉じる', speak:'🔊 音声案内', stop:'■ 停止',
       novoice:'このブラウザは音声案内に対応していません',
       voice:'目的地は%DEST%です。所要時間は約%TIME%、料金は約%FARE%です。%NOTE%',
       voiceMeter:'目的地は%DEST%です。所要時間は約%TIME%です。料金はメーターによる計算となります。%NOTE%',
@@ -2312,7 +2312,7 @@ var GUIDE_TEXT = {
       endS:'どうぞごゆっくり'},
   zh:{to:'目的地', time:'预计时间', fare:'预计车费', toll:'过路费另计',
       card:'可以刷卡支付', meter:'按计价器收费', approx:'约',
-      close:'关闭', gallery:'图片画廊', qrEnd:'关闭', exit:'退出', speak:'🔊 语音播报', stop:'■ 停止',
+      close:'关闭', gallery:'图片画廊', qrEnd:'关闭', exit:'关闭', speak:'🔊 语音播报', stop:'■ 停止',
       novoice:'此浏览器不支持语音播报',
       voice:'目的地是%DEST%。预计需要%TIME%，车费约%FARE%。%NOTE%',
       voiceMeter:'目的地是%DEST%。预计需要%TIME%。车费按计价器收取。%NOTE%',
@@ -5922,7 +5922,7 @@ function endGallery(){
   $('gPause').className='gpause';
   $('gPause').setAttribute('aria-hidden','true');
   if (!guestMode){ closeGuide(); return; }
-  showGuestEnd();
+  guideBack();   /* 손님 폰: 누른 순간 창 닫기 → 안 되면 안내 끝 화면 */
 }
 /* 손님 폰 나가기.
    태극 문양 사진 위에 감사 인사를 띄우고 소리로도 인사한 뒤 창을 닫는다.
@@ -5978,7 +5978,12 @@ function guideBack(){
   try { window.close(); } catch(e){}
   setTimeout(function(){
     window.removeEventListener('pagehide', onHide);
-    if (!gone) showGuestEnd();   /* 안 닫혔으면 예전처럼 감사 인사 → 안내 끝 화면 */
+    if (gone) return;
+    /* 안 닫혔으면 여행가이드 QR 닫기와 똑같이 곧바로 '안내 끝' 화면 (예전 4초 감사 화면은 건너뛴다) */
+    try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch(e){}
+    try { closeGuide(); } catch(e){}
+    gPaused=true;
+    pageEnd(guideLang||'ko');
   }, 300);
 }
 function closeGuide(){
@@ -7091,12 +7096,34 @@ function tbMapPaint(){
       clear(mp);
       tb.tmf=tmapFrame(mp, key, function(){ tb.tmFail=true; tb.tmf=null; tbMapPaint(); });
     }
-    tb.tmf.set({car: p ? [p.lat, p.lng] : null, dest:[d.lat, d.lng], line: e ? e.line : null, lineId: e ? e.at : 0, fit:fit, near:TB_MAP_NEAR});
+    tb.tmf.set({car: p ? [p.lat, p.lng] : null, carIc: p ? tbCarIcon(tbCarHeading(p)) : '', dest:[d.lat, d.lng], line: e ? e.line : null, lineId: e ? e.at : 0, fit:fit, near:TB_MAP_NEAR});
     if (e) tb.mapLineAt=e.at;
     if (fit){ tb.mapFit=false; tb.mapFitAt=Date.now(); }
     return;
   }
   tbLeafPaint(fit);
+}
+/* 지도 위 차 모양 (위에서 본 택시, 가는 방향으로 돌아간다) */
+function tbCarIcon(h){
+  h=Math.round((h||0)/10)*10;
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 46 46"><g transform="rotate('+h+' 23 23)">'+
+    '<circle cx="23" cy="23" r="21" fill="#2F6BFF" fill-opacity=".22"/>'+
+    '<path d="M23 1.5 L28 8 L18 8 Z" fill="#2F6BFF" stroke="#fff" stroke-width="1.2"/>'+
+    '<rect x="14.5" y="8.5" width="17" height="30" rx="6" fill="#FFC61E" stroke="#1d2126" stroke-width="1.6"/>'+
+    '<rect x="17" y="13" width="12" height="6.5" rx="2" fill="#2b3440"/>'+
+    '<rect x="17" y="30" width="12" height="5" rx="2" fill="#2b3440"/>'+
+    '<rect x="18.5" y="21.5" width="9" height="5" rx="1.2" fill="#fff" stroke="#1d2126" stroke-width=".8"/>'+
+    '</g></svg>';
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+/* 차가 가는 방향(북쪽 0도, 시계 방향) — 10m 넘게 움직였을 때만 새로 잡는다 */
+function tbCarHeading(p){
+  var q=tb.mapPrev, dy, dx;
+  if (!p) return tb.mapHd||0;
+  if (!q){ tb.mapPrev={lat:p.lat, lng:p.lng}; return tb.mapHd||0; }
+  dy=(p.lat-q.lat)*111320; dx=(p.lng-q.lng)*111320*Math.cos(p.lat*Math.PI/180);
+  if (dx*dx+dy*dy > 100){ tb.mapHd=(Math.atan2(dx, dy)*180/Math.PI+360)%360; tb.mapPrev={lat:p.lat, lng:p.lng}; }
+  return tb.mapHd||0;
 }
 /* 기본 지도 (Leaflet + OpenStreetMap) */
 function tbLeafPaint(fit){
@@ -7105,14 +7132,22 @@ function tbLeafPaint(fit){
   try { tb.map.invalidateSize(); } catch(x){}
   if (e && e.line && e.line.length>1 && tb.mapLineAt!==e.at){
     if (tb.mapLine) tb.map.removeLayer(tb.mapLine);
-    tb.mapLine=L.polyline(e.line, {color:'#FFC61E', weight:6, opacity:.9}).addTo(tb.map);
+    if (tb.mapLine2) tb.map.removeLayer(tb.mapLine2);
+    tb.mapLine2=L.polyline(e.line, {color:'#fff', weight:12, opacity:1}).addTo(tb.map);
+    tb.mapLine=L.polyline(e.line, {color:'#2F6BFF', weight:8, opacity:1}).addTo(tb.map);
     tb.mapLineAt=e.at; fit=true;
   }
   if (!tb.mapDest) tb.mapDest=L.circleMarker([d.lat, d.lng], {radius:11, color:'#fff', weight:3, fillColor:'#FF5A5F', fillOpacity:1}).addTo(tb.map);
   else tb.mapDest.setLatLng([d.lat, d.lng]);
   if (p){
-    if (!tb.mapCar) tb.mapCar=L.circleMarker([p.lat, p.lng], {radius:10, color:'#fff', weight:3, fillColor:'#3D8BFF', fillOpacity:1}).addTo(tb.map);
-    else tb.mapCar.setLatLng([p.lat, p.lng]);
+    (function(){
+      var ic=tbCarIcon(tbCarHeading(p));
+      if (tb.mapCar && tb.mapCarIc!==ic){ try { tb.map.removeLayer(tb.mapCar); } catch(x){} tb.mapCar=null; }
+      if (!tb.mapCar){
+        tb.mapCarIc=ic;
+        tb.mapCar=L.marker([p.lat, p.lng], {icon:L.icon({iconUrl:ic, iconSize:[46,46], iconAnchor:[23,23]}), zIndexOffset:1000}).addTo(tb.map);
+      } else tb.mapCar.setLatLng([p.lat, p.lng]);
+    })();
     pts.push([p.lat, p.lng]);
   }
   pts.push([d.lat, d.lng]);
@@ -7130,7 +7165,7 @@ function tbLeafPaint(fit){
 function tbMapReset(){
   if (tb.tmf){ tb.tmf.kill(); tb.tmf=null; }
   tb.tmFail=false;
-  if (tb.map){ try { tb.map.remove(); } catch(x){} tb.map=null; tb.mapLine=tb.mapDest=tb.mapCar=null; }
+  if (tb.map){ try { tb.map.remove(); } catch(x){} tb.map=null; tb.mapLine=tb.mapLine2=tb.mapDest=tb.mapCar=null; }
   if ($('ttMap')) clear($('ttMap'));
   tb.mapLineAt=0; tb.mapFitAt=0;
 }
@@ -7140,16 +7175,21 @@ function tbMapReset(){
 var TMAP_DOC='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
   '<style>html,body,#m{margin:0;padding:0;width:100%;height:100%;background:#1b1e23;overflow:hidden}</style>'+
   '<script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=%KEY%"><\/script></head><body><div id="m"></div><script>'+
-  'var map,car,dst,line,lineId=-1,ready=false,q=null,nz=0;'+
+  'var map,car,dst,line,line2,lineId=-1,ready=false,q=null,nz=0,carIc="";'+
   'function ic(c){return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(\'<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="10" fill="\'+c+\'" stroke="#fff" stroke-width="3"/></svg>\');}'+
   'function LL(a){return new Tmapv2.LatLng(a[0],a[1]);}'+
   'function mk(a,c){return new Tmapv2.Marker({position:LL(a),icon:ic(c),iconSize:new Tmapv2.Size(26,26),map:map});}'+
   'function draw(d){var b,i,ps;'+
-  ' if(d.clear){if(car){car.setMap(null);car=null;}if(dst){dst.setMap(null);dst=null;}if(line){line.setMap(null);line=null;}lineId=-1;return;}'+
+  ' if(d.clear){if(car){car.setMap(null);car=null;}if(dst){dst.setMap(null);dst=null;}if(line){line.setMap(null);line=null;}if(line2){line2.setMap(null);line2=null;}lineId=-1;return;}'+
   ' if(d.dest){if(dst)dst.setPosition(LL(d.dest));else dst=mk(d.dest,"#FF5A5F");}'+
-  ' if(d.car){if(car)car.setPosition(LL(d.car));else car=mk(d.car,"#3D8BFF");}'+
-  ' if(d.line&&d.line.length>1&&d.lineId!==lineId){if(line)line.setMap(null);ps=[];for(i=0;i<d.line.length;i++)ps.push(LL(d.line[i]));'+
-  '  line=new Tmapv2.Polyline({path:ps,strokeColor:"#FFC61E",strokeWeight:6,map:map});lineId=d.lineId;}'+
+  ' if(d.car){if(d.carIc&&d.carIc!==carIc&&car){car.setMap(null);car=null;}'+
+  '  if(car)car.setPosition(LL(d.car));'+
+  '  else if(d.carIc){carIc=d.carIc;car=new Tmapv2.Marker({position:LL(d.car),icon:d.carIc,iconSize:new Tmapv2.Size(46,46),map:map});}'+
+  '  else car=mk(d.car,"#3D8BFF");}'+
+  ' if(d.line&&d.line.length>1&&d.lineId!==lineId){if(line)line.setMap(null);if(line2)line2.setMap(null);ps=[];for(i=0;i<d.line.length;i++)ps.push(LL(d.line[i]));'+
+  '  line2=new Tmapv2.Polyline({path:ps,strokeColor:"#FFFFFF",strokeWeight:13,strokeOpacity:1,map:map});'+
+  '  line=new Tmapv2.Polyline({path:ps,strokeColor:"#2F6BFF",strokeWeight:8,strokeOpacity:1,map:map});lineId=d.lineId;'+
+  '  if(car){var cp=car.getPosition();car.setMap(null);car=new Tmapv2.Marker({position:cp,icon:carIc||undefined,iconSize:new Tmapv2.Size(46,46),map:map});}}'+
   ' if(d.near&&d.car){if(!nz){map.setZoom(d.near);nz=1;}map.setCenter(LL(d.car));}'+
   ' else if(d.fit){b=new Tmapv2.LatLngBounds();if(d.car)b.extend(LL(d.car));if(d.dest)b.extend(LL(d.dest));'+
   '  if(d.line)for(i=0;i<d.line.length;i+=10)b.extend(LL(d.line[i]));'+
