@@ -860,6 +860,12 @@ body.solo>*:not(.shv):not(.gland):not(.pgend){display:none!important}
 .pgend .pe-ic{font-size:56px}
 .pgend b{font-size:26px;color:#FFC61E}
 .pgend p{margin:0;font-size:17px;line-height:1.6;color:#C9CED4;white-space:pre-line;word-break:keep-all}
+.pgend .pe-main{font-size:20px;font-weight:700;color:#fff}
+.pgend .pe-sub{font-size:14px;color:#9AA0A8}
+.pgend .pe-arrow{position:absolute;left:0;right:0;bottom:14px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#FFC61E;animation:peDown 1.2s ease-in-out infinite}
+.pgend .pe-arrow span{font-size:26px;font-weight:800;line-height:1;padding:4px 14px;border:2px solid #FFC61E;border-radius:10px}
+.pgend .pe-arrow i{font-style:normal;font-size:22px;line-height:1}
+@keyframes peDown{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
 .pgend button{margin-top:10px;min-height:48px;padding:0 22px;border:1px solid #3A3F46;border-radius:10px;background:#1E2126;color:#fff;font-size:16px;font-weight:700}
 body.solo{overflow:hidden;background:#101215}
 .shv,.gland{overscroll-behavior:contain}
@@ -7354,10 +7360,10 @@ function tbSharePaint(){
    닫기를 시도해 보고, 안 닫히면 뒤로 가기 → 그래도 남아 있으면 '안내 끝' 화면을 덮어 보여 준다.
    (예전에는 전체 화면만 풀리고 아무 일도 없는 것처럼 보였다) */
 var PAGE_END_TXT={
-  ko:{a:'안내를 마쳤습니다', b:'이제 이 창을 닫으셔도 됩니다.\n휴대폰의 홈 버튼이나 뒤로 가기(＜)를 누르세요.', r:'다시 보기'},
-  en:{a:'All done', b:'You can close this page now.\nPress your phone\'s Home or Back (＜) button.', r:'View again'},
-  ja:{a:'ご案内を終了しました', b:'この画面は閉じて大丈夫です。\nスマホのホームか戻る(＜)ボタンを押してください。', r:'もう一度見る'},
-  zh:{a:'介绍已结束', b:'现在可以关闭此页面了。\n请按手机的主页键或返回键(＜)。', r:'再看一次'}
+  ko:{a:'안내를 마쳤습니다', b:'휴대폰 화면 맨 아래의\n＜ (뒤로) 버튼을 누르면 이 창이 닫힙니다.', g:'버튼이 없는 휴대폰은 화면 왼쪽이나 오른쪽\n가장자리에서 안쪽으로 밀어 주세요.', r:'안내 다시 보기'},
+  en:{a:'All done', b:'Press the ＜ (Back) button\nat the very bottom of your phone to close.', g:'No buttons? Swipe inward from\nthe left or right edge of the screen.', r:'View again'},
+  ja:{a:'ご案内を終了しました', b:'スマホ画面のいちばん下の\n＜（戻る）ボタンで閉じられます。', g:'ボタンがない機種は、画面の左右の端から\n内側にスワイプしてください。', r:'もう一度見る'},
+  zh:{a:'介绍已结束', b:'请按手机屏幕最下方的\n＜（返回）键关闭此页面。', g:'没有按键的手机，请从屏幕左侧或右侧\n边缘向内滑动。', r:'再看一次'}
 };
 function pageEnd(L){
   var t=PAGE_END_TXT[L]||PAGE_END_TXT.ko, gone=false, url=location.href;
@@ -7374,8 +7380,10 @@ function pageEnd(L){
       var ov=el('div',{cls:'pgend'},[
         el('div',{cls:'pe-ic', text:'🚕'}),
         el('b',{text:t.a}),
-        el('p',{text:t.b}),
-        el('button',{type:'button', onclick:function(){ if (ov.parentNode) ov.parentNode.removeChild(ov); }},[t.r])
+        el('p',{cls:'pe-main', text:t.b}),
+        el('p',{cls:'pe-sub', text:t.g}),
+        el('button',{type:'button', onclick:function(){ if (ov.parentNode) ov.parentNode.removeChild(ov); }},[t.r]),
+        el('div',{cls:'pe-arrow', 'aria-hidden':'true'},[el('span',{text:'＜'}), el('i',{text:'▼'})])
       ]);
       (document.fullscreenElement || document.body).appendChild(ov);
     }, 450);
