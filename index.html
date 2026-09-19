@@ -838,13 +838,13 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 /* ── 오른쪽 위 버튼 묶음: 위 = 서울 여행가이드, 아래 = 기사님께 부탁하기 ── */
 .tbcorner{position:absolute;right:16px;top:14px;z-index:15;display:flex;flex-direction:column;align-items:stretch;gap:10px;max-width:min(78vw,560px)}
 .tbcorner.pos-idle{top:78px}
-.tbcorner.pos-gal{top:48px}
+.tbcorner.pos-gal{top:18px}
 .tbcorner .tbreqbtn{position:static;max-width:none;transform:none;margin-left:0}
 .tbcorner .tbguidebtn{justify-content:flex-start}
 .tbcorner.incard{position:static;flex:none;margin-left:auto;max-width:48%;gap:8px}
 .tbcorner.incard .tbreqbtn,.tbcorner.incard .tbguidebtn{box-shadow:0 2px 10px rgba(0,0,0,.35)}
 /* 손 흔들기: 검정 실루엣으로 또렷하게 */
-.tbreqbtn .hi{filter:brightness(0) drop-shadow(0 0 1px rgba(0,0,0,.6));font-size:32px}
+.tbreqbtn .hi{filter:brightness(0) invert(.4);font-size:32px}
 /* 나침반: 바늘이 좌우로 흔들리다 북쪽에 멈춘다 (4초마다) */
 svg.cmp{width:1.2em;height:1.2em;vertical-align:-0.22em;margin-right:.35em;flex:none}
 .tbguidebtn .gi svg.cmp{width:34px;height:34px;margin:0;vertical-align:middle}
@@ -7032,6 +7032,8 @@ function tbEtaPaint(){
   tbMapPaint();
 }
 /* ── 태블릿 지도 (Leaflet + OpenStreetMap) ── */
+/* 요금·시간 화면 지도: 지금 지나는 곳을 가까이 (17 = 건물·도로가 보이는 크기) */
+var TB_MAP_NEAR=17;
 function tbMapInit(){
   if (tb.map) return true;
   if (!window.L || !$('ttMap')) return false;
@@ -7055,7 +7057,7 @@ function tbMapPaint(){
       clear(mp);
       tb.tmf=tmapFrame(mp, key, function(){ tb.tmFail=true; tb.tmf=null; tbMapPaint(); });
     }
-    tb.tmf.set({car: p ? [p.lat, p.lng] : null, dest:[d.lat, d.lng], line: e ? e.line : null, lineId: e ? e.at : 0, fit:fit});
+    tb.tmf.set({car: p ? [p.lat, p.lng] : null, dest:[d.lat, d.lng], line: e ? e.line : null, lineId: e ? e.at : 0, fit:fit, near:TB_MAP_NEAR});
     if (e) tb.mapLineAt=e.at;
     if (fit){ tb.mapFit=false; tb.mapFitAt=Date.now(); }
     return;
@@ -7080,6 +7082,7 @@ function tbLeafPaint(fit){
     pts.push([p.lat, p.lng]);
   }
   pts.push([d.lat, d.lng]);
+  if (p){ try { tb.map.setView([p.lat, p.lng], TB_MAP_NEAR, {animate:false}); } catch(x){} tb.mapFit=false; tb.mapFitAt=Date.now(); return; }
   if (fit){
     try {
       b=L.latLngBounds(pts);
@@ -7113,7 +7116,8 @@ var TMAP_DOC='<!doctype html><html><head><meta charset="utf-8"><meta name="viewp
   ' if(d.car){if(car)car.setPosition(LL(d.car));else car=mk(d.car,"#3D8BFF");}'+
   ' if(d.line&&d.line.length>1&&d.lineId!==lineId){if(line)line.setMap(null);ps=[];for(i=0;i<d.line.length;i++)ps.push(LL(d.line[i]));'+
   '  line=new Tmapv2.Polyline({path:ps,strokeColor:"#FFC61E",strokeWeight:6,map:map});lineId=d.lineId;}'+
-  ' if(d.fit){b=new Tmapv2.LatLngBounds();if(d.car)b.extend(LL(d.car));if(d.dest)b.extend(LL(d.dest));'+
+  ' if(d.near&&d.car){map.setCenter(LL(d.car));if(map.getZoom()!==d.near)map.setZoom(d.near);}'+
+  ' else if(d.fit){b=new Tmapv2.LatLngBounds();if(d.car)b.extend(LL(d.car));if(d.dest)b.extend(LL(d.dest));'+
   '  if(d.line)for(i=0;i<d.line.length;i+=10)b.extend(LL(d.line[i]));'+
   '  try{map.fitBounds(b,{left:40,top:40,right:40,bottom:40});}catch(e){try{map.fitBounds(b);}catch(x){}}}}'+
   'window.addEventListener("message",function(e){var d=e.data;if(!d||!d.tm)return;if(ready){try{draw(d.tm);}catch(x){}}else q=d.tm;});'+
