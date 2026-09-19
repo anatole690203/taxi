@@ -844,7 +844,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tbcorner.incard{position:static;flex:none;margin-left:auto;max-width:48%;gap:8px}
 .tbcorner.incard .tbreqbtn,.tbcorner.incard .tbguidebtn{box-shadow:0 2px 10px rgba(0,0,0,.35)}
 /* 손 흔들기: 검정 실루엣으로 또렷하게 */
-.tbreqbtn .hi{filter:brightness(0) invert(.4);font-size:32px}
+.tbreqbtn .hi{filter:brightness(0) invert(.93) drop-shadow(0 0 1px rgba(0,0,0,.6));font-size:32px}
 /* 나침반: 바늘이 좌우로 흔들리다 북쪽에 멈춘다 (4초마다) */
 svg.cmp{width:1.2em;height:1.2em;vertical-align:-0.22em;margin-right:.35em;flex:none}
 .tbguidebtn .gi svg.cmp{width:34px;height:34px;margin:0;vertical-align:middle}
@@ -855,7 +855,12 @@ svg.cmp .ndl{transform-box:view-box;transform-origin:16px 16px;animation:cmpNdl 
 .tbguidebtn{background:#5B2A9B!important;color:#fff!important;border-color:#5B2A9B!important}
 .tbguidebtn .lb i{opacity:.9}
 /* QR로 연 손님 폰 화면: 뒤의 기사 화면 숨김 */
-body.solo>*:not(.shv):not(.gland){display:none!important}
+body.solo>*:not(.shv):not(.gland):not(.pgend){display:none!important}
+.pgend{position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;background:#101215;color:#fff;text-align:center}
+.pgend .pe-ic{font-size:56px}
+.pgend b{font-size:26px;color:#FFC61E}
+.pgend p{margin:0;font-size:17px;line-height:1.6;color:#C9CED4;white-space:pre-line;word-break:keep-all}
+.pgend button{margin-top:10px;min-height:48px;padding:0 22px;border:1px solid #3A3F46;border-radius:10px;background:#1E2126;color:#fff;font-size:16px;font-weight:700}
 body.solo{overflow:hidden;background:#101215}
 .shv,.gland{overscroll-behavior:contain}
 .gl-top{display:flex;align-items:center;gap:3em}
@@ -917,10 +922,10 @@ body.solo{overflow:hidden;background:#101215}
 .gd-photo .gd-credit{position:absolute;right:10px;bottom:8px;padding:2px 8px;border-radius:4px;background:rgba(0,0,0,.45);color:#fff;font-size:12px}
 .gd-sec{margin:1.2vh 2px .2vh;font-size:clamp(15px,2vh,20px);font-weight:800;color:#FFC61E}
 .gd-sec:first-of-type{margin-top:0}
-/* 분류 제목 색: 보라 → 노랑 → 파랑 순서로 돌아간다 */
-.gd-sec.g-palace,.gd-sec.g-shop{color:#B99CFF}
-.gd-sec.g-hanok,.gd-sec.g-walk{color:#FFC61E}
-.gd-sec.g-land{color:#5AA9FF}
+/* 분류 제목 색: 노랑 · 보라 · 회색 · 노랑 · 보라 */
+.gd-sec.g-palace,.gd-sec.g-shop{color:#FFC61E}
+.gd-sec.g-hanok,.gd-sec.g-walk{color:#B99CFF}
+.gd-sec.g-land{color:#B8BEC6}
 .gland{position:fixed;inset:0;z-index:7000;overflow-y:auto;background:#101215;color:#fff;padding:16px 16px 28px;display:flex;flex-direction:column;gap:10px}
 .gl-head{font-size:18px;font-weight:800;color:#FFC61E}
 .gl-photo{position:relative;height:220px;border-radius:12px;background:linear-gradient(135deg,#2B3A55,#5B3E6E 55%,#8A4B5C) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:80px}
@@ -7345,6 +7350,37 @@ function tbSharePaint(){
     try { clear(qb); new QRCode(qb, {text:url, width:240, height:240, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
   });
 }
+/* 손님 폰 화면 닫기: 브라우저는 손님이 직접 연 탭을 페이지가 닫지 못하게 막는 경우가 많다.
+   닫기를 시도해 보고, 안 닫히면 뒤로 가기 → 그래도 남아 있으면 '안내 끝' 화면을 덮어 보여 준다.
+   (예전에는 전체 화면만 풀리고 아무 일도 없는 것처럼 보였다) */
+var PAGE_END_TXT={
+  ko:{a:'안내를 마쳤습니다', b:'이제 이 창을 닫으셔도 됩니다.\n휴대폰의 홈 버튼이나 뒤로 가기(＜)를 누르세요.', r:'다시 보기'},
+  en:{a:'All done', b:'You can close this page now.\nPress your phone\'s Home or Back (＜) button.', r:'View again'},
+  ja:{a:'ご案内を終了しました', b:'この画面は閉じて大丈夫です。\nスマホのホームか戻る(＜)ボタンを押してください。', r:'もう一度見る'},
+  zh:{a:'介绍已结束', b:'现在可以关闭此页面了。\n请按手机的主页键或返回键(＜)。', r:'再看一次'}
+};
+function pageEnd(L){
+  var t=PAGE_END_TXT[L]||PAGE_END_TXT.ko, gone=false, url=location.href;
+  function onHide(){ gone=true; }
+  window.addEventListener('pagehide', onHide);
+  try { var w=window.open('', '_self'); if (w) w.close(); } catch(e){}
+  try { window.close(); } catch(e){}
+  setTimeout(function(){
+    if (gone) return;
+    if (document.referrer && history.length>1){ try { history.back(); } catch(e){} }
+    setTimeout(function(){
+      if (gone || location.href!==url) return;
+      window.removeEventListener('pagehide', onHide);
+      var ov=el('div',{cls:'pgend'},[
+        el('div',{cls:'pe-ic', text:'🚕'}),
+        el('b',{text:t.a}),
+        el('p',{text:t.b}),
+        el('button',{type:'button', onclick:function(){ if (ov.parentNode) ov.parentNode.removeChild(ov); }},[t.r])
+      ]);
+      (document.fullscreenElement || document.body).appendChild(ov);
+    }, 450);
+  }, 250);
+}
 /* 가족 폰에서 여는 화면 (?s=주소) */
 function shareBoot(){
   var m=/[?&]s=([a-z0-9]{16,40})\b/.exec(location.search), tok, box, st={}, map=null, car=null, dst=null, es, pingT, tmf=null, tmFail=false, tmFit=false;
@@ -7397,14 +7433,7 @@ function shareBoot(){
   box.addEventListener('pointerdown', goFull, true);
   document.body.className+=' solo';
   /* 닫기: 브라우저는 손님이 연 탭을 페이지가 직접 닫지 못하게 해서, 닫기 → 전체 화면 끄기 → 뒤로 가기 순서로 시도 */
-  function shClose(){
-    try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); } catch(e){}
-    try { window.close(); } catch(e){}
-    setTimeout(function(){
-      if (history.length>1){ history.back(); return; }
-      alert('이 화면은 휴대폰의 뒤로 가기(＜) 버튼이나 브라우저 탭 닫기로 닫아 주세요.');
-    }, 300);
-  }
+  function shClose(){ pageEnd('ko'); }
   document.title='안심도착 안내';
   function paint(){
     var ago;
@@ -7757,11 +7786,7 @@ function guideLandBoot(){
   ph=el('div',{cls:'gl-photo'},[el('span',{text:sp.ic}), sp.credit ? el('i',{text:sp.credit}) : null]);
   var limg = sp.img || (sp.local!=null && typeof PLATE_BGS!=='undefined' ? PLATE_BGS[sp.local] : '');
   if (limg){ ph.style.backgroundImage='url("'+limg+'")'; if (sp.pos) ph.style.backgroundPosition=sp.pos; ph.className='gl-photo has'; }
-  function glClose(){
-    try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); } catch(e){}
-    try { window.close(); } catch(e){}
-    setTimeout(function(){ if (history.length>1){ history.back(); return; } alert(t.bye); }, 300);
-  }
+  function glClose(){ pageEnd(L); }
   box=el('div',{cls:'gland'},[
     el('div',{cls:'gl-top'},[
       el('button',{cls:'gl-x', type:'button', onclick:function(e){ e.stopPropagation(); glClose(); }},[t.cl]),
