@@ -5967,7 +5967,18 @@ function closeGuestPage(){
    손님 폰: 나가기 — 태극 문양 화면에 감사 인사를 띄운 뒤 창을 닫는다 */
 function guideBack(){
   if (!guestMode){ closeGuide(); return; }
-  showGuestEnd();
+  /* 손님이 누른 바로 그 순간에 창 닫기를 시도한다.
+     (예전에는 감사 화면 4초 뒤에 닫기를 시도해서, 브라우저가 '손님이 누른 게 아니다'라고 보고 막았다.
+      여행가이드 화면은 누르는 즉시 닫기를 시도해서 잘 닫혔다) */
+  var gone=false;
+  function onHide(){ gone=true; }
+  window.addEventListener('pagehide', onHide);
+  try { var w=window.open('', '_self'); if (w) w.close(); } catch(e){}
+  try { window.close(); } catch(e){}
+  setTimeout(function(){
+    window.removeEventListener('pagehide', onHide);
+    if (!gone) showGuestEnd();   /* 안 닫혔으면 예전처럼 감사 인사 → 안내 끝 화면 */
+  }, 300);
 }
 function closeGuide(){
   closeAbout();
