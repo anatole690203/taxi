@@ -835,6 +835,52 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
   /* 큰 글씨는 시간·요금을 다시 위아래로 */
   .tabscr.big .tbpane.trip .tt-row{grid-template-columns:1fr}
 }
+/* ── 서울 여행 가이드 ── */
+.tbguidebtn{position:absolute;left:16px;bottom:44px;z-index:15;display:flex;align-items:center;gap:10px;min-height:56px;padding:6px 18px 6px 12px;border:2px solid #FFC61E;border-radius:28px;background:#17191c;color:#FFC61E;text-align:left;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+.tbguidebtn .gi{font-size:26px;line-height:1}
+.tbguidebtn .lb{display:flex;flex-direction:column}
+.tbguidebtn .lb b{font-size:17px;font-weight:800;line-height:1.2}
+.tbguidebtn .lb i{font-style:normal;font-size:12px;font-weight:600;opacity:.8}
+#tabScr .tbpane.gdpane .gd-qr{position:static}
+.gd-card .gd-photo{margin-top:34px}
+.tbgd .gd-qr{position:static}
+#tabScr .tbpane.gdpane{padding-top:32px!important;justify-content:flex-start;align-items:stretch;text-align:left;gap:1.4vh;padding-bottom:max(12vh,110px)}
+.gd-head{font-size:clamp(20px,3vh,32px);font-weight:800;color:#FFC61E}
+.gd-card{display:flex;flex-direction:column;gap:1.6vh;flex:1 1 auto;min-height:0}
+.gd-photo{position:relative;flex:1 1 auto;min-height:28vh;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#2B3A55,#5B3E6E 55%,#8A4B5C) center/cover no-repeat;display:flex;align-items:center;justify-content:center}
+.gd-photo .gd-ic{font-size:clamp(70px,13vh,150px);filter:drop-shadow(0 6px 16px rgba(0,0,0,.4))}
+.gd-photo.has .gd-ic{display:none}
+.gd-body{display:flex;gap:3vw;align-items:flex-start}
+/* QR은 모든 화면에서 같은 높이 (사진 아래 글자 시작점에서 42px 아래) */
+.gd-qr{margin-top:42px}
+.gd-info{flex:1 1 auto;min-width:0}
+.gd-type{font-size:clamp(14px,2vh,20px);color:#9AA0A8}
+.gd-name{font-size:clamp(28px,4.8vh,54px);font-weight:800;line-height:1.2;word-break:keep-all}
+.gd-name2{font-size:clamp(16px,2.4vh,26px);color:#C9CED4;font-weight:700}
+.gd-desc{white-space:pre-line;margin-top:1vh;font-size:clamp(16px,2.4vh,26px);color:#E4E7EB;line-height:1.45;word-break:keep-all}
+.gd-sub{white-space:pre-line;margin-top:1vh;font-size:clamp(15px,2.1vh,22px);color:#A8CBFF;word-break:keep-all}
+.gd-qr{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:clamp(130px,17vh,190px)}
+.gd-qrbox{width:100%;aspect-ratio:1/1;padding:8px;background:#fff;border-radius:8px;box-sizing:border-box}
+.gd-qrbox img,.gd-qrbox canvas{width:100%!important;height:100%!important;display:block}
+.gd-qr span{white-space:pre-line;font-size:clamp(11px,1.5vh,15px);color:#C9CED4;text-align:center;line-height:1.35;word-break:keep-all}
+.tbgd{position:absolute;inset:0;z-index:18;display:none;flex-direction:column;background:#101215;padding:3vh 3vw 2vh}
+.tbgd.on{display:flex}
+.gd-top{display:flex;align-items:center;gap:10px;margin-bottom:1.6vh}
+.gd-top b{flex:1;font-size:clamp(20px,3vh,32px);color:#FFC61E}
+.gd-top .tbreq-lang{margin-right:0}
+.gd-back{min-height:48px;padding:0 14px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#fff;font-size:16px;font-weight:700}
+.gd-scroll{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:1.4vh}
+.gd-hint{font-size:clamp(15px,2vh,20px);color:#9AA0A8}
+.gd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.2vh 1.4vw}
+.gd-grid button{display:flex;align-items:center;gap:12px;min-height:clamp(64px,8vh,92px);padding:8px 10px;border:1px solid #3A3F46;border-radius:12px;background:#1E2126;color:#fff;text-align:left}
+.gd-grid .th{flex:none;width:clamp(52px,6.5vh,72px);height:clamp(52px,6.5vh,72px);border-radius:10px;background:#2A2F36 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:28px}
+.gd-grid .nm{min-width:0}
+.gd-grid .nm b{display:block;font-size:clamp(15px,2.1vh,21px);line-height:1.25;word-break:keep-all}
+.gd-grid .nm i{display:block;font-style:normal;font-size:clamp(12px,1.6vh,15px);color:#9AA0A8;margin-top:2px}
+.tbgd .gd-card{flex:none}
+.tbgd .gd-photo{min-height:34vh}
+.tbgd .gd-close{margin-top:calc(1vh + 30px)}
+.gd-close{align-self:center;width:min(440px,100%);min-height:clamp(48px,6vh,70px);margin-top:1vh;border:2px solid #FFC61E;border-radius:10px;background:#17191c;color:#FFC61E;font-size:clamp(18px,2.6vh,26px);font-weight:800}
 /* ── 도착 예정 공유 페이지 (가족 폰) ── */
 .shv{position:fixed;inset:0;z-index:7000;display:flex;flex-direction:column;background:#101215;color:#fff;padding:16px;gap:10px;overflow-y:auto}
 .shv h2{margin:0;font-size:22px}
@@ -1662,6 +1708,15 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
     <div class="mn-list" id="mnList"></div>
     <div class="mn-rate" id="mnRate"></div>
     <div class="mn-note" id="mnNote"></div>
+  </div>
+  <div class="tbpane gdpane" id="tbGuide">
+    <div class="gd-head" id="gdHead"></div>
+    <div class="gd-card" id="gdBox"></div>
+  </div>
+  <button class="tbguidebtn" type="button" id="tbGuideBtn" style="display:none"><span class="gi">🗺</span><span class="lb"><b>서울 여행 가이드</b><i>Seoul Travel Guide</i></span></button>
+  <div class="tbgd" id="tbGd">
+    <div class="gd-top" id="gdTop"></div>
+    <div class="gd-scroll" id="gdBody"></div>
   </div>
   <button class="tbreqbtn" type="button" id="tbReqBtn" style="display:none"></button>
   <div class="tbreq" id="tbReq">
@@ -7323,6 +7378,179 @@ function shareBoot(){
   return true;
 }
 
+/* ───────── 🗺 서울 여행 가이드 ─────────
+   · 운행 중 자동: 공항→시내·시외 운행(외국인 손님은 공항행 빼고 모두)에서 명소를 한 장씩 보여 준다
+   · 손님이 직접: 왼쪽 아래 [서울 여행 가이드] 버튼 → 명소 목록 → 한 곳 누르면 크게 + QR
+   · 사진: 중계 서버(taxi-tour)의 /photo 로 한국관광공사 사진을 받아 온다 (없으면 그림 배경)
+   · QR: 한국어 손님은 네이버 지도, 외국인 손님은 구글 지도 검색으로 연결 */
+var GD_SPOTS=[
+  {id:'insadong', ic:'🏮', kw:'인사동',
+   name:{ko:'인사동', en:'Insadong', ja:'仁寺洞', zh:'仁寺洞'},
+   type:{ko:'전통 문화 거리', en:'Traditional culture street', ja:'伝統文化の街', zh:'传统文化街'},
+   desc:{ko:'전통 찻집, 공예품\n갤러리가 모인 거리', en:'Tea houses, craft shops\nand galleries on a traditional street', ja:'伝統茶屋や工芸品店\nギャラリーが並ぶ通り', zh:'传统茶馆、工艺品店\n和画廊林立的街道'},
+   sub:{ko:'🚇 3호선 안국역 6번 출구', en:'🚇 Line 3 Anguk Stn. Exit 6', ja:'🚇 3号線 安国駅 6番出口', zh:'🚇 3号线 安国站 6号出口'}},
+  {id:'bukchon', ic:'🏘️', kw:'북촌한옥마을',
+   name:{ko:'북촌 한옥마을', en:'Bukchon Hanok Village', ja:'北村韓屋村', zh:'北村韩屋村'},
+   type:{ko:'한옥 마을', en:'Traditional hanok village', ja:'韓屋の村', zh:'韩屋村'},
+   desc:{ko:'한옥 골목이 이어진 마을. 주민이 사는 곳이니 조용히 둘러봐 주세요', en:'Alleys of traditional hanok homes. People live here, so please visit quietly', ja:'韓屋の路地が続く村。住民が暮らしているので静かに見学を', zh:'韩屋小巷相连的村落，这里有居民居住，请安静参观'},
+   sub:{ko:'🚇 3호선 안국역 2번 출구', en:'🚇 Line 3 Anguk Stn. Exit 2', ja:'🚇 3号線 安国駅 2番出口', zh:'🚇 3号线 安国站 2号出口'}},
+  {id:'seochon', ic:'☕', kw:'서촌',
+   name:{ko:'서촌 한옥마을', en:'Seochon Hanok Village', ja:'西村韓屋村', zh:'西村韩屋村'},
+   type:{ko:'한옥 골목 · 카페', en:'Hanok alleys & cafés', ja:'韓屋の路地・カフェ', zh:'韩屋小巷·咖啡馆'},
+   desc:{ko:'경복궁 서쪽, 한옥과 작은 카페·맛집이 이어진 골목', en:'West of Gyeongbokgung Palace: hanok alleys with small cafés and eateries', ja:'景福宮の西、韓屋と小さなカフェや食堂が続く路地', zh:'景福宫西侧，韩屋与小咖啡馆、餐馆相连的小巷'},
+   sub:{ko:'🚇 3호선 경복궁역 2번 출구', en:'🚇 Line 3 Gyeongbokgung Stn. Exit 2', ja:'🚇 3号線 景福宮駅 2番出口', zh:'🚇 3号线 景福宫站 2号出口'}},
+  {id:'namsan', ic:'🗼', kw:'N서울타워',
+   name:{ko:'남산 N 서울타워', en:'Namsan N Seoul Tower', ja:'南山Nソウルタワー', zh:'南山N首尔塔'},
+   type:{ko:'전망대', en:'Observatory', ja:'展望台', zh:'观景台'},
+   desc:{ko:'서울 시내를 한눈에\n내려다보는 야경 명소', en:'See all of Seoul from above\nfamous for night views', ja:'ソウル市内を一望できる\n夜景の名所', zh:'俯瞰首尔全景的地方\n夜景胜地'},
+   sub:{ko:'🚇 4호선 명동역 3번 출구\n→ 남산 케이블카', en:'🚇 Line 4 Myeong-dong Stn. Exit 3\n→ Namsan Cable Car', ja:'🚇 4号線 明洞駅 3番出口\n→ 南山ケーブルカー', zh:'🚇 4号线 明洞站 3号出口\n→ 南山缆车'}},
+  {id:'cheonggye', ic:'🌊', kw:'청계천',
+   name:{ko:'청계천', en:'Cheonggyecheon Stream', ja:'清渓川', zh:'清溪川'},
+   type:{ko:'도심 산책로', en:'City stream walk', ja:'都心の散策路', zh:'城市溪流步道'},
+   desc:{ko:'도심 속 물길을 따라 걷는 산책로, 밤 조명이 아름다워요', en:'A walkway along a stream in the heart of the city, lovely at night', ja:'都心を流れる小川沿いの散策路、夜のライトアップが美しい', zh:'沿着市中心溪流漫步的步道，夜景灯光很美'},
+   sub:{ko:'🚇 5호선 광화문역 5번 출구 (청계광장)', en:'🚇 Line 5 Gwanghwamun Stn. Exit 5 (Cheonggye Plaza)', ja:'🚇 5号線 光化門駅 5番出口（清渓広場）', zh:'🚇 5号线 光化门站 5号出口（清溪广场）'}},
+  {id:'ddp', ic:'🌀', kw:'동대문디자인플라자',
+   name:{ko:'동대문 DDP', en:'Dongdaemun Design Plaza (DDP)', ja:'東大門デザインプラザ（DDP）', zh:'东大门设计广场（DDP）'},
+   type:{ko:'디자인 · 문화 공간', en:'Design & culture complex', ja:'デザイン・文化空間', zh:'设计·文化空间'},
+   desc:{ko:'곡선 건축이 멋진 랜드마크, 전시와 주변 쇼핑까지', en:'A landmark of flowing architecture, with exhibitions and shopping nearby', ja:'曲線の建築が印象的なランドマーク、展示とショッピング', zh:'曲线建筑地标，有展览，周边可购物'},
+   sub:{ko:'🚇 동대문역사문화공원역 1번 출구 (2·4·5호선)', en:'🚇 Dongdaemun History & Culture Park Stn. Exit 1 (Lines 2·4·5)', ja:'🚇 東大門歴史文化公園駅 1番出口（2・4・5号線）', zh:'🚇 东大门历史文化公园站 1号出口（2·4·5号线）'}},
+  {id:'ikseon', ic:'🍵', kw:'익선동',
+   name:{ko:'익선동 한옥거리', en:'Ikseon-dong Hanok Street', ja:'益善洞 韓屋通り', zh:'益善洞韩屋街'},
+   type:{ko:'한옥 카페 거리', en:'Hanok café street', ja:'韓屋カフェ通り', zh:'韩屋咖啡街'},
+   desc:{ko:'좁은 한옥 골목에 감성 카페와 맛집이 가득', en:'Narrow hanok alleys packed with stylish cafés and restaurants', ja:'狭い韓屋の路地におしゃれなカフェや食堂がいっぱい', zh:'狭窄的韩屋小巷里满是特色咖啡馆和餐厅'},
+   sub:{ko:'🚇 종로3가역 4번 출구 (1·3·5호선)', en:'🚇 Jongno 3-ga Stn. Exit 4 (Lines 1·3·5)', ja:'🚇 鍾路3街駅 4番出口（1・3・5号線）', zh:'🚇 钟路3街站 4号出口（1·3·5号线）'}},
+  {id:'inwang', ic:'⛰️', kw:'인왕산',
+   name:{ko:'한양도성길 인왕산 구간', en:'Seoul City Wall Trail – Inwangsan', ja:'漢陽都城道 仁王山区間', zh:'汉阳都城路 仁王山区间'},
+   type:{ko:'성곽 도보 코스', en:'City wall hiking trail', ja:'城郭ウォーキングコース', zh:'城墙徒步路线'},
+   desc:{ko:'옛 서울 성곽을 따라 걸으며 도심 전망을 즐기는 약 4km 코스', en:'About 4 km along the old city wall with great views of downtown', ja:'旧ソウルの城壁沿いに歩く約4kmのコース、市内の眺めが見事', zh:'沿古首尔城墙步行约4公里，可欣赏市中心景色'},
+   sub:{ko:'🥾 돈의문터 ↔ 창의문', en:'🥾 Donuimun Gate Site ↔ Changuimun Gate', ja:'🥾 敦義門跡 ↔ 彰義門', zh:'🥾 敦义门遗址 ↔ 彰义门'}},
+  {id:'bugak', ic:'🌲', kw:'북악',
+   name:{ko:'북악하늘길', en:'Bugak Sky Trail', ja:'北岳スカイロード', zh:'北岳天空路'},
+   type:{ko:'숲길 도보 코스', en:'Forest walking trail', ja:'森のウォーキングコース', zh:'林间步道'},
+   desc:{ko:'북악산 숲길을 걸으며 서울을 내려다보는 코스', en:'A forest trail on Bugaksan Mountain overlooking Seoul', ja:'北岳山の森の道からソウルを見下ろすコース', zh:'漫步北岳山林间小路，俯瞰首尔'},
+   sub:{ko:'🥾 북악팔각정 ↔ 발바위쉼터 · 1.8km', en:'🥾 Bugak Palgakjeong ↔ Balbawi Rest Area · 1.8 km', ja:'🥾 北岳八角亭 ↔ バルバウィ休憩所 · 1.8km', zh:'🥾 北岳八角亭 ↔ 足岩休息处 · 1.8公里'}},
+  {id:'yulgok', ic:'🏯', kw:'궁궐담장길',
+   name:{ko:'율곡로 궁궐담장길', en:'Yulgok-ro Palace Wall Path', ja:'栗谷路 宮殿の塀道', zh:'栗谷路宫墙路'},
+   type:{ko:'궁궐 산책길', en:'Palace wall walk', ja:'宮殿の散策路', zh:'宫殿散步路'},
+   desc:{ko:'창경궁과 종묘를 잇는 궁궐 담장을 따라 걷는 산책길', en:'A path along the palace walls linking Changgyeonggung and Jongmyo', ja:'昌慶宮と宗廟を結ぶ宮殿の塀沿いの散策路', zh:'连接昌庆宫与宗庙、沿宫墙而行的步道'},
+   sub:{ko:'🚇 3호선 안국역 4번 출구에서 약 750m', en:'🚇 About 750 m from Line 3 Anguk Stn. Exit 4', ja:'🚇 3号線 安国駅 4番出口から約750m', zh:'🚇 距3号线安国站4号出口约750米'}}
+];
+var GD_TEXT={
+  ko:{title:'서울 여행 가이드', qr:'QR 찍고\n지도·맛집·길찾기', list:'가 보고 싶은 곳을 눌러 보세요', back:'목록', close:'닫기 · Close'},
+  en:{title:'Seoul Travel Guide', qr:'Scan QR\nmap · food · directions', list:'Tap a place to see more', back:'List', close:'Close'},
+  ja:{title:'ソウル旅行ガイド', qr:'QRを読み取って\n地図・グルメ・道案内', list:'行きたい場所をタップしてください', back:'一覧', close:'閉じる · Close'},
+  zh:{title:'首尔旅游指南', qr:'扫码查看\n地图·美食·路线', list:'点击想去的地方查看详情', back:'列表', close:'关闭 · Close'}
+};
+var GD_PHOTO_KEY='airportCallLog.gdPhotos.v1';
+var gdPhotos=(function(){ try { return JSON.parse(sGet(GD_PHOTO_KEY)||'{}')||{}; } catch(e){ return {}; } })();
+function gdLang(){ return tb.gdLang || tbLang(); }
+function gdMapUrl(sp, L){
+  return L==='ko' ? 'https://map.naver.com/p/search/'+encodeURIComponent(sp.name.ko)
+                  : 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(sp.name.en+', Seoul');
+}
+/* 사진: 중계 서버에서 한 번 받아 두고 7일 동안 다시 쓴다 */
+function gdPhoto(sp, cb){
+  var c=gdPhotos[sp.id];
+  if (c && Date.now()-c.at < 7*86400000){ cb(c.img||''); return; }
+  if (!tb.tourUrl){ cb(''); return; }
+  fetch(tb.tourUrl+'/photo?kw='+encodeURIComponent(sp.kw), {cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){
+    var img=(j && j.ok && j.img) ? String(j.img).replace(/^http:\/\//,'https://') : '';
+    gdPhotos[sp.id]={img:img, at:Date.now()};
+    try { sSet(GD_PHOTO_KEY, JSON.stringify(gdPhotos)); } catch(e){}
+    cb(img);
+  }).catch(function(){ cb(''); });
+}
+/* 명소 한 곳을 크게 그린다 (자동 화면과 손님이 고른 화면이 같이 쓴다) */
+function gdRender(box, sp, L){
+  var t=GD_TEXT[L]||GD_TEXT.en, ph, qr, url=gdMapUrl(sp, L);
+  clear(box);
+  ph=el('div',{cls:'gd-photo'},[el('span',{cls:'gd-ic', text:sp.ic})]);
+  box.appendChild(ph);
+  gdPhoto(sp, function(img){
+    if (!img) return;
+    var im=new Image();
+    im.onload=function(){ ph.style.backgroundImage='url("'+img+'")'; ph.className='gd-photo has'; };
+    im.src=img;
+  });
+  qr=el('div',{cls:'gd-qrbox'});
+  box.appendChild(el('div',{cls:'gd-body'},[
+    el('div',{cls:'gd-info'},[
+      el('div',{cls:'gd-type', text:sp.type[L]||sp.type.en}),
+      el('div',{cls:'gd-name', text:sp.name[L]||sp.name.en}),
+      el('div',{cls:'gd-desc', text:sp.desc[L]||sp.desc.en}),
+      el('div',{cls:'gd-sub', text:sp.sub[L]||sp.sub.en})
+    ]),
+    el('div',{cls:'gd-qr'},[qr, el('span',{text:t.qr})])
+  ]));
+  loadQrLib(function(ok){
+    if (!ok) return;
+    try { new QRCode(qr, {text:url, width:220, height:220, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
+  });
+}
+/* ── 운행 중 자동 화면: 명소 세 곳을 12초씩 ── */
+var GD_AUTO_EACH=12000, GD_AUTO_COUNT=3;
+function tbShowGuide(){
+  var n=0, L=tbLang();
+  if ($('tbMsg').className.indexOf(' on')>=0 && tb.backTimer){ setTimeout(tbShowGuide, 5000); return; }
+  if (tb.gdTimer){ clearInterval(tb.gdTimer); tb.gdTimer=null; }
+  $('gdHead').textContent='🗺 '+(GD_TEXT[L]||GD_TEXT.en).title+(L==='ko' ? '' : ' · '+GD_TEXT.ko.title);
+  function step(){
+    var sp=GD_SPOTS[(tb.gdIdx||0) % GD_SPOTS.length];
+    tb.gdIdx=(tb.gdIdx||0)+1;
+    gdRender($('gdBox'), sp, L);
+    n++;
+    if (n>=GD_AUTO_COUNT && tb.gdTimer){ clearInterval(tb.gdTimer); tb.gdTimer=null; }
+  }
+  step();
+  tbPane('tbGuide');
+  tb.gdTimer=setInterval(function(){ if ($('tbGuide').className.indexOf(' on')<0){ clearInterval(tb.gdTimer); tb.gdTimer=null; return; } step(); }, GD_AUTO_EACH);
+  tbStat();
+}
+/* ── 손님이 직접 여는 가이드 (목록 → 한 곳) ── */
+function gdOpen(){ tb.gdLang=''; gdList(); $('tbGd').className='tbgd on'; gdKeep(); }
+function gdClose(){ $('tbGd').className='tbgd'; if (tb.gdCloseT){ clearTimeout(tb.gdCloseT); tb.gdCloseT=null; } }
+function gdKeep(){ if (tb.gdCloseT) clearTimeout(tb.gdCloseT); tb.gdCloseT=setTimeout(gdClose, 90000); }
+function gdTop(L, back){
+  var t=GD_TEXT[L]||GD_TEXT.en, top=$('gdTop'), langs;
+  clear(top);
+  if (back) top.appendChild(el('button',{type:'button', cls:'gd-back', onclick:function(e){ e.stopPropagation(); gdList(); gdKeep(); }},['‹ '+t.back]));
+  top.appendChild(el('b',{text:'🗺 '+t.title}));
+  langs=el('div',{cls:'tbreq-lang'});
+  [['ko','한국어'],['en','English'],['ja','日本語'],['zh','中文']].forEach(function(a){
+    langs.appendChild(el('button',{type:'button', cls: a[0]===L ? 'on' : '', onclick:function(e){ e.stopPropagation(); tb.gdLang=a[0]; if (tb.gdCur) gdDetail(tb.gdCur); else gdList(); gdKeep(); }},[a[1]]));
+  });
+  top.appendChild(langs);
+}
+function gdList(){
+  var L=gdLang(), t=GD_TEXT[L]||GD_TEXT.en, body=$('gdBody'), grid;
+  tb.gdCur=null;
+  gdTop(L, false);
+  clear(body);
+  body.appendChild(el('div',{cls:'gd-hint', text:t.list}));
+  grid=el('div',{cls:'gd-grid'});
+  GD_SPOTS.forEach(function(sp){
+    var th=el('span',{cls:'th'},[sp.ic]);
+    gdPhoto(sp, function(img){ if (img){ th.style.backgroundImage='url("'+img+'")'; th.textContent=''; th.className='th has'; } });
+    grid.appendChild(el('button',{type:'button', onclick:function(e){ e.stopPropagation(); gdDetail(sp); gdKeep(); }},[
+      th, el('span',{cls:'nm'},[el('b',{text:sp.name[L]||sp.name.en}), el('i',{text:sp.type[L]||sp.type.en})])
+    ]));
+  });
+  body.appendChild(grid);
+  body.appendChild(el('button',{type:'button', cls:'gd-close', onclick:function(e){ e.stopPropagation(); gdClose(); }},[t.close]));
+}
+function gdDetail(sp){
+  var L=gdLang(), t=GD_TEXT[L]||GD_TEXT.en, body=$('gdBody'), box=el('div',{cls:'gd-card'});
+  tb.gdCur=sp;
+  gdTop(L, true);
+  clear(body);
+  body.appendChild(box);
+  gdRender(box, sp, L);
+  body.appendChild(el('button',{type:'button', cls:'gd-close', onclick:function(e){ e.stopPropagation(); gdClose(); }},[t.close]));
+}
+function gdBind(){
+  $('tbGuideBtn').addEventListener('click', function(e){ e.stopPropagation(); gdOpen(); });
+}
+
 /* ── 태블릿 쪽 ── */
 var tb={on:false, code:'', name:'', es:null, wake:null, watch:null, pos:null,
         ride:null, alightAt:0, backTimer:null, clockTimer:null, seen:{}, speakQ:[],
@@ -7365,6 +7593,7 @@ function tabletBoot(){
   $('tbSelfUpdate').addEventListener('click', forceUpdate);
   tgBind();
   tbReqBind();
+  gdBind();
   $('tbNotTablet').addEventListener('click', function(){
     try { localStorage.removeItem(TB_MODE_KEY); } catch(e){}
     location.replace(location.href.split('?')[0]);
@@ -7373,7 +7602,8 @@ function tabletBoot(){
   return true;
 }
 function tbPane(id){
-  var ps=['tbStart','tbIdle','tbMsg','tbTrip','tbGal','tbAir','tbMoney'], i;
+  var ps=['tbStart','tbIdle','tbMsg','tbTrip','tbGal','tbAir','tbMoney','tbGuide'], i;
+  if ($('tbGuideBtn')) $('tbGuideBtn').style.display = (id==='tbStart' || id==='tbAir') ? 'none' : '';
   if (id!=='tbGal') tbSlideStop();
   if ($('tbReqBtn')) $('tbReqBtn').style.display = id==='tbStart' ? 'none' : '';
   tbFull();
@@ -7505,7 +7735,7 @@ function tbRide(m){
 }
 /* 출발 시각을 기준으로 화면을 차례로 바꾼다 */
 function tbPlanStart(){
-  var isAir=!!(tb.trip && tb.trip.ap), plan=[], i, k, base, st, fx=tbForeign(), cat=tbRouteCat(), fxLoop;
+  var isAir=!!(tb.trip && tb.trip.ap), plan=[], i, k, base, st, fx=tbForeign(), cat=tbRouteCat(), fxLoop, gdOn;
   /* 어르신 큰 글씨: 요금·시간·남은 거리 화면 하나만 계속 보여 준다 */
   if (tb.big){ tb.plan=[{t:40000, f:'trip'}]; tb.planIdx=0; tb.planAt=Date.now(); tbPlanNext(); return; }
   for (i=0;i<TB_PLAN.length;i++){
@@ -7515,12 +7745,16 @@ function tbPlanStart(){
   /* 외국인 손님: 1분 20초에 환율 화면 15초 (시내→시내는 요금 화면 한 줄로만) */
   if (fx && cat!=='C2C'){ plan.push({t:80000, f:'money'}); plan.push({t:95000, f:'trip'}); }
   fxLoop = fx && (cat==='A2C' || cat==='A2O' || cat==='C2O');
+  /* 서울 여행 가이드: 3분 20초에 45초, 그 뒤 갤러리. 10분마다 다시 */
+  gdOn = (cat==='A2C' || cat==='A2O' || (fx && cat!=='C2A'));
+  if (gdOn){ for (i=0;i<plan.length;i++) if (plan[i].t===200000 && plan[i].f==='gal') plan[i].t=245000; plan.push({t:200000, f:'guide'}); }
   /* 10분마다 다시 확인할 수 있게 요금·시간과 목적지 표를 잠깐 띄운다 */
   for (k=1;k<=TB_LOOP_TIMES;k++){
     base=k*TB_LOOP_EVERY;
     plan.push({t:base, f:'trip'});
     st=base+TB_LOOP_STEP;
     if (fxLoop){ plan.push({t:st, f:'money'}); st+=TB_LOOP_STEP; }
+    if (gdOn){ plan.push({t:st, f:'guide'}); st+=45000; }
     plan.push({t:st, f: isAir ? 'air' : 'gal'});
     if (isAir) plan.push({t:st+TB_LOOP_STEP, f:'gal'});
   }
@@ -7534,6 +7768,7 @@ function tbPlanRun(f){
   else if (f==='both') tbShowAir('both');
   else if (f==='air') tbShowAir();
   else if (f==='money') tbShowMoney(false);
+  else if (f==='guide') tbShowGuide();
 }
 function tbPlanNext(){
   var step, wait;
