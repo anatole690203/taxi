@@ -5316,6 +5316,7 @@ function renderBookList(){
 /* ───────── 승객 안내 화면 ───────── */
 var lastTrip=null;   /* {dest, time, fare, toll} */
 var guideLang='ko';
+var guestQuiet=false;   /* 외국인 손님 QR: 저절로 말하지 않고 [음성 안내]를 눌렀을 때만 */
 /* ───────── 기사 프로필 ─────────
    설정 탭에서 적어 두면 승객 안내 화면에 기사 카드로 나온다.
    사진은 이 휴대폰에만 저장된다. QR로 손님 폰에 보낼 때는 글자 정보만 주소에 싣는다 */
@@ -6000,7 +6001,8 @@ function buildGuideLangs(){
     (function(l){
       box.appendChild(el('button',{type:'button','data-v':l.v, onclick:function(){
         stopGuideVoice(); guideLang=l.v; renderGuide();
-        speakGuideSoon();   /* 언어를 고르면 그 언어로 곧바로 읽어 준다 */
+        /* 언어를 고르면 그 언어로 곧바로 읽어 준다. 단 외국인 손님 QR(조용히 열기)은 [음성 안내]를 누를 때만 */
+        if (!guestQuiet) speakGuideSoon();
       }},[l.n]));
     })(GUIDE_LANGS[i]);
   }
@@ -6426,6 +6428,16 @@ function tbTripPayload(lat, lng, name){
   try { if (guideProfile()) o.p=profileToQr(guideProfile()); } catch(e){}
   g=b64u(JSON.stringify(o));
   return {g:g, d:String(tr.dest).slice(0,60), t:tr.time||0, f:tr.fare||0, o:tr.toll?1:0, ap:airHall(tr.dest)};
+}
+/* 태블릿 갤러리 QR: [외국인 손님]이 켜져 있으면 손님 폰 화면을 영어로 열고, 음성은 저절로 나오지 않게 한다 */
+function tbGuestG(g){
+  var o;
+  if (!g || !tbForeign()) return g;
+  try { o=JSON.parse(unb64u(g)); } catch(e){ return g; }
+  if (!o || !o.d) return g;
+  if (!o.l || o.l==='ko') o.l = (tb.tripLang && tb.tripLang!=='ko' && GUIDE_TEXT[tb.tripLang]) ? tb.tripLang : 'en';
+  o.q=1;
+  try { return b64u(JSON.stringify(o)); } catch(e){ return g; }
 }
 /* 목적지가 인천공항 터미널이면 어느 터미널의 입국장·출국장인지 */
 function airHall(name){
@@ -8300,7 +8312,7 @@ function tbShowGal(){
   $('ttQrSub2').textContent=(TB_QR_TEXT[L]||TB_QR_TEXT.en).sub;
   /* QR: 손님 휴대폰에서 목적지·시간·요금 화면이 열린다 */
   box=$('ttQr'); clear(box);
-  url=location.href.split('?')[0].split('#')[0].replace(/index\.html$/,'')+'?g='+tr.g;
+  url=location.href.split('?')[0].split('#')[0].replace(/index\.html$/,'')+'?g='+tbGuestG(tr.g);
   if (tr.g) loadQrLib(function(ok){
     if (!ok) return;
     try { clear(box); new QRCode(box, {text:url, width:320, height:320, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
@@ -8817,7 +8829,9 @@ function openFromQr(){
       openGuide({dest:o.d, time:o.t||0, fare:o.f||0, toll:!!o.o,
                  lat:isNum(o.y)?o.y:null, lng:isNum(o.x)?o.x:null});
       armMapBtns();
-      autoSpeakOnce();
+      /* q: 외국인 손님 운행에서 태블릿 QR로 연 경우 — 저절로 말하지 않는다 ([음성 안내]를 누르면 나온다) */
+      guestQuiet=!!o.q;
+      if (!o.q) autoSpeakOnce();
       return true;
     }
   }
