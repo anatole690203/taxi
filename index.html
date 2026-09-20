@@ -437,6 +437,16 @@ a.brow:active{background:#2a2e34}
 .destdet{margin:8px 0 0;padding:8px 10px;background:var(--board);border-radius:4px;border-left:3px solid #C792EA;font-size:13.5px;line-height:1.45}
 .destdet .dd-addr{color:var(--muted)}
 .destdet .dd-bld{color:var(--sign);font-weight:700;margin-top:2px;font-size:15px}
+.destdet .dd-row{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:start;padding:4px 0;border-bottom:1px dashed #23272e}
+.destdet .dd-row:last-child{border-bottom:0}
+.destdet .dd-row .k{font-size:12.5px;color:var(--muted);font-weight:700;padding-top:2px}
+.destdet .dd-row .v{font-size:13.5px;color:var(--ink);line-height:1.45;min-width:0;word-break:keep-all}
+.destdet .dd-row.b .v{color:#A8F0C6}
+.destdet .dd-row.h .v{color:#D6CFFF}
+.destdet .dd-row .bld{color:var(--sign);font-size:15px}
+.destdet .dd-row .none{color:var(--muted)}
+.destdet .dd-warn{margin:4px 0;padding:6px 8px;border-radius:3px;background:#3a2f31;border-left:3px solid #FF8A8A;color:#FFD0D0;font-size:12.5px}
+.destdet .chip.cand{background:#1E2126;border-color:#5B7FFF;color:#C9D8FF;cursor:pointer;text-align:left}
 .destdet .dd-reg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;font-size:12.5px}
 .destdet .dd-reg .rh{background:#2A2540;border:1px solid #6C5CE7;color:#D6CFFF;border-radius:3px;padding:2px 7px;font-weight:700}
 .destdet .dd-reg .rb{background:#1E2A22;border:1px solid #2E7D4F;color:#A8F0C6;border-radius:3px;padding:2px 7px;font-weight:700}
@@ -4091,7 +4101,7 @@ function loadNaverSdk(key, cb){
   if (ready()){ cb(true); return; }
   try { window.navermap_authFailure=function(){ naverAuthFailed=true; }; } catch(e){}
   s=document.createElement('script');
-  s.src='https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId='+encodeURIComponent(key);
+  s.src='https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId='+encodeURIComponent(key)+'&submodules=geocoder';
   s.onload=function(){ if (done) return; done=true; setTimeout(function(){ cb(ready()); }, 400); };
   s.onerror=function(){ if (done) return; done=true; cb(false); };
   document.head.appendChild(s);
@@ -4119,6 +4129,30 @@ function kakaoLevel(zoom){ return Math.max(1, Math.min(14, 19-(zoom||12))); }
 /* 말한 내용을 카카오 장소·주소 검색으로 좌표화한다 */
 function kakaoServicesReady(){
   return typeof kakao!=='undefined' && kakao.maps && kakao.maps.services && !!kakao.maps.services.Places;
+}
+/* 네이버 지도 주소 검색 (설정의 네이버 클라이언트 ID · Geocoding 권한). 지번 주소는 네이버가 더 정확하다.
+   결과: [{n:지번주소, lat, lng, addr:도로명주소}] 또는 null */
+function naverGeocode(query, cb){
+  var key=getNaverKey();
+  if (!key){ cb(null); return; }
+  function doIt(){
+    try {
+      if (typeof naver==='undefined' || !naver.maps || !naver.maps.Service || !naver.maps.Service.geocode){ cb(null); return; }
+      naver.maps.Service.geocode({query:query}, function(status, resp){
+        var list=[], a, i, x, y;
+        if (status!==naver.maps.Service.Status.OK || !resp || !resp.v2 || !resp.v2.addresses){ cb(null); return; }
+        a=resp.v2.addresses;
+        for (i=0;i<Math.min(5,a.length);i++){
+          x=parseFloat(a[i].x); y=parseFloat(a[i].y);
+          if (!isFinite(x) || !isFinite(y)) continue;
+          list.push({n:a[i].jibunAddress || a[i].roadAddress || query, lat:y, lng:x, addr:a[i].roadAddress || '', src:'naver'});
+        }
+        cb(list.length ? list : null);
+      });
+    } catch(e){ cb(null); }
+  }
+  if (typeof naver!=='undefined' && naver.maps && naver.maps.Service){ doIt(); return; }
+  loadNaverSdk(key, function(ok){ if (ok) doIt(); else cb(null); });
 }
 /* 적은 말이 '주소'인가 '가게 이름'인가.
    주소면 주소 검색을 먼저 해야 한다. 장소 검색을 먼저 하면 "태평동 115"처럼 번지로 말했을 때
@@ -4162,19 +4196,49 @@ function searchPlace(query, cb){
         next();
       }, {size:10});
     }
-    function byAddress(next){
-      if (typeof gc.addressSearch!=='function'){ next(); return; }
-      gc.addressSearch(query, function(res, st){
-        var r;
-        if (st===kakao.maps.services.Status.OK && res && res.length){
-          r=res[0];
-          cb({n: (r.address && r.address.address_name) || r.address_name || query,
+    function toCand(r){
+      return {n:(r.address && r.address.address_name) || r.address_name || query,
               lat:parseFloat(r.y), lng:parseFloat(r.x),
-              addr:(r.road_address && r.road_address.address_name) || r.address_name || ''}, null);
+              addr:(r.road_address && r.road_address.address_name) || ''};
+    }
+    function pickBest(cands){
+      var i, best=null;
+      if (want) for (i=0;i<cands.length;i++) if (addrNum(cands[i].n)===want){ best=cands[i]; break; }
+      best = best || cands[0]; best.cands=cands; return best;
+    }
+    function byAddress(next){
+      /* 0차: 네이버 지도 주소 검색 (설정에 네이버 클라이언트 ID가 있을 때). 지번은 네이버가 정확하다 */
+      naverGeocode(query, function(nl){
+        if (nl && nl.length){ cb(pickBest(nl), null); return; }
+        byKakaoAddress(next);
+      });
+    }
+    function byKakaoAddress(next){
+      if (typeof gc.addressSearch!=='function'){ next(); return; }
+      /* 1차: 글자가 정확히 맞는 주소만(exact) · 2차: 비슷한 주소(similar) */
+      gc.addressSearch(query, function(res, st){
+        var i, cands=[], best=null;
+        if (st===kakao.maps.services.Status.OK && res && res.length){
+          for (i=0;i<Math.min(5,res.length);i++) cands.push(toCand(res[i]));
+          /* 번지가 정확히 같은 후보를 앞으로 */
+          if (want) for (i=0;i<cands.length;i++) if (addrNum(cands[i].n)===want){ best=cands[i]; break; }
+          best = best || cands[0];
+          best.cands=cands;
+          cb(best, null);
           return;
         }
-        next();
-      });
+        gc.addressSearch(query, function(res2, st2){
+          var j, c2=[], b2=null;
+          if (st2===kakao.maps.services.Status.OK && res2 && res2.length){
+            for (j=0;j<Math.min(5,res2.length);j++) c2.push(toCand(res2[j]));
+            if (want) for (j=0;j<c2.length;j++) if (addrNum(c2[j].n)===want){ b2=c2[j]; break; }
+            b2 = b2 || c2[0]; b2.cands=c2;
+            cb(b2, null);
+            return;
+          }
+          next();
+        }, {analyze_type:'similar'});
+      }, {analyze_type:'exact'});
     }
     function fail(){ cb(null, '"'+query+'" 을(를) 찾지 못했습니다'); }
     /* 주소처럼 보이면 주소 → 장소 순서, 가게 이름처럼 보이면 장소 → 주소 순서 */
@@ -4368,6 +4432,39 @@ function lookupPlace(lat, lng, cb){
   loadKakaoSdk(key, function(ok){ if (ok) doIt(); else cb(null, null); });
 }
 
+/* 좌표 → 도로명 주소·지번 주소·건물명을 따로 돌려준다 */
+function lookupBoth(lat, lng, cb){
+  var key=getKakaoKey();
+  if (!key){ cb(null); return; }
+  function doIt(){
+    if (!kakaoServicesReady()){ cb(null); return; }
+    var gc=new kakao.maps.services.Geocoder();
+    if (typeof gc.coord2Address!=='function'){ cb(null); return; }
+    try { gc.coord2Address(lng, lat, function(res, st){
+      var r, o={road:'', jibun:'', bld:''};
+      if (st===kakao.maps.services.Status.OK && res && res.length){
+        r=res[0];
+        o.road=(r.road_address && r.road_address.address_name) || '';
+        o.jibun=(r.address && r.address.address_name) || '';
+        o.bld=(r.road_address && r.road_address.building_name) || '';
+        if (!o.bld.replace(/\s/g,'')) o.bld='';
+      }
+      cb(o);
+    }); } catch(e){ cb(null); }
+  }
+  if (kakaoServicesReady()){ doIt(); return; }
+  loadKakaoSdk(key, function(ok){ if (ok) doIt(); else cb(null); });
+}
+/* 도로 이름으로 도로 폭을 어림한다 (도로명주소법: 대로 40m 이상 · 로 12~40m · 길 12m 미만) */
+function roadWidthGuess(roadAddr){
+  var toks=String(roadAddr||'').split(/\s+/), i, name='', kind;
+  for (i=0;i<toks.length;i++) if (/(대로|로|길)$/.test(toks[i]) && !/(시|도|구|군|동)$/.test(toks[i])){ name=toks[i]; break; }
+  if (!name) return null;
+  if (/길$/.test(name)) kind='길 · 폭 12m 미만 (보통 6~8m)';
+  else if (/대로$/.test(name)) kind='대로 · 폭 40m 이상';
+  else kind='로 · 폭 12~40m';
+  return {name:name, kind:kind};
+}
 /* 좌표에서 가장 가까운 권역 (간선도로 안내용) */
 function nearestZone(lat, lng){
   var best=null, bd=Infinity, i, d;
@@ -5700,9 +5797,13 @@ function loadDestDetail(pt, box){
   clear(box);
   if (!getKakaoKey()){ box.appendChild(el('span',{cls:'dd-k', text:'건물·가게 이름을 보려면 설정에 카카오 JavaScript 키가 필요합니다'})); return; }
   box.appendChild(el('span',{cls:'dd-k', text:'건물·가게 확인 중…'}));
-  lookupPlace(pt.lat, pt.lng, function(addr, place){
+  lookupBoth(pt.lat, pt.lng, function(ad){
+    ad=ad||{road:'', jibun:'', bld:''};
     placesNear(pt.lat, pt.lng, 80, function(list){
-      var det={addr:addr||'', jibun:(pt.n && /\d/.test(pt.n) ? pt.n : ''), bld:place||'', shops:list.slice(0,8), naver:0, reg:null};
+      var det={addr:ad.road||'', jibun:ad.jibun||'', asked:(pt.n && /\d/.test(pt.n) ? pt.n : ''), bld:ad.bld||'',
+               shops:list.slice(0,8), naver:0, reg:null, cands:pt.cands||[], pt:pt};
+      /* 말한 번지와 찾은 번지가 다르면 표시한다 (예: 115라고 했는데 115-3이 잡힘) */
+      det.mismatch = !!(det.asked && det.jibun && addrNum(det.asked) && addrNum(det.jibun) && addrNum(det.asked)!==addrNum(det.jibun));
       destDetCache[k]=det;
       if (box.parentNode) paintDestDetail(box, det);
       /* 행정동·법정동: 말한 주소가 행정동이면 법정동을, 법정동이면 행정동을 함께 보여 준다 */
@@ -5752,37 +5853,61 @@ function naverShops(pt, det, cb){
         if (!map[n.n.replace(/\s/g,'')]) continue;
         out.push({n:n.n, cat:n.cat, d:n.d, src:'naver'});
       }
-      cb({addr:det.addr, jibun:det.jibun, bld:det.bld, shops:out.slice(0,12), naver:1, reg:det.reg||null});
+      cb({addr:det.addr, jibun:det.jibun, asked:det.asked, bld:det.bld, shops:out.slice(0,12), naver:1, reg:det.reg||null, cands:det.cands||[], pt:det.pt, mismatch:det.mismatch});
     }).catch(function(){ cb(null); });
   } catch(e){ cb(null); }
 }
+function ddRow(label, valueNodes, cls){
+  var v=el('div',{cls:'v'});
+  (Array.isArray(valueNodes) ? valueNodes : [valueNodes]).forEach(function(x){ if (x!==null && x!==undefined) v.appendChild(typeof x==='string' ? document.createTextNode(x) : x); });
+  return el('div',{cls:'dd-row'+(cls ? ' '+cls : '')},[el('div',{cls:'k', text:label}), v]);
+}
 function paintDestDetail(box, det){
-  var row, i, s;
+  var row, i, s, rw, hName, bName, shops;
   clear(box);
-  if (!det.addr && !det.bld && !det.shops.length){ box.style.display='none'; return; }
+  if (!det.addr && !det.jibun && !det.bld && !det.shops.length){ box.style.display='none'; return; }
   box.style.display='';
-  if (det.addr && !det.bld && !det.shops.length) box.appendChild(el('div',{cls:'dd-k', text:'이 주소 둘레에 등록된 건물 이름·가게가 없습니다'}));
-  if (det.addr) box.appendChild(el('div',{cls:'dd-addr', text:'📍 '+det.addr}));
-  if (det.jibun && det.jibun!==det.addr) box.appendChild(el('div',{cls:'dd-addr', text:'🏷 '+det.jibun}));
-  if (det.reg && (det.reg.h || det.reg.b)){
-    var rrow=el('div',{cls:'dd-reg'});
-    if (det.reg.h) rrow.appendChild(el('span',{cls:'rh', text:'행정동 '+det.reg.h, title:det.reg.hFull}));
-    if (det.reg.b) rrow.appendChild(el('span',{cls:'rb', text:'법정동 '+det.reg.b, title:det.reg.bFull}));
-    if (det.reg.hFull) rrow.appendChild(el('span',{cls:'rf', text:det.reg.hFull}));
-    box.appendChild(rrow);
-  }
-  if (det.bld) box.appendChild(el('div',{cls:'dd-bld', text:'🏢 '+det.bld}));
+  /* 법정동: 지번 주소 · 행정동: 행정동 이름(시·구 포함) · 도로명: 도로명 주소 */
+  bName = det.jibun || det.asked || '';
+  hName = det.reg && det.reg.hFull ? det.reg.hFull : (det.reg && det.reg.h ? det.reg.h : '');
+  if (bName) box.appendChild(ddRow('법정동', bName, 'b'));
+  if (hName) box.appendChild(ddRow('행정동', hName, 'h'));
+  if (det.addr) box.appendChild(ddRow('도로명', det.addr));
+  if (det.pt && det.pt.src) box.appendChild(el('div',{cls:'dd-k', text:'주소 위치 찾기: '+(det.pt.src==='naver' ? '네이버 지도' : '카카오 지도')}));
+  if (det.mismatch) box.appendChild(el('div',{cls:'dd-warn', text:'⚠ 말한 번지('+addrNum(det.asked)+')와 찾은 번지('+addrNum(det.jibun)+')가 다릅니다. 아래 다른 후보를 눌러 보세요'}));
+  box.appendChild(ddRow('건물명', det.bld ? el('b',{cls:'bld', text:det.bld}) : el('span',{cls:'none', text:'등록된 건물명 없음'})));
+  /* 1층 상가: 이 건물·바로 옆(80m) 가게 */
   if (det.shops.length){
-    box.appendChild(el('div',{cls:'dd-k', text:(det.bld ? '이 건물·바로 옆' : '주소지 바로 옆')+' 가게·기관(80m 안) · '+
-      (det.naver ? '✓는 카카오·네이버 양쪽에 있는 곳' : '카카오 지도')}));
-    row=el('div',{cls:'dd-shops'});
+    shops=el('div',{cls:'dd-shops'});
     for (i=0;i<det.shops.length;i++){
       s=det.shops[i];
-      row.appendChild(el('span',{cls:'chip'+(s.src==='both' ? ' both' : (s.src==='naver' ? ' nv' : '')),
+      shops.appendChild(el('span',{cls:'chip'+(s.src==='both' ? ' both' : (s.src==='naver' ? ' nv' : '')),
         text:(s.src==='both' ? '✓ ' : '')+s.n,
         title:(s.cat||'')+' · '+Math.round(s.d)+'m'+(s.src==='naver' ? ' · 네이버에만 등록' : '')}));
     }
-    box.appendChild(row);
+    box.appendChild(ddRow('1층상가', shops));
+    box.appendChild(el('div',{cls:'dd-k', text:'80m 안 가게·기관 · '+(det.naver ? '✓는 카카오·네이버 양쪽에 있는 곳' : '카카오 지도 기준')}));
+  } else {
+    box.appendChild(ddRow('1층상가', el('span',{cls:'none', text:'1층에 상가 없음 (등록된 가게 없음)'})));
+  }
+  /* 전면 도로·진입도로: 도로명 주소의 도로 이름으로 폭을 어림한다 */
+  rw=roadWidthGuess(det.addr);
+  if (rw){
+    box.appendChild(ddRow('전면 도로', rw.name+' · '+rw.kind));
+    box.appendChild(ddRow('진입도로', rw.name+' (같은 도로) · 이름 기준 추정'));
+  }
+  /* 다른 후보: 카카오가 같은 말로 찾은 다른 지점. 누르면 그곳으로 바꾼다 */
+  if (det.cands && det.cands.length>1){
+    row=el('div',{cls:'dd-shops'});
+    for (i=0;i<det.cands.length;i++){
+      (function(c){
+        if (det.pt && Math.abs(c.lat-det.pt.lat)<1e-6 && Math.abs(c.lng-det.pt.lng)<1e-6) return;
+        row.appendChild(el('button',{cls:'chip cand', type:'button', text:c.n+(c.addr ? ' · '+c.addr : ''), onclick:function(){
+          setVoiceDest({n:c.n, lat:c.lat, lng:c.lng, addr:c.addr, cands:det.cands}); renderRoad(); toast('도착지를 '+c.n+'로 바꿨습니다');
+        }}));
+      })(det.cands[i]);
+    }
+    if (row.childNodes.length){ box.appendChild(ddRow('다른 후보', row)); }
   }
 }
 /* 기사 앱에 뜬 목적지를 옮겨 넣기 (붙여넣기 또는 직접 입력) */
