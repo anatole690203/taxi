@@ -290,10 +290,11 @@ a.brow:active{background:#2a2e34}
 .fz.hot .nm{color:var(--sign)}
 .pick{display:flex;gap:6px;align-items:stretch}
 .pick select,.pick input{flex:1 1 auto;min-width:0;text-overflow:ellipsis}
-.bname{color:var(--sign);font-weight:700}
+.bname{color:#C792EA;font-weight:700}
 .selwrap{position:relative;flex:1 1 auto;min-width:0;display:flex}
 .selwrap select{flex:1 1 auto;width:100%}
 #rdFrom,#rdFromLabel{font-size:17px;color:#C792EA;font-weight:600}
+#rdFromLabel .bname,#rdFrom .bname{color:#C792EA}
 #rdTo{font-size:17px;color:#69F0AE;font-weight:600}
 .sellabel{display:none;position:absolute;left:1px;top:1px;bottom:1px;right:30px;padding:0 0 0 11px;align-items:center;
   pointer-events:none;background:var(--panel);border-radius:4px 0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -307,9 +308,8 @@ a.brow:active{background:#2a2e34}
 .mini:disabled{opacity:.6}
 .voicemsg{font-size:14px;color:var(--muted);min-height:20px;margin-top:6px}
 .voicemsg.hear{color:var(--sign);font-weight:600}
-.voicemsg .dm1{display:grid;grid-template-columns:auto 1fr;gap:0 4px;line-height:1.45}
-.voicemsg .dm1 .dk{white-space:nowrap}
-.voicemsg .dm2{padding-left:calc(4.2em + 4px);color:#E6C94A;font-weight:500;line-height:1.45}
+.voicemsg .dk{line-height:1.45}
+.voicemsg .dm{padding-left:0;line-height:1.5}
 .btn2{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
 .btn.ride{background:#3DDC84;border-color:#3DDC84;color:#10331f;font-weight:700}
 .btn.ai{width:100%;margin-top:8px;background:#5B7FFF;border-color:#5B7FFF;color:#fff;font-weight:700}
@@ -6011,6 +6011,15 @@ function naverShops(pt, det, cb){
     }).catch(function(){ cb(null); });
   } catch(e){ cb(null); }
 }
+/* 주소 앞 시·도 줄임말을 정식 이름으로: '경기 성남시…' → '경기도 성남시…' */
+var SIDO_FULL={'서울':'서울특별시','부산':'부산광역시','대구':'대구광역시','인천':'인천광역시','광주':'광주광역시',
+  '대전':'대전광역시','울산':'울산광역시','세종':'세종특별자치시','경기':'경기도','강원':'강원특별자치도',
+  '충북':'충청북도','충남':'충청남도','전북':'전북특별자치도','전남':'전라남도','경북':'경상북도','경남':'경상남도','제주':'제주특별자치도'};
+function fullAddr(a){
+  var s=String(a||'').trim(), p=s.split(' ');
+  if (p.length>1 && SIDO_FULL[p[0]]){ p[0]=SIDO_FULL[p[0]]; return p.join(' '); }
+  return s;
+}
 function ddRow(label, valueNodes, cls){
   var v=el('div',{cls:'v'});
   (Array.isArray(valueNodes) ? valueNodes : [valueNodes]).forEach(function(x){ if (x!==null && x!==undefined) v.appendChild(typeof x==='string' ? document.createTextNode(x) : x); });
@@ -6032,10 +6041,10 @@ function paintDestDetail(box, det){
     ]));
   }
   /* 법정동: 지번 주소 · 행정동: 행정동 이름(시·구 포함) · 도로명: 도로명 주소 */
-  bName = det.jibun || det.asked || '';
+  bName = fullAddr(det.jibun || det.asked || '');
   hName = det.reg && det.reg.hFull ? det.reg.hFull : (det.reg && det.reg.h ? det.reg.h : '');
   if (bName) box.appendChild(ddRow('법정동', bName, 'b'));
-  if (det.addr) box.appendChild(ddRow('도로명', det.addr));
+  if (det.addr) box.appendChild(ddRow('도로명', fullAddr(det.addr)));
   if (det.pt && det.pt.src) box.appendChild(el('div',{cls:'dd-k', text:'주소 위치 찾기: '+(det.pt.src==='naver' ? '네이버 지도' : '카카오 지도')}));
   if (det.mismatch) box.appendChild(el('div',{cls:'dd-warn', text:'⚠ 말한 번지('+addrNum(det.asked)+')와 찾은 번지('+addrNum(det.jibun)+')가 다릅니다. 아래 다른 후보를 눌러 보세요'}));
   box.appendChild(ddRow('건물명', det.bld ? el('b',{cls:'bld', text:det.bld}) : el('span',{cls:'none', text:'등록된 건물명 없음'})));
@@ -6086,9 +6095,11 @@ function paintDestDetail(box, det){
 }
 /* 도착지 안내 두 줄: 첫 줄 '도착지: 이름(지번)', 둘째 줄 '(도로명 주소)' — 둘째 줄은 첫 줄 글자 시작에 맞춘다 */
 function paintDestMsg(msg, pt){
+  var a=fullAddr(pt.n||''), b=fullAddr(pt.addr||'');
   clear(msg);
-  msg.appendChild(el('div',{cls:'dm1'},[el('span',{cls:'dk', text:'도착지: '}), el('span',{text:pt.n||''})]));
-  if (pt.addr && pt.addr!==pt.n) msg.appendChild(el('div',{cls:'dm2', text:'('+pt.addr+')'}));
+  msg.appendChild(el('div',{cls:'dk', text:'도착지:'}));
+  msg.appendChild(el('div',{cls:'dm', text:a}));
+  if (b && b!==a) msg.appendChild(el('div',{cls:'dm', text:'('+b+')'}));
 }
 /* 기사 앱에 뜬 목적지를 옮겨 넣기 (붙여넣기 또는 직접 입력) */
 function findTypedDest(){
@@ -10284,7 +10295,7 @@ function init(){
   $('roadAxis').addEventListener('change', renderRoadList);
   (function(){
     var h=$('roadListTog'), w=$('roadListWrap');
-    function tog(){ var on=w.style.display==='none'; w.style.display= on ? '' : 'none'; h.setAttribute('aria-expanded', on ? 'true' : 'false'); h.querySelector('small').textContent= on ? '다시 누르면 숨김' : '눌러서 도로 이름 보기'; if (on) renderRoadList(); }
+    function tog(){ var on=w.style.display==='none'; w.style.display= on ? '' : 'none'; h.setAttribute('aria-expanded', on ? 'true' : 'false'); h.querySelector('small').textContent= on ? '' : '눌러서 도로 이름 보기'; if (on) renderRoadList(); }
     if (h && w){ h.addEventListener('click', tog); h.addEventListener('keydown', function(ev){ if (ev.keyCode===13||ev.keyCode===32){ ev.preventDefault(); tog(); } }); }
   })();
   $('btnCalc').addEventListener('click', function(){ calcReturn(false); });
