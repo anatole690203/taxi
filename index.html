@@ -5998,6 +5998,7 @@ function guideBack(){
   var gone=false;
   function onHide(){ gone=true; }
   window.addEventListener('pagehide', onHide);
+  if (/KAKAOTALK/i.test(navigator.userAgent||'')){ try { location.href='kakaotalk://inappbrowser/close'; } catch(e){} }
   try { var w=window.open('', '_self'); if (w) w.close(); } catch(e){}
   try { window.close(); } catch(e){}
   setTimeout(function(){
@@ -7466,10 +7467,23 @@ var PAGE_END_TXT={
   ja:{a:'ご案内を終了しました', b:'スマホのいちばん下の\n＜（戻る）ボタンで終了します。', cap:'スマホの下のボタン', n1:'', n2:'', n3:'このボタン', g:'前の画面が出たら、もう一度 ＜ を押してください。\nボタンがない機種は画面の端から内側にスワイプ。', r:'もう一度見る'},
   zh:{a:'介绍已结束', b:'请按手机最下方的\n＜（返回）键离开此页面。', cap:'手机下方的按键', n1:'', n2:'', n3:'按这个', g:'如果出现之前的页面，请再按一次 ＜。\n没有按键的手机，请从屏幕边缘向内滑动。', r:'再看一次'}
 };
+/* 큰 화면으로 보기: 먼저 이 화면을 전체 화면으로. 카카오톡 안의 브라우저처럼 전체 화면이 막혀 있으면 크롬으로 넘겨 연다 */
+function bigScreen(box){
+  var kakao=/KAKAOTALK/i.test(navigator.userAgent||'');
+  function isFull(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  if (isFull()) return;
+  try {
+    var r = box.requestFullscreen ? box.requestFullscreen({navigationUI:'hide'}) : (box.webkitRequestFullscreen ? box.webkitRequestFullscreen() : null);
+    if (r && r.catch) r.catch(function(){});
+  } catch(e){}
+  if (kakao) setTimeout(function(){ if (!isFull()) location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(location.href); }, 600);
+}
 function pageEnd(L){
   var t=PAGE_END_TXT[L]||PAGE_END_TXT.ko, gone=false, url=location.href;
   function onHide(){ gone=true; }
   window.addEventListener('pagehide', onHide);
+  /* 카카오톡 안의 브라우저는 이 주소로 창을 닫을 수 있다 */
+  if (/KAKAOTALK/i.test(navigator.userAgent||'')){ try { location.href='kakaotalk://inappbrowser/close'; } catch(e){} }
   try { var w=window.open('', '_self'); if (w) w.close(); } catch(e){}
   try { window.close(); } catch(e){}
   setTimeout(function(){
@@ -7513,12 +7527,7 @@ function shareBoot(){
       el('div',{},[el('span',{text:'남은 거리'}), el('b',{id:'shLeft', text:'–'})])
     ]),
     el('div',{cls:'done', id:'shDone', style:'display:none'}),
-    el('button',{cls:'shfull', type:'button', onclick:function(){
-      var u=location.href;
-      /* 카카오톡 안의 브라우저면 크롬으로 넘겨 연다 */
-      if (/KAKAOTALK/i.test(navigator.userAgent||'')){ location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(u); return; }
-      try { if (box.requestFullscreen) box.requestFullscreen().catch(function(){}); else if (box.webkitRequestFullscreen) box.webkitRequestFullscreen(); } catch(e){}
-    }},['큰 화면으로 보기']),
+    el('button',{cls:'shfull', type:'button', onclick:function(){ bigScreen(box); }},['큰 화면으로 보기']),
     el('div',{cls:'map', id:'shMap'}),
     el('div',{cls:'st', id:'shSt', text:'택시 태블릿이 2분마다 위치를 알려 줍니다. 이 화면을 열어 두면 저절로 바뀝니다.'}),
     el('button',{cls:'shb', type:'button', id:'shSms', onclick:function(){
@@ -7529,7 +7538,8 @@ function shareBoot(){
     el('button',{cls:'shb2', type:'button', id:'shShare', onclick:function(){
       var u=location.href;
       try {
-        if (navigator.share){ navigator.share({title:'안심도착 안내', text:'택시 안심도착 안내입니다. 지금 위치와 도착 예정 시각을 볼 수 있어요', url:u}).catch(function(){}); return; }
+        /* 긴 안내 문장 없이 주소만 보낸다 → 받는 사람 카카오톡에는 'Best Seoul Taxi' 미리보기 카드가 보인다 */
+        if (navigator.share){ navigator.share({url:u}).catch(function(){}); return; }
       } catch(e){}
       try { navigator.clipboard.writeText(u).then(function(){ alert('주소를 복사했습니다. 카카오톡에 붙여 넣어 보내 주세요.'); }, function(){ prompt('이 주소를 복사해 보내 주세요', u); }); } catch(e){ prompt('이 주소를 복사해 보내 주세요', u); }
     }},['카카오톡·다른 앱으로 보내기'])
@@ -7539,7 +7549,6 @@ function shareBoot(){
   function goFull(e){
     /* 문자보내기·카카오톡 보내기·닫기 버튼은 다른 화면으로 넘어가는 버튼이라 제외 */
     if (e && e.target && e.target.closest && e.target.closest('#shSms,#shShare,.shx')) return;
-    if (/KAKAOTALK/i.test(navigator.userAgent||'')) return;   /* 카톡 안에서는 [크게 보기]로 크롬에 넘김 */
     try {
       if (document.fullscreenElement || document.webkitFullscreenElement) return;
       if (box.requestFullscreen) box.requestFullscreen({navigationUI:'hide'}).catch(function(){});
@@ -7911,8 +7920,7 @@ function guideLandBoot(){
       gdTitle(el('div',{cls:'gl-head'}), t.title)
     ]),
     el('button',{cls:'gl-full', type:'button', onclick:function(){
-      if (/KAKAOTALK/i.test(navigator.userAgent||'')){ location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(location.href); return; }
-      try { if (box.requestFullscreen) box.requestFullscreen({navigationUI:'hide'}).catch(function(){}); else if (box.webkitRequestFullscreen) box.webkitRequestFullscreen(); } catch(e){}
+      bigScreen(box);
     }},[t.full]),
     ph,
     el('div',{cls:'gl-type', text:sp.type[L]||sp.type.en}),
