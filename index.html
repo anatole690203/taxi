@@ -995,6 +995,7 @@ body.solo{overflow:hidden;background:#101215}
 .shv .map{flex:1 1 auto;min-height:260px;border-radius:8px;overflow:hidden;background:#1b1e23}
 .shv .st{font-size:14px;color:#9AA0A8;line-height:1.5}
 .shv .done{padding:18px;border-radius:8px;background:#2ecc71;color:#0d2416;font-size:22px;font-weight:800;text-align:center}
+.shv .done.end{background:#3A3F46;color:#fff}
 .shv .shb{min-height:52px;border:0;border-radius:8px;background:#FFC61E;color:#17191c;font-size:17px;font-weight:800}
 .shv .shb2{min-height:48px;border:1px solid #FFC61E;border-radius:8px;background:transparent;color:#FFC61E;font-size:16px;font-weight:800}
 .shv .shfull{min-height:46px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#fff;font-size:16px;font-weight:700}
@@ -3563,7 +3564,7 @@ function startHereWatch(){
     var c=pos.coords, moved;
     hereAcc=c.accuracy;
     moved = !wxAt || km(c.latitude, c.longitude, wxAt.lat, wxAt.lng) > 3;
-    lastHere={lat:c.latitude, lng:c.longitude};
+    lastHere={lat:c.latitude, lng:c.longitude}; lastHereAt=Date.now();
     /* 달리는 중이면 위성이 주는 진행 방향이 자력계보다 정확하다 */
     if (c.speed!==null && c.speed!==undefined && c.speed>2.5 && c.heading!==null && c.heading!==undefined && !isNaN(c.heading)){
       gpsHead=((c.heading%360)+360)%360; gpsHeadTs=Date.now();
@@ -4765,7 +4766,7 @@ function renderRush(){
 
 /* ───────── 도로 화면 ───────── */
 var roadFilled=false;
-var lastHere=null;    /* 가장 최근에 확인한 현위치 */
+var lastHere=null, lastHereAt=0;    /* 가장 최근에 확인한 현위치 */
 var voiceDest=null;   /* 음성으로 잡은 목적지 (권역 목록에 없는 곳) */
 var hereDest=null;    /* 현위치 주소 */
 var VOICE_VAL='__voice';
@@ -5101,14 +5102,38 @@ function ptNodes(pt, fallback){
   return [(pt && pt.n) || fallback];
 }
 /* 출발 권역을 현위치로 */
+/* 정확한 현재 위치 한 번 받기
+   예전: 20초 전 값까지 그대로 쓰고(maximumAge 20초), 처음 온 값을 바로 썼다 → 건물 사이·실내에서는
+         기지국·와이파이로 잡은 첫 값이 100m 넘게 틀리는 일이 많았다.
+   지금: 옛 값을 쓰지 않고(maximumAge 0) 최대 8초 동안 위성 값을 모아 가장 정확한 것을 쓴다.
+         오차 25m 안쪽 값이 오면 바로 쓴다. 이미 달리며 지켜보던 값이 10초 안쪽·오차 30m 안쪽이면 그것을 쓴다 */
+function bestFix(ok, fail){
+  var best=null, id=null, done=false, t;
+  function finish(){
+    if (done) return; done=true;
+    try { if (id!==null) navigator.geolocation.clearWatch(id); } catch(e){}
+    clearTimeout(t);
+    if (best) ok(best); else fail();
+  }
+  if (lastHere && lastHereAt && Date.now()-lastHereAt < 10000 && isNum(hereAcc) && hereAcc <= 30){
+    ok({coords:{latitude:lastHere.lat, longitude:lastHere.lng, accuracy:hereAcc}}); return;
+  }
+  try {
+    id=navigator.geolocation.watchPosition(function(p){
+      if (!best || p.coords.accuracy < best.coords.accuracy) best=p;
+      if (p.coords.accuracy <= 25) finish();
+    }, function(){ if (!best) finish(); }, {enableHighAccuracy:true, maximumAge:0, timeout:15000});
+  } catch(e){ fail(); return; }
+  t=setTimeout(finish, 8000);
+}
 function setFromHere(){
   var btn=$('btnHere');
   if (!navigator.geolocation || isInsecurePage()){ toast('현위치를 쓰려면 https 주소로 열어야 합니다'); return; }
   btn.disabled=true; btn.textContent='확인 중';
-  navigator.geolocation.getCurrentPosition(function(pos){
+  bestFix(function(pos){
     btn.disabled=false; btn.textContent='현위치';
-    lastHere={lat:pos.coords.latitude, lng:pos.coords.longitude};
-    var la=pos.coords.latitude, ln=pos.coords.longitude;
+    lastHere={lat:pos.coords.latitude, lng:pos.coords.longitude}; lastHereAt=Date.now(); hereAcc=pos.coords.accuracy;
+    var la=pos.coords.latitude, ln=pos.coords.longitude, acc=Math.round(pos.coords.accuracy||0);
     var z=assignZone(la, ln);
     if (z===OTHER) z=nearestZone(la, ln);
     setHereDest({n:'현위치', lat:la, lng:ln});
@@ -5119,12 +5144,12 @@ function setFromHere(){
       setHereDest({n: name || ('현위치 · '+z), lat:la, lng:ln,
                    place: addr ? herePlace(addr, place) : '', addr: addr||''});
       renderRoad();
-      toast('출발지를 '+(name || z)+'로 잡았습니다');
+      toast('출발지를 '+(name || z)+'로 잡았습니다'+(acc ? ' (오차 약 '+acc+'m)' : '')+(acc > 60 ? ' · 위치가 부정확합니다. 트인 곳에서 다시 눌러 주세요' : ''));
     });
   }, function(){
     btn.disabled=false; btn.textContent='현위치';
     toast('현재 위치를 확인하지 못했습니다');
-  }, {enableHighAccuracy:true, timeout:10000, maximumAge:20000});
+  });
 }
 /* 음성으로 도착 권역 말하기 */
 var voiceRec=null;
@@ -5184,14 +5209,14 @@ function startRide(){
   var btn=$('btnRide');
   if (!navigator.geolocation || isInsecurePage()){ rideSheet(null); return; }
   btn.disabled=true; btn.textContent='위치 확인 중…';
-  navigator.geolocation.getCurrentPosition(function(pos){
+  bestFix(function(pos){
     btn.disabled=false; btn.textContent='출발 (현위치)';
-    lastHere={lat:pos.coords.latitude, lng:pos.coords.longitude};
+    lastHere={lat:pos.coords.latitude, lng:pos.coords.longitude}; lastHereAt=Date.now(); hereAcc=pos.coords.accuracy;
     rideSheet(assignZone(pos.coords.latitude, pos.coords.longitude));
   }, function(){
     btn.disabled=false; btn.textContent='출발 (현위치)';
     rideSheet(null);
-  }, {enableHighAccuracy:true, timeout:10000, maximumAge:20000});
+  });
 }
 function rideSheet(hereZone){
   var to=destZoneName(), pt=destPoint(), from, fp, adv, line, i, kids, real;
@@ -6025,7 +6050,7 @@ function buildGuideLangs(){
     (function(l){
       box.appendChild(el('button',{type:'button','data-v':l.v, onclick:function(){
         stopGuideVoice(); guideLang=l.v; renderGuide();
-        /* 언어를 고르면 그 언어로 곧바로 읽어 준다. 단 외국인 손님 QR(조용히 열기)은 [음성 안내]를 누를 때만 */
+        /* 기사 폰에서 보여 줄 때는 고른 언어로 곧바로 읽어 준다. 손님 QR 화면은 [음성 안내]를 누를 때만 */
         if (!guestQuiet) speakGuideSoon();
       }},[l.n]));
     })(GUIDE_LANGS[i]);
@@ -6946,7 +6971,7 @@ function tbAck(){
 
 /* ── 운행 시작·끝 ── */
 function tbTripBegin(){
-  tbShareEnd(true, false);
+  tbShareEnd(true, true);   /* 앞 운행이 하차 안내 없이 끝났으면 '안내가 종료되었습니다' */
   tb.rideFrom = tb.pos ? {lat:tb.pos.lat, lng:tb.pos.lng} : null;
   tb.moneyNear=false;
   if (tb.moneyBack){ clearTimeout(tb.moneyBack); tb.moneyBack=null; }
@@ -7241,10 +7266,13 @@ function tmapFrame(box, key, onFail, zoomCtl){
   var f=document.createElement('iframe'), ctl={ok:false, dead:false, q:null}, t;
   f.className='tmf';
   f.setAttribute('title','T map');
+  /* 지도 그림이 다 뜨기 전의 잔상(확대 단추·빈 타일 등)이 보이지 않게, 준비될 때까지 감춰 두었다가 부드럽게 보여 준다 */
+  f.style.opacity='0'; f.style.transition='opacity .35s ease';
   f.srcdoc=TMAP_DOC.replace('%KEY%', encodeURIComponent(key)).replace('%ZC%', zoomCtl ? 'true' : 'false');
   function onMsg(e){
     if (!f.contentWindow || e.source!==f.contentWindow || !e.data) return;
-    if (e.data.tmap==='ok'){ ctl.ok=true; if (t){ clearTimeout(t); t=null; } if (ctl.q){ var d=ctl.q; d.fit=true; ctl.set(d); } }
+    if (e.data.tmap==='ok'){ ctl.ok=true; if (t){ clearTimeout(t); t=null; } if (ctl.q){ var d=ctl.q; d.fit=true; ctl.set(d); }
+      setTimeout(function(){ f.style.opacity='1'; }, 1400); }
     else if (e.data.tmap==='fail') die(true);
   }
   function die(cb){
@@ -7425,7 +7453,7 @@ function tbShareNew(){
 function tbShareUrl(){ return tb.share ? location.href.split('?')[0].split('#')[0].replace(/index\.html$/,'')+'?s='+tb.share.tok : ''; }
 function tbShareSend(done, cancel){
   var s=tb.share, d=tb.ride, p=tb.pos, n, msg;
-  if (!s || !s.on) return;
+  if (!s || (!s.on && !done)) return;   /* 끝 소식(도착·종료)은 지금 보는 사람이 없어도 남겨 둔다 → 나중에 열어도 보인다 */
   s.last=Date.now();
   msg={v:1, at:Date.now(), d:String((tb.trip && tb.trip.d) || (d && d.n) || '').slice(0,60)};
   if (p && Date.now()-p.at < 180000){ msg.lat=Math.round(p.lat*1e5)/1e5; msg.lng=Math.round(p.lng*1e5)/1e5; }
@@ -7440,7 +7468,7 @@ function tbShareSend(done, cancel){
 function tbShareEnd(send, cancel){
   var s=tb.share;
   if (!s) return;
-  if (send && s.on) tbShareSend(true, cancel);
+  if (send) tbShareSend(true, cancel);
   try { if (s.es) s.es.close(); } catch(e){}
   tb.share=null;
   if ($('ttShareQr')) $('ttShareQr').__url='';
@@ -7560,14 +7588,24 @@ function shareBoot(){
   /* 닫기: 브라우저는 손님이 연 탭을 페이지가 직접 닫지 못하게 해서, 닫기 → 전체 화면 끄기 → 뒤로 가기 순서로 시도 */
   function shClose(){ pageEnd('ko'); }
   document.title='안심도착 안내';
+  var openedAt=Date.now();
   function paint(){
-    var ago;
+    var ago, ended;
     if (st.d) $('shDst').textContent='목적지: '+st.d;
-    if (st.done){
+    /* 20분 넘게 새 소식이 없으면 운행이 끝난 것으로 본다
+       (태블릿이 꺼졌거나, 내비가 끝나 기사님이 운행을 마친 경우 등) — 연 직후 15초는 새 소식을 기다린다 */
+    ended = !st.done && st.at && Date.now()-st.at > 1200000 && Date.now()-openedAt > 15000;
+    $('shDone').className = 'done' + ((st.done && st.cancel) || ended ? ' end' : '');
+    if (st.done && !st.cancel){
       $('shDone').style.display='';
-      $('shDone').textContent = st.cancel ? '운행 안내가 끝났습니다' : '✅ 목적지에 도착했습니다';
+      $('shDone').textContent = '✅ 목적지에 도착했습니다';
       $('shEta').textContent='도착'; $('shLeft').textContent='0 m';
+    } else if (st.done || ended){
+      $('shDone').style.display='';
+      $('shDone').textContent = '안내가 종료되었습니다';
+      $('shEta').textContent='종료'; $('shLeft').textContent='–';
     } else {
+      $('shDone').style.display='none';
       if (isNum(st.e)) $('shEta').textContent=tbHM(st.e);
       if (isNum(st.r)) $('shLeft').textContent=tbKm(st.r);
     }
@@ -7601,6 +7639,7 @@ function shareBoot(){
   }
   ping();
   pingT=setInterval(function(){ if (!document.hidden && !st.done) ping(); paint(); }, 90000);
+  setTimeout(paint, 16000);   /* 열고 나서 새 소식이 안 오면 '안내가 종료되었습니다' */
   return true;
 }
 
@@ -8863,9 +8902,8 @@ function openFromQr(){
       openGuide({dest:o.d, time:o.t||0, fare:o.f||0, toll:!!o.o,
                  lat:isNum(o.y)?o.y:null, lng:isNum(o.x)?o.x:null});
       armMapBtns();
-      /* q: 외국인 손님 운행에서 태블릿 QR로 연 경우 — 저절로 말하지 않는다 ([음성 안내]를 누르면 나온다) */
-      guestQuiet=!!o.q;
-      if (!o.q) autoSpeakOnce();
+      /* 모든 손님 QR: 저절로 말하지 않는다. 손님이 [음성 안내]를 누를 때만 손님 휴대폰에서 나온다 */
+      guestQuiet=true;
       return true;
     }
   }
@@ -8878,7 +8916,7 @@ function openFromQr(){
     openGuide({dest:(pt&&pt.n)||'', time:0, fare:0, toll:false,
                lat:pt&&isNum(pt.lat)?pt.lat:null, lng:pt&&isNum(pt.lng)?pt.lng:null});
     armMapBtns();
-    autoSpeakOnce();
+    guestQuiet=true;   /* 고정 QR도 저절로 말하지 않는다 */
     return true;
   }
   return false;
