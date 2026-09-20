@@ -437,6 +437,10 @@ a.brow:active{background:#2a2e34}
 .destdet{margin:8px 0 0;padding:8px 10px;background:var(--board);border-radius:4px;border-left:3px solid #C792EA;font-size:13.5px;line-height:1.45}
 .destdet .dd-addr{color:var(--muted)}
 .destdet .dd-bld{color:var(--sign);font-weight:700;margin-top:2px;font-size:15px}
+.destdet .dd-reg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;font-size:12.5px}
+.destdet .dd-reg .rh{background:#2A2540;border:1px solid #6C5CE7;color:#D6CFFF;border-radius:3px;padding:2px 7px;font-weight:700}
+.destdet .dd-reg .rb{background:#1E2A22;border:1px solid #2E7D4F;color:#A8F0C6;border-radius:3px;padding:2px 7px;font-weight:700}
+.destdet .dd-reg .rf{color:var(--muted)}
 .destdet .dd-k{display:block;font-size:12px;color:var(--muted);margin-top:6px}
 .destdet .dd-shops{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
 .destdet .dd-shops .chip{background:#31363D;border:1px solid var(--line);border-radius:3px;padding:3px 8px;font-size:12.5px;color:var(--ink)}
@@ -3208,6 +3212,30 @@ function recFgnNow(){
   } catch(e){}
   return false;
 }
+/* 행정동·법정동 둘 다 받아 온다: {h:'태평1동', hFull:'경기도 성남시 수정구 태평1동', b:'태평동', bFull:'…'} */
+function reverseRegions(lat, lng, cb){
+  var key=getKakaoKey();
+  if (!key){ cb(null); return; }
+  function doIt(){
+    if (!kakaoServicesReady()){ cb(null); return; }
+    try {
+      var gc=new kakao.maps.services.Geocoder();
+      if (typeof gc.coord2RegionCode!=='function'){ cb(null); return; }
+      gc.coord2RegionCode(lng, lat, function(res, st){
+        var i, o={h:'', hFull:'', b:'', bFull:''};
+        if (st===kakao.maps.services.Status.OK && res && res.length){
+          for (i=0;i<res.length;i++){
+            if (res[i].region_type==='H' && !o.h){ o.h=res[i].region_3depth_name||''; o.hFull=res[i].address_name||''; }
+            if (res[i].region_type==='B' && !o.b){ o.b=res[i].region_3depth_name||''; o.bFull=res[i].address_name||''; }
+          }
+        }
+        cb((o.h||o.b) ? o : null);
+      });
+    } catch(e){ cb(null); }
+  }
+  if (kakaoServicesReady()){ doIt(); return; }
+  loadKakaoSdk(key, function(ok){ if (ok) doIt(); else cb(null); });
+}
 /* 행정동 이름 (예: 신림동 → 카카오 coord2RegionCode의 H 타입). 카카오 키가 없으면 null */
 function reverseDong(lat, lng, cb){
   var key=getKakaoKey();
@@ -4092,30 +4120,66 @@ function kakaoLevel(zoom){ return Math.max(1, Math.min(14, 19-(zoom||12))); }
 function kakaoServicesReady(){
   return typeof kakao!=='undefined' && kakao.maps && kakao.maps.services && !!kakao.maps.services.Places;
 }
+/* 적은 말이 '주소'인가 '가게 이름'인가.
+   주소면 주소 검색을 먼저 해야 한다. 장소 검색을 먼저 하면 "태평동 115"처럼 번지로 말했을 때
+   엉뚱한 가게가 1순위로 잡혀 다른 건물로 안내되는 일이 있었다 */
+function looksLikeAddress(q){
+  var s=String(q||'').replace(/\s+/g,' ').trim();
+  if (/\d+(-\d+)?\s*(번지)?$/.test(s) && /(동|가|리|읍|면)\s*\d/.test(s)) return true;   /* 지번: 태평동 115 */
+  if (/(로|길)\s*\d+(-\d+)?$/.test(s)) return true;                                    /* 도로명: 시민로258번길 3 */
+  if (/(로|길)\d*번길\s*\d+/.test(s)) return true;
+  return false;
+}
+/* 주소에서 번지(115, 115-3)나 건물번호를 뽑는다 — 검색 결과가 그 번지인지 맞춰 보는 데 쓴다 */
+function addrNum(s){ var m=/(\d+(?:-\d+)?)\s*$/.exec(String(s||'').trim()); return m ? m[1] : ''; }
 function searchPlace(query, cb){
   var key=getKakaoKey();
   if (!query){ cb(null, '검색어가 없습니다'); return; }
   if (!key){ cb(null, '설정 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
   function doSearch(){
     if (!kakaoServicesReady()){ cb(null, '장소 검색을 불러오지 못했습니다. 새로고침해 보세요'); return; }
-    var ps=new kakao.maps.services.Places();
-    ps.keywordSearch(query, function(data, status){
-      if (status===kakao.maps.services.Status.OK && data && data.length){
-        cb({n:data[0].place_name, lat:parseFloat(data[0].y), lng:parseFloat(data[0].x),
-            addr:data[0].road_address_name || data[0].address_name || ''}, null);
-        return;
-      }
-      /* 장소로 못 찾으면 주소로 다시 */
-      var gc=new kakao.maps.services.Geocoder();
-      if (typeof gc.addressSearch!=='function'){ cb(null, '"'+query+'" 을(를) 찾지 못했습니다'); return; }
-      gc.addressSearch(query, function(res, st2){
-        if (st2===kakao.maps.services.Status.OK && res && res.length){
-          cb({n:query, lat:parseFloat(res[0].y), lng:parseFloat(res[0].x), addr:res[0].address_name||''}, null);
-        } else {
-          cb(null, '"'+query+'" 을(를) 찾지 못했습니다');
+    var ps=new kakao.maps.services.Places(), gc=new kakao.maps.services.Geocoder(),
+        want=addrNum(query), isAddr=looksLikeAddress(query);
+
+    function byKeyword(next){
+      ps.keywordSearch(query, function(data, status){
+        var i, d, hit=null;
+        if (status===kakao.maps.services.Status.OK && data && data.length){
+          /* 번지를 말했으면 그 번지와 맞는 결과를 고른다 */
+          if (want){
+            for (i=0;i<data.length;i++){
+              d=data[i];
+              if (addrNum(d.address_name)===want || addrNum(d.road_address_name)===want){ hit=d; break; }
+            }
+          }
+          if (!hit && !isAddr) hit=data[0];
+          if (hit){
+            cb({n:hit.place_name, lat:parseFloat(hit.y), lng:parseFloat(hit.x),
+                addr:hit.road_address_name || hit.address_name || ''}, null);
+            return;
+          }
         }
+        next();
+      }, {size:10});
+    }
+    function byAddress(next){
+      if (typeof gc.addressSearch!=='function'){ next(); return; }
+      gc.addressSearch(query, function(res, st){
+        var r;
+        if (st===kakao.maps.services.Status.OK && res && res.length){
+          r=res[0];
+          cb({n: (r.address && r.address.address_name) || r.address_name || query,
+              lat:parseFloat(r.y), lng:parseFloat(r.x),
+              addr:(r.road_address && r.road_address.address_name) || r.address_name || ''}, null);
+          return;
+        }
+        next();
       });
-    }, {size:5});
+    }
+    function fail(){ cb(null, '"'+query+'" 을(를) 찾지 못했습니다'); }
+    /* 주소처럼 보이면 주소 → 장소 순서, 가게 이름처럼 보이면 장소 → 주소 순서 */
+    if (isAddr) byAddress(function(){ byKeyword(fail); });
+    else        byKeyword(function(){ byAddress(fail); });
   }
   if (kakaoServicesReady()){ doSearch(); return; }
   loadKakaoSdk(key, function(ok){
@@ -5638,9 +5702,15 @@ function loadDestDetail(pt, box){
   box.appendChild(el('span',{cls:'dd-k', text:'건물·가게 확인 중…'}));
   lookupPlace(pt.lat, pt.lng, function(addr, place){
     placesNear(pt.lat, pt.lng, 80, function(list){
-      var det={addr:addr||'', bld:place||'', shops:list.slice(0,8), naver:0};
+      var det={addr:addr||'', jibun:(pt.n && /\d/.test(pt.n) ? pt.n : ''), bld:place||'', shops:list.slice(0,8), naver:0, reg:null};
       destDetCache[k]=det;
       if (box.parentNode) paintDestDetail(box, det);
+      /* 행정동·법정동: 말한 주소가 행정동이면 법정동을, 법정동이면 행정동을 함께 보여 준다 */
+      reverseRegions(pt.lat, pt.lng, function(reg){
+        if (!reg) return;
+        det.reg=reg; if (destDetCache[k]) destDetCache[k].reg=reg;
+        if (box.parentNode) paintDestDetail(box, destDetCache[k]||det);
+      });
       /* 네이버 지역검색으로 한 번 더 확인·보충 (관광 정보 서버에 /place 경로가 있을 때만) */
       naverShops(pt, det, function(merged){
         if (!merged) return;
@@ -5682,7 +5752,7 @@ function naverShops(pt, det, cb){
         if (!map[n.n.replace(/\s/g,'')]) continue;
         out.push({n:n.n, cat:n.cat, d:n.d, src:'naver'});
       }
-      cb({addr:det.addr, bld:det.bld, shops:out.slice(0,12), naver:1});
+      cb({addr:det.addr, jibun:det.jibun, bld:det.bld, shops:out.slice(0,12), naver:1, reg:det.reg||null});
     }).catch(function(){ cb(null); });
   } catch(e){ cb(null); }
 }
@@ -5693,6 +5763,14 @@ function paintDestDetail(box, det){
   box.style.display='';
   if (det.addr && !det.bld && !det.shops.length) box.appendChild(el('div',{cls:'dd-k', text:'이 주소 둘레에 등록된 건물 이름·가게가 없습니다'}));
   if (det.addr) box.appendChild(el('div',{cls:'dd-addr', text:'📍 '+det.addr}));
+  if (det.jibun && det.jibun!==det.addr) box.appendChild(el('div',{cls:'dd-addr', text:'🏷 '+det.jibun}));
+  if (det.reg && (det.reg.h || det.reg.b)){
+    var rrow=el('div',{cls:'dd-reg'});
+    if (det.reg.h) rrow.appendChild(el('span',{cls:'rh', text:'행정동 '+det.reg.h, title:det.reg.hFull}));
+    if (det.reg.b) rrow.appendChild(el('span',{cls:'rb', text:'법정동 '+det.reg.b, title:det.reg.bFull}));
+    if (det.reg.hFull) rrow.appendChild(el('span',{cls:'rf', text:det.reg.hFull}));
+    box.appendChild(rrow);
+  }
   if (det.bld) box.appendChild(el('div',{cls:'dd-bld', text:'🏢 '+det.bld}));
   if (det.shops.length){
     box.appendChild(el('div',{cls:'dd-k', text:(det.bld ? '이 건물·바로 옆' : '주소지 바로 옆')+' 가게·기관(80m 안) · '+
@@ -9659,21 +9737,10 @@ function stopGuideVoice(){
    기사 폰(손님에게 화면만 보여 줄 때)에서는 띄우지 않는다. */
 var guestMode=false, gMapShown=false;
 function tripHasPoint(){ return !!(lastTrip && isNum(lastTrip.lat) && isNum(lastTrip.lng)); }
-function renderMapBtns(){
-  var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.ko, box=$('gMap');
-  if (!box) return;   /* 지도 확인 상자는 없앴다(2026-09) → 아무 것도 그리지 않는다 */
-  $('gMapCap').textContent=t.mapCap;
-  $('gGmap').textContent=t.gmap;
-  $('gTmap').textContent=t.tmap;
-  var on = guestMode && gMapShown && tripHasPoint();
-  box.className = on ? 'gmapbox on' : 'gmapbox';
-  box.setAttribute('aria-hidden', on ? 'false' : 'true');
-}
+function renderMapBtns(){ /* 지도 확인 상자는 없앴다(2026-09) */ }
 function showMapBtns(){
-  if (!guestMode || gMapShown) return;
+  /* 지도 확인 상자는 없앴다(2026-09). 아무 것도 하지 않는다 */
   gMapShown=true;
-  renderMapBtns();
-  try { $('gMap').scrollIntoView({behavior:'smooth', block:'center'}); } catch(e){}
 }
 /* 음성이 막혀서 끝내 나오지 않는 경우를 대비해, 몇 초 지나도 말이 시작되지 않으면 버튼을 띄운다 */
 function armMapBtns(){
@@ -9875,8 +9942,6 @@ function init(){
   $('gBackBottom').addEventListener('click', guideBack);
   $('gSpeak').addEventListener('click', speakGuide);
   if ($('gQr')) $('gQr').addEventListener('click', showQr);
-  if ($('gGmap')) $('gGmap').addEventListener('click', openGoogleMap);
-  if ($('gTmap')) $('gTmap').addEventListener('click', openTmapGuest);
   if ($('qrClose')) $('qrClose').addEventListener('click', closeQr);
   if ($('qrSave')) $('qrSave').addEventListener('click', saveQrImage);
   if ($('qrShare')){
