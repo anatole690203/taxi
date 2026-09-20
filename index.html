@@ -7,8 +7,25 @@
 <title>공항콜 기록기</title>
 <!-- 카카오톡·문자로 링크를 보낼 때 미리보기 카드에 나오는 글 (가족·손님이 받는 링크용) -->
 <meta property="og:title" content="🚕 Best Seoul Taxi">
-<meta property="og:description" content="택시 안심도착 안내 · 서울 여행가이드 — 눌러서 열어 보세요">
+<meta property="og:description" content="택시 안심도착 안내&#10;서울 여행가이드&#10;💌 눌러서 열어 보세요">
 <meta property="og:type" content="website">
+<script>
+/* 안심도착(?s)·여행가이드(?pl)·손님 안내(?g, ?p=1)·태블릿(?tablet) 주소로 열면
+   그 화면이 준비될 때까지 기사용 입력 화면을 보여 주지 않는다 */
+(function(){
+  if (/[?&](s|pl|g|tablet)=|[?&]p=1\b/.test(location.search)){
+    document.documentElement.className+=' bootx';
+    setTimeout(function(){ document.documentElement.className=document.documentElement.className.replace(/\s*\bbootx\b/g,''); }, 5000);
+  }
+})();
+</script>
+<style>html.bootx,html.bootx body{background:#101215}html.bootx body{visibility:hidden}
+/* 불러오는 동안: 🚕 + 안내 문구 */
+html.bootx::before{content:'🚕';position:fixed;left:0;right:0;top:calc(50% - 110px);z-index:100000;text-align:center;font-size:64px;line-height:1;animation:bootCar 1.2s ease-in-out infinite}
+@keyframes bootCar{0%,100%{transform:translateX(-10px)}50%{transform:translateX(10px)}}
+html.bootx::after{content:'안내를 불러오는 중…\A Loading…';white-space:pre;position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;text-align:center;padding-top:30px;
+  font:700 20px/1.9 -apple-system,'Segoe UI','Noto Sans KR','Apple SD Gothic Neo',sans-serif;color:#C9CED4;background:#101215;animation:bootPulse 1.4s ease-in-out infinite}
+@keyframes bootPulse{0%,100%{opacity:1}50%{opacity:.55}}</style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#17191c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -888,6 +905,8 @@ body.solo{overflow:hidden;background:#101215}
 .shv,.gland{overscroll-behavior:contain}
 .gl-top{display:flex;align-items:center;gap:3em}
 .gl-x{flex:none;min-height:40px;padding:0 12px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:15px;font-weight:700}
+.shv:fullscreen .shfull,.gland:fullscreen .gl-full{display:none!important}
+.shv:-webkit-full-screen .shfull,.gland:-webkit-full-screen .gl-full{display:none!important}
 .gl-full{min-height:46px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#fff;font-size:15px;font-weight:700}
 /* 운행 중 자동 가이드 화면: 오른쪽 위 두 버튼 아래에서 사진이 시작 */
 #tabScr #tbGuide .gd-head{min-height:112px}
@@ -9106,10 +9125,12 @@ function init(){
   if ($('gpEnd')) $('gpEnd').addEventListener('click', endGallery);
   bindTabletPhone();
   bindAir();
-  if (shareBoot()) return;   /* 가족이 도착 예정 공유 주소로 들어왔으면 그 화면만 */
-  if (guideLandBoot()) return;   /* 손님이 여행 가이드 QR을 찍었으면 그 안내 화면만 */
-  if (tabletBoot()){ primeVoices(); return; }   /* 뒷좌석 태블릿이면 태블릿 안내 화면만 쓴다 */
+  function bootShow(){ document.documentElement.className=document.documentElement.className.replace(/\s*\bbootx\b/g,''); }
+  if (shareBoot()){ bootShow(); return; }   /* 가족이 도착 예정 공유 주소로 들어왔으면 그 화면만 */
+  if (guideLandBoot()){ bootShow(); return; }   /* 손님이 여행 가이드 QR을 찍었으면 그 안내 화면만 */
+  if (tabletBoot()){ bootShow(); primeVoices(); return; }   /* 뒷좌석 태블릿이면 태블릿 안내 화면만 쓴다 */
   openFromQr();   /* QR을 찍고 들어왔으면 곧장 승객 화면 */
+  bootShow();
   primeVoices();
   $('btnRoad').addEventListener('click', renderRoad);
   $('btnRide').addEventListener('click', startRide);
