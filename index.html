@@ -3798,7 +3798,7 @@ function startHereWatch(){
     }
   }, function(){
     if (!wxNow) loadRouteWeather();
-  }, {enableHighAccuracy:true, maximumAge:15000, timeout:20000});
+  }, {enableHighAccuracy:true, maximumAge:5000, timeout:20000});
 }
 /* 있는 곳의 진짜 주소를 받아 둔다. 못 받으면 이름 없이 둔다 */
 function nameHere(lat, lng){
@@ -5637,29 +5637,65 @@ function ptNodes(pt, fallback){
          기지국·와이파이로 잡은 첫 값이 100m 넘게 틀리는 일이 많았다.
    지금: 옛 값을 쓰지 않고(maximumAge 0) 최대 8초 동안 위성 값을 모아 가장 정확한 것을 쓴다.
          오차 25m 안쪽 값이 오면 바로 쓴다. 이미 달리며 지켜보던 값이 10초 안쪽·오차 30m 안쪽이면 그것을 쓴다 */
-function bestFix(ok, fail){
-  var best=null, id=null, done=false, t;
+/* 가장 정확한 위치 잡기.
+   휴대폰은 처음에 기지국·와이파이로 어림한 값(수백 m 오차)을 먼저 주고, 위성(GPS) 값은 몇 초 뒤에 온다.
+   예전에는 8초만 기다려 어림값으로 끝나는 일이 있었다 → 오차 20m 안이면 바로, 8초가 지나면 40m 안이면, 늦어도 20초에는 그때까지 가장 좋은 값을 쓴다 */
+var FIX_GOOD_M=20, FIX_OK_M=40, FIX_OK_AFTER=8000, FIX_MAX=20000;
+function bestFix(ok, fail, onProgress){
+  var best=null, id=null, done=false, t, started=Date.now();
   function finish(){
     if (done) return; done=true;
     try { if (id!==null) navigator.geolocation.clearWatch(id); } catch(e){}
     clearTimeout(t);
     if (best) ok(best); else fail();
   }
-  if (lastHere && lastHereAt && Date.now()-lastHereAt < 10000 && isNum(hereAcc) && hereAcc <= 30){
+  /* 방금(5초 안) 받은 값이 20m 안이면 그대로 */
+  if (lastHere && lastHereAt && Date.now()-lastHereAt < 5000 && isNum(hereAcc) && hereAcc <= FIX_GOOD_M){
     ok({coords:{latitude:lastHere.lat, longitude:lastHere.lng, accuracy:hereAcc}}); return;
   }
   try {
     id=navigator.geolocation.watchPosition(function(p){
-      if (!best || p.coords.accuracy < best.coords.accuracy) best=p;
-      if (p.coords.accuracy <= 25) finish();
-    }, function(){ if (!best) finish(); }, {enableHighAccuracy:true, maximumAge:0, timeout:15000});
+      var a=p.coords.accuracy;
+      if (!best || a < best.coords.accuracy) best=p;
+      if (onProgress) { try { onProgress(Math.round(best.coords.accuracy||0)); } catch(e){} }
+      if (a <= FIX_GOOD_M) finish();
+      else if (Date.now()-started > FIX_OK_AFTER && a <= FIX_OK_M) finish();
+    }, function(){ if (!best) finish(); }, {enableHighAccuracy:true, maximumAge:0, timeout:FIX_MAX});
   } catch(e){ fail(); return; }
-  t=setTimeout(finish, 8000);
+  t=setTimeout(finish, FIX_MAX);
+}
+/* 현위치를 잡은 뒤 20초 동안 더 정확한 값(오차가 30% 넘게 줄고 10m 넘게 움직임)이 오면 출발지를 조용히 고친다 */
+var hereRefineId=null;
+function refineHere(la, ln, acc){
+  var id, t;
+  try { if (hereRefineId!==null) navigator.geolocation.clearWatch(hereRefineId); } catch(e){}
+  if (!navigator.geolocation) return;
+  function stop(){ try { navigator.geolocation.clearWatch(id); } catch(e){} if (hereRefineId===id) hereRefineId=null; clearTimeout(t); }
+  try {
+    id=navigator.geolocation.watchPosition(function(p){
+      var a=p.coords.accuracy, nla=p.coords.latitude, nln=p.coords.longitude;
+      if (!(a < acc*0.7) || km(la, ln, nla, nln)*1000 < 10) return;
+      if (!hereDest || $('rdFrom').value!==HERE_VAL){ stop(); return; }
+      la=nla; ln=nln; acc=a;
+      lastHere={lat:la, lng:ln}; lastHereAt=Date.now(); hereAcc=a;
+      lookupPlace(la, ln, function(addr, place){
+        var z=assignZone(la, ln), name;
+        if (z===OTHER) z=nearestZone(la, ln);
+        name = addr ? hereLabel(addr, place) : null;
+        setHereDest({n: name || ('현위치 · '+z), lat:la, lng:ln, place: addr ? herePlace(addr, place) : '', addr: addr||''});
+        renderRoad();
+        toast('현위치를 더 정확하게 고쳤습니다 (오차 약 '+Math.round(a)+'m)');
+      });
+      if (a <= FIX_GOOD_M) stop();
+    }, function(){}, {enableHighAccuracy:true, maximumAge:0, timeout:FIX_MAX});
+    hereRefineId=id;
+    t=setTimeout(stop, FIX_MAX);
+  } catch(e){}
 }
 function setFromHere(){
   var btn=$('btnHere');
   if (!navigator.geolocation || isInsecurePage()){ toast('현위치를 쓰려면 https 주소로 열어야 합니다'); return; }
-  btn.disabled=true; btn.textContent='확인 중';
+  btn.disabled=true; btn.textContent='GPS 확인 중';
   bestFix(function(pos){
     btn.disabled=false; btn.textContent='현위치';
     lastHere={lat:pos.coords.latitude, lng:pos.coords.longitude}; lastHereAt=Date.now(); hereAcc=pos.coords.accuracy;
@@ -5674,12 +5710,14 @@ function setFromHere(){
       setHereDest({n: name || ('현위치 · '+z), lat:la, lng:ln,
                    place: addr ? herePlace(addr, place) : '', addr: addr||''});
       renderRoad();
-      toast('출발지를 '+(name || z)+'로 잡았습니다'+(acc ? ' (오차 약 '+acc+'m)' : '')+(acc > 60 ? ' · 위치가 부정확합니다. 트인 곳에서 다시 눌러 주세요' : ''));
+      toast('출발지를 '+(name || z)+'로 잡았습니다'+(acc ? ' (오차 약 '+acc+'m)' : '')+(acc > 60 ? ' · 오차가 큽니다. 잠시 그대로 두면 위성 값으로 고쳐지고, 계속 크면 휴대폰 설정 → 위치 → "위치 정확도 향상"을 켜 주세요' : ''));
     });
+    /* 잡은 뒤에도 잠깐 더 지켜보다가 더 정확한 값이 오면 고친다 */
+    refineHere(la, ln, pos.coords.accuracy||999);
   }, function(){
     btn.disabled=false; btn.textContent='현위치';
     toast('현재 위치를 확인하지 못했습니다');
-  });
+  }, function(acc){ btn.textContent = acc ? 'GPS '+acc+'m…' : 'GPS 확인 중'; });
 }
 /* 음성으로 도착 권역 말하기 */
 var voiceRec=null;
