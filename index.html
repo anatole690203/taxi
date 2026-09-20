@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#262A30">
 <title>공항콜 기록기</title>
+<!-- 카카오톡·문자로 링크를 보낼 때 미리보기 카드에 나오는 글 (가족·손님이 받는 링크용) -->
+<meta property="og:title" content="🚕 Best Seoul Taxi">
+<meta property="og:description" content="택시 안심도착 안내 · 서울 여행가이드 — 눌러서 열어 보세요">
+<meta property="og:type" content="website">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#17191c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -7202,7 +7206,10 @@ var TMAP_DOC='<!doctype html><html><head><meta charset="utf-8"><meta name="viewp
   '  line2=new Tmapv2.Polyline({path:ps,strokeColor:"#FFFFFF",strokeWeight:13,strokeOpacity:1,map:map});'+
   '  line=new Tmapv2.Polyline({path:ps,strokeColor:"#2F6BFF",strokeWeight:8,strokeOpacity:1,map:map});lineId=d.lineId;'+
   '  if(car){var cp=car.getPosition();car.setMap(null);car=new Tmapv2.Marker({position:cp,icon:carIc||undefined,iconSize:new Tmapv2.Size(46,46),map:map});}}'+
-  ' if(d.near&&d.car){if(!nz){map.setZoom(d.near);nz=1;}map.setCenter(LL(d.car));}'+
+  ' if(d.near&&d.car){var c=LL(d.car);'+
+  '  if(!nz){nz=1;map.setCenter(c);map.setZoom(d.near);'+
+  '   setTimeout(function(){try{map.setCenter(c);}catch(x){}},600);setTimeout(function(){try{map.setCenter(c);}catch(x){}},1800);}'+
+  '  else map.setCenter(c);}'+
   ' else if(d.fit){b=new Tmapv2.LatLngBounds();if(d.car)b.extend(LL(d.car));if(d.dest)b.extend(LL(d.dest));'+
   '  if(d.line)for(i=0;i<d.line.length;i+=10)b.extend(LL(d.line[i]));'+
   '  try{map.fitBounds(b,{left:40,top:40,right:40,bottom:40});}catch(e){try{map.fitBounds(b);}catch(x){}}}}'+
