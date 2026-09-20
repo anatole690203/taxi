@@ -5640,12 +5640,23 @@ function renderRoad(){
     box.appendChild(dd);
     loadDestDetail(dp, dd);
   }
+  /* 목적지를 좌표로 직접 잡았고(말하기·붙여넣기·찾기) 목적지가 서울 권역 밖이면 권역표 어림 안내는 쓰지 않는다.
+     (예: 신림 → 성남 태평동을 '서남 → 동남 = 올림픽대로'로 잘못 안내하던 문제) */
+  var coordDest = !!(dp && $('rdTo').value===VOICE_VAL && isNum(dp.lat));
+  var outsideZones = coordDest && assignZone(dp.lat, dp.lng)===OTHER;
+  if (outsideZones && !real){
+    box.appendChild(el('div',{cls:'tops', style:'margin:10px 0 0'}, ptNodes(fp, from).concat([' → '+dp.n])));
+    box.appendChild(el('div',{cls:'ralt', text:'서울 권역 밖 목적지라 권역표 안내는 쓰지 않습니다. T맵(실시간 교통)을 누르면 실제 경로와 경유 간선도로가 나옵니다.'}));
+    box.appendChild(el('button',{cls:'btn navi kmprev', type:'button', onclick:function(){ previewNaver(lastHere||fp, dp); }},
+      [el('span',{cls:'bl1', text:'네이버 지도 미리보기'}), el('span',{cls:'bl2', text:dp.n})]));
+    return;
+  }
   if (!adv && !real){
     box.appendChild(el('div',{cls:'empty', text:'출발과 도착 권역을 다르게 고르세요.'}));
     return;
   }
   box.appendChild(el('div',{cls:'tops', style:'margin:10px 0 0'},
-    ptNodes(fp, from).concat([' → '+(dp?dp.n:to)+' ('+zoneArea(from)+' → '+zoneArea(to)+')'])));
+    ptNodes(fp, from).concat([' → '+(dp?dp.n:to)+(outsideZones ? '' : ' ('+zoneArea(from)+' → '+zoneArea(to)+')')])));
   if (real){
     /* 실시간으로 받아 온 길 그대로 보여 준다. 권역으로 어림한 우회로·주의 문구는 이 경로와
        맞지 않을 수 있으므로 아예 붙이지 않는다 */
