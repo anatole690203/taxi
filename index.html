@@ -6020,6 +6020,12 @@ function fullAddr(a){
   if (p.length>1 && SIDO_FULL[p[0]]){ p[0]=SIDO_FULL[p[0]]; return p.join(' '); }
   return s;
 }
+/* 상호 이름이 같은 곳인가: 띄어쓰기를 빼고 한쪽이 다른 쪽을 품고 있으면 같은 곳으로 본다 */
+function sameShop(a, b){
+  var x=String(a||'').replace(/\s/g,''), y=String(b||'').replace(/\s/g,'');
+  if (!x || !y) return false;
+  return x===y || x.indexOf(y)>=0 || y.indexOf(x)>=0;
+}
 function ddRow(label, valueNodes, cls){
   var v=el('div',{cls:'v'});
   (Array.isArray(valueNodes) ? valueNodes : [valueNodes]).forEach(function(x){ if (x!==null && x!==undefined) v.appendChild(typeof x==='string' ? document.createTextNode(x) : x); });
