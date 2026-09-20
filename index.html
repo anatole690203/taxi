@@ -293,17 +293,23 @@ a.brow:active{background:#2a2e34}
 .bname{color:var(--sign);font-weight:700}
 .selwrap{position:relative;flex:1 1 auto;min-width:0;display:flex}
 .selwrap select{flex:1 1 auto;width:100%}
+#rdFrom,#rdFromLabel{font-size:17px;color:#C792EA;font-weight:600}
+#rdTo{font-size:17px;color:#69F0AE;font-weight:600}
 .sellabel{display:none;position:absolute;left:1px;top:1px;bottom:1px;right:30px;padding:0 0 0 11px;align-items:center;
   pointer-events:none;background:var(--panel);border-radius:4px 0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sellabel.on{display:block;line-height:44px}
 .pick input{min-height:46px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
 .mini{flex:none;min-height:46px;padding:0 10px;border-radius:4px;border:1px solid var(--line);background:var(--panel);font-size:13px;font-weight:600;white-space:nowrap}
+#btnHere,#btnVoice{width:104px;min-height:46px;padding:0;font-size:15px;text-align:center}
 .mini.gps{color:#A8CBFF;border-color:#A8CBFF}
 .mini.mic{color:var(--sign);border-color:var(--sign)}
 .mini.on{background:var(--danger);border-color:var(--danger);color:#fff}
 .mini:disabled{opacity:.6}
 .voicemsg{font-size:14px;color:var(--muted);min-height:20px;margin-top:6px}
 .voicemsg.hear{color:var(--sign);font-weight:600}
+.voicemsg .dm1{display:grid;grid-template-columns:auto 1fr;gap:0 4px;line-height:1.45}
+.voicemsg .dm1 .dk{white-space:nowrap}
+.voicemsg .dm2{padding-left:calc(4.2em + 4px);color:#E6C94A;font-weight:500;line-height:1.45}
 .btn2{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
 .btn.ride{background:#3DDC84;border-color:#3DDC84;color:#10331f;font-weight:700}
 .btn.ai{width:100%;margin-top:8px;background:#5B7FFF;border-color:#5B7FFF;color:#fff;font-weight:700}
@@ -1566,18 +1572,15 @@ body.solo{overflow:hidden;background:#101215}
       <div class="roadled" id="roadLed" style="display:none" aria-live="polite"></div>
       <button class="btn guidebtn" type="button" id="btnGuideTop" style="margin:0 0 12px">승객에게 요금·시간 보여주기</button>
       <div class="field">
-        <label class="hi" for="rdFrom">출발 권역</label>
         <div class="pick"><div class="selwrap"><select id="rdFrom"></select><div class="sellabel" id="rdFromLabel" aria-hidden="true"></div></div>
           <button type="button" id="btnHere" class="mini gps" title="현위치로 잡기">현위치</button></div>
       </div>
       <div class="field">
-        <label class="hi" for="rdTo">도착 권역</label>
         <div class="pick"><select id="rdTo"></select>
           <button type="button" id="btnVoice" class="mini mic" title="음성으로 도착지 말하기">🎤 말하기</button></div>
       </div>
       <div class="voicemsg" id="voiceMsg"></div>
       <div class="field" style="margin-top:6px">
-        <label class="hi" for="destText">기사 앱에 뜬 목적지 옮겨 넣기</label>
         <div class="pick">
           <input id="destText" type="text" placeholder="주소나 장소 이름을 붙여 넣거나 입력">
           <button type="button" id="btnPaste" class="mini gps" title="복사한 주소 붙여넣기">붙여넣기</button>
@@ -6070,6 +6073,12 @@ function paintDestDetail(box, det){
     if (row.childNodes.length){ box.appendChild(ddRow('다른 후보', row)); }
   }
 }
+/* 도착지 안내 두 줄: 첫 줄 '도착지: 이름(지번)', 둘째 줄 '(도로명 주소)' — 둘째 줄은 첫 줄 글자 시작에 맞춘다 */
+function paintDestMsg(msg, pt){
+  clear(msg);
+  msg.appendChild(el('div',{cls:'dm1'},[el('span',{cls:'dk', text:'도착지: '}), el('span',{text:pt.n||''})]));
+  if (pt.addr && pt.addr!==pt.n) msg.appendChild(el('div',{cls:'dm2', text:'('+pt.addr+')'}));
+}
 /* 기사 앱에 뜬 목적지를 옮겨 넣기 (붙여넣기 또는 직접 입력) */
 function findTypedDest(){
   var q=$('destText').value.replace(/^\s+|\s+$/g,''), msg=$('voiceMsg');
@@ -6079,7 +6088,7 @@ function findTypedDest(){
     if (pt){
       setVoiceDest(pt); renderRoad();
       msg.className='voicemsg hear';
-      msg.textContent='도착지: '+pt.n+(pt.addr?' ('+pt.addr+')':'');
+      paintDestMsg(msg, pt);
       toast('도착지를 '+pt.n+'로 잡았습니다');
       return;
     }
@@ -6237,7 +6246,7 @@ function startVoice(){
         if (pt){
           setVoiceDest(pt); renderRoad();
           msg.className='voicemsg hear';
-          msg.textContent='도착지: '+pt.n+(pt.addr?' ('+pt.addr+')':'');
+          paintDestMsg(msg, pt);
           toast('도착지를 '+pt.n+'로 잡았습니다');
           return;
         }
