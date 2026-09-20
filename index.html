@@ -66,6 +66,16 @@ button{cursor:pointer}
 .toptabs{margin:14px 16px 0}
 .view>.toptabs:first-child{margin-top:12px}
 .toptabs .seg button[aria-selected="true"]{border-color:var(--sign);color:var(--sign);background:#3A3F46;box-shadow:inset 0 0 0 1px var(--sign)}
+.toptabs .seg button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;padding:4px 2px;font-size:13px;line-height:1}
+.toptabs .dice{width:24px;height:24px;flex:none;transition:transform .2s}
+.toptabs .dice .df{fill:#F4F5F7;stroke:#8A9099;stroke-width:1.2}
+.toptabs .dice .dp{fill:#17191c}
+.toptabs .dice.gear .df{fill:#A7ADB5;stroke:#6F757D}
+.toptabs .dice.gear .dp{fill:#17191c}
+.toptabs button[aria-selected="true"] .dice .df{fill:var(--sign);stroke:#B98A00}
+.toptabs button[aria-selected="true"] .dice.gear .df{fill:var(--sign)}
+.toptabs .dice.roll{animation:diceRoll .7s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes diceRoll{0%{transform:rotate(0) translateY(0) scale(1)}20%{transform:rotate(90deg) translateY(-9px) scale(1.15)}45%{transform:rotate(200deg) translateY(-12px) scale(1.2)}70%{transform:rotate(300deg) translateY(-4px) scale(1.05)}85%{transform:rotate(345deg) translateY(2px)}100%{transform:rotate(360deg) translateY(0) scale(1)}}
 #map{position:relative;z-index:0}
 .view.on{display:block}
 
@@ -133,8 +143,11 @@ button{cursor:pointer}
 .opts{padding:14px 16px 4px}
 .grp{margin-bottom:10px}
 .grp .lab{font-size:13px;color:var(--muted);margin-bottom:4px}
-.grp .lab.air{color:var(--sign);font-weight:700;font-size:14px}
-.grp .lab.city{color:#A8CBFF;font-weight:700;font-size:14px}
+.grp .lab{color:#A7ADB5}
+.grp .lab.air{color:#C792EA;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.grp .lab.city{color:var(--sign);font-weight:700;font-size:14px}
+.termseg{display:flex;gap:6px}
+.termseg button{flex:none;min-width:58px;min-height:36px;font-size:14px;padding:0 10px}
 #segDirCity button[aria-pressed="true"]{border-color:#A8CBFF;color:#A8CBFF;box-shadow:inset 0 0 0 1px #A8CBFF}
 .seg{display:flex;gap:6px}
 .seg.wrap{flex-wrap:wrap}
@@ -173,6 +186,14 @@ a.brow:active{background:#2a2e34}
 /* 최근 기록 */
 .sec{margin:16px;padding:14px;background:var(--panel);border-radius:6px;border-left:5px solid var(--sign);box-shadow:0 1px 0 rgba(0,0,0,.25)}
 .sec h3{font-size:17px;font-weight:700;margin:0 0 10px;color:var(--sign);padding-bottom:8px;border-bottom:1px solid var(--line);letter-spacing:-.3px}
+.sec h3.tog{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;margin-bottom:0;border-bottom:0;padding-bottom:0}
+.sec h3.tog small{margin-left:auto;font-size:12px;font-weight:400;color:var(--muted)}
+.sec h3.tog .arrow{font-size:12px;transition:transform .2s}
+.sec h3.tog[aria-expanded="true"]{margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.sec h3.tog[aria-expanded="true"] .arrow{transform:rotate(180deg)}
+.sechd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.sechd h3{margin:0;border:0;padding:0}
+.sechd .btn{min-height:38px;font-size:13px;padding:0 10px;white-space:nowrap}
 .sec.blue{border-left-color:var(--blue)}
 .sec.blue h3{color:var(--blue)}
 .sec.green{border-left-color:var(--ok)}
@@ -225,6 +246,37 @@ a.brow:active{background:#2a2e34}
 .zbar .track{height:14px;background:var(--panel);border-radius:2px;overflow:hidden}
 .zbar .track i{display:block;height:100%}
 .zbar .c{text-align:right}
+/* 운행 경로 통계 (디지털 전광판 느낌) */
+.sec h4{font-size:14px;font-weight:700;color:var(--ink);margin:16px 0 8px;padding-left:8px;border-left:3px solid var(--sign)}
+.digis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.digis div{background:#0B0D10;border:1px solid #23272e;border-radius:6px;padding:8px 6px;text-align:center}
+.digis b{display:block;font-family:'IBM Plex Sans KR',monospace;font-size:24px;line-height:1.1;letter-spacing:.5px;color:#69F0AE;text-shadow:0 0 6px rgba(105,240,174,.7)}
+.digis b.y{color:var(--sign);text-shadow:0 0 6px rgba(255,200,30,.7)}
+.digis b.p{color:#C792EA;text-shadow:0 0 6px rgba(199,146,234,.7)}
+.digis b.o{color:#F4A259;text-shadow:0 0 6px rgba(244,162,89,.7)}
+.digis b.b{color:#8AB6F9;text-shadow:0 0 6px rgba(138,182,249,.7)}
+.digis span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.sbar{display:grid;grid-template-columns:118px 1fr 44px;gap:8px;align-items:center;font-size:13.5px;margin-bottom:6px}
+.sbar .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbar .track{height:14px;background:#0B0D10;border-radius:2px;overflow:hidden;display:flex;border:1px solid #23272e}
+.sbar .track i{display:block;height:100%}
+.sbar .c{text-align:right;font-variant-numeric:tabular-nums}
+.fgnbars{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;align-items:end;height:96px;padding:6px 4px 0;background:#0B0D10;border:1px solid #23272e;border-radius:6px}
+.fgnbars div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:2px}
+.fgnbars .bar{width:70%;display:flex;flex-direction:column;justify-content:flex-end;height:64px}
+.fgnbars .bar i{display:block;width:100%;border-radius:2px 2px 0 0}
+.fgnbars .bar i.a{background:#3A3F46}
+.fgnbars .bar i.f{background:#C792EA;box-shadow:0 0 6px rgba(199,146,234,.6)}
+.fgnbars small{font-size:10px;color:var(--muted)}
+.fgnbars b{font-size:11px;color:#C792EA;font-variant-numeric:tabular-nums}
+.stleg{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin:6px 0 2px}
+.stleg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.pair{display:flex;align-items:center;gap:6px;font-size:13.5px;padding:7px 8px;background:#0B0D10;border:1px solid #23272e;border-radius:4px;margin-bottom:5px}
+.pair .fr,.pair .to{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pair .to{text-align:right}
+.pair .ar{color:var(--muted);flex:none}
+.pair .n{flex:none;font-variant-numeric:tabular-nums;color:var(--sign);font-weight:700;min-width:34px;text-align:right}
+.pair .k{flex:none;font-size:11px;padding:1px 5px;border-radius:3px;background:#23272e;color:var(--muted)}
 .fz{padding:9px 0;border-top:1px solid var(--line)}
 .fz:first-child{border-top:0}
 .fz .top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
@@ -262,6 +314,7 @@ a.brow:active{background:#2a2e34}
 .ai-card .rd{font-size:13.5px;color:var(--blue);margin-top:4px;line-height:1.5}
 .ai-note{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
 .btn.navi{width:100%;margin-top:10px;background:#FFCD00;border-color:#FFCD00;color:#17191c;font-weight:700}
+.btn.navi.kmprev{background:#4A5058;border-color:#5B626B;color:#F2F2EE}
 .btn.ai{width:100%;margin:2px 0 10px;background:#6C5CE7;border-color:#6C5CE7;color:#fff;font-weight:700}
 .btn.ai:disabled{opacity:.7}
 .ai-card{margin:0 0 8px;padding:12px 14px;background:var(--board);border-left:4px solid var(--line);border-radius:4px}
@@ -286,6 +339,16 @@ a.brow:active{background:#2a2e34}
 .ai-card.c-free .opt{color:#A7ADB5}
 .ai-card.c-free .go{color:#A7ADB5}
 .btn.guidebtn{width:100%;margin-top:8px;background:#A8CBFF;border-color:#A8CBFF;color:#17191c;font-weight:700}
+/* 경유 간선도로 LED 전광판 */
+.roadled{margin:0 0 10px;padding:8px 10px;border-radius:6px;background:#0B0D10;border:1px solid #2A2F36;box-shadow:inset 0 0 0 1px #15181d}
+.roadled .cap{font-size:11px;color:#6F757D;letter-spacing:.5px;margin-bottom:6px}
+.roadled .cap b{color:#FF6B6B}
+.roadled .chips{display:flex;flex-wrap:wrap;gap:6px}
+.roadled .chip{font-family:'IBM Plex Sans KR',monospace;font-weight:700;font-size:14px;padding:6px 10px;border-radius:4px;background:#14171c;color:#4A5058;border:1px solid #23272e;letter-spacing:.3px}
+.roadled .chip.on{color:#FF3B3B;background:#1A0A0A;border-color:#FF3B3B;text-shadow:0 0 6px #FF3B3B,0 0 14px rgba(255,59,59,.8);animation:ledBlink .55s steps(2,end) infinite}
+.roadled .chip.on::before{content:'●';margin-right:6px;font-size:10px;vertical-align:1px}
+.roadled .chip.next{color:#FFC81E;border-color:#5a4a10}
+@keyframes ledBlink{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}
 .btn.tmap{width:100%;margin-top:8px;background:#2C7EF8;border-color:#2C7EF8;color:#fff;font-weight:700}
 .btn.nmapbtn{width:100%;margin-top:8px;background:#03C75A;border-color:#03C75A;color:#fff;font-weight:700}
 /* 경로안내 박스: 내비 세 개를 한 묶음으로 */
@@ -415,6 +478,9 @@ a.brow:active{background:#2a2e34}
 .field label.hi{color:#3DDC84;font-weight:700;font-size:14px}
 .field select,.field input,.field textarea{width:100%;min-height:46px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tqlast{font-size:14px;line-height:1.6;padding:8px 10px;background:var(--board);border-radius:4px;border:1px solid var(--line)}
+.tqlast b{color:var(--sign);font-size:18px}
+.tqlast small{color:var(--muted)}
 .guide{position:fixed;inset:0;z-index:2500;display:none;flex-direction:column;gap:14px;padding:18px;background:var(--slate);overflow:auto}
 .guide.on{display:flex}
 .glang{display:flex;gap:6px}
@@ -665,6 +731,9 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 /* 기사 폰: 태블릿 음성 켜고 끄기 */
 .tbvoice{display:none;align-items:center;gap:10px;margin:8px 16px 0;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:var(--panel);font-size:16px;font-weight:600}
 .tbvoice.on{display:flex}
+.tbmode .tbvoice{margin:0;padding:12px 8px;font-size:15px;gap:8px;flex:1}
+.tbmode.on .tbvoice{display:flex}
+.tbmode label{padding:12px 8px;gap:6px}
 .tbvoice input{width:24px;height:24px;accent-color:#FFC61E}
 .tt-top{display:flex;flex-direction:column;gap:.6vh;margin-top:3vh}
 .tt-k{font-size:clamp(14px,2vh,20px);color:#8B939C}
@@ -992,6 +1061,7 @@ body.solo{overflow:hidden;background:#101215}
 .shv .row div{padding:12px;border-radius:8px;background:#1E2126}
 .shv .row span{display:block;font-size:13px;color:#9AA0A8}
 .shv .row b{display:block;font-size:28px;margin-top:2px}
+.shv .row b#shEta{font-size:26px;letter-spacing:-.5px}
 .shv .map{flex:1 1 auto;min-height:260px;border-radius:8px;overflow:hidden;background:#1b1e23}
 .shv .st{font-size:14px;color:#9AA0A8;line-height:1.5}
 .shv .done{padding:18px;border-radius:8px;background:#2ecc71;color:#0d2416;font-size:22px;font-weight:800;text-align:center}
@@ -1000,6 +1070,21 @@ body.solo{overflow:hidden;background:#101215}
 .shv .shb2{min-height:48px;border:1px solid #FFC61E;border-radius:8px;background:transparent;color:#FFC61E;font-size:16px;font-weight:800}
 .shv .shfull{min-height:46px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#fff;font-size:16px;font-weight:700}
 .shv:fullscreen .shfull{display:none}
+.shv.big{padding:8px 10px;gap:6px}
+.shv.big .shfull,.shv.big .st,.shv.big .shb,.shv.big .shb2{display:none!important}
+.shv.big .shtop{gap:12px}
+.shv.big h2{font-size:17px}
+.shv.big .shx{min-height:32px;font-size:13px;padding:0 9px}
+.shv.big .dst{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shv.big .row{gap:6px}
+.shv.big .row div{padding:6px 10px;display:flex;align-items:baseline;gap:8px}
+.shv.big .row span{font-size:12px}
+.shv.big .row b{font-size:22px;margin:0}
+.shv.big .done{padding:10px;font-size:18px}
+.shv.big .map{min-height:0;flex:1 1 auto}
+.gland.big .gl-full{display:none!important}
+.gland.big h1{font-size:34px}
+.gland.big .gl-desc,.gland.big .gl-sub{font-size:19px}
 .tmf{border:0;width:100%;height:100%;display:block}
 /* 태블릿 갤러리 사진·영상 관리 화면 */
 .tgmgr{position:absolute;inset:0;z-index:20;display:none;background:#101215;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -1038,7 +1123,8 @@ body.solo{overflow:hidden;background:#101215}
 .tbrow.on{display:flex}
 .tbrow .btn{flex:1;min-height:52px;font-size:16px;font-weight:700}
 .tbrow .btn.alight{background:#3a2f45;border-color:#5b4a6b;color:#fff}
-.tbrow .btn.cancel{background:#2A2124;border-color:#7A3A3F;color:#FF8A8A}
+.tbrow .btn.ride2{background:#1F9D55;border-color:#1F9D55;color:#fff}
+.tbrow .btn.cancel{background:#6C5CE7;border-color:#6C5CE7;color:#fff}
 .tbrow .btn{padding:0 4px;font-size:15px;white-space:nowrap;letter-spacing:-.3px}
 .tbqr{display:flex;justify-content:center;padding:14px;background:#fff;border-radius:6px;margin:10px 0}
 /* 손님 폰 나가기 화면: 태극 문양 사진 위에 감사 인사를 띄우고 곧 창을 닫는다 */
@@ -1109,7 +1195,7 @@ body.solo{overflow:hidden;background:#101215}
 <body>
 <div class="app">
 
-  <section class="view on" id="v-rec" aria-label="기록">
+  <section class="view" id="v-rec" aria-label="기록">
     <div class="top">
       <div class="clock num" id="clock">--:--</div>
       <div class="slot" id="slot"></div>
@@ -1173,23 +1259,28 @@ body.solo{overflow:hidden;background:#101215}
     </button>
 
     <nav class="toptabs" aria-label="주요 화면"><div class="seg" role="tablist">
-      <button type="button" role="tab" data-tab="v-rec" aria-selected="true">입력</button>
-      <button type="button" role="tab" data-tab="v-air" aria-selected="false">공항</button>
-      <button type="button" role="tab" data-tab="v-road" aria-selected="false">네비</button>
-      <button type="button" role="tab" data-tab="v-map" aria-selected="false">지도</button>
+      <button type="button" role="tab" data-tab="v-road" aria-selected="true"><svg class="dice" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5" class="df"/><g class="dp"><circle cx="12" cy="12" r="2.3"/></g></svg><span>네비</span></button>
+      <button type="button" role="tab" data-tab="v-air" aria-selected="false"><svg class="dice" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5" class="df"/><g class="dp"><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="17" r="2.3"/></g></svg><span>공항</span></button>
+      <button type="button" role="tab" data-tab="v-map" aria-selected="false"><svg class="dice" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5" class="df"/><g class="dp"><circle cx="7" cy="7" r="2.3"/><circle cx="12" cy="12" r="2.3"/><circle cx="17" cy="17" r="2.3"/></g></svg><span>지도</span></button>
+      <button type="button" role="tab" data-tab="v-rec" aria-selected="false"><svg class="dice" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5" class="df"/><g class="dp"><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="7" r="2.3"/><circle cx="7" cy="17" r="2.3"/><circle cx="17" cy="17" r="2.3"/></g></svg><span>입력</span></button>
+      <button type="button" role="tab" data-tab="v-data" aria-selected="false"><svg class="dice gear" viewBox="0 0 24 24" aria-hidden="true"><path class="df" d="M12 2.2l2 .5.5 2.2 1.9 1.1 2.1-.8 1.5 1.5-.8 2.1 1.1 1.9 2.2.5.5 2-.5 2-2.2.5-1.1 1.9.8 2.1-1.5 1.5-2.1-.8-1.9 1.1-.5 2.2-2 .5-2-.5-.5-2.2-1.9-1.1-2.1.8-1.5-1.5.8-2.1-1.1-1.9-2.2-.5-.5-2 .5-2 2.2-.5 1.1-1.9-.8-2.1 1.5-1.5 2.1.8 1.9-1.1.5-2.2z"/><circle class="dp" cx="12" cy="12" r="3.2"/></svg><span>설정</span></button>
     </div></nav>
     <div class="tbrow" id="tbRow">
-      <button class="btn" type="button" id="tbRideBtn">🚕 승차 안내</button>
+      <button class="btn ride2" type="button" id="tbRideBtn">🚕 탑승 안내</button>
       <button class="btn alight" type="button" id="tbAlightBtn">👋 하차 안내</button>
-      <button class="btn cancel" type="button" id="tbCancelBtn">✕ 안내 취소</button>
+      <button class="btn cancel" type="button" id="tbCancelBtn">안내 종료</button>
     </div>
-    <label class="tbvoice" id="tbVoiceRow"><input type="checkbox" id="tbVoice"> 🔊 태블릿 음성도 함께 (끄면 화면만)</label>
     <div class="tbmode" id="tbModeRow">
-      <label><input type="checkbox" id="tbBig"> 👵 어르신 큰 글씨</label>
-      <label><input type="checkbox" id="tbFgn"> 🌏 외국인 손님</label>
+      <label class="tbvoice" id="tbVoiceRow" title="체크하면 태블릿에서 음성도 함께 나옵니다"><input type="checkbox" id="tbVoice"> 🔊 음성</label>
+      <label><input type="checkbox" id="tbBig"> 큰 글씨</label>
+      <label><input type="checkbox" id="tbFgn"> 외국인</label>
     </div>
     <div class="opts">
-      <div class="grp"><div class="lab air">공항운행</div>
+      <div class="grp"><div class="lab air"><span>공항운행</span>
+          <div class="seg termseg" id="segTerm">
+            <button type="button" data-v="T1">T1</button>
+            <button type="button" data-v="T2">T2</button>
+          </div></div>
         <div class="seg dirseg" id="segDirAir">
           <button type="button" data-v="toAir">서울 → 공항</button>
           <button type="button" data-v="fromAir">공항 → 서울</button>
@@ -1197,23 +1288,17 @@ body.solo{overflow:hidden;background:#101215}
       </div>
       <div class="grp"><div class="lab city">시내운행</div>
         <div class="seg dirseg wrap" id="segDirCity">
-          <button type="button" data-v="inCity">서울 ↔ 서울</button>
+          <button type="button" data-v="inCity">서울 → 서울</button>
           <button type="button" data-v="toOut">서울 → 시외</button>
           <button type="button" data-v="fromOut">시외 → 서울</button>
         </div>
       </div>
-      <div class="grp"><div class="lab">호출 유형</div>
+      <div class="grp"><div class="lab gray">호출 유형</div>
         <div class="seg" id="segType">
           <button type="button" data-v="우버XL">우버XL</button>
           <button type="button" data-v="카카오">카카오</button>
           <button type="button" data-v="길손">길손</button>
           <button type="button" data-v="예약">예약</button>
-        </div>
-      </div>
-      <div class="grp"><div class="lab">터미널</div>
-        <div class="seg" id="segTerm">
-          <button type="button" data-v="T1">T1</button>
-          <button type="button" data-v="T2">T2</button>
         </div>
       </div>
     </div>
@@ -1272,7 +1357,7 @@ body.solo{overflow:hidden;background:#101215}
           <option value="air">공항운행 전체</option>
         </optgroup>
         <optgroup label="시내운행">
-          <option value="inCity">서울 ↔ 서울</option>
+          <option value="inCity">서울 → 서울</option>
           <option value="toOut">서울 → 시외</option>
           <option value="fromOut">시외 → 서울</option>
           <option value="city">시내운행 전체</option>
@@ -1305,7 +1390,7 @@ body.solo{overflow:hidden;background:#101215}
     <div class="legend">
       <span><i style="background:#FFC81E"></i>서울→공항</span>
       <span><i style="background:#8AB6F9"></i>공항→서울</span>
-      <span><i style="background:#69F0AE"></i>서울↔서울</span>
+      <span><i style="background:#69F0AE"></i>서울→서울</span>
       <span><i style="background:#F4A259"></i>서울→시외</span>
       <span><i style="background:#C792EA"></i>시외→서울</span>
       <span><i style="border:2px solid var(--muted);background:var(--slate)"></i>외국인 선호 호텔 (테두리색 = 권역)</span>
@@ -1341,7 +1426,7 @@ body.solo{overflow:hidden;background:#101215}
           <option value="air">공항운행 전체</option>
         </optgroup>
         <optgroup label="시내운행">
-          <option value="inCity">서울 ↔ 서울</option>
+          <option value="inCity">서울 → 서울</option>
           <option value="toOut">서울 → 시외</option>
           <option value="fromOut">시외 → 서울</option>
           <option value="city">시내운행 전체</option>
@@ -1350,6 +1435,16 @@ body.solo{overflow:hidden;background:#101215}
       </select>
     </div>
     <div class="sum" id="sum"></div>
+    <div class="sec" id="st2">
+      <h3>운행 경로 통계</h3>
+      <div class="digis" id="st2Sum"></div>
+      <h4>🌏 외국인 시간대별</h4><div id="st2Fgn"></div>
+      <h4>🏨 호텔 탑승 (호텔 → 공항 · 시내 · 시외)</h4><div id="st2Hotel"></div>
+      <h4>📍 관광지 이동 (어디서 → 어디로)</h4><div id="st2Spot"></div>
+      <h4>🏘 동별 픽업</h4><div id="st2Dong"></div>
+      <h4>🚕 이동 거리</h4><div id="st2Dist"></div>
+      <div class="tops" style="margin-top:8px">목적지·거리는 내비로 출발(탑승)한 운행부터 쌓입니다. 동 이름은 카카오 지도 키가 있을 때 저장됩니다. 호텔은 150m, 관광지는 250m 안에서 태우거나 내린 기록으로 셉니다.</div>
+    </div>
     <div class="sec blue">
       <h3>권역별 픽업</h3>
       <div id="zbars"></div>
@@ -1366,6 +1461,22 @@ body.solo{overflow:hidden;background:#101215}
   </section>
 
   <section class="view" id="v-ret" aria-label="귀로">
+    <div class="sec gray" id="tqSec">
+      <h3>공항 택시 대기 · 함께 보고</h3>
+      <div class="empty">인천공항공사는 택시 승강장 대기 대수를 공개하지 않습니다(주차장·운항편·승객 예고만 공개). 대신 이 앱을 쓰는 기사들이 현장에서 본 대수를 보고하면 서로 공유되어, 아래 <b>앞에 선 택시(대)</b>에 자동으로 들어갑니다.</div>
+      <div class="tqlast" id="tqLast">받는 중…</div>
+      <div class="row2" style="margin-top:8px">
+        <div class="seg" id="tqTerm">
+          <button type="button" data-v="T1" aria-pressed="true">T1</button>
+          <button type="button" data-v="T2" aria-pressed="false">T2</button>
+        </div>
+        <div class="field" style="margin:0"><input id="tqN" type="text" inputmode="numeric" placeholder="지금 보이는 대수"></div>
+      </div>
+      <div class="btn2" style="margin-top:8px">
+        <button class="btn primary" type="button" id="tqSend">지금 대수 보고하기</button>
+        <button class="btn" type="button" id="tqRefresh">새로 받기</button>
+      </div>
+    </div>
     <div class="sec">
       <h3>지금 공항에서 기다릴까?</h3>
       <div class="row2">
@@ -1409,8 +1520,9 @@ body.solo{overflow:hidden;background:#101215}
     </div>
   </section>
 
-  <section class="view" id="v-road" aria-label="도로">
+  <section class="view on" id="v-road" aria-label="도로">
     <div class="sec">
+      <div class="roadled" id="roadLed" style="display:none" aria-live="polite"></div>
       <button class="btn guidebtn" type="button" id="btnGuideTop" style="margin:0 0 12px">승객에게 요금·시간 보여주기</button>
       <div class="field">
         <label class="hi" for="rdFrom">출발 권역</label>
@@ -1431,16 +1543,17 @@ body.solo{overflow:hidden;background:#101215}
           <button type="button" id="btnFind" class="mini mic" title="목적지로 지정">찾기</button>
         </div>
       </div>
-      <button class="btn ai" type="button" id="btnAi">AI 최적 경로 (T맵 실시간 교통반영)</button>
+      <button class="btn ai" type="button" id="btnAi">T맵(실시간 교통)</button>
       <div id="aiResult"></div>
       <div class="btn2">
+        <button class="btn ride" type="button" id="btnRide">출발(탑승)</button>
         <button class="btn primary" type="button" id="btnRoad">경로 보기</button>
-        <button class="btn ride" type="button" id="btnRide">출발 (현위치)</button>
       </div>
       <div id="roadResult"></div>
     </div>
-    <div class="sec blue">
-      <h3>서울 간선도로</h3>
+    <div class="sec blue" id="roadSec">
+      <h3 class="tog" id="roadListTog" role="button" tabindex="0" aria-expanded="false">서울 간선도로 <span class="arrow">▼</span><small>눌러서 도로 이름 보기</small></h3>
+      <div id="roadListWrap" style="display:none">
       <div class="filters" style="padding:0 0 10px">
         <select id="roadAxis" aria-label="축">
           <option value="all">전체</option>
@@ -1451,6 +1564,7 @@ body.solo{overflow:hidden;background:#101215}
         </select>
       </div>
       <div id="roadList"></div>
+      </div>
     </div>
   </section>
 
@@ -1530,12 +1644,16 @@ body.solo{overflow:hidden;background:#101215}
       <label class="pftog"><span>승객 화면에 기사 프로필 표시<small>끄면 안내 화면에 기사 카드가 나오지 않습니다</small></span><input type="checkbox" class="pfsw" id="pfShow"></label>
       <button class="btn primary" type="button" id="pfSave" style="margin-top:12px;width:100%">프로필 저장</button>
     </div>
+    <div class="sec"><h3>앱 버전</h3>
+      <div class="empty" id="verInfo">앱을 고쳐 올린 뒤에도 옛 화면이 보이면 아래를 누르세요. 저장해 둔 화면을 비우고 새로 받아옵니다. 운행 기록은 지워지지 않습니다.</div>
+      <button class="btn navi" type="button" id="btnUpdate">새 버전 확인</button>
+    </div>
     <div class="sec" id="airSrvSec"><h3>공항 정보 서버</h3>
       <div class="empty">공항 탭의 입국 예상 인원과 항공사 터미널 업데이트에 씁니다. Cloudflare Workers로 만든 주소를 넣으세요.</div>
       <div class="field"><label for="airSrv">공항 정보 서버 주소</label><input id="airSrv" type="url" inputmode="url" placeholder="https://taxi-airportrt.caous98.workers.dev"></div>
       <button class="btn" type="button" id="airSrvSave" style="width:100%">저장</button>
     </div>
-    <div class="sec" id="tbSec"><h3>태블릿 안내 화면</h3>
+    <div class="sec" id="tbSec"><div class="sechd"><h3>태블릿 안내 화면</h3><button class="btn" type="button" id="tbUpdate">태블릿 새 버전 받기</button></div>
       <div class="empty">뒷좌석 태블릿에 승차·하차 안내를 글자와 소리로 띄웁니다. 목적지를 정하고 내비(카카오내비·T맵·네이버)로 출발하면 곧바로 승차 안내, 3분 뒤 요금·시간, 5분 뒤 갤러리 사진과 손님용 QR이 저절로 나옵니다. 태블릿이 목적지 가까이 오면 하차 안내가 나옵니다. 태블릿 크롬에서 ⋮ → 홈 화면에 추가로 설치해 열면 주소창 없이 전체 화면으로 나옵니다.</div>
       <div class="empty" id="tbInfo"></div>
       <button class="btn primary" type="button" id="tbPair" style="width:100%;margin-top:8px">태블릿 연결 QR 보기</button>
@@ -1543,7 +1661,7 @@ body.solo{overflow:hidden;background:#101215}
         <button class="btn" type="button" id="tbTestRide">승차 안내 시험</button>
         <button class="btn" type="button" id="tbTestAlight">하차 안내 시험</button>
       </div>
-      <label class="tbvoice on" style="margin:8px 0 0"><input type="checkbox" id="tbVoice2"> 🔊 태블릿 음성도 함께 (끄면 화면만)</label>
+      <label class="tbvoice on" style="margin:8px 0 0"><input type="checkbox" id="tbVoice2"> 🔊 음성 (체크하면 태블릿에서 음성도 함께 나옵니다)</label>
       <div class="field" style="margin-top:14px"><label for="tbEtaProv">태블릿 남은 거리·도착 시각 계산</label>
         <select id="tbEtaProv"><option value="tmap">T맵 (기본)</option><option value="kakao">카카오내비 (카카오모빌리티 · 사용 권한 필요)</option></select></div>
       <button class="btn" type="button" id="tbSendKeys" style="width:100%">태블릿에 경로 계산 키 보내기</button>
@@ -1560,15 +1678,10 @@ body.solo{overflow:hidden;background:#101215}
         <button class="btn" type="button" id="tourSrvSave" style="width:100%;margin-top:6px">저장</button>
         <div class="empty">함께 드린 tour-worker.js로 만든 Cloudflare 주소를 넣으세요. 한국관광공사 자료로 하차 화면에 목적지 주변 관광지·맛집을 보여 줍니다. 비워 두면 보여 주지 않습니다.</div></div>
       <label class="tbvoice on" style="margin:8px 0 0"><input type="checkbox" id="tourAll"> 국내 손님에게도 하차 때 주변 관광지·맛집 보여 주기</label>
-      <button class="btn" type="button" id="tbUpdate" style="width:100%;margin-top:8px">태블릿 새 버전 받기</button>
       <button class="btn" type="button" id="tbUnpair" style="width:100%;margin-top:8px">연결 끊기</button>
       <div class="empty" style="margin-top:6px">승차·하차 신호는 무료 알림 서버(ntfy.sh)를 거쳐 태블릿으로 갑니다. 목적지 이름과 좌표만 보내며, 연결 코드를 아는 기기만 받을 수 있습니다.</div>
     </div>
     <div class="sec gray"><h3>저장 상태</h3><div class="empty" id="storeInfo"></div></div>
-    <div class="sec"><h3>앱 버전</h3>
-      <div class="empty" id="verInfo">앱을 고쳐 올린 뒤에도 옛 화면이 보이면 아래를 누르세요. 저장해 둔 화면을 비우고 새로 받아옵니다. 운행 기록은 지워지지 않습니다.</div>
-      <button class="btn navi" type="button" id="btnUpdate">새 버전 확인</button>
-    </div>
     <div class="sec"><h3>음성 안내 목소리</h3>
       <div class="empty" id="voiceInfo">이 휴대폰에 깔린 목소리 중에서 고릅니다. 삼성 TTS 엔진 목소리는 <b>기기</b>로, 크롬이 인터넷으로 받아오는 것은 <b>온라인</b>으로 표시됩니다.</div>
       <div class="field"><label class="hi" for="vcKo">한국어</label><select id="vcKo"></select></div>
@@ -1595,7 +1708,7 @@ body.solo{overflow:hidden;background:#101215}
         <input id="mapKey" type="text" inputmode="latin" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="발급받은 키를 붙여 넣으세요">
       </div>
       <div class="field">
-        <label for="routeProv">AI 최적 경로에 쓸 실시간 교통</label>
+        <label for="routeProv">네비 탭 T맵(실시간 교통) 버튼에 쓸 경로 서비스</label>
         <select id="routeProv">
           <option value="tmap">TMAP (권장 · 즉시 발급)</option>
           <option value="kakao">카카오모빌리티 (사용 권한 승인 필요)</option>
@@ -1626,7 +1739,7 @@ body.solo{overflow:hidden;background:#101215}
         <p><b>네이버 지도:</b> 네이버 클라우드 플랫폼 콘솔에서 Maps → Application 등록, Web Dynamic Map 선택, Web 서비스 URL에 같은 주소를 등록한 뒤 Client ID를 넣으세요. 결제 수단 등록이 필요합니다.</p>
         <p><b>카카오내비 길안내</b>는 카카오내비 앱을 직접 실행합니다(앱이 없으면 설치 화면). <b>카카오맵 길찾기</b>는 카카오맵 앱이 필요하며, 앱 연결이 막혀 있으면 "연결중입니다" 안내 페이지가 뜹니다. 그럴 때는 카카오내비나 네이버 지도를 고르세요.</p>
         <p><b>카카오모빌리티 경로:</b> 카카오 개발자 플랫폼 키의 REST API 키가 필요하고, 데브톡에서 자동차 길찾기(Directions) 사용 권한을 따로 신청해 승인받아야 합니다. 승인 전에는 권한 오류가 납니다.</p>
-        <p><b>TMAP appKey:</b> openapi.sk.com 회원가입 → 대시보드에서 앱을 만들고 TMAP API 사용 신청을 하면 즉시 발급됩니다. 도로 탭의 "AI 최적 경로"가 이 키로 실시간 교통을 반영한 경로를 계산합니다.</p>
+        <p><b>TMAP appKey:</b> openapi.sk.com 회원가입 → 대시보드에서 앱을 만들고 TMAP API 사용 신청을 하면 즉시 발급됩니다. 네비 탭의 "T맵(실시간 교통)"이 이 키로 실시간 교통을 반영한 경로를 계산합니다.</p>
         <p>주소를 등록하지 않으면 인증 오류가 나고, 그때는 기본 지도로 자동 전환됩니다.</p>
       </div>
     </div>
@@ -1672,13 +1785,6 @@ body.solo{overflow:hidden;background:#101215}
   </div>
   <button class="btn speakbtn" type="button" id="gSpeak"></button>
   <button class="btn qrbtn" type="button" id="gQr"></button>
-  <div class="gmapbox" id="gMap" aria-hidden="true">
-    <div class="gmapcap" id="gMapCap"></div>
-    <div class="gmaprow">
-      <button class="btn mapbtn gm" type="button" id="gGmap"></button>
-      <button class="btn mapbtn tm" type="button" id="gTmap"></button>
-    </div>
-  </div>
   <div class="qrwrap" id="qrWrap" aria-hidden="true">
     <div class="qrbox">
       <div class="qrcap" id="qrCap"></div>
@@ -1962,7 +2068,44 @@ var HOTELS = [
   {n:'조선 팰리스 강남', lat:37.5028999, lng:127.0413106, note:''},
   {n:'안다즈 서울 강남', lat:37.5254876, lng:127.0289201, note:''},
   {n:'인천공항 T1', lat:37.4497, lng:126.4506, note:'예약택시 1C·14C'},
-  {n:'인천공항 T2', lat:37.4688875, lng:126.433359, note:'예약택시 1C·10C'}
+  {n:'인천공항 T2', lat:37.4688875, lng:126.433359, note:'예약택시 1C·10C'},
+  /* ── 2026-09 추가: 외국인 투숙 비중·평점이 높은 호텔 (좌표는 대략치 · 실제 승차 위치는 현장에서 확인) ── */
+  {n:'더 플라자 호텔', lat:37.5645, lng:126.9771, note:'시청 앞 · 외국인 비즈니스·관광 많음'},
+  {n:'서울신라호텔', lat:37.5558, lng:127.0055, note:'장충동 · 외국인 VIP·일본 손님'},
+  {n:'롯데시티호텔 명동', lat:37.5650, lng:126.9903, note:'을지로 · 일본·동남아 개별여행객'},
+  {n:'나인트리 프리미어 호텔 명동 2', lat:37.5617, lng:126.9868, note:'명동성당 옆 · 일본 손님 많음'},
+  {n:'나인트리 프리미어 인사동', lat:37.5710, lng:126.9880, note:'인사동 · 서양 관광객'},
+  {n:'목시 서울 인사동', lat:37.5721, lng:126.9866, note:'종로3가 · 젊은 서양 여행객'},
+  {n:'알로프트 서울 명동', lat:37.5637, lng:126.9893, note:'을지로3가 · 메리어트 계열'},
+  {n:'소테츠 프레사 인 서울 명동', lat:37.5612, lng:126.9849, note:'일본계 · 일본 손님 대부분'},
+  {n:'소테츠 호텔즈 더 스프라지르 서울 동대문', lat:37.5700, lng:127.0122, note:'DDP 옆 · 일본 손님'},
+  {n:'이비스 앰배서더 서울 명동', lat:37.5645, lng:126.9834, note:'명동1가 · 동남아·유럽'},
+  {n:'이비스 앰배서더 서울 인사동', lat:37.5729, lng:126.9862, note:'인사동 · 유럽·미주'},
+  {n:'호텔 스카이파크 센트럴 명동', lat:37.5622, lng:126.9874, note:'명동 한복판 · 일본·중화권'},
+  {n:'호텔 28 명동', lat:37.5641, lng:126.9849, note:'명동 · 부티크'},
+  {n:'세종호텔', lat:37.5615, lng:126.9865, note:'퇴계로 · 명동역 10번 출구'},
+  {n:'로얄호텔 서울', lat:37.5638, lng:126.9857, note:'명동 · 일본 단체'},
+  {n:'호텔 PJ 명동', lat:37.5650, lng:126.9955, note:'을지로4가 · 중화권'},
+  {n:'신라스테이 서대문', lat:37.5662, lng:126.9683, note:'서대문역 · 비즈니스'},
+  {n:'홀리데이 인 익스프레스 서울 홍대', lat:37.5572, lng:126.9237, note:'홍대입구역 · 공항철도 직결'},
+  {n:'아만티 호텔 서울', lat:37.5539, lng:126.9202, note:'홍대 · 유럽·미주 젊은 층'},
+  {n:'글래드 마포', lat:37.5385, lng:126.9464, note:'공덕역 · 공항철도'},
+  {n:'글래드 여의도', lat:37.5217, lng:126.9256, note:'여의도 · 비즈니스'},
+  {n:'롯데시티호텔 마포', lat:37.5394, lng:126.9466, note:'공덕역 · 공항철도'},
+  {n:'JW 메리어트 호텔 서울', lat:37.5045, lng:127.0045, note:'반포 · 고속터미널 직결'},
+  {n:'몬드리안 서울 이태원', lat:37.5350, lng:126.9963, note:'이태원 · 서양 관광객'},
+  {n:'반얀트리 클럽 앤 스파 서울', lat:37.5503, lng:127.0022, note:'남산 · 고급 리조트'},
+  {n:'인터컨티넨탈 서울 코엑스', lat:37.5110, lng:127.0605, note:'삼성역 · 코엑스 직결'},
+  {n:'오크우드 프리미어 코엑스센터', lat:37.5121, lng:127.0592, note:'삼성역 · 장기 투숙 외국인'},
+  {n:'노보텔 앰배서더 서울 강남', lat:37.5057, lng:127.0247, note:'역삼 · 비즈니스'},
+  {n:'신라스테이 삼성', lat:37.5107, lng:127.0632, note:'삼성역 · 비즈니스'},
+  {n:'신라스테이 역삼', lat:37.5034, lng:127.0446, note:'역삼역 · 비즈니스'},
+  {n:'롯데호텔 월드', lat:37.5119, lng:127.0989, note:'잠실 · 롯데월드 직결 · 동남아 가족'},
+  {n:'소피텔 앰배서더 서울', lat:37.5157, lng:127.1001, note:'잠실 석촌호수 · 프랑스계'},
+  {n:'그랜드 워커힐 서울', lat:37.5553, lng:127.1087, note:'광장동 · 카지노 외국인'},
+  {n:'코트야드 메리어트 서울 타임스퀘어', lat:37.5170, lng:126.9038, note:'영등포 · 타임스퀘어 직결'},
+  {n:'스탠포드 호텔 서울', lat:37.5800, lng:126.8904, note:'DMC · 방송 관계자'},
+  {n:'그랜드 머큐어 앰배서더 서울 용산', lat:37.5323, lng:126.9635, note:'용산역 · 드래곤시티 단지'}
 ];
 
 /* 서울 간선도로. 88도로는 올림픽대로의 옛 이름이라 같은 도로로 본다. */
@@ -2487,6 +2630,22 @@ var SPOT_CATS = [
   {key:'biz',     name:'비즈니스·의료', color:'#FFC81E'}
 ];
 function spotCatName(k){ for (var i=0;i<SPOT_CATS.length;i++) if (SPOT_CATS[i].key===k) return SPOT_CATS[i].name; return ''; }
+/* 서울 여행가이드(GD_SPOTS)에 넣어 둔 명소 가운데 지도 관광지 목록(SPOTS)에 없는 곳을 지도에도 올린다.
+   같은 자리(250m 안)에 이미 있으면 겹쳐 넣지 않는다. 앱이 켜질 때 한 번 실행 */
+var GD_CAT_MAP={palace:'history', hanok:'history', land:'view', shop:'shop', walk:'view'};
+function mergeGuideSpots(){
+  var i, j, g, dup;
+  if (typeof GD_SPOTS==='undefined' || !GD_SPOTS || !GD_SPOTS.length) return;
+  for (i=0;i<GD_SPOTS.length;i++){
+    g=GD_SPOTS[i];
+    if (!g || !isNum(g.lat) || !isNum(g.lng)) continue;
+    dup=false;
+    for (j=0;j<SPOTS.length;j++){ if (km(SPOTS[j].lat, SPOTS[j].lng, g.lat, g.lng) < 0.25){ dup=true; break; } }
+    if (dup) continue;
+    SPOTS.push({n:(g.name&&g.name.ko)||g.kw||g.id, lat:g.lat, lng:g.lng, cat:GD_CAT_MAP[g.g]||'history',
+                note:'여행가이드 명소 · '+((g.type&&g.type.ko)||''), gd:true});
+  }
+}
 function spotCatColor(k){ for (var i=0;i<SPOT_CATS.length;i++) if (SPOT_CATS[i].key===k) return SPOT_CATS[i].color; return '#A7ADB5'; }
 var SPOTS = [
   /* 역사문화 — 동남아 관광객 비중 높음 */
@@ -2538,7 +2697,7 @@ function sSet(k,v){
 var DIRS = [
   {v:'toAir',   label:'서울 → 공항', color:'#FFC81E'},
   {v:'fromAir', label:'공항 → 서울', color:'#8AB6F9'},
-  {v:'inCity',  label:'서울 ↔ 서울', color:'#69F0AE'},
+  {v:'inCity',  label:'서울 → 서울', color:'#69F0AE'},
   {v:'toOut',   label:'서울 → 시외', color:'#F4A259'},
   {v:'fromOut', label:'시외 → 서울', color:'#C792EA'}
 ];
@@ -2551,7 +2710,7 @@ function dirColor(v){
   return DIRS[0].color;
 }
 function dirFromLabel(t){
-  t=String(t||'').replace(/\s/g,'');
+  t=String(t||'').replace(/\s/g,'').replace('↔','→');   /* 예전 CSV의 '서울↔서울'도 읽는다 */
   for (var i=0;i<DIRS.length;i++) if (DIRS[i].label.replace(/\s/g,'')===t) return DIRS[i].v;
   return 'toAir';
 }
@@ -2796,14 +2955,15 @@ function csvCell(v){
   if (/[",\r\n]/.test(s)) s='"'+s.replace(/"/g,'""')+'"';
   return s;
 }
-var CSV_HEAD = ['id','일시','요일','시간대','권역','방향','유형','터미널','요금','위도','경도','정확도m','메모'];
+var CSV_HEAD = ['id','일시','요일','시간대','권역','방향','유형','터미널','요금','위도','경도','정확도m','메모','외국인','동','목적지','목적지위도','목적지경도','거리km'];
 function toCSV(recs){
   var lines=[CSV_HEAD.join(',')], i, r, cols, j;
   var sorted = recs.slice().sort(function(a,b){ return a.ts-b.ts; });
   for (i=0;i<sorted.length;i++){
     r=sorted[i];
     cols=[r.id, fmtDate(r.ts), DAYS[dayIdx(r.ts)], BUCKETS[bucketIdx(r.ts)], r.zone,
-          dirLabel(r.dir), r.type, r.term, r.fare, r.lat, r.lng, r.acc, r.memo];
+          dirLabel(r.dir), r.type, r.term, r.fare, r.lat, r.lng, r.acc, r.memo,
+          r.fgn?1:'', r.dong||'', r.dn||'', isNum(r.dlat)?r.dlat:'', isNum(r.dlng)?r.dlng:'', isNum(r.dkm)?r.dkm:''];
     for (j=0;j<cols.length;j++) cols[j]=csvCell(cols[j]);
     lines.push(cols.join(','));
   }
@@ -2857,7 +3017,13 @@ function fromCSV(text){
       type: col(c,'유형') || '일반',
       term: col(c,'터미널'),
       fare: parseFare(col(c,'요금')),
-      memo: col(c,'메모')
+      memo: col(c,'메모'),
+      fgn: col(c,'외국인')==='1' ? 1 : 0,
+      dong: col(c,'동')||undefined,
+      dn: col(c,'목적지')||undefined,
+      dlat: isNaN(parseFloat(col(c,'목적지위도'))) ? undefined : parseFloat(col(c,'목적지위도')),
+      dlng: isNaN(parseFloat(col(c,'목적지경도'))) ? undefined : parseFloat(col(c,'목적지경도')),
+      dkm: isNaN(parseFloat(col(c,'거리km'))) ? undefined : parseFloat(col(c,'거리km'))
     });
   }
   return out;
@@ -3010,8 +3176,54 @@ function flashSaved(){
 function addRecord(lat, lng, acc, zoneName){
   var r={id:newId(), ts:Date.now(), lat:isNum(lat)?lat:null, lng:isNum(lng)?lng:null, acc:isNum(acc)?acc:null,
     zone: zoneName || assignZone(lat,lng), dir:prefs.dir, type:prefs.type, term:prefs.term, fare:null, memo:''};
+  r.fgn = recFgnNow() ? 1 : 0;   /* 외국인 손님 여부 (입력 화면의 외국인 체크 또는 손님 안내 화면을 외국어로 연 경우) */
+  if (isNum(r.lat)) reverseDong(r.lat, r.lng, function(d){ if (d){ r.dong=d; persist(); } });
   records.push(r); persist(); flashSaved(); renderAll();
   toast(r.zone+' '+hhmm(r.ts)+' 저장됨', '되돌리기', function(){ removeRecord(r.id); toast('방금 기록을 지웠습니다'); });
+}
+/* 지금 손님이 외국인인가: 입력 화면 '외국인' 체크, 또는 30분 안에 승객 안내 화면을 외국어로 열었으면 */
+function recFgnNow(){
+  try {
+    if (typeof tbFlags==='function' && tbFlags().fgn) return true;
+    if (typeof guideOpenedAt!=='undefined' && guideOpenedAt && Date.now()-guideOpenedAt < 30*60000 && guideLang && guideLang!=='ko') return true;
+  } catch(e){}
+  return false;
+}
+/* 행정동 이름 (예: 신림동 → 카카오 coord2RegionCode의 H 타입). 카카오 키가 없으면 null */
+function reverseDong(lat, lng, cb){
+  var key=getKakaoKey();
+  if (!key){ cb(null); return; }
+  function doIt(){
+    if (!kakaoServicesReady()){ cb(null); return; }
+    try {
+      var gc=new kakao.maps.services.Geocoder();
+      if (typeof gc.coord2RegionCode!=='function'){ cb(null); return; }
+      gc.coord2RegionCode(lng, lat, function(res, st){
+        var i, h=null, b=null;
+        if (st===kakao.maps.services.Status.OK && res && res.length){
+          for (i=0;i<res.length;i++){ if (res[i].region_type==='H' && !h) h=res[i].region_3depth_name; if (res[i].region_type==='B' && !b) b=res[i].region_3depth_name; }
+        }
+        cb(h||b||null);
+      });
+    } catch(e){ cb(null); }
+  }
+  if (kakaoServicesReady()){ doIt(); return; }
+  loadKakaoSdk(key, function(ok){ if (ok) doIt(); else cb(null); });
+}
+/* 내비로 출발할 때: 40분 안에 남긴 마지막 기록에 목적지(이름·좌표·거리)를 붙인다 */
+function attachDestToRecord(lat, lng, name){
+  var i, r, best=null;
+  if (!isNum(lat) || !isNum(lng)) return;
+  for (i=records.length-1;i>=0;i--){
+    r=records[i];
+    if (Date.now()-r.ts > 40*60000) break;
+    if (!isNum(r.dlat) || (r.dn===name)){ best=r; break; }
+  }
+  if (!best) return;
+  best.dlat=Math.round(lat*1e5)/1e5; best.dlng=Math.round(lng*1e5)/1e5; best.dn=String(name||'').slice(0,60);
+  if (lastBest && lastBest.dest===name && isNum(lastBest.dist)) best.dkm=Math.round(lastBest.dist/100)/10;
+  if (recFgnNow()) best.fgn=1;
+  persist();
 }
 /* https(또는 localhost)가 아닌 주소 = 내려받은 파일로 연 화면 → 브라우저가 위치 요청 자체를 막음 */
 function isInsecurePage(){
@@ -3565,6 +3777,7 @@ function startHereWatch(){
     hereAcc=c.accuracy;
     moved = !wxAt || km(c.latitude, c.longitude, wxAt.lat, wxAt.lng) > 3;
     lastHere={lat:c.latitude, lng:c.longitude}; lastHereAt=Date.now();
+    try { if (typeof roadLedTick==='function') roadLedTick(); } catch(e){}
     /* 달리는 중이면 위성이 주는 진행 방향이 자력계보다 정확하다 */
     if (c.speed!==null && c.speed!==undefined && c.speed>2.5 && c.heading!==null && c.heading!==undefined && !isNaN(c.heading)){
       gpsHead=((c.heading%360)+360)%360; gpsHeadTs=Date.now();
@@ -3977,8 +4190,17 @@ function summarizeKakaoRoute(data){
 }
 
 /* 응답에서 소요시간·요금·정체 구간을 뽑는다 */
+/* 간선도로·고속도로·도시고속화도로·순환로·유료도로인가?
+   TMAP roadType: 0 고속국도 · 1 도시고속화도로 (2 국도, 3 국지도, 4 지방도, 5~ 주요·기타 도로) */
+var MAJOR_ROAD_RE=/고속도로|고속화|순환로|올림픽대로|강변북로|동부간선|북부간선|서부간선|자유로|노들길|제물포터널|남산1호|남산3호|인천대교|영종대교|방화대교|분당수서|자동차전용|공항대로|경인고속|외곽순환/;
+function isMajorRoad(name, roadType){
+  if (roadType===0 || roadType===1 || roadType==='0' || roadType==='1') return true;
+  if (!name) return false;
+  if (MAJOR_ROAD_RE.test(name)) return true;
+  return !!roadByName(name);   /* 앱의 서울 간선도로 목록에 있는 도로 */
+}
 function summarizeTmap(data){
-  var f=(data && data.features) || [], i, j, p, g, t, tot=null, byRoad={}, jams=[], name, k, roads=[];
+  var f=(data && data.features) || [], i, j, p, g, t, tot=null, byRoad={}, jams=[], name, k, roads=[], major=[], mj, c, pts;
   for (i=0;i<f.length;i++){
     p=f[i].properties || {}; g=f[i].geometry || {};
     if (!tot && isNum(p.totalTime)){
@@ -3987,6 +4209,15 @@ function summarizeTmap(data){
     if (g.type==='LineString'){
       name=p.name || '';
       if (name) byRoad[name]=(byRoad[name]||0)+(p.distance||0);
+      /* 간선도로면 지나는 순서대로 모아 둔다. 같은 도로가 이어지면 하나로 합친다 */
+      if (isMajorRoad(name, p.roadType) && g.coordinates && g.coordinates.length){
+        pts=[]; c=g.coordinates;
+        for (j=0;j<c.length;j+=2) if (c[j] && c[j].length>=2) pts.push([c[j][1], c[j][0]]);
+        if ((c.length-1)%2!==0 && c[c.length-1]) pts.push([c[c.length-1][1], c[c.length-1][0]]);
+        mj=major.length ? major[major.length-1] : null;
+        if (mj && mj.n===(name||'간선도로')) mj.pts=mj.pts.concat(pts);
+        else major.push({n:name||'간선도로', pts:pts});
+      }
       t=g.traffic;
       if (t && t.length){
         for (j=0;j<t.length;j++){
@@ -4005,7 +4236,7 @@ function summarizeTmap(data){
   }
   merged.sort(function(a,b){ return b.level-a.level || b.count-a.count; });
   return tot ? {time:tot.time, dist:tot.dist, toll:tot.toll, taxi:tot.taxi,
-                roads:roads.slice(0,4), jams:merged.slice(0,4)} : null;
+                roads:roads.slice(0,4), jams:merged.slice(0,4), major:major} : null;
 }
 function fmtMin(sec){
   var m=Math.round((sec||0)/60), h=Math.floor(m/60);
@@ -4664,6 +4895,7 @@ function renderStats(){
     t.appendChild(tr);
   }
   renderForeign();
+  try { renderStats2(); } catch(e){}
   cells.sort(function(a,b2){ return b2.c-a.c; });
   var tops=$('tops'); clear(tops);
   if (cells.length){
@@ -4676,6 +4908,248 @@ function renderStats(){
   } else {
     tops.appendChild(document.createTextNode('기록이 쌓이면 요일·시간대별로 색이 채워집니다.'));
   }
+}
+
+/* ───────── 운행 경로 통계 ───────── */
+var ST_CAT_COLOR={공항:'#FFC81E', 시내:'#69F0AE', 시외:'#F4A259'};
+function stCat(r){ return AIR_DIRS[r.dir] ? '공항' : (r.dir==='inCity' ? '시내' : '시외'); }
+function stIsHotel(h){ return !/^인천공항|^서울역|케이블카/.test(h.n); }
+function stNear(lat, lng, list, maxKm, filt){
+  var i, d, best=null, bd=maxKm;
+  if (!isNum(lat) || !isNum(lng)) return null;
+  for (i=0;i<list.length;i++){
+    if (filt && !filt(list[i])) continue;
+    d=km(lat, lng, list[i].lat, list[i].lng);
+    if (d<bd){ bd=d; best=list[i]; }
+  }
+  return best;
+}
+/* 어디서 태웠나: 호텔(150m) → 관광지(250m) → 동 → 권역 */
+function stOrigin(r){
+  var h=stNear(r.lat, r.lng, HOTELS, 0.15, stIsHotel), s;
+  if (h) return {k:'hotel', n:h.n};
+  s=stNear(r.lat, r.lng, SPOTS, 0.25);
+  if (s) return {k:'spot', n:s.n};
+  if (isAirportZone(r.zone)) return {k:'air', n:r.zone};
+  return {k:'zone', n:r.dong||r.zone||OTHER};
+}
+/* 어디로 갔나: 공항 → 호텔 → 관광지 → 목적지 이름/권역 */
+function stDest(r){
+  var h, s, p;
+  if (!isNum(r.dlat)){
+    if (r.dir==='toAir') return {k:'air', n:'인천공항'+(r.term ? ' '+r.term : '')};
+    return null;
+  }
+  p={lat:r.dlat, lng:r.dlng};
+  if (typeof tbAirPt==='function' && tbAirPt(p)) return {k:'air', n: /인천|김포/.test(r.dn||'') ? r.dn : '공항'};
+  h=stNear(r.dlat, r.dlng, HOTELS, 0.15, stIsHotel);
+  if (h) return {k:'hotel', n:h.n};
+  s=stNear(r.dlat, r.dlng, SPOTS, 0.25);
+  if (s) return {k:'spot', n:s.n};
+  return {k:'zone', n:r.dn || assignZone(r.dlat, r.dlng)};
+}
+function stKm(r){
+  if (isNum(r.dkm)) return r.dkm;
+  if (isNum(r.lat) && isNum(r.dlat)) return Math.round(km(r.lat, r.lng, r.dlat, r.dlng)*1.3*10)/10;   /* 직선×1.3 어림 */
+  return null;
+}
+function stDigi(v, unit, cls, label){
+  return el('div',null,[el('b',{cls:cls||'', text:String(v)+(unit||'')}), el('span',{text:label})]);
+}
+function stStackRow(name, counts, max){
+  var track=el('span',{cls:'track'}), k, tot=0, w;
+  for (k in counts) if (Object.prototype.hasOwnProperty.call(counts,k)) tot+=counts[k];
+  ['공항','시내','시외'].forEach(function(c){
+    if (!counts[c]) return;
+    w=Math.max(2, Math.round(counts[c]/max*100));
+    track.appendChild(el('i',{style:'width:'+w+'%;background:'+ST_CAT_COLOR[c], title:c+' '+counts[c]+'건'}));
+  });
+  return el('div',{cls:'sbar'},[el('span',{cls:'nm', text:name, title:name}), track, el('span',{cls:'c num', text:tot+'건'})]);
+}
+function stLegend(){
+  var lg=el('div',{cls:'stleg'});
+  ['공항','시내','시외'].forEach(function(c){ lg.appendChild(el('span',null,[el('i',{style:'background:'+ST_CAT_COLOR[c]}), document.createTextNode(c)])); });
+  return lg;
+}
+function renderStats2(){
+  var days=parseInt($('stDays').value,10)||0, dir=$('stDir').value;
+  var recs=filterRecs(records, days, dir), i, r, c, o, d, k;
+  if (!$('st2Sum')) return;
+  /* 요약 숫자 */
+  var nAir=0, nCity=0, nOut=0, nFgn=0, kmSum=0, kmN=0, kmv;
+  for (i=0;i<recs.length;i++){
+    r=recs[i]; c=stCat(r);
+    if (c==='공항') nAir++; else if (c==='시내') nCity++; else nOut++;
+    if (r.fgn) nFgn++;
+    kmv=stKm(r); if (isNum(kmv)){ kmSum+=kmv; kmN++; }
+  }
+  var sum=$('st2Sum'); clear(sum);
+  sum.appendChild(stDigi(nAir, '', 'y', '공항 탑승'));
+  sum.appendChild(stDigi(nCity, '', '', '시내 이동'));
+  sum.appendChild(stDigi(nOut, '', 'o', '시외 이동'));
+  sum.appendChild(stDigi(nFgn, '', 'p', '외국인 손님'));
+  sum.appendChild(stDigi(kmN ? Math.round(kmSum) : '–', kmN ? 'km' : '', 'b', '총 이동 거리'));
+  sum.appendChild(stDigi(kmN ? Math.round(kmSum/kmN*10)/10 : '–', kmN ? 'km' : '', 'b', '평균 이동 거리'));
+
+  /* 외국인 시간대별 (3시간 단위 8칸): 회색=전체, 보라=외국인 */
+  var fb=$('st2Fgn'), all=[0,0,0,0,0,0,0,0], fg=[0,0,0,0,0,0,0,0], mx=1, bars, b;
+  clear(fb);
+  for (i=0;i<recs.length;i++){ b=bucketIdx(recs[i].ts); all[b]++; if (recs[i].fgn) fg[b]++; }
+  for (i=0;i<8;i++) if (all[i]>mx) mx=all[i];
+  bars=el('div',{cls:'fgnbars'});
+  for (i=0;i<8;i++){
+    bars.appendChild(el('div',null,[
+      el('b',{text: fg[i] ? String(fg[i]) : ''}),
+      el('div',{cls:'bar'},[
+        el('i',{cls:'a', style:'height:'+Math.round((all[i]-fg[i])/mx*64)+'px'}),
+        el('i',{cls:'f', style:'height:'+Math.round(fg[i]/mx*64)+'px'})
+      ]),
+      el('small',{text:BUCKET_SHORT[i]})
+    ]));
+  }
+  fb.appendChild(bars);
+  fb.appendChild(el('div',{cls:'stleg'},[el('span',null,[el('i',{style:'background:#C792EA'}), document.createTextNode('외국인')]), el('span',null,[el('i',{style:'background:#3A3F46'}), document.createTextNode('내국인')]), el('span',{text: nFgn ? '외국인 '+nFgn+'건 / 전체 '+recs.length+'건' : '외국인 기록이 아직 없습니다 (입력 화면의 외국인 체크가 켜져 있거나 손님 화면을 외국어로 열면 셉니다)'})]));
+
+  /* 호텔 탑승: 호텔에서 태운 기록을 공항·시내·시외로 */
+  var hb=$('st2Hotel'), hm={}, harr=[], hmax=1;
+  clear(hb);
+  for (i=0;i<recs.length;i++){
+    r=recs[i]; o=stOrigin(r);
+    if (o.k!=='hotel') continue;
+    if (!hm[o.n]) hm[o.n]={n:o.n, c:{공항:0,시내:0,시외:0}, t:0};
+    hm[o.n].c[stCat(r)]++; hm[o.n].t++;
+  }
+  for (k in hm) if (Object.prototype.hasOwnProperty.call(hm,k)) harr.push(hm[k]);
+  harr.sort(function(a,b2){ return b2.t-a.t; });
+  if (!harr.length) hb.appendChild(el('div',{cls:'empty', text:'호텔 앞(150m 안)에서 태운 기록이 아직 없습니다.'}));
+  else {
+    hmax=harr[0].t;
+    hb.appendChild(stLegend());
+    for (i=0;i<Math.min(12,harr.length);i++) hb.appendChild(stStackRow(harr[i].n, harr[i].c, hmax));
+  }
+
+  /* 관광지 이동: 출발 또는 도착이 관광지인 운행을 '어디서 → 어디로' 짝으로 */
+  var sb=$('st2Spot'), pm={}, parr=[], key, row;
+  clear(sb);
+  for (i=0;i<recs.length;i++){
+    r=recs[i]; o=stOrigin(r); d=stDest(r);
+    if (o.k!=='spot' && !(d && d.k==='spot')) continue;
+    key=o.n+'→'+(d ? d.n : '?');
+    if (!pm[key]) pm[key]={fr:o, to:d, n:0, cat:stCat(r)};
+    pm[key].n++;
+  }
+  for (k in pm) if (Object.prototype.hasOwnProperty.call(pm,k)) parr.push(pm[k]);
+  parr.sort(function(a,b2){ return b2.n-a.n; });
+  if (!parr.length) sb.appendChild(el('div',{cls:'empty', text:'관광지(250m 안)에서 태우거나 관광지로 간 기록이 아직 없습니다.'}));
+  for (i=0;i<Math.min(15,parr.length);i++){
+    row=parr[i];
+    sb.appendChild(el('div',{cls:'pair'},[
+      el('span',{cls:'k', text: row.fr.k==='hotel' ? '호텔' : row.fr.k==='spot' ? '관광지' : row.fr.k==='air' ? '공항' : '동·권역'}),
+      el('span',{cls:'fr', text:row.fr.n, title:row.fr.n}),
+      el('span',{cls:'ar', text:'→'}),
+      el('span',{cls:'to', text: row.to ? row.to.n : '(목적지 없음)', title: row.to ? row.to.n : ''}),
+      el('span',{cls:'k', text:row.cat}),
+      el('span',{cls:'n', text:row.n+'건'})
+    ]));
+  }
+
+  /* 동별 픽업 */
+  var db=$('st2Dong'), dm={}, darr=[], dmax=1;
+  clear(db);
+  for (i=0;i<recs.length;i++){
+    r=recs[i]; k=r.dong || r.zone || OTHER;
+    if (!dm[k]) dm[k]={n:k, c:{공항:0,시내:0,시외:0}, t:0};
+    dm[k].c[stCat(r)]++; dm[k].t++;
+  }
+  for (k in dm) if (Object.prototype.hasOwnProperty.call(dm,k)) darr.push(dm[k]);
+  darr.sort(function(a,b2){ return b2.t-a.t; });
+  if (!darr.length) db.appendChild(el('div',{cls:'empty', text:'선택한 조건에 기록이 없습니다.'}));
+  else {
+    dmax=darr[0].t;
+    db.appendChild(stLegend());
+    for (i=0;i<Math.min(12,darr.length);i++) db.appendChild(stStackRow(darr[i].n, darr[i].c, dmax));
+  }
+
+  /* 이동 거리 분포 */
+  var xb=$('st2Dist'), bins=[{n:'5km 미만',lo:0,hi:5},{n:'5~10km',lo:5,hi:10},{n:'10~20km',lo:10,hi:20},{n:'20~40km',lo:20,hi:40},{n:'40km 이상',lo:40,hi:1e9}], bc=[], bmax=1, j;
+  clear(xb);
+  for (j=0;j<bins.length;j++) bc.push({공항:0,시내:0,시외:0, t:0});
+  for (i=0;i<recs.length;i++){
+    r=recs[i]; kmv=stKm(r);
+    if (!isNum(kmv)) continue;
+    for (j=0;j<bins.length;j++) if (kmv>=bins[j].lo && kmv<bins[j].hi){ bc[j][stCat(r)]++; bc[j].t++; break; }
+  }
+  for (j=0;j<bins.length;j++) if (bc[j].t>bmax) bmax=bc[j].t;
+  if (!kmN) xb.appendChild(el('div',{cls:'empty', text:'거리 기록이 아직 없습니다. 네비 탭에서 T맵(실시간 교통)으로 경로를 받고 출발(탑승)하면 거리가 저장됩니다.'}));
+  else {
+    xb.appendChild(stLegend());
+    for (j=0;j<bins.length;j++) xb.appendChild(stStackRow(bins[j].n, {공항:bc[j].공항, 시내:bc[j].시내, 시외:bc[j].시외}, bmax));
+  }
+}
+
+/* ───────── 공항 택시 대기 대수 공유 (ntfy 공개 주제) ─────────
+   공공 API가 없어서, 이 앱을 쓰는 기사들이 보고한 대수를 같은 주제로 주고받는다.
+   주제 이름은 아래 상수. 같은 앱을 쓰는 동료 기사는 같은 이름을 쓰게 되므로 자동으로 공유된다 */
+var TQ_TOPIC='bst-seoul-taxi-icn-queue-2026';
+var tqTerm='T1', tqData={};
+function tqUrl(){ return TB_RELAY+TQ_TOPIC; }
+function tqAgo(at){ var m=Math.round((Date.now()-at)/60000); return m<1 ? '방금' : m<60 ? m+'분 전' : Math.round(m/60)+'시간 전'; }
+function tqPaint(){
+  var box=$('tqLast'), t, parts=[], best;
+  if (!box) return;
+  clear(box);
+  ['T1','T2'].forEach(function(k){
+    t=tqData[k];
+    if (t) parts.push(el('div',null,[document.createTextNode(k+' 앞에 '), el('b',{text:t.n+'대'}), el('small',{text:'  ('+tqAgo(t.at)+' 보고)'})]));
+  });
+  if (!parts.length) box.appendChild(el('span',{cls:'muted', text:'최근 6시간 안에 들어온 보고가 없습니다. 현장에서 보이는 대수를 보고해 주세요.'}));
+  else parts.forEach(function(p){ box.appendChild(p); });
+  /* 선택한 터미널 보고가 90분 안이면 계산 칸에 넣는다 (기사님이 직접 적은 값은 덮지 않는다) */
+  best=tqData[prefs.term||tqTerm]||tqData[tqTerm];
+  if (best && Date.now()-best.at < 90*60000 && $('rQueue') && !$('rQueue').__manual){ $('rQueue').value=best.n; $('rQueue').__auto=true; }
+}
+function tqFetch(){
+  try {
+    fetch(tqUrl()+'/json?poll=1&since=6h', {mode:'cors'}).then(function(r){ return r.text(); }).then(function(txt){
+      var lines=String(txt||'').split('\n'), i, d, m, at;
+      tqData={};
+      for (i=0;i<lines.length;i++){
+        if (!lines[i]) continue;
+        try { d=JSON.parse(lines[i]); m=JSON.parse(d.message); } catch(x){ continue; }
+        if (!m || !isNum(m.n) || !m.t) continue;
+        at=(d.time||0)*1000 || m.at || 0;
+        if (!tqData[m.t] || tqData[m.t].at < at) tqData[m.t]={n:Math.round(m.n), at:at};
+      }
+      tqPaint();
+    }).catch(function(){ if ($('tqLast')) $('tqLast').textContent='보고를 받지 못했습니다. 인터넷 연결을 확인하세요.'; });
+  } catch(e){}
+}
+function tqSend(){
+  var n=parseInt(String($('tqN').value||'').replace(/[^\d]/g,''),10);
+  if (isNaN(n) || n<0 || n>999){ toast('앞에 선 택시 대수를 숫자로 적어 주세요'); return; }
+  try {
+    fetch(tqUrl(), {method:'POST', body:JSON.stringify({v:1, t:tqTerm, n:n, at:Date.now()}), mode:'cors'}).then(function(r){
+      if (r && r.ok){ toast(tqTerm+' '+n+'대로 보고했습니다. 고맙습니다'); $('tqN').value=''; tqData[tqTerm]={n:n, at:Date.now()}; tqPaint(); }
+      else toast('보고하지 못했습니다. 잠시 후 다시 시도하세요');
+    }, function(){ toast('보고하지 못했습니다. 인터넷 연결을 확인하세요'); });
+  } catch(e){}
+}
+function bindTq(){
+  var bs, i;
+  if (!$('tqSend')) return;
+  bs=$('tqTerm').querySelectorAll('button');
+  tqTerm = prefs.term==='T2' ? 'T2' : 'T1';
+  for (i=0;i<bs.length;i++){
+    bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-v')===tqTerm ? 'true' : 'false');
+    bs[i].addEventListener('click', function(){
+      var j; tqTerm=this.getAttribute('data-v');
+      for (j=0;j<bs.length;j++) bs[j].setAttribute('aria-pressed', bs[j]===this ? 'true' : 'false');
+      tqPaint();
+    });
+  }
+  $('tqSend').addEventListener('click', tqSend);
+  $('tqRefresh').addEventListener('click', function(){ $('tqLast').textContent='받는 중…'; tqFetch(); });
+  $('rQueue').addEventListener('input', function(){ this.__manual=true; });
 }
 
 /* ───────── 귀로 화면 ───────── */
@@ -4698,6 +5172,7 @@ function autoFare(){
 }
 function renderReturn(){
   fillRetInputs();
+  tqFetch();
   renderRush();
   if (!$('retResult').firstChild) calcReturn(true);
 }
@@ -4912,7 +5387,7 @@ function renderRoad(){
       line.appendChild(el('b',{text:real[i]}));
     }
     box.appendChild(line);
-    box.appendChild(el('div',{cls:'ralt', text:'실시간 교통으로 받은 실제 경로입니다.'}));
+    box.appendChild(el('div',{cls:'ralt', text:(realRoute && realRoute.majorOnly ? '경유 간선도로·고속도로 (실시간 교통으로 받은 실제 경로)' : '실시간 교통으로 받은 실제 경로입니다.')}));
   } else {
     line=el('div',{cls:'rstep'});
     for (i=0;i<adv.steps.length;i++){
@@ -4928,7 +5403,7 @@ function renderRoad(){
   /* 카카오내비로 경로 미리보기 */
   var pt=destPoint(), sp=fromPoint();
   if (pt){
-    box.appendChild(el('button',{cls:'btn navi', type:'button', onclick:function(){ previewRoute(lastHere||sp, pt); }},
+    box.appendChild(el('button',{cls:'btn navi kmprev', type:'button', onclick:function(){ previewRoute(lastHere||sp, pt); }},
       [el('span',{cls:'bl1', text:'카카오맵으로 경로 미리보기'}), el('span',{cls:'bl2', text:pt.n})]));
   }
   /* 경로에 나온 도로의 설명을 함께 */
@@ -4940,6 +5415,47 @@ function renderRoad(){
   }
 }
 
+/* ── 경유 간선도로 LED ──
+   현위치(startHereWatch가 계속 갱신)가 경로의 간선도로·고속도로 위(70m 안)에 있으면 그 도로 이름이 빨갛게 번쩍인다 */
+var roadLedIdx=-1;
+function ptSegM(lat, lng, a, b){
+  /* 점→선분 거리(m). 작은 범위라 평면으로 계산 */
+  var ky=110540, kx=111320*Math.cos(lat*Math.PI/180),
+      ax=(a[1]-lng)*kx, ay=(a[0]-lat)*ky, bx=(b[1]-lng)*kx, by=(b[0]-lat)*ky,
+      dx=bx-ax, dy=by-ay, L=dx*dx+dy*dy, t=0, px, py;
+  if (L>0){ t=-(ax*dx+ay*dy)/L; if (t<0) t=0; else if (t>1) t=1; }
+  px=ax+t*dx; py=ay+t*dy;
+  return Math.sqrt(px*px+py*py);
+}
+function roadLedNearest(){
+  var mj=(realRoute && realRoute.major)||[], i, j, p, best=-1, bestD=1e9, d;
+  if (!lastHere || Date.now()-lastHereAt > 90000) return -1;
+  for (i=0;i<mj.length;i++){
+    p=mj[i].pts;
+    for (j=1;j<p.length;j++){
+      d=ptSegM(lastHere.lat, lastHere.lng, p[j-1], p[j]);
+      if (d<bestD){ bestD=d; best=i; }
+    }
+  }
+  return bestD<=70 ? best : -1;
+}
+function roadLedTick(){
+  var box=$('roadLed'), mj=(realRoute && realRoute.major)||[], names=[], i, on, chips, idx;
+  if (!box) return;
+  if (!mj.length){ box.style.display='none'; roadLedIdx=-1; return; }
+  for (i=0;i<mj.length;i++) if (names.indexOf(mj[i].n)<0) names.push(mj[i].n);
+  idx=roadLedNearest();
+  on = idx>=0 ? mj[idx].n : '';
+  roadLedIdx=idx;
+  clear(box);
+  box.style.display='';
+  box.appendChild(el('div',{cls:'cap'}, on ? [document.createTextNode('지금 달리는 도로 '), el('b',{text:'● LIVE'})] : [document.createTextNode('경유 간선도로 · 고속도로 (현위치가 도로 위에 오면 빨갛게 번쩍입니다)')]));
+  chips=el('div',{cls:'chips'});
+  for (i=0;i<names.length;i++){
+    chips.appendChild(el('span',{cls:'chip'+(names[i]===on ? ' on' : (!on && i===0 ? ' next' : '')), text:names[i]}));
+  }
+  box.appendChild(chips);
+}
 /* AI 최적 경로: 여러 탐색 옵션을 실시간 교통으로 비교한다 */
 var aiBusy=false;
 /* 실시간으로 받아 온 실제 경로. 이게 있으면 권역으로 어림한 간선도로 안내는 쓰지 않는다.
@@ -4975,12 +5491,12 @@ function runAiRoute(){
   clear(box);
   box.appendChild(el('div',{cls:'ai-note'}, ptNodes(sp,'출발').concat([' → '+(ep.n||'도착')+' 경로를 비교하는 중입니다.'])));
   function next(){
-    if (idx>=opts.length){ aiBusy=false; btn.disabled=false; btn.textContent='AI 최적 경로 (T맵 실시간 교통반영)'; renderAi(results, sp, ep); return; }
+    if (idx>=opts.length){ aiBusy=false; btn.disabled=false; btn.textContent='T맵(실시간 교통)'; renderAi(results, sp, ep); return; }
     var o=opts[idx++];
     (prov==='kakao' ? kakaoDirections : tmapRoute)(sp, ep, o.v, function(sum, err){
       if (sum) results.push({opt:o, sum:sum});
       else if (!results.length && idx>=opts.length){
-        aiBusy=false; btn.disabled=false; btn.textContent='AI 최적 경로 (T맵 실시간 교통반영)';
+        aiBusy=false; btn.disabled=false; btn.textContent='T맵(실시간 교통)';
         clear(box); box.appendChild(el('div',{cls:'ai-note', text:err||'경로를 가져오지 못했습니다'}));
         return;
       }
@@ -4998,8 +5514,14 @@ function renderAi(results, sp, ep){
   }
   results.sort(function(a,b){ return a.sum.time-b.sum.time; });
   best=results[0];
-  realRoute={key:routeKey(sp, ep), roads:best.sum.roads.map(function(x){ return x.n; })};
-  lastBest={key:routeKey(sp, ep), dest:ep.n, time:best.sum.time, fare:best.sum.taxi, toll:best.sum.toll};
+  (function(){
+    var mj=best.sum.major||[], names=[], i;
+    for (i=0;i<mj.length;i++) if (names.indexOf(mj[i].n)<0) names.push(mj[i].n);
+    /* 경유지에는 국도·시내도로가 아닌 간선도로·고속도로만 적는다. 하나도 없으면 거리순 주요 도로 */
+    realRoute={key:routeKey(sp, ep), roads: names.length ? names : best.sum.roads.map(function(x){ return x.n; }), major:mj, majorOnly:names.length>0};
+  })();
+  roadLedTick();
+  lastBest={key:routeKey(sp, ep), dest:ep.n, time:best.sum.time, fare:best.sum.taxi, toll:best.sum.toll, dist:best.sum.dist};
   renderRoad();   /* 어림 안내를 실제 경로로 바꿔 다시 그린다 */
   box.appendChild(el('div',{cls:'ai-note'},[el('span',{cls:'bl1', text:(getRouteProvider()==='kakao'?'카카오':'TMAP')+' 실시간 교통 기준'}),
        el('span',{cls:'bl2'}, ptNodes(sp,'출발').concat([' → '+(ep.n||'도착')+' · 빠른 순']))]));
@@ -5210,11 +5732,11 @@ function startRide(){
   if (!navigator.geolocation || isInsecurePage()){ rideSheet(null); return; }
   btn.disabled=true; btn.textContent='위치 확인 중…';
   bestFix(function(pos){
-    btn.disabled=false; btn.textContent='출발 (현위치)';
+    btn.disabled=false; btn.textContent='출발(탑승)';
     lastHere={lat:pos.coords.latitude, lng:pos.coords.longitude}; lastHereAt=Date.now(); hereAcc=pos.coords.accuracy;
     rideSheet(assignZone(pos.coords.latitude, pos.coords.longitude));
   }, function(){
-    btn.disabled=false; btn.textContent='출발 (현위치)';
+    btn.disabled=false; btn.textContent='출발(탑승)';
     rideSheet(null);
   });
 }
@@ -6072,7 +6594,7 @@ function renderGuide(){
   $('gkFare').textContent=t.fare;
   fare=guideFare(lastTrip.fare, guideLang);
   $('gvFare').textContent= fare ? t.approx+' '+fare : t.meter;
-  $('gNote').textContent= (lastTrip.toll ? t.toll+' · ' : '')+payNote(t);
+  $('gNote').textContent= lastTrip.toll ? t.toll : '';   /* 결제 수단 문구는 뺐다(2026-09) */
   renderDriverCard();
   $('gClose').textContent=t.gallery;   /* 닫기 대신 사진 갤러리를 연다 */
   /* 손님 폰(QR로 들어온 화면): 맨 위 이전 버튼은 없애고, 맨 아래는 나가기로 쓴다.
@@ -6152,7 +6674,7 @@ function guideVoiceText(){
       dest=guideDest(lastTrip.dest, guideLang) || t.welcome,
       time=lastTrip.time ? guideMinutes(lastTrip.time, guideLang) : null,
       fare=speakFare(lastTrip.fare, guideLang),
-      note=(lastTrip.toll ? t.toll+t.sep : '')+payNote(t)+t.end,
+      note=(lastTrip.toll ? t.toll+t.end : ''),   /* 결제 수단 문구는 읽지 않는다(2026-09) */
       s;
   /* 시간이나 요금을 모를 때는 그 대목이 아예 없는 문장을 쓴다.
      빈 자리를 그대로 읽어 주면 승객이 잘못 알아듣는다 */
@@ -6568,6 +7090,7 @@ function navStarted(lat, lng, name){
   if (tbLastRide.key===key && Date.now()-tbLastRide.at < 3*60000) return;
   tbLastRide={key:key, at:Date.now()};
   tbFlagsFresh();
+  try { attachDestToRecord(lat, lng, name); } catch(e){}
   tbSend('ride', {n:name, lat:lat, lng:lng}, tbRideLang(), tbTripPayload(lat, lng, name));
   tbRideSent(lat, lng, name);
   tbAutoRoute(lat, lng, name);
@@ -6593,7 +7116,7 @@ function tbManual(type){
   if (type==='ride') tbFlagsFresh();
   if (type==='ride') tbLastRide={key:p ? Math.round(p.lat*1e4)+','+Math.round(p.lng*1e4) : '', at:Date.now()};
   p=tbSend(type, p, tbRideLang(), type==='ride' && p ? tbTripPayload(p.lat, p.lng, p.n) : null);
-  if (type==='ride' && tbLastRide.key) { var dp=destPoint(); if (dp){ tbRideSent(dp.lat, dp.lng, dp.n); tbAutoRoute(dp.lat, dp.lng, dp.n); tbRunStart(dp.lat, dp.lng, dp.n); } }
+  if (type==='ride' && tbLastRide.key) { var dp=destPoint(); if (dp){ try { attachDestToRecord(dp.lat, dp.lng, dp.n); } catch(e){} tbRideSent(dp.lat, dp.lng, dp.n); tbAutoRoute(dp.lat, dp.lng, dp.n); tbRunStart(dp.lat, dp.lng, dp.n); } }
   else if (type!=='ride'){ tbRunStop(); if (type==='alight') tbResetFlags(); }
   else if (tbTripTimer){ clearTimeout(tbTripTimer); tbTripTimer=null; }
   if (p && p.then) p.then(function(r){ toast(r && r.ok ? (type==='ride'?'승차':'하차')+' 안내를 태블릿으로 보냈습니다' : '보내지 못했습니다. 인터넷 연결을 확인하세요'); },
@@ -6778,7 +7301,7 @@ function tbSetFlag(k, v){
   p=tbSend('mode', null, tbRideLang());
   if (p && p.then) p.then(function(r){
     toast(!(r && r.ok) ? '보내지 못했습니다. 인터넷 연결을 확인하세요'
-      : k==='big' ? (v ? '태블릿을 어르신 큰 글씨로 바꿨습니다' : '태블릿을 보통 글씨로 바꿨습니다')
+      : k==='big' ? (v ? '태블릿을 큰 글씨로 바꿨습니다' : '태블릿을 보통 글씨로 바꿨습니다')
       : (v ? '외국인 손님 안내(환율·주변 추천)를 켰습니다' : '외국인 손님 안내를 껐습니다'));
   }, function(){ toast('보내지 못했습니다. 인터넷 연결을 확인하세요'); });
 }
@@ -7109,6 +7632,8 @@ function tbEtaTick(){
 }
 function tbKm(m){ return m>=10000 ? Math.round(m/1000)+' km' : m>=1000 ? (m/1000).toFixed(1)+' km' : Math.round(m/10)*10+' m'; }
 function tbHM(ts){ var d=new Date(ts), h=d.getHours(), mi=d.getMinutes(); return (h<10?'0':'')+h+':'+(mi<10?'0':'')+mi; }
+/* 오전/오후 표기: 19:53 → 오후 7:53 (가족·손님 안심도착 화면) */
+function tbHM12(ts){ var d=new Date(ts), h=d.getHours(), mi=d.getMinutes(), ap=h<12?'오전':'오후', h12=h%12; if (h12===0) h12=12; return ap+' '+h12+':'+(mi<10?'0':'')+mi; }
 var ETA_TEXT={
   ko:{left:'남은 거리', eta:'도착 예정', soon:'곧 도착', about:'약'},
   en:{left:'Distance left', eta:'Arrival', soon:'Arriving soon', about:'about'},
@@ -7495,16 +8020,20 @@ var PAGE_END_TXT={
   ja:{a:'ご案内を終了しました', b:'スマホのいちばん下の\n＜（戻る）ボタンで終了します。', cap:'スマホの下のボタン', n1:'', n2:'', n3:'このボタン', g:'前の画面が出たら、もう一度 ＜ を押してください。\nボタンがない機種は画面の端から内側にスワイプ。', r:'もう一度見る'},
   zh:{a:'介绍已结束', b:'请按手机最下方的\n＜（返回）键离开此页面。', cap:'手机下方的按键', n1:'', n2:'', n3:'按这个', g:'如果出现之前的页面，请再按一次 ＜。\n没有按键的手机，请从屏幕边缘向内滑动。', r:'再看一次'}
 };
-/* 큰 화면으로 보기: 먼저 이 화면을 전체 화면으로. 카카오톡 안의 브라우저처럼 전체 화면이 막혀 있으면 크롬으로 넘겨 연다 */
+/* 큰 화면으로 보기: 브라우저의 전체 화면 기능(requestFullscreen)은 쓰지 않는다.
+   안드로이드 크롬은 전체 화면이 되면 "전체 화면을 종료하려면 상단에서 드래그한 후…" 안내를 화면 아래에 띄워 버튼을 가린다.
+   대신 이 화면 안에서 글자·버튼을 줄이고 지도를 크게 키운다(CSS .big). 제목을 누르면 원래 크기로 돌아온다 */
 function bigScreen(box){
-  var kakao=/KAKAOTALK/i.test(navigator.userAgent||'');
-  function isFull(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
-  if (isFull()) return;
-  try {
-    var r = box.requestFullscreen ? box.requestFullscreen({navigationUI:'hide'}) : (box.webkitRequestFullscreen ? box.webkitRequestFullscreen() : null);
-    if (r && r.catch) r.catch(function(){});
-  } catch(e){}
-  if (kakao) setTimeout(function(){ if (!isFull()) location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(location.href); }, 600);
+  if (!box) return;
+  if (/\bbig\b/.test(box.className)) return;
+  box.className+=' big';
+  try { box.scrollTop=0; } catch(e){}
+  try { window.dispatchEvent(new Event('resize')); } catch(e){}
+}
+function bigScreenOff(box){
+  if (!box) return;
+  box.className=box.className.replace(/\s*\bbig\b/g,'');
+  try { window.dispatchEvent(new Event('resize')); } catch(e){}
 }
 function pageEnd(L){
   var t=PAGE_END_TXT[L]||PAGE_END_TXT.ko, gone=false, url=location.href;
@@ -7547,7 +8076,7 @@ function shareBoot(){
   box=el('div',{cls:'shv'},[
     el('div',{cls:'shtop'},[
       el('button',{cls:'shx', type:'button', 'aria-label':'닫기', onclick:function(e){ e.stopPropagation(); shClose(); }},['닫기']),
-      el('h2',{text:'🚕 안심도착 안내'})
+      el('h2',{text:'🚕 안심도착 안내', title:'큰 화면일 때 누르면 원래 크기로', onclick:function(){ bigScreenOff(box); }})
     ]),
     el('div',{cls:'dst', id:'shDst', text:'정보를 받는 중입니다…'}),
     el('div',{cls:'row'},[
@@ -7573,17 +8102,7 @@ function shareBoot(){
     }},['카카오톡·다른 앱으로 보내기'])
   ]);
   document.body.appendChild(box);
-  /* 주소창 없애기: 손님이 화면을 처음 누르는 순간 전체 화면으로 (브라우저가 누르기 전에는 허락하지 않음) */
-  function goFull(e){
-    /* 문자보내기·카카오톡 보내기·닫기 버튼은 다른 화면으로 넘어가는 버튼이라 제외 */
-    if (e && e.target && e.target.closest && e.target.closest('#shSms,#shShare,.shx')) return;
-    try {
-      if (document.fullscreenElement || document.webkitFullscreenElement) return;
-      if (box.requestFullscreen) box.requestFullscreen({navigationUI:'hide'}).catch(function(){});
-      else if (box.webkitRequestFullscreen) box.webkitRequestFullscreen();
-    } catch(e){}
-  }
-  box.addEventListener('pointerdown', goFull, true);
+  /* (전체 화면 자동 전환은 쓰지 않는다: 크롬이 "전체 화면을 종료하려면…" 문구를 띄워 화면을 가린다) */
   document.body.className+=' solo';
   /* 닫기: 브라우저는 손님이 연 탭을 페이지가 직접 닫지 못하게 해서, 닫기 → 전체 화면 끄기 → 뒤로 가기 순서로 시도 */
   function shClose(){ pageEnd('ko'); }
@@ -7606,7 +8125,7 @@ function shareBoot(){
       $('shEta').textContent='종료'; $('shLeft').textContent='–';
     } else {
       $('shDone').style.display='none';
-      if (isNum(st.e)) $('shEta').textContent=tbHM(st.e);
+      if (isNum(st.e)) $('shEta').textContent=tbHM12(st.e);
       if (isNum(st.r)) $('shLeft').textContent=tbKm(st.r);
     }
     if (st.at){ ago=Math.max(0, Math.round((Date.now()-st.at)/60000)); $('shSt').textContent=(ago ? ago+'분 전' : '방금')+' 확인한 위치입니다. 이 화면을 열어 두면 저절로 바뀝니다.'; }
@@ -7976,16 +8495,7 @@ function guideLandBoot(){
   document.body.appendChild(box);
   /* 뒤에 기사용 화면이 비치거나 같이 스크롤되지 않게: 이 안내 화면만 남긴다 */
   document.body.className+=' solo';
-  /* 주소창 없애기: 빈 곳·사진을 처음 누르면 전체 화면 (지도·맛집·닫기 버튼은 제외) */
-  box.addEventListener('pointerdown', function(e){
-    if (e.target && e.target.closest && e.target.closest('.gl-btn,.gl-x,.gl-full')) return;
-    if (/KAKAOTALK/i.test(navigator.userAgent||'')) return;
-    try {
-      if (document.fullscreenElement || document.webkitFullscreenElement) return;
-      if (box.requestFullscreen) box.requestFullscreen({navigationUI:'hide'}).catch(function(){});
-      else if (box.webkitRequestFullscreen) box.webkitRequestFullscreen();
-    } catch(err){}
-  }, true);
+  /* (전체 화면 자동 전환은 쓰지 않는다: 크롬의 "전체 화면을 종료하려면…" 안내가 화면을 가린다) */
   return true;
 }
 function gdBind(){
@@ -7998,7 +8508,7 @@ function gdBind(){
 }
 
 /* ── 태블릿 쪽 ── */
-var tb={on:false, code:'', name:'', es:null, wake:null, watch:null, pos:null,
+var tb={on:false, code:'', name:'', es:null, esWatch:null, lastEv:0, wake:null, watch:null, pos:null,
         ride:null, alightAt:0, backTimer:null, clockTimer:null, seen:{}, speakQ:[],
         trip:null, plan:null, planIdx:0, planAt:0, planTimer:null, slideTimer:null, slideIdx:0, slideRun:false, slideList:[], slideSig:'', slideTok:0, voice:true, pax:null,
         big:false, fgn:false, rideFrom:null, eta:null, etaTimer:null, etaLast:0, etaStart:0, share:null, tour:null, tourUrl:'', tourAll:false, moneyNear:false};
@@ -8085,8 +8595,10 @@ function tbStart(){
   document.addEventListener('visibilitychange', function(){
     if (document.hidden) return;
     tbWake();
-    if (!tb.es || tb.es.readyState===2) tbConnect();
+    if (!tb.es || tb.es.readyState===2 || Date.now()-(tb.lastEv||0) > 60000) tbConnect(true);
   }, false);
+  /* 와이파이·데이터가 바뀌어 다시 연결됐을 때도 곧바로 다시 잇는다 */
+  window.addEventListener('online', function(){ tbConnect(true); });
 }
 function tbWake(){
   try {
@@ -8104,19 +8616,23 @@ function tbGps(){
     }, function(){ tbStat(); }, {enableHighAccuracy:true, maximumAge:3000, timeout:30000});
   } catch(e){}
 }
-function tbConnect(){
+function tbConnect(again){
   if (!window.EventSource) return;
   try { if (tb.es) tb.es.close(); } catch(e){}
-  tb.es=new EventSource(TB_RELAY+tbTopic(tb.code)+'/sse');
-  tb.es.onopen=tbStat;
+  /* 다시 이을 때는 끊긴 동안(최근 3분) 온 신호를 함께 받는다. 같은 신호는 id로 걸러 한 번만 처리한다 */
+  tb.es=new EventSource(TB_RELAY+tbTopic(tb.code)+'/sse'+(again ? '?since=3m' : ''));
+  tb.lastEv=Date.now();
+  tb.es.onopen=function(){ tb.lastEv=Date.now(); tbStat(); };
   tb.es.onerror=tbStat;
   tb.es.onmessage=function(e){
     var d, m;
+    tb.lastEv=Date.now();   /* keepalive(45초마다)도 여기로 온다 → 연결이 살아 있다는 표시 */
     try { d=JSON.parse(e.data); } catch(x){ return; }
     if (!d || (d.event && d.event!=='message') || !d.message) return;
     if (d.id){ if (tb.seen[d.id]) return; tb.seen[d.id]=1; }
     try { m=JSON.parse(d.message); } catch(x){ return; }
-    if (!m || !m.type || !isNum(m.ts) || Date.now()-m.ts > (m.type==='ack' ? 900000 : 90000)) return;   /* 늦게 도착한 옛 신호는 버린다 */
+    /* 늦게 도착한 옛 신호는 버린다. 폰·태블릿 시계가 조금 어긋나도 버리지 않도록 3분까지는 받는다 */
+    if (!m || !m.type || !isNum(m.ts) || Date.now()-m.ts > (m.type==='ack' ? 900000 : 180000)) return;
     if (m.big!==undefined) tbApplyFlags(m, m.type==='mode');
     if (m.type==='ack'){ tbAck(); return; }
     if (m.type==='keys'){ tbKeys(m); return; }
@@ -8127,6 +8643,11 @@ function tbConnect(){
     else if (m.type==='update') forceUpdate();
   };
   setTimeout(tbStat, 1500);
+  /* 연결 감시: 2분 넘게 아무 소식(keepalive 포함)이 없으면 소리 없이 끊긴 것 → 다시 잇는다 */
+  if (!tb.esWatch) tb.esWatch=setInterval(function(){
+    if (!tb.es) return;
+    if (tb.es.readyState===2 || Date.now()-(tb.lastEv||0) > 120000) tbConnect(true);
+  }, 20000);
 }
 function tbClock(){
   var d=new Date(), h=d.getHours(), mi=d.getMinutes();
@@ -8683,13 +9204,14 @@ function tgBind(){
 }
 function tbAlight(lang){
   var g=tbGreetKey(), t=TB_TEXT.ko;
-  /* 폰 버튼과 GPS가 거의 동시에 보내도 한 번만 */
-  if (Date.now()-tb.alightAt < 60000) return;
+  /* 폰 버튼과 GPS가 거의 동시에 보내도 한 번만 (5초). 예전에는 60초여서, GPS 도착 안내가 잠깐 나온 뒤
+     기사님이 하차 버튼을 눌러도 아무 반응이 없던 경우가 있었다 */
+  if (Date.now()-tb.alightAt < 5000) return;
   tb.alightAt=Date.now();
-  tbTripEnd(false);
+  try { tbTripEnd(false); } catch(e){}
   tb.ride=null;
   tb.trip=null;
-  tbPlanStop();
+  try { tbPlanStop(); } catch(e){}
   lang = lang || tb.lastLang || '';
   tbShow('alight', '👋', t.alight, t[g], function(x){ return x.alight+' '+x[g]; }, lang);
   (function(){
@@ -8945,7 +9467,7 @@ var guestMode=false, gMapShown=false;
 function tripHasPoint(){ return !!(lastTrip && isNum(lastTrip.lat) && isNum(lastTrip.lng)); }
 function renderMapBtns(){
   var t=GUIDE_TEXT[guideLang]||GUIDE_TEXT.ko, box=$('gMap');
-  if (!box) return;
+  if (!box) return;   /* 지도 확인 상자는 없앴다(2026-09) → 아무 것도 그리지 않는다 */
   $('gMapCap').textContent=t.mapCap;
   $('gGmap').textContent=t.gmap;
   $('gTmap').textContent=t.tmap;
@@ -9099,7 +9621,7 @@ function onImportFile(file){
 }
 
 /* ───────── 탭·렌더 ───────── */
-var currentTab='v-rec';
+var currentTab='v-road';
 function showTab(id){
   var views=document.querySelectorAll('.view'), tabs=document.querySelectorAll('.tabbar button, .toptabs button'), i;
   for (i=0;i<views.length;i++) views[i].className = views[i].id===id ? 'view on' : 'view';
@@ -9114,7 +9636,7 @@ function showTab(id){
   if (id==='v-map') ensureMap();
   if (id==='v-stat') renderStats();
   if (id==='v-ret'){ autoFare(); renderReturn(); }
-  if (id==='v-road'){ fillRoadSelects(); renderRoadList(); if (!$('roadResult').firstChild) renderRoad(); }
+  if (id==='v-road'){ fillRoadSelects(); if ($('roadListWrap') && $('roadListWrap').style.display!=='none') renderRoadList(); if (!$('roadResult').firstChild) renderRoad(); roadLedTick(); }
   if (id==='v-book') renderBook();
   if (id==='v-air'){ renderAir(); loadPax(); }
   if (id==='v-data') renderStore();
@@ -9138,6 +9660,7 @@ function init(){
   loadAll();
   loadTracks();
   loadLedger();
+  try { mergeGuideSpots(); } catch(e){}
   setDirSegs(prefs.dir); setSeg('segType', prefs.type); setSeg('segTerm', prefs.term);
   bindDirSegs(); bindSeg('segType','type'); bindSeg('segTerm','term');
   renderPlate();
@@ -9145,7 +9668,11 @@ function init(){
   $('manualBtn').addEventListener('click', function(){ openZonePicker(null); });
   $('scrim').addEventListener('click', function(e){ if (e.target===this) closeSheet(); });
   var tabs=document.querySelectorAll('.tabbar button, .toptabs button'), i;
-  for (i=0;i<tabs.length;i++) tabs[i].addEventListener('click', function(){ showTab(this.getAttribute('data-tab')); });
+  for (i=0;i<tabs.length;i++) tabs[i].addEventListener('click', function(){
+    var d=this.querySelector('.dice');
+    if (d){ d.classList.remove('roll'); void d.offsetWidth; d.classList.add('roll'); setTimeout(function(){ d.classList.remove('roll'); }, 750); }
+    showTab(this.getAttribute('data-tab'));
+  });
   $('btnAi').addEventListener('click', runAiRoute);
   $('bkSave').addEventListener('click', saveEntry);
   $('bkAmount').addEventListener('keydown', function(e){ if (e.keyCode===13){ e.preventDefault(); saveEntry(); } });
@@ -9196,7 +9723,13 @@ function init(){
     renderRoad(); loadRouteWeather();   /* 목적지가 바뀌면 그 길의 날씨를 다시 받는다 */
   });
   $('roadAxis').addEventListener('change', renderRoadList);
+  (function(){
+    var h=$('roadListTog'), w=$('roadListWrap');
+    function tog(){ var on=w.style.display==='none'; w.style.display= on ? '' : 'none'; h.setAttribute('aria-expanded', on ? 'true' : 'false'); h.querySelector('small').textContent= on ? '다시 누르면 숨김' : '눌러서 도로 이름 보기'; if (on) renderRoadList(); }
+    if (h && w){ h.addEventListener('click', tog); h.addEventListener('keydown', function(ev){ if (ev.keyCode===13||ev.keyCode===32){ ev.preventDefault(); tog(); } }); }
+  })();
   $('btnCalc').addEventListener('click', function(){ calcReturn(false); });
+  bindTq();
   $('btnRetSave').addEventListener('click', function(){
     var c=retSettings();
     c.fare=numIn('rFare', c.fare); c.feePct=numIn('rFee', c.feePct);
@@ -9281,6 +9814,7 @@ function init(){
   renderStore();
   renderAll();
   updateTrackMsg();
+  if (!guestMode) showTab('v-road');   /* 첫 화면은 네비 (상단 탭 줄도 이 화면으로 옮긴다) */
   setInterval(renderClock, 15000);
   if (!guestMode){   /* 손님 폰에서는 위치 권한을 묻거나 날씨를 받지 않는다 */
     initEnvBar();
