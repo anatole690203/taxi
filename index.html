@@ -1589,14 +1589,10 @@ body.solo{overflow:hidden;background:#101215}
       </div>
       <button class="btn ai" type="button" id="btnAi">T맵(실시간 교통)</button>
       <div id="aiResult"></div>
-      <div class="btn2">
-        <button class="btn ride" type="button" id="btnRide">출발(탑승)</button>
-        <button class="btn primary" type="button" id="btnRoad">경로 보기</button>
-      </div>
       <div id="roadResult"></div>
     </div>
     <div class="sec blue" id="roadSec">
-      <h3 class="tog" id="roadListTog" role="button" tabindex="0" aria-expanded="false">서울 간선도로 <span class="arrow">▼</span><small>눌러서 도로 이름 보기</small></h3>
+      <h3 class="tog" id="roadListTog" role="button" tabindex="0" aria-expanded="false">서울 간선도로 <span class="arrow">▼</span><small></small></h3>
       <div id="roadListWrap" style="display:none">
       <div class="filters" style="padding:0 0 10px">
         <select id="roadAxis" aria-label="축">
@@ -2632,11 +2628,11 @@ function speakFare(won, lang){
 /* TMAP 실시간 경로 설정 */
 var TKEY_KEY = 'airportCallLog.tmapKey.v1';
 /* 가장 빠른 경로 카드 앞에 붙는 말. 바꾸고 싶으면 이 한 줄만 고치면 된다 */
-var BEST_ROUTE_TAG = 'AI추천 · ';
+var BEST_ROUTE_TAG = '';
 var TMAP_OPTS = [
   {v:'0', n:'교통최적 경로'},
   {v:'2', n:'최소 시간'},
-  {v:'1', n:'무료도로 우선'}
+  {v:'1', n:'무료도로'}
 ];
 var JAM_NAME = ['정보없음','원활','서행','지체','정체'];
 /* 경로 종류별 색. 최소 시간은 노랑, 교통최적은 보라, 무료도로는 회색 */
@@ -5791,8 +5787,9 @@ function renderAi(results, sp, ep){
     box.appendChild(el('div',{cls:'ai-note', text:'경로를 가져오지 못했습니다. 잠시 후 다시 시도하세요.'}));
     return;
   }
-  results.sort(function(a,b){ return a.sum.time-b.sum.time; });
+  /* 화면 순서는 교통최적 경로 → 최소 시간 → 무료도로 (요청한 순서 그대로). 실제 안내·태블릿에 쓰는 '최적'은 가장 빠른 것 */
   best=results[0];
+  for (i=1;i<results.length;i++) if (results[i].sum.time < best.sum.time) best=results[i];
   (function(){
     var mj=best.sum.major||[], names=[], i;
     for (i=0;i<mj.length;i++) if (names.indexOf(mj[i].n)<0) names.push(mj[i].n);
@@ -5804,7 +5801,7 @@ function renderAi(results, sp, ep){
   lastBest={key:routeKey(sp, ep), dest:ep.n, time:best.sum.time, fare:best.sum.taxi, toll:best.sum.toll, dist:best.sum.dist};
   renderRoad();   /* 어림 안내를 실제 경로로 바꿔 다시 그린다 */
   box.appendChild(el('div',{cls:'ai-note'},[el('span',{cls:'bl1', text:(getRouteProvider()==='kakao'?'카카오':'TMAP')+' 실시간 교통 기준'}),
-       el('span',{cls:'bl2'}, ptNodes(sp,'출발').concat([' → '+(ep.n||'도착')+' · 빠른 순']))]));
+       el('span',{cls:'bl2'}, ptNodes(sp,'출발').concat([' → '+(ep.n||'도착')]))]));
   for (i=0;i<results.length;i++){
     r=results[i];
     card=el('div',{cls: 'ai-card '+optClass(r.opt.n)+' tap', title:'누르면 T맵 길안내가 시작됩니다',
@@ -10281,8 +10278,8 @@ function init(){
   openFromQr();   /* QR을 찍고 들어왔으면 곧장 승객 화면 */
   bootShow();
   primeVoices();
-  $('btnRoad').addEventListener('click', renderRoad);
-  $('btnRide').addEventListener('click', startRide);
+  if ($('btnRoad')) $('btnRoad').addEventListener('click', renderRoad);
+  if ($('btnRide')) $('btnRide').addEventListener('click', startRide);
   $('btnHere').addEventListener('click', setFromHere);
 
   $('btnVoice').addEventListener('click', startVoice);
@@ -10301,7 +10298,7 @@ function init(){
   $('roadAxis').addEventListener('change', renderRoadList);
   (function(){
     var h=$('roadListTog'), w=$('roadListWrap');
-    function tog(){ var on=w.style.display==='none'; w.style.display= on ? '' : 'none'; h.setAttribute('aria-expanded', on ? 'true' : 'false'); h.querySelector('small').textContent= on ? '' : '눌러서 도로 이름 보기'; if (on) renderRoadList(); }
+    function tog(){ var on=w.style.display==='none'; w.style.display= on ? '' : 'none'; h.setAttribute('aria-expanded', on ? 'true' : 'false'); h.querySelector('small').textContent=''; if (on) renderRoadList(); }
     if (h && w){ h.addEventListener('click', tog); h.addEventListener('keydown', function(ev){ if (ev.keyCode===13||ev.keyCode===32){ ev.preventDefault(); tog(); } }); }
   })();
   $('btnCalc').addEventListener('click', function(){ calcReturn(false); });
