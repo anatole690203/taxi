@@ -196,6 +196,7 @@ a.brow:active{background:#2a2e34}
 .sechd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
 .sechd h3{margin:0;border:0;padding:0}
 .sechd .btn{min-height:38px;font-size:13px;padding:0 10px;white-space:nowrap}
+.sechd .btn.tbupd{background:#6C5CE7;border-color:#6C5CE7;color:#fff;font-weight:700;min-height:42px;font-size:14px;padding:0 14px;border-radius:6px}
 .sec.blue{border-left-color:var(--blue)}
 .sec.blue h3{color:var(--blue)}
 .sec.green{border-left-color:var(--ok)}
@@ -1060,7 +1061,7 @@ body.solo{overflow:hidden;background:#101215}
 .shv{position:fixed;inset:0;z-index:7000;display:flex;flex-direction:column;background:#101215;color:#fff;padding:16px;gap:10px;overflow-y:auto}
 .shv h2{margin:0;font-size:22px}
 .shv .shtop{display:flex;align-items:center;gap:3em}
-.shv .shx{flex:none;min-height:40px;padding:0 12px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:15px;font-weight:700}
+.shv .shx{flex:none;min-height:50px;padding:0 20px;border:2px solid #5B626B;border-radius:10px;background:#2A2F36;color:#fff;font-size:19px;font-weight:800;letter-spacing:.5px}
 .shv .dst{font-size:16px;color:#C9CED4}
 .shv .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .shv .row div{padding:12px;border-radius:8px;background:#1E2126}
@@ -1075,16 +1076,17 @@ body.solo{overflow:hidden;background:#101215}
 .shv .shb2{min-height:48px;border:1px solid #FFC61E;border-radius:8px;background:transparent;color:#FFC61E;font-size:16px;font-weight:800}
 .shv .shfull{min-height:46px;border:1px solid #3A3F46;border-radius:8px;background:transparent;color:#fff;font-size:16px;font-weight:700}
 .shv:fullscreen .shfull{display:none}
+.shv:fullscreen{padding-top:calc(10px + env(safe-area-inset-top))}
 .shv.big{padding:8px 10px;gap:6px}
 .shv.big .shfull,.shv.big .st,.shv.big .shb,.shv.big .shb2{display:none!important}
 .shv.big .shtop{gap:12px}
-.shv.big h2{font-size:17px}
-.shv.big .shx{min-height:32px;font-size:13px;padding:0 9px}
+.shv.big h2{font-size:18px}
+.shv.big .shx{min-height:44px;font-size:17px;padding:0 16px}
 .shv.big .dst{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.shv.big .row{gap:6px}
-.shv.big .row div{padding:6px 10px;display:flex;align-items:baseline;gap:8px}
-.shv.big .row span{font-size:12px}
-.shv.big .row b{font-size:22px;margin:0}
+.shv.big .row{gap:8px}
+.shv.big .row div{padding:8px 12px}
+.shv.big .row span{font-size:13px}
+.shv.big .row b{font-size:26px;margin-top:2px}
 .shv.big .done{padding:10px;font-size:18px}
 .shv.big .map{min-height:0;flex:1 1 auto}
 .gland.big .gl-full{display:none!important}
@@ -1661,7 +1663,7 @@ body.solo{overflow:hidden;background:#101215}
       <div class="field"><label for="airSrv">공항 정보 서버 주소</label><input class="keyin" id="airSrv" type="url" inputmode="url" placeholder="https://taxi-airportrt.caous98.workers.dev"></div>
       <button class="btn" type="button" id="airSrvSave" style="width:100%">저장</button>
     </div>
-    <div class="sec" id="tbSec"><div class="sechd"><h3>태블릿 안내 화면</h3><button class="btn" type="button" id="tbUpdate">태블릿 새 버전 받기</button></div>
+    <div class="sec" id="tbSec"><div class="sechd"><h3>태블릿 안내 화면</h3><button class="btn tbupd" type="button" id="tbUpdate">태블릿 새 버전 받기</button></div>
       <div class="empty">뒷좌석 태블릿에 승차·하차 안내를 글자와 소리로 띄웁니다. 목적지를 정하고 내비(카카오내비·T맵·네이버)로 출발하면 곧바로 승차 안내, 3분 뒤 요금·시간, 5분 뒤 갤러리 사진과 손님용 QR이 저절로 나옵니다. 태블릿이 목적지 가까이 오면 하차 안내가 나옵니다. 태블릿 크롬에서 ⋮ → 홈 화면에 추가로 설치해 열면 주소창 없이 전체 화면으로 나옵니다.</div>
       <div class="empty" id="tbInfo"></div>
       <button class="btn primary" type="button" id="tbPair" style="width:100%;margin-top:8px">태블릿 연결 QR 보기</button>
@@ -5323,12 +5325,15 @@ function fillRoadSelects(){
   for (i=0;i<ZONES.length;i++){
     z=ZONES[i];
     g=z.gu||'기타';
+    /* 공항은 공항·터미널별로 따로 묶는다 */
+    if (g==='공항') g = /^김포/.test(z.name) ? '김포공항' : /T2/.test(z.name) ? '인천공항 T2' : '인천공항 T1';
     if (!groups[g]){ groups[g]=[]; order.push(g); }
-    groups[g].push({z:z, d:km(here.lat, here.lng, z.lat, z.lng)});
+    groups[g].push({z:z, d:km(here.lat, here.lng, z.lat, z.lng), ap: /입국장/.test(z.name) ? 0 : (/출국장/.test(z.name) ? 1 : 2)});
   }
   /* 차례를 정해 둔 권역은 그 순서대로, 나머지는 가까운 순으로 */
   for (n=0;n<order.length;n++) groups[order[n]].sort(function(x,y){
     var ox=x.z.o||99, oy=y.z.o||99;
+    if (x.ap!==y.ap) return x.ap-y.ap;   /* 공항: 입국장 → 출국장 */
     return ox!==oy ? ox-oy : x.d-y.d;
   });
   /* 구끼리도 가장 가까운 권역의 거리로 줄을 세운다 */
@@ -8071,14 +8076,29 @@ var PAGE_END_TXT={
    대신 이 화면 안에서 글자·버튼을 줄이고 지도를 크게 키운다(CSS .big). 제목을 누르면 원래 크기로 돌아온다 */
 function bigScreen(box){
   if (!box) return;
-  if (/\bbig\b/.test(box.className)) return;
-  box.className+=' big';
+  /* 카카오톡 안에서 연 화면: 카카오톡의 주소줄은 페이지가 숨길 수 없으므로 크롬(외부 브라우저)으로 넘겨 연다 */
+  if (/KAKAOTALK/i.test(navigator.userAgent||'')){
+    try { location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(location.href); } catch(e){}
+    setTimeout(function(){ if (!/\bbig\b/.test(box.className)) box.className+=' big'; }, 800);
+    return;
+  }
+  if (!/\bbig\b/.test(box.className)) box.className+=' big';
   try { box.scrollTop=0; } catch(e){}
   try { window.dispatchEvent(new Event('resize')); } catch(e){}
+  /* 주소창까지 숨기는 방법은 브라우저 전체 화면뿐이다. [큰 화면으로 보기]를 눌렀을 때 한 번만 요청한다.
+     (크롬은 이때 "전체 화면을 종료하려면…" 안내를 몇 초 보였다가 스스로 지운다.
+      예전에는 화면을 누를 때마다 다시 요청해서 그 안내가 계속 나타났다) */
+  try {
+    if (!(document.fullscreenElement || document.webkitFullscreenElement)){
+      var r = box.requestFullscreen ? box.requestFullscreen({navigationUI:'hide'}) : (box.webkitRequestFullscreen ? box.webkitRequestFullscreen() : null);
+      if (r && r.catch) r.catch(function(){});
+    }
+  } catch(e){}
 }
 function bigScreenOff(box){
   if (!box) return;
   box.className=box.className.replace(/\s*\bbig\b/g,'');
+  try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); } catch(e){}
   try { window.dispatchEvent(new Event('resize')); } catch(e){}
 }
 function pageEnd(L){
@@ -8148,7 +8168,8 @@ function shareBoot(){
     }},['카카오톡·다른 앱으로 보내기'])
   ]);
   document.body.appendChild(box);
-  /* (전체 화면 자동 전환은 쓰지 않는다: 크롬이 "전체 화면을 종료하려면…" 문구를 띄워 화면을 가린다) */
+  /* 화면을 누른다고 저절로 전체 화면으로 가지는 않는다(그때마다 크롬 안내 문구가 나왔음). [큰 화면으로 보기]에서만 */
+  document.addEventListener('fullscreenchange', function(){ if (!document.fullscreenElement) box.className=box.className.replace(/\s*\bbig\b/g,''); });
   document.body.className+=' solo';
   /* 닫기: 브라우저는 손님이 연 탭을 페이지가 직접 닫지 못하게 해서, 닫기 → 전체 화면 끄기 → 뒤로 가기 순서로 시도 */
   function shClose(){ pageEnd('ko'); }
