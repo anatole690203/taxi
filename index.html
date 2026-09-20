@@ -433,6 +433,15 @@ a.brow:active{background:#2a2e34}
 .heat td.zero{color:transparent;background:var(--panel)}
 .heat td.now{outline:2px solid var(--ink);outline-offset:-2px}
 .tops{font-size:14px;color:var(--muted);margin-top:6px}
+/* 목적지 건물·가게 정보 */
+.destdet{margin:8px 0 0;padding:8px 10px;background:var(--board);border-radius:4px;border-left:3px solid #C792EA;font-size:13.5px;line-height:1.45}
+.destdet .dd-addr{color:var(--muted)}
+.destdet .dd-bld{color:var(--sign);font-weight:700;margin-top:2px;font-size:15px}
+.destdet .dd-k{display:block;font-size:12px;color:var(--muted);margin-top:6px}
+.destdet .dd-shops{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.destdet .dd-shops .chip{background:#31363D;border:1px solid var(--line);border-radius:3px;padding:3px 8px;font-size:12.5px;color:var(--ink)}
+.destdet .dd-shops .chip.both{border-color:#03C75A;color:#8FF0BC}
+.destdet .dd-shops .chip.nv{border-color:#2E7D4F;color:#A7ADB5;font-size:12px;opacity:.9}
 .tops b{color:var(--ink)}
 .plan{margin:0 16px 10px;background:var(--board);border-left:4px solid var(--line);border-radius:4px;padding:12px 14px}
 .plan.win{border-left-color:var(--ok)}
@@ -5391,6 +5400,12 @@ function renderRoad(){
   var dp=destPoint(), fp=fromPoint();
   box.appendChild(el('div',{cls:'tops', style:'margin:10px 0 0'},
     ptNodes(fp, from).concat([' → '+(dp?dp.n:to)+' ('+zoneArea(from)+' → '+zoneArea(to)+')'])));
+  /* 붙여넣기·말하기로 넣은 목적지: 주소 아래에 건물 이름과 그 건물·바로 옆 가게(45m 안)를 보여 준다 */
+  if (dp && $('rdTo').value===VOICE_VAL && isNum(dp.lat) && isNum(dp.lng)){
+    var dd=el('div',{cls:'destdet'});
+    box.appendChild(dd);
+    loadDestDetail(dp, dd);
+  }
   if (real){
     /* 실시간으로 받아 온 길 그대로 보여 준다. 권역으로 어림한 우회로·주의 문구는 이 경로와
        맞지 않을 수 있으므로 아예 붙이지 않는다 */
@@ -5580,6 +5595,111 @@ function renderAi(results, sp, ep){
     text:(getRouteProvider()==='kakao'?'카카오모빌리티':'TMAP')+' 실시간 교통정보 기준입니다. 사고나 행사로 갑자기 막히는 경우는 내비 안내 중 자동으로 다시 계산됩니다.'}));
 }
 
+/* ── 목적지 건물·가게 정보 (카카오 지도 자료) ──
+   건물 이름은 좌표→주소 변환의 building_name, 가게·기관은 그 좌표 45m 안의 장소 검색(음식점·카페·편의점·약국·은행·병원·공공기관·관광명소)으로 모은다.
+   네이버 지역 검색은 서버(비밀 키)가 있어야 해서 여기서는 쓰지 않는다 */
+var destDetCache={};
+function placesNear(lat, lng, radius, cb){
+  var key=getKakaoKey();
+  if (!key){ cb([]); return; }
+  function run(){
+    var ps, codes=['FD6','CE7','CS2','PM9','BK9','HP8','PO3','AT4','MT1','AC5'], out=[], seen={}, i=0, loc;
+    if (!kakaoServicesReady() || !kakao.maps.services.Places){ cb([]); return; }
+    try { ps=new kakao.maps.services.Places(); loc=new kakao.maps.LatLng(lat, lng); } catch(e){ cb([]); return; }
+    function next(){
+      var c;
+      if (i>=codes.length){ out.sort(function(a,b){ return a.d-b.d; }); cb(out); return; }
+      c=codes[i++];
+      try {
+        ps.categorySearch(c, function(data, st){
+          var j, p, d;
+          if (st===kakao.maps.services.Status.OK && data){
+            for (j=0;j<data.length;j++){
+              p=data[j]; d=parseFloat(p.distance);
+              if (isNaN(d) || d>radius || seen[p.id]) continue;
+              seen[p.id]=1;
+              out.push({n:p.place_name, cat:String(p.category_name||'').split(' > ').pop(), d:d});
+            }
+          }
+          next();
+        }, {location:loc, radius:radius, sort:kakao.maps.services.SortBy.DISTANCE, size:15});
+      } catch(e){ next(); }
+    }
+    next();
+  }
+  if (kakaoServicesReady()) run(); else loadKakaoSdk(key, function(ok){ if (ok) run(); else cb([]); });
+}
+function loadDestDetail(pt, box){
+  var k=pt.lat.toFixed(5)+','+pt.lng.toFixed(5);
+  if (destDetCache[k]){ paintDestDetail(box, destDetCache[k]); return; }
+  clear(box);
+  if (!getKakaoKey()){ box.appendChild(el('span',{cls:'dd-k', text:'건물·가게 이름을 보려면 설정에 카카오 JavaScript 키가 필요합니다'})); return; }
+  box.appendChild(el('span',{cls:'dd-k', text:'건물·가게 확인 중…'}));
+  lookupPlace(pt.lat, pt.lng, function(addr, place){
+    placesNear(pt.lat, pt.lng, 45, function(list){
+      var det={addr:addr||'', bld:place||'', shops:list.slice(0,8), naver:0};
+      destDetCache[k]=det;
+      if (box.parentNode) paintDestDetail(box, det);
+      /* 네이버 지역검색으로 한 번 더 확인·보충 (관광 정보 서버에 /place 경로가 있을 때만) */
+      naverShops(pt, det, function(merged){
+        if (!merged) return;
+        destDetCache[k]=merged;
+        if (box.parentNode) paintDestDetail(box, merged);
+      });
+    });
+  });
+}
+/* 네이버 지역검색 결과를 카카오 결과와 합친다.
+   양쪽에 다 있는 가게는 '✓'(지금도 영업 중일 가능성이 높음), 네이버에만 있으면 '네이버'로 표시 */
+function naverShops(pt, det, cb){
+  var srv=tourServer(), dong, names, url;
+  if (!srv){ cb(null); return; }
+  dong = String(det.addr||'').split(' ').slice(1,3).join(' ');
+  names = det.shops.map(function(s){ return s.n; }).slice(0,8).join('|');
+  url = srv+'/place?lat='+pt.lat.toFixed(6)+'&lng='+pt.lng.toFixed(6)+
+        '&q='+encodeURIComponent(dong)+'&names='+encodeURIComponent(names)+
+        '&o='+encodeURIComponent(location.origin);
+  try {
+    fetch(url, {mode:'cors'}).then(function(r){ return r.json(); }).then(function(j){
+      var map={}, out=[], i, s, n;
+      if (!j || !j.list){ cb(null); return; }
+      for (i=0;i<j.list.length;i++){ n=j.list[i]; map[n.n.replace(/\s/g,'')]=n; }
+      /* 카카오 목록을 그대로 두고, 네이버에도 있으면 표시를 붙인다 */
+      for (i=0;i<det.shops.length;i++){
+        s=det.shops[i]; n=map[s.n.replace(/\s/g,'')];
+        out.push({n:s.n, cat:s.cat, d:s.d, src: n ? 'both' : 'kakao'});
+        if (n) delete map[s.n.replace(/\s/g,'')];
+      }
+      /* 네이버에만 있는 가게를 뒤에 더한다 */
+      for (i=0;i<j.list.length;i++){
+        n=j.list[i];
+        if (!map[n.n.replace(/\s/g,'')]) continue;
+        out.push({n:n.n, cat:n.cat, d:n.d, src:'naver'});
+      }
+      cb({addr:det.addr, bld:det.bld, shops:out.slice(0,12), naver:1});
+    }).catch(function(){ cb(null); });
+  } catch(e){ cb(null); }
+}
+function paintDestDetail(box, det){
+  var row, i, s;
+  clear(box);
+  if (!det.addr && !det.bld && !det.shops.length){ box.style.display='none'; return; }
+  box.style.display='';
+  if (det.addr) box.appendChild(el('div',{cls:'dd-addr', text:'📍 '+det.addr}));
+  if (det.bld) box.appendChild(el('div',{cls:'dd-bld', text:'🏢 '+det.bld}));
+  if (det.shops.length){
+    box.appendChild(el('div',{cls:'dd-k', text:(det.bld ? '이 건물·바로 옆' : '주소지 바로 옆')+' 가게·기관 · '+
+      (det.naver ? '✓는 카카오·네이버 양쪽에 있는 곳' : '카카오 지도')}));
+    row=el('div',{cls:'dd-shops'});
+    for (i=0;i<det.shops.length;i++){
+      s=det.shops[i];
+      row.appendChild(el('span',{cls:'chip'+(s.src==='both' ? ' both' : (s.src==='naver' ? ' nv' : '')),
+        text:(s.src==='both' ? '✓ ' : '')+s.n,
+        title:(s.cat||'')+' · '+Math.round(s.d)+'m'+(s.src==='naver' ? ' · 네이버에만 등록' : '')}));
+    }
+    box.appendChild(row);
+  }
+}
 /* 기사 앱에 뜬 목적지를 옮겨 넣기 (붙여넣기 또는 직접 입력) */
 function findTypedDest(){
   var q=$('destText').value.replace(/^\s+|\s+$/g,''), msg=$('voiceMsg');
