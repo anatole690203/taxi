@@ -475,11 +475,12 @@ a.brow:active{background:#2a2e34}
 .plan{margin:0 16px 10px;background:var(--board);border-left:4px solid var(--line);border-radius:4px;padding:12px 14px}
 .plan h4{margin:0 0 6px;font-size:16px;color:var(--muted)}
 .plan.wait{border-left-color:#C792EA}
-.plan.wait h4{color:#C792EA}
+.plan.wait h4,.plan.wait .big{color:#C792EA}
 .plan.empty{border-left-color:var(--blue)}
-.plan.empty h4{color:var(--blue)}
-.plan.be{border-left-color:var(--muted)}
-.plan.be h4{color:var(--muted)}
+.plan.empty h4,.plan.empty .big{color:var(--blue)}
+.plan.be{border-left-color:#3DDC84}
+.plan.be h4,.plan.be .big{color:#3DDC84}
+#btnRetSave{color:#3a2f45;background:#E9E3F0;border-color:#5b4a6b;font-weight:700}
 .plan.win h4::after{content:' · 유리';font-size:13px;color:var(--ok)}
 .plan .big{font-size:24px;font-weight:700;line-height:1.2}
 .plan .big.neg{color:var(--danger)}
