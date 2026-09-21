@@ -473,15 +473,21 @@ a.brow:active{background:#2a2e34}
 .destdet .dd-shops .chip.nv{border-color:#2E7D4F;color:#A7ADB5;font-size:12px;opacity:.9}
 .tops b{color:var(--ink)}
 .plan{margin:0 16px 10px;background:var(--board);border-left:4px solid var(--line);border-radius:4px;padding:12px 14px}
-.plan.win{border-left-color:var(--ok)}
 .plan h4{margin:0 0 6px;font-size:16px;color:var(--muted)}
-.plan.wait h4{color:var(--sign)}
+.plan.wait{border-left-color:#C792EA}
+.plan.wait h4{color:#C792EA}
+.plan.empty{border-left-color:var(--blue)}
 .plan.empty h4{color:var(--blue)}
+.plan.be{border-left-color:var(--muted)}
+.plan.be h4{color:var(--muted)}
+.plan.win h4::after{content:' · 유리';font-size:13px;color:var(--ok)}
 .plan .big{font-size:24px;font-weight:700;line-height:1.2}
 .plan .big.neg{color:var(--danger)}
 .plan .li{font-size:14px;color:var(--muted);margin-top:4px}
-.verdict{margin:16px 16px 10px;padding:12px 14px;background:#2f3a33;border-left:5px solid var(--ok);border-radius:4px;font-size:15px;font-weight:600}
-.verdict.wait{background:#3a2f31;border-left-color:var(--danger)}
+.verdict{margin:16px 16px 10px;padding:12px 14px;background:#2f3a33;border-radius:4px;font-size:15px;font-weight:600;line-height:1.5}
+.verdict.wait{background:#33303a}
+.verdict .v1{font-size:17px;font-weight:700;color:var(--ink)}
+.verdict .v2{font-size:15px;font-weight:600;color:var(--ok);margin-top:2px}
 .rushrow{display:grid;grid-template-columns:92px 1fr 62px;gap:8px;align-items:center;font-size:14px;margin-bottom:6px}
 .rushrow .track{height:12px;background:var(--panel);border-radius:2px;overflow:hidden}
 .rushrow .track i{display:block;height:100%;background:var(--blue)}
@@ -1621,12 +1627,12 @@ body.solo{overflow:hidden;background:#101215}
       <button class="btn primary" type="button" id="btnCalc">계산하기</button>
     </div>
     <div id="retResult"></div>
-    <div class="sec blue">
-      <h3>귀로 손님이 많았던 시간대</h3>
+    <div class="sec">
+      <h3>귀로 콜 많은 시간</h3>
       <div id="rushBox"></div>
     </div>
     <div class="sec gray">
-      <h3>내 차·요금 기준값</h3>
+      <h3>공항운행경비 기준값 설정</h3>
       <div class="row2">
         <div class="field"><label for="rFare">공항→서울 평균 요금(원)</label><input id="rFare" type="text" inputmode="numeric"></div>
         <div class="field"><label for="rFee">플랫폼 수수료(%)</label><input id="rFee" type="text" inputmode="decimal"></div>
@@ -1640,7 +1646,7 @@ body.solo{overflow:hidden;background:#101215}
         <div class="field"><label for="rFuel">LPG 단가(원/L)</label><input id="rFuel" type="text" inputmode="numeric"></div>
       </div>
       <div class="row2">
-        <div class="field"><label for="rToll">빈차 복귀 통행료(원)</label><input id="rToll" type="text" inputmode="numeric"></div>
+        <div class="field"><label for="rToll">빈차 복귀 통행료(원, 공항 빈차는 면제라 0)</label><input id="rToll" type="text" inputmode="numeric"></div>
         <div class="field"><label for="rHourly">시내 영업 시간당 순수입(원)</label><input id="rHourly" type="text" inputmode="numeric"></div>
       </div>
       <button class="btn" type="button" id="btnRetSave">기준값 저장</button>
@@ -5204,7 +5210,7 @@ var RET_DEFAULT = {
   min:50,          /* 편도 주행 시간(분) */
   kmpl:8.6,        /* 2027 스포티지 2.0 LPG 19인치 복합연비 (기아 공식) */
   fuel:1100,       /* LPG 단가(원/L) */
-  toll:6600,       /* 빈차 복귀 시 본인 부담 통행료 */
+  toll:0,          /* 빈차 복귀 통행료 — 공항 빈차 회송은 면제라 0원 */
   hourly:20000,    /* 시내 영업 시간당 순수입 */
   rate10:30        /* 공항 승차장에서 10분에 빠지는 대수 */
 };
@@ -5217,6 +5223,8 @@ function retSettings(){
       for (k in o){ if (Object.prototype.hasOwnProperty.call(o,k) && isNum(v[k])) o[k]=v[k]; }
       /* 예전 버전(1분당 대수)에서 넘어온 값 변환 */
       if (!isNum(v.rate10) && isNum(v.rate)) o.rate10=v.rate*10;
+      /* 예전 기본 통행료 6,600원을 그대로 쓰던 경우 → 공항 빈차 회송은 면제라 0원으로 */
+      if (v.toll===6600) o.toll=0;
       /* 예전 기본 연비(8.5)를 그대로 쓰던 경우 19인치 공식 연비로 바꾼다. 직접 넣은 다른 값은 건드리지 않는다 */
       if (o.kmpl===8.5) o.kmpl=8.6;
     } catch(e){}
@@ -5617,14 +5625,14 @@ function calcReturn(quiet){
   p=returnPlan(c, w);
   clear(box);
 
-  verdict=el('div',{cls: p.better==='wait' ? 'verdict' : 'verdict wait'});
-  verdict.textContent = p.better==='wait'
-    ? '기다렸다 태우는 편이 낫습니다 · 시간당 '+won(p.gap)+' 유리'
-    : '빈차로 돌아가는 편이 낫습니다 · 시간당 '+won(p.gap)+' 유리';
+  verdict=el('div',{cls: p.better==='wait' ? 'verdict' : 'verdict wait'},[
+    el('div',{cls:'v1', text: p.better==='wait' ? '공항 대기' : '서울로 빈차 복귀'}),
+    el('div',{cls:'v2', text:'- 시간당 '+won(p.gap)+' 유리'})
+  ]);
   box.appendChild(verdict);
 
   card=el('div',{cls: p.better==='wait' ? 'plan wait win' : 'plan wait'},[
-    el('h4',{text:'기다렸다 태우기'}),
+    el('h4',{text:'공항 대기'}),
     el('div',{cls:'big num', text: won(p.perHourWait)+' / 시간'}),
     el('div',{cls:'li', text:'대기 '+p.waitMin+'분 + 주행 '+c.min+'분 = '+p.span+'분'}),
     el('div',{cls:'li', text:'요금 '+won(c.fare)+' − 수수료 '+won(p.fee)+' − 연료 '+won(p.fuelTrip)+' = '+won(p.netWait)})
@@ -5632,16 +5640,16 @@ function calcReturn(quiet){
   box.appendChild(card);
 
   card=el('div',{cls: p.better==='empty' ? 'plan empty win' : 'plan empty'},[
-    el('h4',{text:'빈차로 복귀'}),
+    el('h4',{text:'빈차복귀'}),
     el('div',{cls:'big num', text: won(p.perHourEmpty)+' / 시간'}),
-    el('div',{cls:'li', text:'회송 '+c.min+'분 동안 수입 0, 비용 '+won(p.costEmpty)+' (연료 '+won(p.fuelTrip)+' + 통행료 '+won(c.toll)+')'}),
+    el('div',{cls:'li', text:'회송 '+c.min+'분 동안 수입 0, 비용 '+won(p.costEmpty)+' (연료 '+won(p.fuelTrip)+(c.toll>0 ? ' + 통행료 '+won(c.toll) : ' · 빈차 통행료 면제')+')'}),
     el('div',{cls:'li', text:'남는 '+p.waitMin+'분을 시내에서 영업해 '+won(p.cityEarn)+' (시간당 '+won(c.hourly)+' 기준) → 합계 '+won(p.netEmpty)})
   ]);
   box.appendChild(card);
 
   if (p.breakeven!==null){
-    box.appendChild(el('div',{cls:'plan'},[
-      el('h4',{text:'손익분기 대기 시간'}),
+    box.appendChild(el('div',{cls:'plan be'},[
+      el('h4',{text:'손익분기 대기시간'}),
       el('div',{cls:'big num', text: (p.breakeven>0 ? Math.round(p.breakeven)+'분' : '0분')}),
       el('div',{cls:'li', text: p.breakeven>0
         ? '이보다 오래 기다려야 할 것 같으면 빈차로 돌아가세요. 대기 대수로는 약 '+Math.round(p.breakeven*c.rate10/10)+'대까지입니다.'
