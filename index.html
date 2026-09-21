@@ -880,7 +880,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tback.on{display:block}
 .tback span{display:block;font-size:.6em;font-weight:700;margin-top:4px}
 /* ── 남은 거리·도착 시각·지도·도착 예정 공유 ── */
-.tbpane.trip{overflow-y:auto}
+.tbpane.trip{overflow:hidden;overscroll-behavior:none}
 .tt-side{display:flex;flex-direction:column;min-height:0;gap:1.4vh}
 .tt-eta{display:grid;grid-template-columns:1fr 1fr;gap:1.2vh 2vw;padding:1.4vh 2vw;border-radius:10px;background:#1E2126}
 .tt-eta .k{font-size:clamp(13px,1.9vh,20px);color:#9AA0A8}
@@ -1377,6 +1377,38 @@ body.solo{overflow:hidden;background:#101215}
 #tbIdle .tv-cap b{display:block;font-size:clamp(17px,2vh,25px);font-weight:700;line-height:1.25}
 #tbIdle .tv-cap i{display:block;font-style:normal;font-size:clamp(12px,1.4vh,16px);opacity:.85;margin-top:2px}
 @media (prefers-reduced-motion:reduce){#tbIdle .tv-s.kb,#tbIdle .ti-tk span,#tbIdle .ti-tvon{animation:none}}
+/* 대기 화면 카드 왼쪽: 사진 · Best Seoul Taxi · 차종 · 인사 (이름 없음) */
+#tbIdle .ti-pf{flex:1 1 auto;min-width:0;max-width:none;flex-direction:row;align-items:center;gap:14px}
+#tbIdle .ti-pf .tb-name{display:none!important}
+#tbIdle .ti-pftx{min-width:0;display:flex;flex-direction:column;gap:3px;text-align:left}
+#tbIdle .ti-pfk{font-family:'Playball','Great Vibes','Snell Roundhand',cursive;font-size:clamp(22px,2.6vh,32px);line-height:1.2;background:linear-gradient(90deg,#FFD27A,#F78CA0,#C79BFF);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+#tbIdle .ti-pfc{font-size:clamp(16px,1.8vh,21px);color:#A9B0B8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tbIdle .ti-pfc:empty{display:none}
+#tbIdle .ti-pfd{font-size:clamp(15px,1.7vh,20px);color:#A8CBFF;line-height:1.35;word-break:keep-all}
+#tbIdle .ti-svc{flex:0 1 auto;width:clamp(260px,44vw,420px)}
+/* 태블릿: 화면 고정 (끌어도 위아래로 밀리지 않게) */
+html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:none;height:100%}
+.tabscr{overscroll-behavior:none}
+.tbpane.trip .tt-map{min-height:8vh}
+/* 세로 태블릿(갤럭시탭 768×1024 등): 주행 화면이 한 화면에 모두 들어가게 (넘치면 위아래로 밀렸다) */
+@media (max-aspect-ratio:1/1){
+  .tbpane.trip{padding:2.6vh 4.5vw 2.4vh!important;gap:.9vh!important}
+  .tbpane.trip .tt-drv{margin-bottom:0!important;padding:.7vh 2.4vw!important}
+  .tbpane.trip .tt-drv .dav{width:clamp(46px,5.8vh,66px)!important;height:clamp(46px,5.8vh,66px)!important}
+  .tbpane.trip .tt-drv .k{font-size:clamp(17px,2.3vh,26px)!important}
+  .tbpane.trip .tt-top{margin-top:.4vh!important;gap:.2vh!important}
+  .tbpane.trip .tt-dest{font-size:clamp(24px,3.5vh,40px)!important}
+  .tbpane.trip .tt-row{margin-top:.8vh!important}
+  .tbpane.trip .tt-v{font-size:clamp(24px,3.6vh,42px)!important}
+  .tbpane.trip .tt-note{margin-top:.4vh!important}
+  .tbpane.trip .tt-side{gap:.9vh!important;min-height:0}
+  .tbpane.trip .tt-eta{padding:.9vh 2vw!important;row-gap:.5vh!important}
+  .tbpane.trip .tt-map{min-height:6vh!important;flex:1 1 0!important}
+  .tbpane.trip .tt-qr{flex:none!important;padding:1vh 2.4vw!important}
+  .tbpane.trip .tt-qrbox{width:clamp(104px,12.5vh,150px)!important;height:clamp(104px,12.5vh,150px)!important;padding:6px!important}
+  .tbpane.trip .tt-qrtxt b{font-size:clamp(18px,2.5vh,28px)!important}
+  .tbpane.trip .tt-qrtxt span{font-size:clamp(15px,1.9vh,22px)!important}
+}
 /* 관리 화면 탭 */
 .tgtabs{display:flex;gap:8px;margin:0 0 12px}
 .tgtabs button{flex:1;min-height:48px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:17px;font-weight:700}
@@ -1919,6 +1951,7 @@ body.solo{overflow:hidden;background:#101215}
         <input type="file" id="tbMediaFile" class="pffile" accept="image/*,video/*" multiple>
       </div>
       <div class="empty" id="tbMediaMsg">폰에서 고른 사진·영상이 태블릿으로 전송되어 태블릿에 저장됩니다. 사진은 자동으로 줄여 보내고, 영상은 한 개 15MB(약 30초)까지 보낼 수 있습니다. 보낼 때 태블릿이 켜져 있고 인터넷에 연결돼 있어야 받습니다.</div>
+      <button class="btn" type="button" id="tbActsSend" style="width:100%;margin-top:8px">📷 프로필 활동 사진을 태블릿 TV로 다시 보내기</button>
       <button class="btn" type="button" id="tbMediaClear" style="width:100%;margin-top:8px">위에서 고른 칸의 태블릿 사진·영상 모두 지우기</button>
       <div class="field" style="margin-top:14px"><label for="tmapMapKey">T맵 지도용 키 (지도 전용으로 따로 발급)</label>
         <input class="keyin" id="tmapMapKey" type="text" inputmode="latin" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="openapi.sk.com에서 지도용 앱을 하나 더 만들어 받은 키">
@@ -2128,7 +2161,7 @@ body.solo{overflow:hidden;background:#101215}
       <div class="ti-hello" id="tiHello">안전하고 편안하게 모시겠습니다</div>
       <div class="ti-hello2">환영합니다 · Welcome · ようこそ · 欢迎</div>
       <div class="ti-drv" id="tiDrv">
-        <div class="ti-pf"><div class="dav" id="tbAv"></div><div class="tb-name" id="tbName"></div></div>
+        <div class="ti-pf"><div class="dav" id="tbAv"></div><div class="ti-pftx"><div class="ti-pfk">Best Seoul Taxi</div><div class="ti-pfc" id="tiPfCar"></div><div class="ti-pfd">안전하고 편안하게 모시겠습니다</div></div><div class="tb-name" id="tbName"></div></div>
         <div class="ti-svc">
           <div class="ti-tv" aria-hidden="true">
             <div class="ti-tvbz">
@@ -7374,6 +7407,7 @@ function pfSave(){
   profile=next;
   pfFill();
   toast('기사 프로필을 저장했습니다');
+  try { tbSendPf(); tbSendActs(false); } catch(e){}
 }
 function initProfileForm(){
   if (!$('pfSec')) return;
@@ -8212,7 +8246,7 @@ function bindTabletPhone(){
   $('tbBig').addEventListener('change', function(){ tbSetFlag('big', this.checked); });
   $('tbFgn').addEventListener('change', function(){ tbSetFlag('fgn', this.checked); });
   $('tbEtaProv').addEventListener('change', function(){ sSet(TB_ETA_PROV_KEY, this.value==='kakao' ? 'kakao' : 'tmap'); toast(this.value==='kakao' ? '카카오내비로 계산합니다. [태블릿에 경로 계산 키 보내기]도 눌러 주세요' : 'T맵으로 계산합니다'); });
-  $('tbSendKeys').addEventListener('click', tbSendKeys);
+  $('tbSendKeys').addEventListener('click', function(){ tbSendKeys(); try { tbSendPf(); } catch(e){} });
   tbMediaBind();
   $('tmapMapKey').value=tmapMapKey();
   $('tmapMapKeySave').addEventListener('click', function(){
@@ -8446,16 +8480,16 @@ function tbReqBuild(){
 /* 부탁하기 화면 맨 위: 기사 소개 (운행 정보에 실려 온 프로필, 없으면 연결 때 받은 이름) */
 function tbReqDrvPaint(L){
   var box=$('tbReqDrv'), av=el('span',{cls:'dav'}), src=$('ttDrvAv') && $('ttDrvAv').style.backgroundImage,
-      nm=($('ttDrvN') && $('ttDrvN').textContent) || tb.name || '', car=($('ttDrvC') && $('ttDrvC').textContent) || '',
+      nm='', car=($('ttDrvC') && $('ttDrvC').textContent) || tbPfLoad().car || '',
       sub={ko:'편하게 부탁해 주세요', en:'Feel free to ask me anything', ja:'お気軽にお申し付けください', zh:'有需要请随时告诉我'};
   if (!box) return;
   clear(box);
-  try { paintAvatar(av, {nameKo:tb.name}, 'ko'); } catch(e){}
+  try { paintAvatar(av, {nameKo:''}, 'ko'); } catch(e){}
   if (src){ av.style.backgroundImage=src; av.textContent=''; }
   box.appendChild(av);
   box.appendChild(el('div',{cls:'tx'},[
     el('div',{cls:'k', text:'Best Seoul Taxi'}),
-    el('div',{cls:'n', text:nm.split(' / ')[0]}),
+    nm ? el('div',{cls:'n', text:nm.split(' / ')[0]}) : null,
     nm.indexOf(' / ')>0 ? el('div',{cls:'e', text:nm.split(' / ').slice(1).join(' / ')}) : null,
     car ? el('div',{cls:'c', text:car}) : null,
     el('div',{cls:'d', text: sub[L]||sub.en})
@@ -8504,7 +8538,7 @@ function tbAck(){
   if (!b) return;
   clear(b);
   av=el('span',{cls:'dav'});
-  try { paintAvatar(av, {nameKo:tb.name}, 'ko'); } catch(e){}
+  try { paintAvatar(av, {nameKo:''}, 'ko'); } catch(e){}
   src=$('ttDrvAv') && $('ttDrvAv').style.backgroundImage;
   if (src){ av.style.backgroundImage=src; av.textContent=''; }
   b.appendChild(av);
@@ -9082,15 +9116,9 @@ function bigScreen(box){
   if (!/\bbig\b/.test(box.className)) box.className+=' big';
   try { box.scrollTop=0; } catch(e){}
   try { window.dispatchEvent(new Event('resize')); } catch(e){}
-  /* 주소창까지 숨기는 방법은 브라우저 전체 화면뿐이다. [큰 화면으로 보기]를 눌렀을 때 한 번만 요청한다.
-     (크롬은 이때 "전체 화면을 종료하려면…" 안내를 몇 초 보였다가 스스로 지운다.
-      예전에는 화면을 누를 때마다 다시 요청해서 그 안내가 계속 나타났다) */
-  try {
-    if (!(document.fullscreenElement || document.webkitFullscreenElement)){
-      var r = box.requestFullscreen ? box.requestFullscreen({navigationUI:'hide'}) : (box.webkitRequestFullscreen ? box.webkitRequestFullscreen() : null);
-      if (r && r.catch) r.catch(function(){});
-    }
-  } catch(e){}
+  /* 브라우저 전체 화면(requestFullscreen)은 한 번도 요청하지 않는다.
+     한 번이라도 요청하면 크롬이 "taxi.lovech.co.kr: 전체 화면을 종료하려면 상단에서 드래그한 후…" 안내를 띄운다.
+     (예전 수정은 '누를 때마다'를 '한 번만'으로 줄였을 뿐이라 안내가 다시 나타났다) */
 }
 function bigScreenOff(box){
   if (!box) return;
@@ -9618,8 +9646,10 @@ function tabletBoot(){
   tb.on=true; tb.code=o.code; tb.name=o.name||'';
   $('tabScr').className='tabscr on';
   $('tabScr').setAttribute('aria-hidden','false');
-  paintAvatar($('tbAv'), {nameKo:tb.name}, 'ko');
-  $('tbName').textContent=tb.name;
+  document.documentElement.className+=' tbfixed';   /* 태블릿: 뒤쪽 페이지가 끌려 화면이 밀리지 않게 (tbmode는 폰 체크 줄 이름이라 쓰지 않는다) */
+  paintAvatar($('tbAv'), {nameKo:''}, 'ko');
+  $('tbName').textContent='';   /* 태블릿에는 기사 이름을 보이지 않는다 */
+  tbPfPaint();
   tbPane('tbStart');
   $('tbGo').addEventListener('click', tbStart);
   /* 손님이나 기사가 화면을 한 번이라도 누르면 전체 화면으로 되돌린다 */
@@ -9717,7 +9747,8 @@ function tbConnect(again){
     if (m.type==='keys'){ tbKeys(m); return; }
     if (m.type==='routes'){ tbRoutesShow(m); return; }
     if (m.type==='media'){ tbMediaRecv(m, d.attachment); return; }
-    if (m.type==='media_clear'){ tbMediaClear(m.album); return; }
+    if (m.type==='media_clear'){ tbMediaClear(m.album, m.src); return; }
+    if (m.type==='pf'){ tbPfSave({car:m.car||''}); tbPfPaint(); return; }
     if (m.type==='ride') tbRide(m);
     else if (m.type==='alight'){ if (m.voice!==undefined) tb.voice=!!m.voice; tbAlight(m.lang); }
     else if (m.type==='trip') tbTripMsg(m);
@@ -9975,14 +10006,12 @@ function tbDrvCard(tr, L){
   try { o=JSON.parse(unb64u(tr.g)); } catch(e){ o=null; }
   if (o && o.p){ try { pr=profileFromQr(o.p); } catch(e){ pr=null; } }
   /* 프로필이 안 실려 왔으면 연결할 때 받은 이름과 기본 사진으로 */
-  if (!pr && tb.name){ try { pr=emptyProfile(); pr.nameKo=tb.name; } catch(e){ pr=null; } }
+  if (!pr){ try { pr=emptyProfile(); } catch(e){ pr=null; } }
   if (!pr){ box.style.display='none'; return; }
   paintAvatar($('ttDrvAv'), pr, L);
-  (function(){
-    var ko=pfName(pr, 'ko')||'', en=pr.nameEn||'';
-    $('ttDrvN').textContent = (ko && en && ko!==en) ? (ko+' / '+en) : (ko||en);
-  })();
+  $('ttDrvN').textContent='';   /* 태블릿에는 기사 이름(한·영·일·중)을 보이지 않는다 */
   try { $('ttDrvC').textContent=carText(pr, 'ko', true)||''; } catch(e){ $('ttDrvC').textContent=''; }
+  if ($('ttDrvC').textContent){ tbPfSave({car:$('ttDrvC').textContent}); }
   $('ttDrvD').textContent=DRV_TAGLINE.ko||'';
   box.style.display='flex';
 }
@@ -11325,6 +11354,7 @@ function tbMediaBind(){
     for (j=0;j<bs.length;j++) bs[j].setAttribute('aria-pressed', bs[j]===b ? 'true' : 'false');
   }); })(bs[i]);
   $('tbMediaFile').addEventListener('change', function(){ var fs=this.files; tbMediaSend(fs); this.value=''; });
+  $('tbActsSend').addEventListener('click', function(){ tbSendActs(true); });
   $('tbMediaClear').addEventListener('click', function(){
     var code=tbPairCode(), nm= tbMediaAlbum==='tv' ? '대기화면 TV' : '운행 중 갤러리';
     if (!code){ toast('태블릿을 먼저 연결하세요'); return; }
@@ -11367,15 +11397,17 @@ function tbMediaSend(list){
   })();
 }
 function tbMediaAck(rest){
-  var p=rest.split('|'), what=p[0], album= p[1]==='gal' ? '운행 중 갤러리' : '대기화면 TV', cnt=p[2] ? ' (지금 '+p[2]+'개)' : '';
+  var p=rest.split('|'), what=p[0];
+  if (what==='cleared' && p[3]==='act') return;   /* 활동 사진을 새로 보내기 전 옛 것을 비운 것: 알리지 않는다 */
+  var album= p[1]==='gal' ? '운행 중 갤러리' : '대기화면 TV', cnt=p[2] ? ' (지금 '+p[2]+'개)' : '';
   if (what==='ok'){ toast('태블릿이 '+album+' 사진·영상을 받아 저장했습니다'+cnt); tbMediaNote('태블릿이 받아 저장했습니다'+cnt+'.'); }
   else if (what==='full') toast('태블릿 '+album+' 칸이 가득 찼습니다(50개). 몇 개 지운 뒤 보내세요');
   else if (what==='cleared') toast('태블릿 '+album+' 사진·영상을 모두 지웠습니다');
   else toast('태블릿이 사진·영상을 저장하지 못했습니다. 저장 공간을 확인하세요');
 }
 /* ── 태블릿 쪽 ── */
-function tbMediaSay(what, album, cnt){
-  var body={topic:tbRqTopic(tb.code), title:'📷 사진·영상', priority:2, tags:['frame_with_picture'], message:'#MEDIA '+what+'|'+(album||'tv')+'|'+(cnt||'')};
+function tbMediaSay(what, album, cnt, src){
+  var body={topic:tbRqTopic(tb.code), title:'📷 사진·영상', priority:2, tags:['frame_with_picture'], message:'#MEDIA '+what+'|'+(album||'tv')+'|'+(cnt||'')+'|'+(src||'')};
   try { fetch(TB_RELAY, {method:'POST', body:JSON.stringify(body), mode:'cors'}).catch(function(){}); } catch(e){}
 }
 function tbMediaRefresh(album){
@@ -11397,7 +11429,7 @@ function tbMediaRecv(m, att){
       if (kind==='img' && !/^image\//.test(b.type||'')) b=b.slice(0, b.size, 'image/jpeg');
       if (kind==='video' && !/^video\//.test(b.type||'')) b=b.slice(0, b.size, 'video/mp4');
       try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){}); } catch(e){}
-      tgWrite(function(st){ st.add({kind:kind, blob:b, name:name, size:b.size, at:Date.now(), album:album}); }, function(okk){
+      tgWrite(function(st){ st.add({kind:kind, blob:b, name:name, size:b.size, at:Date.now(), album:album, src:m.src||''}); }, function(okk){
         if (!okk){ tbMediaSay('fail', album); return; }
         tbMediaSay('ok', album, cnt+1);
         tbMediaRefresh(album);
@@ -11405,13 +11437,54 @@ function tbMediaRecv(m, att){
     })['catch'](function(){ tbMediaSay('fail', album); });
   });
 }
-function tbMediaClear(album){
+function tbMediaClear(album, src){
   album = album==='gal' ? 'gal' : 'tv';
   tgAll(function(rows){
-    var ids=rows.filter(function(r){ return (r.album==='tv' ? 'tv' : 'gal')===album; }).map(function(r){ return r.id; });
-    tgWrite(function(st){ ids.forEach(function(id){ st['delete'](id); }); }, function(){ tbMediaSay('cleared', album); tbMediaRefresh(album); });
+    var ids=rows.filter(function(r){ return (r.album==='tv' ? 'tv' : 'gal')===album && (!src || r.src===src); }).map(function(r){ return r.id; });
+    tgWrite(function(st){ ids.forEach(function(id){ st['delete'](id); }); }, function(){ tbMediaSay('cleared', album, '', src); tbMediaRefresh(album); });
   });
 }
+
+/* ═══════════ 폰 → 태블릿: 프로필 차종 · 활동 사진(TV) ═══════════ */
+var TB_ACTS_SIG_KEY='airportCallLog.tbActsSig.v1', TB_PF_KEY='airportCallLog.tbPf.v1';
+function tbSendPf(){
+  var p=profile || null, car='';
+  if (!tbPairCode() || !p) return;
+  try { car=carText(p, 'ko', true)||''; } catch(e){ car=''; }
+  tbSend('pf', null, '', null, {car:String(car).slice(0,40)});
+}
+function tbActsSig(acts){
+  var s=acts.map(function(a){ return a.length+':'+a.slice(-48); }).join('|'), h=0, i;
+  for (i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))|0;
+  return acts.length+'-'+h;
+}
+/* 프로필 '활동 사진'을 태블릿 대기화면 TV 칸으로. 바뀐 경우에만(또는 다시 보내기) 옛 활동 사진을 비우고 새로 보낸다 */
+function tbSendActs(force){
+  var code=tbPairCode(), acts=((profile && profile.acts) || []).slice(), sig=tbActsSig(acts), total=acts.length, ok=0, bad=0, k=0;
+  if (!code){ if (force) toast('설정에서 태블릿을 먼저 연결하세요'); return; }
+  if (!force && sGet(TB_ACTS_SIG_KEY)===sig) return;
+  tbSend('media_clear', null, '', null, {album:'tv', src:'act'});
+  if (!total){ sSet(TB_ACTS_SIG_KEY, sig); if (force) toast('보낼 활동 사진이 없습니다. 프로필에 활동 사진을 넣어 주세요'); return; }
+  tbMediaNote('프로필 활동 사진 '+total+'장을 태블릿 TV로 보내는 중…');
+  setTimeout(function next(){
+    var src=acts.shift();
+    if (!src){
+      if (!bad) sSet(TB_ACTS_SIG_KEY, sig);
+      tbMediaNote('프로필 활동 사진 '+ok+'장을 태블릿 TV로 보냈습니다.'+(bad ? ' '+bad+'장은 보내지 못했습니다. 인터넷을 확인하고 [다시 보내기]를 눌러 주세요.' : ''));
+      return;
+    }
+    k++;
+    fetch(src).then(function(r){ return r.blob(); }).then(function(b){
+      var meta={v:1, type:'media', ts:Date.now(), album:'tv', kind:'img', src:'act', n:encodeURIComponent('활동 사진 '+k)},
+          url=TB_RELAY+tbTopic(code)+'?m='+encodeURIComponent(JSON.stringify(meta))+'&f=act_'+k+'.jpg';
+      return fetch(url, {method:'PUT', body:b, mode:'cors'});
+    }).then(function(r){ if (r && r.ok) ok++; else bad++; next(); }, function(){ bad++; next(); });
+  }, 1500);   /* 옛 활동 사진 지우기가 먼저 끝나도록 잠깐 기다린다 */
+}
+/* ── 태블릿 쪽: 차종을 기억해 대기 화면 카드에 ── */
+function tbPfLoad(){ try { return JSON.parse(sGet(TB_PF_KEY)||'{}')||{}; } catch(e){ return {}; } }
+function tbPfSave(o){ var p=tbPfLoad(); if (o && o.car) p.car=String(o.car).slice(0,40); try { sSet(TB_PF_KEY, JSON.stringify(p)); } catch(e){} tbPfPaint(); }
+function tbPfPaint(){ var c=$('tiPfCar'); if (c) c.textContent=tbPfLoad().car||''; }
 if (typeof document !== 'undefined' && document.addEventListener){
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
   else init();
