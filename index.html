@@ -1424,6 +1424,9 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 #tbIdle .tv-s .tv-bl{position:absolute;inset:-10%;background:center/cover no-repeat;filter:blur(16px) brightness(.5) saturate(1.1);animation:tvKB 8s ease-out forwards}
 #tbIdle .tv-s .tv-im{position:absolute;left:0;right:0;top:0;bottom:clamp(24px,2.8vh,32px);background:center/contain no-repeat}
 #tbIdle .tv-s video{position:absolute;left:0;right:0;top:0;bottom:clamp(24px,2.8vh,32px);width:100%!important;height:calc(100% - clamp(24px,2.8vh,32px))!important;object-fit:contain!important;background:#000}
+/* TV 세로 사진: 폭에 꽉 채워 위→아래로 천천히 훑기 */
+#tbIdle .tv-s .tv-area{position:absolute;left:0;right:0;top:0;bottom:clamp(24px,2.8vh,32px);overflow:hidden}
+#tbIdle .tv-s .tv-pan{position:absolute;left:0;top:0;display:block;width:100%;height:auto;will-change:transform;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
 /* 관리 화면 탭 */
 .tgtabs{display:flex;gap:8px;margin:0 0 12px}
 .tgtabs button{flex:1;min-height:48px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:17px;font-weight:700}
@@ -11406,12 +11409,9 @@ function tvNext(tok){
     node.appendChild(el('div',{cls:'tv-cap'},[el('b',{text:it.s.ko}), el('i',{text:it.s.en})]));
     go(7000);
   } else if (it.kind==='img'){
-    /* 사진은 TV 틀에 맞춰 전체가 보이게(잘리지 않게) 줄이고, 남는 자리는 같은 사진을 흐리게 깔아 채운다.
-       아래 자막띠에 가려지지 않게 자막 위까지만 쓴다 */
-    node.className='tv-s fit';
-    node.appendChild(el('div',{cls:'tv-bl', style:'background-image:url("'+it.url+'")'}));
-    node.appendChild(el('div',{cls:'tv-im', style:'background-image:url("'+it.url+'")'}));
-    go(7000);
+    /* 사진 크기를 먼저 알아낸 뒤 보여 준다 (tvImg) */
+    tvImg(box, it.url, tok, go);
+    return;
   } else {
     v=document.createElement('video');
     v.muted=true; v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.autoplay=true; v.preload='auto'; v.src=it.url;
@@ -11726,6 +11726,59 @@ function tbPfAck(){
   var p=tbPfLoad(), body={topic:tbRqTopic(tb.code), title:'✅ 문구 반영', priority:1,
       message:'#PF ok|'+encodeURIComponent(p.tk||'')+'|'+encodeURIComponent(p.tg||'')};
   try { fetch(TB_RELAY, {method:'POST', body:JSON.stringify(body), mode:'cors'}).catch(function(){}); } catch(e){}
+}
+
+/* ── TV 사진 보여 주기 ──
+   세로로 긴 사진(TV 폭에 맞추면 화면보다 길어지는 사진): TV 폭에 꽉 채워 크게 보여 주고,
+     위에서 1초 멈춘 뒤 아래로 천천히 훑어 내려가 끝에서 잠깐 멈춘다 (길수록 천천히, 최대 14초)
+   가로로 넓은 사진: 잘리지 않게 틀에 맞추고 남는 자리는 같은 사진을 흐리게 깐다
+   (예전에는 세로 사진을 세로 길이에 맞춰 줄여서 가운데 좁은 기둥처럼 작게 나왔다) */
+function tvImg(box, url, tok, go){
+  var probe=new Image(), shown=false;
+  function show(w, h){
+    var node, area, img, W, H, tk, sh, D, ms, anim;
+    if (shown || !tb.tvRun || tok!==tb.tvTok) return;
+    shown=true;
+    node=el('div',{cls:'tv-s fit'});
+    node.appendChild(el('div',{cls:'tv-bl', style:'background-image:url("'+url+'")'}));
+    tk=box.parentNode && box.parentNode.querySelector('.ti-tk');
+    W=box.clientWidth; H=box.clientHeight-((tk && tk.offsetHeight) || 0);
+    sh = (w && h && W) ? W*h/w : 0;
+    if (sh > H*1.08){
+      D=Math.round(sh-H);
+      ms=Math.max(6000, Math.min(14000, 5000+D/H*2500));
+      area=el('div',{cls:'tv-area'});
+      img=el('img',{cls:'tv-pan', src:url, alt:''});
+      area.appendChild(img);
+      node.appendChild(area);
+      tvShowNode(box, node);
+      try {
+        anim=img.animate([{transform:'translateY(0)'},{transform:'translateY(0)', offset:0.1},
+                          {transform:'translateY(-'+D+'px)', offset:0.88},{transform:'translateY(-'+D+'px)'}],
+                         {duration:ms, easing:'ease-in-out', fill:'forwards'});
+      } catch(e){ img.style.transition='transform '+Math.round(ms*0.78)+'ms ease-in-out '+Math.round(ms*0.1)+'ms'; setTimeout(function(){ img.style.transform='translateY(-'+D+'px)'; }, 50); }
+      go(ms+800);
+    } else {
+      node.appendChild(el('div',{cls:'tv-im', style:'background-image:url("'+url+'")'}));
+      tvShowNode(box, node);
+      go(7000);
+    }
+  }
+  probe.onload=function(){ show(probe.naturalWidth, probe.naturalHeight); };
+  probe.onerror=function(){ show(0, 0); };
+  setTimeout(function(){ show(0, 0); }, 4000);
+  probe.src=url;
+}
+/* 새 화면을 올리고 이전 화면은 서서히 치운다 */
+function tvShowNode(box, node){
+  var olds, i;
+  box.appendChild(node);
+  void node.offsetWidth; node.className+=' on';
+  olds=Array.prototype.slice.call(box.childNodes, 0, -1);
+  for (i=0;i<olds.length;i++) (function(o){
+    o.className=o.className.replace(/\s*\bon\b/g,'');
+    setTimeout(function(){ var vv=o.getElementsByTagName('video')[0]; if (vv){ try { vv.pause(); } catch(e){} } if (o.parentNode) o.parentNode.removeChild(o); }, 1400);
+  })(olds[i]);
 }
 if (typeof document !== 'undefined' && document.addEventListener){
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
