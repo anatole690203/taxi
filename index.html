@@ -1943,7 +1943,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
         <input type="file" id="pfActFile" class="pffile" accept="image/*" multiple>
         <button class="btn primary" type="button" id="pfTvSend" style="width:100%;margin-top:10px">📷 프로필 사진·활동 사진을 태블릿 TV로 보내기</button>
         <div class="pfstate" id="pfTvPhotoState"></div>
-        <div class="empty">프로필 사진과 위의 활동 사진이 태블릿 대기 화면 TV에 차례로 나옵니다. [프로필 저장]을 눌러도 자동으로 보내집니다.</div>
+        <div class="empty">위의 활동 사진이 태블릿 대기 화면 TV에 차례로 나옵니다(대표 프로필 사진은 TV 옆 동그라미에 나옵니다). [프로필 저장]을 눌러도 자동으로 보내집니다.</div>
       </div>
       <div class="field"><label for="pfDonate">후원 페이지 주소 (선택)</label>
         <input id="pfDonate" type="url" inputmode="url" placeholder="https://">
@@ -7467,7 +7467,7 @@ function initProfileForm(){
   });
   $('pfSave').addEventListener('click', pfSave);
   $('pfTvApply').addEventListener('click', function(){ pfTextApply('tk'); });
-  $('pfTvSend').addEventListener('click', function(){ tbSendActs(true, true); });
+  $('pfTvSend').addEventListener('click', tbTvSendNow);
   $('pfTgApply').addEventListener('click', function(){ pfTextApply('tg'); });
   $('pfTvText').addEventListener('input', pfTextState);
   $('pfTagline').addEventListener('input', pfTextState);
@@ -11374,19 +11374,53 @@ var TV_SCENES=[
   svg:'<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="tvs5" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="#6B3A12"/><stop offset="1" stop-color="#120A06"/></radialGradient><radialGradient id="tvs5g" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFD27A" stop-opacity=".9"/><stop offset="1" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><linearGradient id="tvs5f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C8"/><stop offset="1" stop-color="#FF9A2E"/></linearGradient></defs><rect width="320" height="180" fill="url(#tvs5)"/><circle cx="160" cy="70" r="62" fill="url(#tvs5g)"/><path d="M160 44 C150 58 148 70 152 80 C155 88 165 88 168 80 C172 70 170 58 160 44Z" fill="url(#tvs5f)"/><rect x="157" y="84" width="6" height="8" fill="#3A2A1A"/><rect x="138" y="92" width="44" height="72" rx="6" fill="#F4E9D8"/><rect x="138" y="92" width="44" height="10" rx="5" fill="#FFFFFF" fill-opacity=".55"/><ellipse cx="160" cy="166" rx="54" ry="7" fill="#000" fill-opacity=".35"/></svg>'}
 ];
 function tvList(){
-  var own=(tg.tv||[]).map(function(it){ return {kind:it.kind, url:it.url}; }), base=TV_SCENES.map(function(s){ return {kind:'scene', s:s}; }), out=[], i, j=0;
+  /* 한 바퀴에 각 사진·영상은 한 번씩만. 두 개마다 기본 화면 한 장(바퀴마다 다른 기본 화면).
+     예전에는 사진이 10장보다 적으면 목록을 늘리느라 첫 사진을 또 넣어 두세 번 나왔다.
+     같은 사진이 여러 곳(태블릿에서 넣은 것 + 폰 활동 사진)에 있으면 한 번만 */
+  var own=[], base=TV_SCENES.map(function(s){ return {kind:'scene', s:s}; }), out=[], i, j, gap, n, cyc, hs=[];
+  (tg.tv||[]).forEach(function(it){
+    if (it.kind==='img' && it.h){
+      for (j=0;j<hs.length;j++) if (tvHamming(hs[j], it.h) <= 24) return;
+      hs.push(it.h);
+    }
+    own.push({kind:it.kind, url:it.url});
+  });
   if (!own.length) return base;
   if (sGet(TV_MIX_KEY)==='0') return own;
-  /* 직접 넣은 사진·영상 두 개마다 기본 화면 한 장 */
-  /* 기본 화면 5장이 모두 한 번씩은 돌도록 목록을 충분히 길게 만든다 */
-  for (i=0;i<Math.max(own.length, base.length*2);i++){ out.push(own[i%own.length]); if (i%2===1) out.push(base[(j++)%base.length]); }
+  gap = own.length>=2 ? 2 : 1;
+  n = own.length + Math.floor(own.length/gap);
+  cyc = Math.floor((tb.tvIdx||0)/n);
+  j = cyc*Math.floor(own.length/gap);
+  for (i=0;i<own.length;i++){ out.push(own[i]); if ((i+1)%gap===0) out.push(base[(j++)%base.length]); }
   return out;
+}
+/* 사진 지문(16×16 밝기) — 크기나 화질이 달라도 같은 사진이면 거의 같다 */
+function tvHash(url, cb){
+  var im=new Image();
+  im.onload=function(){
+    try {
+      var c=document.createElement('canvas'), g, d, i, sum=0, v=[], bits='';
+      c.width=16; c.height=16; g=c.getContext('2d'); g.drawImage(im,0,0,16,16);
+      d=g.getImageData(0,0,16,16).data;
+      for (i=0;i<256;i++){ v[i]=d[i*4]*0.3+d[i*4+1]*0.59+d[i*4+2]*0.11; sum+=v[i]; }
+      for (i=0;i<256;i++) bits+= v[i]>sum/256 ? '1' : '0';
+      cb(/1/.test(bits) && /0/.test(bits) ? bits : '');   /* 한 가지 색뿐인 사진은 지문으로 비교하지 않는다 */
+    } catch(e){ cb(''); }
+  };
+  im.onerror=function(){ cb(''); };
+  im.src=url;
+}
+function tvHamming(a, b){ var n=0, i; if (!a || !b || a.length!==b.length) return 999; for (i=0;i<a.length;i++) if (a.charAt(i)!==b.charAt(i)) n++; return n; }
+function tvHashAll(cb){
+  var list=(tg.tv||[]).filter(function(it){ return it.kind==='img' && it.h===undefined; });
+  (function next(){ var it=list.shift(); if (!it){ cb(); return; } tvHash(it.url, function(h){ it.h=h; next(); }); })();
 }
 function tvStart(){
   if (typeof tb==='undefined' || tb.tvRun || !$('tiTvScr')) return;
   tb.tvRun=true; tb.tvTok=(tb.tvTok||0)+1;
   if (!isNum(tb.tvIdx)) tb.tvIdx=0;
-  if (!tg.ver) tgLoad(function(){ tvNext(tb.tvTok); }); else tvNext(tb.tvTok);
+  var tok=tb.tvTok;
+  if (!tg.ver) tgLoad(function(){ tvHashAll(function(){ tvNext(tok); }); }); else tvHashAll(function(){ tvNext(tok); });
 }
 function tvStop(){
   var box=$('tiTvScr'), vs, i;
@@ -11491,9 +11525,9 @@ function tbMediaAck(rest){
   var p=rest.split('|'), what=p[0];
   if (p[3]==='act' && what==='commit'){
     sSet(TB_ACTS_SIG_KEY, p[4]||'');
-    pfPhotoState('✅ 태블릿 TV 프로필 사진 '+(p[2]||'0')+'장 반영됨 ('+hhmm(Date.now())+')', 'ok');
-    tbMediaNote('태블릿 TV에 프로필 사진 '+(p[2]||'0')+'장이 반영되었습니다.');
-    if (Date.now()-tbActsUserAt < 120000) toast('✅ 태블릿 TV에 프로필 사진 '+(p[2]||'0')+'장이 반영되었습니다');
+    pfPhotoState('✅ 태블릿 TV에 '+tbActsWhat(p[2]||'0')+' 반영됨 ('+hhmm(Date.now())+')', 'ok');
+    tbMediaNote('태블릿 TV에 '+tbActsWhat(p[2]||'0')+'이 반영되었습니다.');
+    if (Date.now()-tbActsUserAt < 120000) toast('✅ 태블릿 TV에 '+tbActsWhat(p[2]||'0')+'이 반영되었습니다');
     return;
   }
   if (p[3]==='act' && what==='partial'){
@@ -11593,14 +11627,34 @@ function tbSendPf(){
   try { car=carText(p, 'ko', true)||''; } catch(e){ car=''; }
   tbSend('pf', null, '', null, {car:String(car).slice(0,40), tk:String(p.tvText||'').slice(0,80), tg:String(p.tagline||'').slice(0,40)});
 }
-/* TV로 보낼 프로필 사진: 대표 프로필 사진 + 활동 사진 */
+/* TV로 보낼 사진: 활동 사진만. 대표 프로필 사진은 TV 바로 옆 동그라미에 이미 나오므로 보내지 않는다
+   (활동 사진이 하나도 없을 때만 대표 사진을 보낸다). 똑같은 사진은 한 번만 */
 function tbActsList(){
-  var out=[], p=profile||{}, i;
-  if (p.photo && /^data:image\//.test(p.photo)) out.push(p.photo);
-  for (i=0;i<(p.acts||[]).length;i++) if (/^data:image\//.test(p.acts[i]||'')) out.push(p.acts[i]);
+  var out=[], p=profile||{}, i, seen={};
+  for (i=0;i<(p.acts||[]).length;i++){
+    var a=p.acts[i]||'';
+    if (!/^data:image\//.test(a) || seen[a]) continue;
+    seen[a]=1; out.push(a);
+  }
+  if (!out.length && p.photo && /^data:image\//.test(p.photo)) out.push(p.photo);
   return out;
 }
-/* 태블릿이 "TV 사진 맞나?"(#PFSYNC 태블릿이 가진 표시)를 물으면: 문구·차종은 늘 다시 보내고, 사진은 다를 때만 다시 보낸다 */
+function tbActsWhat(n){ var p=profile||{}; return ((p.acts||[]).length ? '활동 사진 ' : '프로필 사진 ')+n+'장'; }
+/* [TV로 보내기]: 화면에 보이는 사진(지우거나 더한 뒤 아직 [프로필 저장]을 안 눌렀어도) 그대로 저장하고 보낸다 */
+function tbTvSendNow(){
+  var cur, changed=false;
+  if (pfDraft){
+    cur=normProfile(profile||{});
+    if (JSON.stringify(cur.acts||[])!==JSON.stringify(pfDraft.acts||[]) || (cur.photo||'')!==(pfDraft.photo||'')){
+      cur.acts=(pfDraft.acts||[]).slice(); cur.photo=pfDraft.photo||'';
+      if (!sSet(PROFILE_KEY, JSON.stringify(cur))){ toast('저장하지 못했습니다. 사진을 조금 줄여 주세요'); return; }
+      profile=cur; changed=true;
+    }
+  }
+  if (changed) toast('바뀐 사진을 저장하고 보냅니다');
+  tbSendActs(true, true);
+}
+/* 태블릿이 "TV 사진 맞나?\"(#PFSYNC 태블릿이 가진 표시)를 물으면: 문구·차종은 늘 다시 보내고, 사진은 다를 때만 다시 보낸다 */
 var tbPfSyncAt=0;
 function tbPfSyncReply(tsig){
   if (Date.now()-tbPfSyncAt < 60000) return;
@@ -11608,7 +11662,7 @@ function tbPfSyncReply(tsig){
   try { tbSendPf(); } catch(e){}
   var p=String(tsig||'').trim().split('|'), list=tbActsList();
   if (p[0]!==tbActsSig(list) || (parseInt(p[1],10)||0) < list.length) tbSendActs(true);
-  else { sSet(TB_ACTS_SIG_KEY, p[0]); pfPhotoState('✅ 태블릿 TV 프로필 사진 '+list.length+'장 반영됨 ('+hhmm(Date.now())+' 확인)', 'ok'); }
+  else { sSet(TB_ACTS_SIG_KEY, p[0]); pfPhotoState('✅ 태블릿 TV에 '+tbActsWhat(list.length)+' 반영됨 ('+hhmm(Date.now())+' 확인)', 'ok'); }
 }
 function tbActsSig(acts){
   var s=acts.map(function(a){ return a.length+':'+a.slice(-48); }).join('|'), h=0, i;
@@ -11626,7 +11680,7 @@ function tbSendActs(force, user){
   if (user) tbActsUserAt=Date.now();
   if (!total){ tbSend('media_commit', null, '', null, {album:'tv', src:'act', sig:sig, n:0}); pfPhotoState('보낼 프로필 사진이 없습니다. 프로필 사진이나 활동 사진을 넣고 저장하세요.', 'warn'); return; }
   tbActsBusy=true;
-  pfPhotoState('⏳ 태블릿 TV로 보내는 중… 0 / '+total, '');
+  pfPhotoState('⏳ 태블릿 TV로 '+tbActsWhat(total)+'을 보내는 중… 0 / '+total, '');
   (function next(){
     var src=acts.shift();
     if (!src){
@@ -11746,17 +11800,21 @@ function tvImg(box, url, tok, go){
     sh = (w && h && W) ? W*h/w : 0;
     if (sh > H*1.08){
       D=Math.round(sh-H);
-      ms=Math.max(6000, Math.min(14000, 5000+D/H*2500));
+      /* 천천히: 초당 약 18px로 내려간다 (예전 약 36px/초는 너무 빨랐다). 위에서 1.5초·끝에서 2초 멈춤, 최대 30초 */
+      var mv=Math.max(5000, Math.min(26500, D/18*1000)), hTop=1500, hEnd=2000;
+      ms=hTop+mv+hEnd;
       area=el('div',{cls:'tv-area'});
       img=el('img',{cls:'tv-pan', src:url, alt:''});
       area.appendChild(img);
       node.appendChild(area);
       tvShowNode(box, node);
       try {
-        anim=img.animate([{transform:'translateY(0)'},{transform:'translateY(0)', offset:0.1},
-                          {transform:'translateY(-'+D+'px)', offset:0.88},{transform:'translateY(-'+D+'px)'}],
-                         {duration:ms, easing:'ease-in-out', fill:'forwards'});
-      } catch(e){ img.style.transition='transform '+Math.round(ms*0.78)+'ms ease-in-out '+Math.round(ms*0.1)+'ms'; setTimeout(function(){ img.style.transform='translateY(-'+D+'px)'; }, 50); }
+        anim=img.animate([{transform:'translateY(0)', easing:'linear'},
+                          {transform:'translateY(0)', offset:hTop/ms, easing:'cubic-bezier(.45,0,.55,1)'},
+                          {transform:'translateY(-'+D+'px)', offset:(hTop+mv)/ms},
+                          {transform:'translateY(-'+D+'px)'}],
+                         {duration:ms, easing:'linear', fill:'forwards'});
+      } catch(e){ img.style.transition='transform '+Math.round(mv)+'ms cubic-bezier(.45,0,.55,1) '+hTop+'ms'; setTimeout(function(){ img.style.transform='translateY(-'+D+'px)'; }, 50); }
       go(ms+800);
     } else {
       node.appendChild(el('div',{cls:'tv-im', style:'background-image:url("'+url+'")'}));
