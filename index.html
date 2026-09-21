@@ -1314,6 +1314,16 @@ body.solo{overflow:hidden;background:#101215}
 .ai-card .hd .tm.long{font-size:24px}
 .tt-galeta .ge{white-space:nowrap}
 .tt-galeta .ge2{margin-left:.9em}
+/* 🧪 T맵 경로 지정 시험 상자 */
+.viatest{margin:10px 0 0;padding:12px;border:1px dashed #8A7CFF;border-radius:6px;background:#23213a}
+.viatest .vt-h{font-size:15px;font-weight:700;color:#C4B8FF}
+.viatest .vt-tip{font-size:13px;color:var(--muted);margin-top:4px}
+.viatest .vt-seg{display:flex;gap:6px;margin-top:10px}
+.viatest .vt-seg button{flex:1;min-height:40px;border:1px solid var(--line);border-radius:6px;background:var(--board);font-size:13px;font-weight:700;color:var(--muted)}
+.viatest .vt-seg button.on{border-color:#8A7CFF;color:#fff;background:#3b3566}
+.viatest .vt-info{font-size:13px;color:#fff;margin-top:8px}
+.viatest .vt-btns{display:flex;gap:6px;margin-top:10px}
+.viatest .vt-btns button{flex:1;min-height:46px;border:0;border-radius:6px;background:#6C5CE7;color:#fff;font-size:13px;font-weight:700}
 /* ═══ 태블릿 대기 화면: 사진이 천천히 확대되며 넘어가고, 시계·날씨·4개 국어 인사 ═══ */
 #tbIdle.idle2{padding:0;justify-content:flex-end;align-items:stretch;text-align:left;gap:0;overflow:hidden}
 #tbIdle .ti-bg{position:absolute;inset:0;background:#101215 center/cover no-repeat;opacity:0;transition:opacity 1.6s ease}
@@ -4687,7 +4697,7 @@ function isMajorRoad(name, roadType){
   return !!roadByName(name);   /* 앱의 서울 간선도로 목록에 있는 도로 */
 }
 function summarizeTmap(data){
-  var f=(data && data.features) || [], i, j, p, g, t, tot=null, byRoad={}, jams=[], name, k, roads=[], major=[], mj, c, pts, segs=[];
+  var f=(data && data.features) || [], i, j, p, g, t, tot=null, byRoad={}, jams=[], name, k, roads=[], major=[], mj, c, pts, segs=[], line=[], c2, st, ln2;
   for (i=0;i<f.length;i++){
     p=f[i].properties || {}; g=f[i].geometry || {};
     if (!tot && isNum(p.totalTime)){
@@ -4695,6 +4705,8 @@ function summarizeTmap(data){
     }
     if (g.type==='LineString'){
       name=p.name || '';
+      /* 경로 전체 선 (손님이 고른 경로만 지나는 경유지를 찾을 때 쓴다) */
+      if (g.coordinates && g.coordinates.length){ c2=g.coordinates; for (j=0;j<c2.length;j++) if (c2[j] && c2[j].length>=2) line.push([c2[j][1], c2[j][0], name||'']); }
       if (name) byRoad[name]=(byRoad[name]||0)+(p.distance||0);
       /* 전면 도로·진입 대로 판정용: 구간을 순서대로 남긴다 (이름 없는 구간은 '이름 없는 길') */
       if (segs.length && segs[segs.length-1].n===(name||'이름 없는 길')) segs[segs.length-1].d+=(p.distance||0);
@@ -4731,8 +4743,9 @@ function summarizeTmap(data){
     front=segs[segs.length-1];
     for (si=segs.length-2; si>=0; si--){ if (segs[si].rt<=7 && segs[si].n!==front.n){ entry=segs[si]; break; } }
   }
+  if (line.length>600){ st=Math.ceil(line.length/600); ln2=[]; for (j=0;j<line.length;j+=st) ln2.push(line[j]); ln2.push(line[line.length-1]); line=ln2; }
   return tot ? {time:tot.time, dist:tot.dist, toll:tot.toll, taxi:tot.taxi,
-                roads:roads.slice(0,4), jams:merged.slice(0,4), major:major, segs:segs, front:front, entry:entry} : null;
+                roads:roads.slice(0,4), jams:merged.slice(0,4), major:major, segs:segs, front:front, entry:entry, line:line} : null;
 }
 function fmtMin(sec){
   var m=Math.round((sec||0)/60), h=Math.floor(m/60);
@@ -6110,6 +6123,85 @@ function runAiRoute(){
   }
   next();
 }
+/* 경로 카드 제목 줄: 합계가 제목 밑으로 밀리면(긴 제목 + '1시간 2분') 그 카드 시간을 '62분'으로 줄여 합계를 제목 옆에 둔다 */
+function aiHdFit(){
+  var cs=document.querySelectorAll('.ai-card'), i, o, sm, tm;
+  for (i=0;i<cs.length;i++){
+    o=cs[i].querySelector('.opt'); sm=cs[i].querySelector('.sum2'); tm=cs[i].querySelector('.tm');
+    if (!o || !sm || !tm || !o.offsetWidth || !tm.getAttribute('data-min')) continue;
+    if (Math.abs(sm.getBoundingClientRect().top-o.getBoundingClientRect().top) > 6){
+      tm.textContent=tm.getAttribute('data-min')+'분'; tm.className='tm num';
+    }
+  }
+}
+window.addEventListener('resize', function(){ setTimeout(aiHdFit, 50); });
+/* ── 🧪 T맵 경로 지정 시험 ──
+   T맵 앱 호출에는 경로 종류(교통최적·최소시간·무료도로)를 넘기는 공개 칸이 없다.
+   대신 고른 경로만 지나는 지점을 경유지(rV1·rV2)로 넣어 T맵이 그 도로를 타게 유도한다.
+   경유지 = 다른 경로 하나하나와 가장 멀리 갈라지는 경로 위 점 (출발·도착 2km 안은 뺀다) */
+function routeVias(results, idx){
+  var me=results[idx] && results[idx].sum, ln=(me && me.line) || [], cands=[], vias=[], sp, ep, i, j, k, p, d, dd, other, best;
+  if (ln.length<2) return [];
+  sp=ln[0]; ep=ln[ln.length-1];
+  /* 경로 선 위 모든 점이 후보 (고속도로가 아닌 길로 갈라지는 무료도로도 잡히게). 이름은 그 구간 도로 이름 */
+  for (i=0;i<ln.length;i++) cands.push({lat:ln[i][0], lng:ln[i][1], n:ln[i][2]||''});
+  cands=cands.filter(function(c){ return km(c.lat,c.lng,sp[0],sp[1])>=2 && km(c.lat,c.lng,ep[0],ep[1])>=2; });
+  for (j=0;j<results.length;j++){
+    if (j===idx) continue;
+    other=(results[j].sum && results[j].sum.line) || [];
+    if (!other.length) continue;
+    best=null;
+    for (i=0;i<cands.length;i++){
+      p=cands[i]; d=1e9;
+      for (k=0;k<other.length;k++){ dd=km(p.lat,p.lng,other[k][0],other[k][1]); if (dd<d) d=dd; }
+      if (d>=0.4 && (!best || d>best.d)) best={lat:p.lat, lng:p.lng, n:p.n, d:d};
+    }
+    if (best && !vias.some(function(v){ return km(v.lat,v.lng,best.lat,best.lng)<5; })) vias.push(best);
+  }
+  /* 지나는 순서대로 (출발지에서 가까운 것 먼저), 최대 2곳 */
+  vias.sort(function(a,b){ return km(sp[0],sp[1],a.lat,a.lng)-km(sp[0],sp[1],b.lat,b.lng); });
+  return vias.slice(0,2);
+}
+/* mode: 'a' = tmap://?rGo…&rV1…  'b' = tmap://route?rGo…&rV1…  'opt' = tmap://?rGo…&rSOpt=경로옵션 */
+function tmapPickUrl(ep, vias, mode, opt){
+  var q='referrer=com.skt.Tmap&rGoName='+encodeURIComponent(ep.n||'목적지')+'&rGoX='+ep.lng+'&rGoY='+ep.lat, i, host=(mode==='b' ? 'route' : '');
+  if (mode==='opt') q+='&rSOpt='+encodeURIComponent(opt||'0');
+  else for (i=0;i<vias.length && i<2;i++)
+    q+='&rV'+(i+1)+'Name='+encodeURIComponent(vias[i].n||('경유지'+(i+1)))+'&rV'+(i+1)+'X='+vias[i].lng.toFixed(6)+'&rV'+(i+1)+'Y='+vias[i].lat.toFixed(6);
+  if (isAndroid()) return 'intent://'+host+'?'+q+'#Intent;scheme=tmap;action=android.intent.action.VIEW;'+
+                          'category=android.intent.category.BROWSABLE;package='+TMAP_PKG+';S.browser_fallback_url='+encodeURIComponent(TMAP_STORE)+';end';
+  return 'tmap://'+host+'?'+q;
+}
+function aiViaTest(results, ep){
+  var pick=0, seg, info, box, i;
+  function paint(){
+    var vs=routeVias(results, pick), bs=seg.getElementsByTagName('button'), j;
+    for (j=0;j<bs.length;j++) bs[j].className = j===pick ? 'on' : '';
+    info.textContent = vs.length ? '넣을 경유지: '+vs.map(function(v){ return v.n||'경유지'; }).join(' → ')
+                                 : '다른 경로와 갈라지는 곳이 없어 경유지 없이 엽니다';
+    info.setAttribute('data-n', String(vs.length));
+  }
+  function go(mode){
+    var u=tmapPickUrl(ep, routeVias(results, pick), mode, results[pick].opt.v);
+    toast('시험: '+results[pick].opt.n+' · '+(mode==='opt' ? '③ 경로옵션' : mode==='b' ? '② 경유지(route)' : '① 경유지')+' 방식으로 T맵을 엽니다');
+    setTimeout(function(){ window.location.href=u; }, 300);
+  }
+  seg=el('div',{cls:'vt-seg'});
+  for (i=0;i<results.length;i++) (function(k){ seg.appendChild(el('button',{type:'button', text:results[k].opt.n, onclick:function(){ pick=k; paint(); }})); })(i);
+  info=el('div',{cls:'vt-info'});
+  box=el('div',{cls:'viatest'},[
+    el('div',{cls:'vt-h', text:'🧪 T맵 경로 지정 시험'}),
+    el('div',{cls:'vt-tip', text:'경로를 고른 뒤 ①②③을 하나씩 눌러, T맵이 그 경로의 주요 도로로 안내하는지 봐 주세요.'}),
+    seg, info,
+    el('div',{cls:'vt-btns'},[
+      el('button',{type:'button', text:'① 경유지', onclick:function(){ go('a'); }}),
+      el('button',{type:'button', text:'② 경유지(route)', onclick:function(){ go('b'); }}),
+      el('button',{type:'button', text:'③ 경로옵션', onclick:function(){ go('opt'); }})
+    ])
+  ]);
+  paint();
+  return box;
+}
 /* 경로 카드: 제목 바로 옆(같은 줄)에 흰 글씨 합계 = 예상 요금 + 통행료 (손님이 내는 돈) */
 function aiSum(sm){
   var toll=sm.toll||0, fare=sm.taxi||0;
@@ -6148,7 +6240,7 @@ function renderAi(results, sp, ep){
       onclick:(function(p){ return function(){ startTmapNavi(p.lat, p.lng, p.n); }; })(ep)},[
       el('div',{cls:'hd'},[
         el('span',{cls:'hl'},[el('span',{cls:'opt', text: (i===0?BEST_ROUTE_TAG:'')+r.opt.n}), aiSum(r.sum)]),
-        el('span',{cls: fmtMin(r.sum.time).indexOf('시간')>=0 ? 'tm num long' : 'tm num', text: fmtMin(r.sum.time)})
+        el('span',{cls: fmtMin(r.sum.time).indexOf('시간')>=0 ? 'tm num long' : 'tm num', 'data-min':String(Math.round((r.sum.time||0)/60)), text: fmtMin(r.sum.time)})
       ]),
       aiFee(r.sum)
     ]);
@@ -6163,6 +6255,9 @@ function renderAi(results, sp, ep){
     }
     box.appendChild(card);
   }
+  /* 🧪 시험: 손님이 고른 경로로 T맵이 안내하게 할 수 있는지 (확인되면 태블릿 경로 선택으로 이어 간다) */
+  if (getRouteProvider()==='tmap' && results.length>1) box.appendChild(aiViaTest(results, ep));
+  setTimeout(aiHdFit, 30);
   /* 내비 세 개는 한 박스에 나란히 둔다. 손가락이 닿는 자리를 줄이지 않으려고 높이는 남겼다 */
   box.appendChild(el('div',{cls:'navibox'},[
     el('div',{cls:'cap', text:'경로안내'}),
