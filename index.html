@@ -1323,7 +1323,10 @@ body.solo{overflow:hidden;background:#101215}
 .viatest .vt-seg button.on{border-color:#8A7CFF;color:#fff;background:#3b3566}
 .viatest .vt-info{font-size:13px;color:#fff;margin-top:8px}
 .viatest .vt-btns{display:flex;gap:6px;margin-top:10px}
-.viatest .vt-btns button{flex:1;min-height:46px;border:0;border-radius:6px;background:#6C5CE7;color:#fff;font-size:13px;font-weight:700}
+.viatest .vt-btns button{flex:1;min-height:52px;border:0;border-radius:6px;background:#6C5CE7;color:#fff;font-size:13px;font-weight:700;line-height:1.25;padding:4px}
+.viatest .vt-cap{font-size:13px;color:var(--muted);margin-top:10px}
+.viatest .vt-cap+.vt-btns{margin-top:6px}
+.viatest .vt-btns.alt button{background:#2F6B4F}
 /* ═══ 태블릿 대기 화면: 사진이 천천히 확대되며 넘어가고, 시계·날씨·4개 국어 인사 ═══ */
 #tbIdle.idle2{padding:0;justify-content:flex-end;align-items:stretch;text-align:left;gap:0;overflow:hidden}
 #tbIdle .ti-bg{position:absolute;inset:0;background:#101215 center/cover no-repeat;opacity:0;transition:opacity 1.6s ease}
@@ -6162,42 +6165,76 @@ function routeVias(results, idx){
   vias.sort(function(a,b){ return km(sp[0],sp[1],a.lat,a.lng)-km(sp[0],sp[1],b.lat,b.lng); });
   return vias.slice(0,2);
 }
-/* mode: 'a' = tmap://?rGo…&rV1…  'b' = tmap://route?rGo…&rV1…  'opt' = tmap://?rGo…&rSOpt=경로옵션 */
-function tmapPickUrl(ep, vias, mode, opt){
-  var q='referrer=com.skt.Tmap&rGoName='+encodeURIComponent(ep.n||'목적지')+'&rGoX='+ep.lng+'&rGoY='+ep.lat, i, host=(mode==='b' ? 'route' : '');
-  if (mode==='opt') q+='&rSOpt='+encodeURIComponent(opt||'0');
-  else for (i=0;i<vias.length && i<2;i++)
-    q+='&rV'+(i+1)+'Name='+encodeURIComponent(vias[i].n||('경유지'+(i+1)))+'&rV'+(i+1)+'X='+vias[i].lng.toFixed(6)+'&rV'+(i+1)+'Y='+vias[i].lat.toFixed(6);
+/* 1차 시험 결과(2026-09-21): tmap://?rGo… 와 경로옵션(rSOpt)은 T맵 첫 화면만 열림,
+   tmap://route?rGo… 는 길찾기 화면이 열리지만 목적지가 비어 있음 → 안드로이드 T맵은 목적지를 goalx·goaly·goalname으로 받는다.
+   2차 시험: 목적지는 goal…로 고정하고, 공개되지 않은 경유지 이름 두 가지(via1x… / rV1X…)를 넣어 본다.
+   비교용: 경유지를 공식 지원하는 네이버 내비(v1lat…)와 카카오내비(via_list + 경로 옵션) */
+function tmapViaTestUrl(ep, vias, kind){
+  var nm=encodeURIComponent(ep.n||'목적지'), host='route', q, i, v;
+  q='referrer=com.skt.Tmap&goalname='+nm+'&goalx='+ep.lng+'&goaly='+ep.lat;
+  if (kind==='n1'){ host='navigate'; q='referrer=com.skt.Tmap&name='+nm+'&lon='+ep.lng+'&lat='+ep.lat+'&goalname='+nm+'&goalx='+ep.lng+'&goaly='+ep.lat; }
+  for (i=0;i<vias.length && i<2;i++){
+    v=vias[i];
+    if (kind==='r2') q+='&rV'+(i+1)+'Name='+encodeURIComponent(v.n||'경유지')+'&rV'+(i+1)+'X='+v.lng.toFixed(6)+'&rV'+(i+1)+'Y='+v.lat.toFixed(6);
+    else q+='&via'+(i+1)+'name='+encodeURIComponent(v.n||'경유지')+'&via'+(i+1)+'x='+v.lng.toFixed(6)+'&via'+(i+1)+'y='+v.lat.toFixed(6);
+  }
   if (isAndroid()) return 'intent://'+host+'?'+q+'#Intent;scheme=tmap;action=android.intent.action.VIEW;'+
                           'category=android.intent.category.BROWSABLE;package='+TMAP_PKG+';S.browser_fallback_url='+encodeURIComponent(TMAP_STORE)+';end';
   return 'tmap://'+host+'?'+q;
 }
+/* 네이버 지도 내비: 경유지 v1·v2 (공식 파라미터). 출발지는 비워 휴대폰 현재 위치에서 */
+function naverViaUrl(ep, vias){
+  var q='dlat='+ep.lat+'&dlng='+ep.lng+'&dname='+encodeURIComponent(ep.n||'목적지'), i;
+  for (i=0;i<vias.length && i<2;i++) q+='&v'+(i+1)+'lat='+vias[i].lat.toFixed(6)+'&v'+(i+1)+'lng='+vias[i].lng.toFixed(6)+'&v'+(i+1)+'name='+encodeURIComponent(vias[i].n||'경유지');
+  q+='&appname='+encodeURIComponent(naverAppName());
+  if (isAndroid()) return 'intent://navigation?'+q+'#Intent;scheme=nmap;action=android.intent.action.VIEW;'+
+                          'category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap'+
+                          ';S.browser_fallback_url='+encodeURIComponent('https://play.google.com/store/apps/details?id=com.nhn.android.nmap')+';end';
+  return 'nmap://navigation?'+q;
+}
+/* 카카오내비: 경유지(via_list)와 경로 옵션(rpoption). 교통최적→추천(100), 최소 시간→빠른길(1), 무료도로→무료도로(2) */
+var KNAVI_RP={'0':100, '2':1, '1':2};
+function kakaoNaviViaUrl(ep, vias, optV){
+  var key=getKakaoKey(), param, extras, q;
+  if (!key) return '';
+  param={destination:{name:ep.n||'목적지', x:ep.lng, y:ep.lat},
+         option:{coord_type:'wgs84', rpoption:KNAVI_RP[optV]||100},
+         via_list:vias.slice(0,2).map(function(v){ return {name:v.n||'경유지', x:v.lng, y:v.lat}; })};
+  extras={KA:'sdk/1.0 os/javascript origin/'+naverAppName()};
+  q='appkey='+encodeURIComponent(key)+'&apiver=1.0'+'&extras='+encodeURIComponent(JSON.stringify(extras))+'&param='+encodeURIComponent(JSON.stringify(param));
+  if (isAndroid()) return 'intent://navigate?'+q+'#Intent;scheme=kakaonavi-sdk;action=android.intent.action.VIEW;'+
+                          'category=android.intent.category.BROWSABLE;package='+KNAVI_PKG+';S.browser_fallback_url='+encodeURIComponent(KNAVI_STORE)+';end';
+  return 'kakaonavi-sdk://navigate?'+q;
+}
 function aiViaTest(results, ep){
   var pick=0, seg, info, box, i;
+  var KINDS={r1:'① T맵 길찾기 (via1x)', r2:'② T맵 길찾기 (rV1X)', n1:'③ T맵 바로안내 (via1x)', nv:'④ 네이버 내비', kk:'⑤ 카카오내비'};
   function paint(){
-    var vs=routeVias(results, pick), bs=seg.getElementsByTagName('button'), j;
+    var vs=routeVias(results, pick), bs=seg.getElementsByTagName('button'), j, names=[];
     for (j=0;j<bs.length;j++) bs[j].className = j===pick ? 'on' : '';
-    info.textContent = vs.length ? '넣을 경유지: '+vs.map(function(v){ return v.n||'경유지'; }).join(' → ')
-                                 : '다른 경로와 갈라지는 곳이 없어 경유지 없이 엽니다';
-    info.setAttribute('data-n', String(vs.length));
+    vs.forEach(function(v){ var n=v.n||'경유지'; if (names.indexOf(n)<0) names.push(n); });
+    info.textContent = vs.length ? '넣을 경유지 '+vs.length+'곳: '+names.join(' → ') : '다른 경로와 갈라지는 곳이 없어 경유지 없이 엽니다';
   }
-  function go(mode){
-    var u=tmapPickUrl(ep, routeVias(results, pick), mode, results[pick].opt.v);
-    toast('시험: '+results[pick].opt.n+' · '+(mode==='opt' ? '③ 경로옵션' : mode==='b' ? '② 경유지(route)' : '① 경유지')+' 방식으로 T맵을 엽니다');
+  function go(kind){
+    var vs=routeVias(results, pick), u;
+    if (kind==='nv') u=naverViaUrl(ep, vs);
+    else if (kind==='kk'){ u=kakaoNaviViaUrl(ep, vs, results[pick].opt.v); if (!u){ toast('설정 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; } }
+    else u=tmapViaTestUrl(ep, vs, kind);
+    toast('시험: '+results[pick].opt.n+' · '+KINDS[kind]);
     setTimeout(function(){ window.location.href=u; }, 300);
   }
+  function btn(kind){ return el('button',{type:'button', text:KINDS[kind], onclick:function(){ go(kind); }}); }
   seg=el('div',{cls:'vt-seg'});
   for (i=0;i<results.length;i++) (function(k){ seg.appendChild(el('button',{type:'button', text:results[k].opt.n, onclick:function(){ pick=k; paint(); }})); })(i);
   info=el('div',{cls:'vt-info'});
   box=el('div',{cls:'viatest'},[
-    el('div',{cls:'vt-h', text:'🧪 T맵 경로 지정 시험'}),
-    el('div',{cls:'vt-tip', text:'경로를 고른 뒤 ①②③을 하나씩 눌러, T맵이 그 경로의 주요 도로로 안내하는지 봐 주세요.'}),
+    el('div',{cls:'vt-h', text:'🧪 T맵 경로 지정 시험 (2차)'}),
+    el('div',{cls:'vt-tip', text:'①②③은 T맵에 목적지와 경유지 1·2가 들어가는지 봐 주세요. ④⑤는 경유지를 공식 지원하는 앱이라 비교용입니다.'}),
     seg, info,
-    el('div',{cls:'vt-btns'},[
-      el('button',{type:'button', text:'① 경유지', onclick:function(){ go('a'); }}),
-      el('button',{type:'button', text:'② 경유지(route)', onclick:function(){ go('b'); }}),
-      el('button',{type:'button', text:'③ 경로옵션', onclick:function(){ go('opt'); }})
-    ])
+    el('div',{cls:'vt-cap', text:'T맵'}),
+    el('div',{cls:'vt-btns'},[btn('r1'), btn('r2'), btn('n1')]),
+    el('div',{cls:'vt-cap', text:'비교 (경유지 공식 지원)'}),
+    el('div',{cls:'vt-btns alt'},[btn('nv'), btn('kk')])
   ]);
   paint();
   return box;
