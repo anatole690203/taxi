@@ -1314,19 +1314,38 @@ body.solo{overflow:hidden;background:#101215}
 .ai-card .hd .tm.long{font-size:24px}
 .tt-galeta .ge{white-space:nowrap}
 .tt-galeta .ge2{margin-left:.9em}
-/* 🧪 T맵 경로 지정 시험 상자 */
-.viatest{margin:10px 0 0;padding:12px;border:1px dashed #8A7CFF;border-radius:6px;background:#23213a}
-.viatest .vt-h{font-size:15px;font-weight:700;color:#C4B8FF}
-.viatest .vt-tip{font-size:13px;color:var(--muted);margin-top:4px}
-.viatest .vt-seg{display:flex;gap:6px;margin-top:10px}
-.viatest .vt-seg button{flex:1;min-height:40px;border:1px solid var(--line);border-radius:6px;background:var(--board);font-size:13px;font-weight:700;color:var(--muted)}
-.viatest .vt-seg button.on{border-color:#8A7CFF;color:#fff;background:#3b3566}
-.viatest .vt-info{font-size:13px;color:#fff;margin-top:8px}
-.viatest .vt-btns{display:flex;gap:6px;margin-top:10px}
-.viatest .vt-btns button{flex:1;min-height:52px;border:0;border-radius:6px;background:#6C5CE7;color:#fff;font-size:13px;font-weight:700;line-height:1.25;padding:4px}
-.viatest .vt-cap{font-size:13px;color:var(--muted);margin-top:10px}
-.viatest .vt-cap+.vt-btns{margin-top:6px}
-.viatest .vt-btns.alt button{background:#2F6B4F}
+/* 폰: 태블릿에서 손님이 경로 고르기 */
+.btn.aipick{display:block;width:100%;margin:10px 0 0;min-height:52px;background:#3A2F4D;border:1px solid #6C5CE7;color:#fff;font-size:15px;font-weight:700;border-radius:6px}
+.rpick{position:fixed;inset:0;z-index:9000;background:rgba(12,14,18,.97);display:flex;flex-direction:column;justify-content:center;gap:14px;padding:24px 20px calc(24px + env(safe-area-inset-bottom))}
+.rpick .rp-k{font-size:15px;color:var(--muted)}
+.rpick .rp-n{font-size:30px;font-weight:700;color:#fff}
+.rpick .rp-n.k0{color:#A79BFF}.rpick .rp-n.k2{color:var(--sign)}.rpick .rp-n.k1{color:#D0D4DA}
+.rpick .rp-s{font-size:18px;color:#fff}
+.rpick .rp-how{font-size:18px;line-height:1.55;color:#fff;background:#262A30;border-left:4px solid var(--sign);padding:12px 14px;border-radius:6px}
+.rpick .rp-go{min-height:64px;border:0;border-radius:8px;background:#2F7CF6;color:#fff;font-size:20px;font-weight:700}
+.rpick .rp-x{min-height:48px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--muted);font-size:15px}
+/* 태블릿: 경로 카드 3장 */
+.tbroute{position:absolute;inset:0;z-index:19;display:flex;flex-direction:column;gap:1.6vh;padding:4vh 5vw;background:#101215;color:#fff;overflow-y:auto}
+.tbroute .tr-h{font-size:clamp(30px,4.2vh,52px);font-weight:700;line-height:1.25}
+.tbroute .tr-h2{font-size:clamp(22px,2.6vh,30px);color:#C9CED4}
+.tbroute .tr-to{font-size:clamp(22px,2.4vh,28px);color:#9AA0A8}
+.tbroute .tr-list{display:flex;flex-direction:column;gap:1.6vh;margin-top:1vh}
+.tbroute .tr-card{display:block;width:100%;text-align:left;padding:2.2vh 2.4vw;border:2px solid #3A3F46;border-left-width:10px;border-radius:14px;background:#1E2126;color:#fff;font:inherit;cursor:pointer}
+.tbroute .tr-card:active{transform:scale(.99);background:#262A30}
+.tbroute .tr-card.k0{border-left-color:#8A7CFF}.tbroute .tr-card.k2{border-left-color:#FFC61E}.tbroute .tr-card.k1{border-left-color:#9AA0A8}
+.tbroute .tr-top{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.tbroute .tr-n{font-size:clamp(30px,3.8vh,46px);font-weight:700;line-height:1.2}
+.tbroute .tr-n i{display:block;font-style:normal;font-size:clamp(22px,2.4vh,28px);font-weight:600;color:#C9CED4}
+.tbroute .tr-t{font-size:clamp(40px,5.4vh,66px);font-weight:800;white-space:nowrap}
+.tbroute .tr-f{font-size:clamp(24px,2.8vh,32px);margin-top:.8vh;color:#FFC61E;font-weight:700}
+.tbroute .tr-r{font-size:clamp(22px,2.3vh,26px);margin-top:.6vh;color:#C9CED4}
+.tbroute .tr-foot{margin-top:auto;font-size:clamp(22px,2.4vh,28px);color:#9AA0A8;text-align:center}
+.tbroute .tr-done{margin:auto;text-align:center}
+.tbroute .tr-ck{font-size:clamp(90px,12vh,150px);color:#3DDC84;line-height:1}
+.tbroute .tr-dn{font-size:clamp(40px,5.6vh,70px);font-weight:800;margin-top:1vh}
+.tbroute .tr-dn.k0{color:#A79BFF}.tbroute .tr-dn.k2{color:#FFC61E}
+.tbroute .tr-dok{font-size:clamp(26px,3vh,36px);margin-top:1.4vh}
+.tbroute .tr-dok2{font-size:clamp(22px,2.4vh,28px);color:#C9CED4;margin-top:.8vh}
 /* ═══ 태블릿 대기 화면: 사진이 천천히 확대되며 넘어가고, 시계·날씨·4개 국어 인사 ═══ */
 #tbIdle.idle2{padding:0;justify-content:flex-end;align-items:stretch;text-align:left;gap:0;overflow:hidden}
 #tbIdle .ti-bg{position:absolute;inset:0;background:#101215 center/cover no-repeat;opacity:0;transition:opacity 1.6s ease}
@@ -6138,107 +6157,6 @@ function aiHdFit(){
   }
 }
 window.addEventListener('resize', function(){ setTimeout(aiHdFit, 50); });
-/* ── 🧪 T맵 경로 지정 시험 ──
-   T맵 앱 호출에는 경로 종류(교통최적·최소시간·무료도로)를 넘기는 공개 칸이 없다.
-   대신 고른 경로만 지나는 지점을 경유지(rV1·rV2)로 넣어 T맵이 그 도로를 타게 유도한다.
-   경유지 = 다른 경로 하나하나와 가장 멀리 갈라지는 경로 위 점 (출발·도착 2km 안은 뺀다) */
-function routeVias(results, idx){
-  var me=results[idx] && results[idx].sum, ln=(me && me.line) || [], cands=[], vias=[], sp, ep, i, j, k, p, d, dd, other, best;
-  if (ln.length<2) return [];
-  sp=ln[0]; ep=ln[ln.length-1];
-  /* 경로 선 위 모든 점이 후보 (고속도로가 아닌 길로 갈라지는 무료도로도 잡히게). 이름은 그 구간 도로 이름 */
-  for (i=0;i<ln.length;i++) cands.push({lat:ln[i][0], lng:ln[i][1], n:ln[i][2]||''});
-  cands=cands.filter(function(c){ return km(c.lat,c.lng,sp[0],sp[1])>=2 && km(c.lat,c.lng,ep[0],ep[1])>=2; });
-  for (j=0;j<results.length;j++){
-    if (j===idx) continue;
-    other=(results[j].sum && results[j].sum.line) || [];
-    if (!other.length) continue;
-    best=null;
-    for (i=0;i<cands.length;i++){
-      p=cands[i]; d=1e9;
-      for (k=0;k<other.length;k++){ dd=km(p.lat,p.lng,other[k][0],other[k][1]); if (dd<d) d=dd; }
-      if (d>=0.4 && (!best || d>best.d)) best={lat:p.lat, lng:p.lng, n:p.n, d:d};
-    }
-    if (best && !vias.some(function(v){ return km(v.lat,v.lng,best.lat,best.lng)<5; })) vias.push(best);
-  }
-  /* 지나는 순서대로 (출발지에서 가까운 것 먼저), 최대 2곳 */
-  vias.sort(function(a,b){ return km(sp[0],sp[1],a.lat,a.lng)-km(sp[0],sp[1],b.lat,b.lng); });
-  return vias.slice(0,2);
-}
-/* 1차 시험 결과(2026-09-21): tmap://?rGo… 와 경로옵션(rSOpt)은 T맵 첫 화면만 열림,
-   tmap://route?rGo… 는 길찾기 화면이 열리지만 목적지가 비어 있음 → 안드로이드 T맵은 목적지를 goalx·goaly·goalname으로 받는다.
-   2차 시험: 목적지는 goal…로 고정하고, 공개되지 않은 경유지 이름 두 가지(via1x… / rV1X…)를 넣어 본다.
-   비교용: 경유지를 공식 지원하는 네이버 내비(v1lat…)와 카카오내비(via_list + 경로 옵션) */
-function tmapViaTestUrl(ep, vias, kind){
-  var nm=encodeURIComponent(ep.n||'목적지'), host='route', q, i, v;
-  q='referrer=com.skt.Tmap&goalname='+nm+'&goalx='+ep.lng+'&goaly='+ep.lat;
-  if (kind==='n1'){ host='navigate'; q='referrer=com.skt.Tmap&name='+nm+'&lon='+ep.lng+'&lat='+ep.lat+'&goalname='+nm+'&goalx='+ep.lng+'&goaly='+ep.lat; }
-  for (i=0;i<vias.length && i<2;i++){
-    v=vias[i];
-    if (kind==='r2') q+='&rV'+(i+1)+'Name='+encodeURIComponent(v.n||'경유지')+'&rV'+(i+1)+'X='+v.lng.toFixed(6)+'&rV'+(i+1)+'Y='+v.lat.toFixed(6);
-    else q+='&via'+(i+1)+'name='+encodeURIComponent(v.n||'경유지')+'&via'+(i+1)+'x='+v.lng.toFixed(6)+'&via'+(i+1)+'y='+v.lat.toFixed(6);
-  }
-  if (isAndroid()) return 'intent://'+host+'?'+q+'#Intent;scheme=tmap;action=android.intent.action.VIEW;'+
-                          'category=android.intent.category.BROWSABLE;package='+TMAP_PKG+';S.browser_fallback_url='+encodeURIComponent(TMAP_STORE)+';end';
-  return 'tmap://'+host+'?'+q;
-}
-/* 네이버 지도 내비: 경유지 v1·v2 (공식 파라미터). 출발지는 비워 휴대폰 현재 위치에서 */
-function naverViaUrl(ep, vias){
-  var q='dlat='+ep.lat+'&dlng='+ep.lng+'&dname='+encodeURIComponent(ep.n||'목적지'), i;
-  for (i=0;i<vias.length && i<2;i++) q+='&v'+(i+1)+'lat='+vias[i].lat.toFixed(6)+'&v'+(i+1)+'lng='+vias[i].lng.toFixed(6)+'&v'+(i+1)+'name='+encodeURIComponent(vias[i].n||'경유지');
-  q+='&appname='+encodeURIComponent(naverAppName());
-  if (isAndroid()) return 'intent://navigation?'+q+'#Intent;scheme=nmap;action=android.intent.action.VIEW;'+
-                          'category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap'+
-                          ';S.browser_fallback_url='+encodeURIComponent('https://play.google.com/store/apps/details?id=com.nhn.android.nmap')+';end';
-  return 'nmap://navigation?'+q;
-}
-/* 카카오내비: 경유지(via_list)와 경로 옵션(rpoption). 교통최적→추천(100), 최소 시간→빠른길(1), 무료도로→무료도로(2) */
-var KNAVI_RP={'0':100, '2':1, '1':2};
-function kakaoNaviViaUrl(ep, vias, optV){
-  var key=getKakaoKey(), param, extras, q;
-  if (!key) return '';
-  param={destination:{name:ep.n||'목적지', x:ep.lng, y:ep.lat},
-         option:{coord_type:'wgs84', rpoption:KNAVI_RP[optV]||100},
-         via_list:vias.slice(0,2).map(function(v){ return {name:v.n||'경유지', x:v.lng, y:v.lat}; })};
-  extras={KA:'sdk/1.0 os/javascript origin/'+naverAppName()};
-  q='appkey='+encodeURIComponent(key)+'&apiver=1.0'+'&extras='+encodeURIComponent(JSON.stringify(extras))+'&param='+encodeURIComponent(JSON.stringify(param));
-  if (isAndroid()) return 'intent://navigate?'+q+'#Intent;scheme=kakaonavi-sdk;action=android.intent.action.VIEW;'+
-                          'category=android.intent.category.BROWSABLE;package='+KNAVI_PKG+';S.browser_fallback_url='+encodeURIComponent(KNAVI_STORE)+';end';
-  return 'kakaonavi-sdk://navigate?'+q;
-}
-function aiViaTest(results, ep){
-  var pick=0, seg, info, box, i;
-  var KINDS={r1:'① T맵 길찾기 (via1x)', r2:'② T맵 길찾기 (rV1X)', n1:'③ T맵 바로안내 (via1x)', nv:'④ 네이버 내비', kk:'⑤ 카카오내비'};
-  function paint(){
-    var vs=routeVias(results, pick), bs=seg.getElementsByTagName('button'), j, names=[];
-    for (j=0;j<bs.length;j++) bs[j].className = j===pick ? 'on' : '';
-    vs.forEach(function(v){ var n=v.n||'경유지'; if (names.indexOf(n)<0) names.push(n); });
-    info.textContent = vs.length ? '넣을 경유지 '+vs.length+'곳: '+names.join(' → ') : '다른 경로와 갈라지는 곳이 없어 경유지 없이 엽니다';
-  }
-  function go(kind){
-    var vs=routeVias(results, pick), u;
-    if (kind==='nv') u=naverViaUrl(ep, vs);
-    else if (kind==='kk'){ u=kakaoNaviViaUrl(ep, vs, results[pick].opt.v); if (!u){ toast('설정 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; } }
-    else u=tmapViaTestUrl(ep, vs, kind);
-    toast('시험: '+results[pick].opt.n+' · '+KINDS[kind]);
-    setTimeout(function(){ window.location.href=u; }, 300);
-  }
-  function btn(kind){ return el('button',{type:'button', text:KINDS[kind], onclick:function(){ go(kind); }}); }
-  seg=el('div',{cls:'vt-seg'});
-  for (i=0;i<results.length;i++) (function(k){ seg.appendChild(el('button',{type:'button', text:results[k].opt.n, onclick:function(){ pick=k; paint(); }})); })(i);
-  info=el('div',{cls:'vt-info'});
-  box=el('div',{cls:'viatest'},[
-    el('div',{cls:'vt-h', text:'🧪 T맵 경로 지정 시험 (2차)'}),
-    el('div',{cls:'vt-tip', text:'①②③은 T맵에 목적지와 경유지 1·2가 들어가는지 봐 주세요. ④⑤는 경유지를 공식 지원하는 앱이라 비교용입니다.'}),
-    seg, info,
-    el('div',{cls:'vt-cap', text:'T맵'}),
-    el('div',{cls:'vt-btns'},[btn('r1'), btn('r2'), btn('n1')]),
-    el('div',{cls:'vt-cap', text:'비교 (경유지 공식 지원)'}),
-    el('div',{cls:'vt-btns alt'},[btn('nv'), btn('kk')])
-  ]);
-  paint();
-  return box;
-}
 /* 경로 카드: 제목 바로 옆(같은 줄)에 흰 글씨 합계 = 예상 요금 + 통행료 (손님이 내는 돈) */
 function aiSum(sm){
   var toll=sm.toll||0, fare=sm.taxi||0;
@@ -6292,8 +6210,8 @@ function renderAi(results, sp, ep){
     }
     box.appendChild(card);
   }
-  /* 🧪 시험: 손님이 고른 경로로 T맵이 안내하게 할 수 있는지 (확인되면 태블릿 경로 선택으로 이어 간다) */
-  if (getRouteProvider()==='tmap' && results.length>1) box.appendChild(aiViaTest(results, ep));
+  /* 태블릿이 연결돼 있으면: 손님이 태블릿에서 경로를 고르게 한다 */
+  if (getRouteProvider()==='tmap' && results.length>1 && tbPairCode()) box.appendChild(aiPickBtn(results, ep));
   setTimeout(aiHdFit, 30);
   /* 내비 세 개는 한 박스에 나란히 둔다. 손가락이 닿는 자리를 줄이지 않으려고 높이는 남겼다 */
   box.appendChild(el('div',{cls:'navibox'},[
@@ -8011,13 +7929,14 @@ function tbPairCode(){ var c=sGet(TB_PAIR_KEY); return /^[a-z0-9]{12,32}$/.test(
 
 /* ── 폰 쪽 ── */
 var tbLastRide={key:'', at:0};
-function tbSend(type, dest, lang, trip){
-  var code=tbPairCode(), msg;
+function tbSend(type, dest, lang, trip, extra){
+  var code=tbPairCode(), msg, xk;
   if (!code) return null;
   msg={v:1, type:type, ts:Date.now(), lang:lang||'', voice:tbVoiceOn()?1:0};
   (function(){ var f=tbFlags(); msg.big=f.big?1:0; msg.fgn=f.fgn?1:0; })();
   msg.ep=tbEtaProvPhone(); msg.tu=tourServer(); msg.ta=tourAllOn()?1:0; msg.mk=tmapMapKey();
   if (trip) msg.trip=trip;
+  if (extra) for (xk in extra) if (Object.prototype.hasOwnProperty.call(extra,xk)) msg[xk]=extra[xk];
   if (dest && isNum(dest.lat) && isNum(dest.lng)) msg.dest={n:String(dest.n||'').slice(0,60), lat:Math.round(dest.lat*1e5)/1e5, lng:Math.round(dest.lng*1e5)/1e5};
   try {
     /* keepalive: 곧바로 내비 앱으로 넘어가도 신호는 끝까지 간다 */
@@ -8384,6 +8303,8 @@ function rqConnect(){
     try { d=JSON.parse(e.data); } catch(x){ return; }
     if (!d || (d.event && d.event!=='message') || !d.message) return;
     if (d.time && Date.now()/1000-d.time > 180) return;
+    /* 태블릿에서 손님이 경로를 골랐다 */
+    if (String(d.message).indexOf('#ROUTE ')===0){ try { routePicked(JSON.parse(String(d.message).slice(7))); } catch(x){} return; }
     rqShow(String(d.message).slice(0,80));
   };
 }
@@ -9735,6 +9656,7 @@ function tbConnect(again){
     if (m.big!==undefined) tbApplyFlags(m, m.type==='mode');
     if (m.type==='ack'){ tbAck(); return; }
     if (m.type==='keys'){ tbKeys(m); return; }
+    if (m.type==='routes'){ tbRoutesShow(m); return; }
     if (m.type==='ride') tbRide(m);
     else if (m.type==='alight'){ if (m.voice!==undefined) tb.voice=!!m.voice; tbAlight(m.lang); }
     else if (m.type==='trip') tbTripMsg(m);
@@ -9944,6 +9866,7 @@ function tbDeferClear(){
 function tbCancel(){
   if (tb.backTimer){ clearTimeout(tb.backTimer); tb.backTimer=null; }
   tbDeferClear();
+  tbRouteClose();
   tbTripEnd(true);
   tb.tour=null;
   tbModeReset();
@@ -10330,6 +10253,7 @@ function tbAlight(lang){
   if (Date.now()-tb.alightAt < 5000) return;
   tb.alightAt=Date.now();
   tbDeferClear();
+  tbRouteClose();
   try { tbTripEnd(false); } catch(e){}
   tb.ride=null;
   tb.trip=null;
@@ -11081,6 +11005,124 @@ function tbFlipLang(lang){
   return (typeof tb!=='undefined' && tb.fgn) ? 'en' : '';
 }
 setTimeout(fitSoon, 400);
+
+/* ═══════════ 손님이 태블릿에서 경로 고르기 ═══════════
+   시험 결과(2026-09-21): T맵 앱은 링크로 경로 종류를 받지 않고, 경유지는 1개만 받되 매번 좁은 길로 돌아간다.
+   그래서 경유지는 쓰지 않는다.
+   · 교통최적 경로 = T맵 기본(티맵추천) → 바로안내(navigate) 한 번으로 시작
+   · 최소 시간 / 무료도로 → T맵 길찾기 화면(route, 목적지만)을 열고 기사가 T맵의 [시간우선]/[무료] 카드를 누른다 */
+var aiPickCtx=null;
+function aiPickBtn(results, ep){
+  return el('button',{cls:'btn aipick', type:'button', onclick:function(){
+    var rs=results.map(function(r){ return {k:String(r.opt.v), n:r.opt.n, t:Math.round(r.sum.time||0), d:Math.round(r.sum.dist||0),
+            toll:r.sum.toll||0, f:r.sum.taxi||0, rd:(r.sum.roads||[]).slice(0,3).map(function(x){ return x.n; })}; }), p;
+    aiPickCtx={routes:rs, ep:{lat:ep.lat, lng:ep.lng, n:ep.n}, at:Date.now()};
+    p=tbSend('routes', ep, tbRideLang(), null, {routes:rs});
+    if (!p){ toast('설정 탭에서 태블릿을 먼저 연결하세요'); return; }
+    if (p.then) p.then(function(r){ toast(r && r.ok ? '태블릿에 경로 '+rs.length+'개를 보냈습니다. 손님이 고르면 알려 드립니다' : '보내지 못했습니다. 인터넷 연결을 확인하세요'); },
+                       function(){ toast('보내지 못했습니다. 인터넷 연결을 확인하세요'); });
+  }},['📱 태블릿에서 손님이 경로 고르기']);
+}
+/* T맵 길찾기 화면(목적지만). 안드로이드는 goalx·goaly·goalname, 아이폰은 rGoName 계열 */
+function tmapRouteUrl(ep){
+  var nm=encodeURIComponent(ep.n||'목적지');
+  if (isAndroid()) return 'intent://route?referrer=com.skt.Tmap&goalname='+nm+'&goalx='+ep.lng+'&goaly='+ep.lat+
+                          '#Intent;scheme=tmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package='+TMAP_PKG+
+                          ';S.browser_fallback_url='+encodeURIComponent(TMAP_STORE)+';end';
+  return 'tmap://route?rGoName='+nm+'&rGoX='+ep.lng+'&rGoY='+ep.lat;
+}
+function routePickClose(){ var o=$('routePick'); if (o && o.parentNode) o.parentNode.removeChild(o); }
+function routePicked(o){
+  var ctx=aiPickCtx, ep=(ctx && ctx.ep) || destPoint(), r=null, i, k, how, kids;
+  if (!o || !ep || !isNum(ep.lat)) return;
+  k=String(o.k||'0');
+  if (ctx) for (i=0;i<ctx.routes.length;i++) if (ctx.routes[i].k===k) r=ctx.routes[i];
+  how = k==='0' ? '버튼을 누르면 T맵 안내가 바로 시작됩니다.'
+      : k==='2' ? 'T맵이 열리면 ① [시간우선] 카드 → ② [안내시작]을 누르세요.'
+      : 'T맵이 열리면 ① 카드를 옆으로 밀어 ‘무료’ 카드 → ② [안내시작]을 누르세요.';
+  routePickClose();
+  kids=[
+    el('div',{cls:'rp-k', text: o.auto ? '손님이 30초 안에 고르지 않아 교통최적 경로로 정했습니다' : '🛣 손님이 고른 경로'}),
+    el('div',{cls:'rp-n k'+k, text:(r && r.n) || o.n || '교통최적 경로'}),
+    r ? el('div',{cls:'rp-s num', text: fmtMin(r.t)+(r.f ? ' · 합계 '+(r.f+(r.toll||0)).toLocaleString('ko-KR')+'원' : '')+' · '+fmtKm(r.d)}) : null,
+    el('div',{cls:'rp-how', text:how}),
+    el('button',{cls:'rp-go', type:'button', text: k==='0' ? 'T맵 안내 시작' : 'T맵 열기', onclick:function(){
+      routePickClose();
+      if (k==='0') startTmapNavi(ep.lat, ep.lng, ep.n);
+      else { navStarted(ep.lat, ep.lng, ep.n); window.location.href=tmapRouteUrl(ep); }
+    }}),
+    el('button',{cls:'rp-x', type:'button', text:'닫기', onclick:routePickClose})
+  ];
+  document.body.appendChild(el('div',{cls:'rpick', id:'routePick', role:'dialog', 'aria-modal':'true'}, kids));
+  if (navigator.vibrate){ try { navigator.vibrate([200,100,200]); } catch(e){} }
+}
+/* ── 태블릿 쪽: 경로 카드 3장 ── */
+var TB_ROUTE_TXT={
+  ko:{h:'원하시는 경로를 골라 주세요', to:'목적지', tot:'합계 약', left:'초 뒤 교통최적 경로로 모십니다', ok:'경로로 모시겠습니다',
+      names:{'0':'교통최적 경로','2':'최소 시간','1':'무료도로'}},
+  en:{h:'Please choose your route', to:'Destination', tot:'Total approx.', left:'s · then the recommended route', ok:'Thank you — we will take this route',
+      names:{'0':'Recommended','2':'Fastest','1':'Fewer tolls'}},
+  ja:{h:'ご希望のルートをお選びください', to:'目的地', tot:'合計 約', left:'秒後におすすめルートで出発します', ok:'このルートでお送りします',
+      names:{'0':'おすすめ','2':'最短時間','1':'無料道路優先'}},
+  zh:{h:'请选择您想走的路线', to:'目的地', tot:'合计 约', left:'秒后按推荐路线出发', ok:'我们将按此路线出发',
+      names:{'0':'推荐路线','2':'最快路线','1':'优先免费道路'}}
+};
+function tbRouteClose(){
+  if (typeof tb==='undefined') return;
+  if (tb.routeTimer){ clearInterval(tb.routeTimer); tb.routeTimer=null; }
+  if (tb.routeDone){ clearTimeout(tb.routeDone); tb.routeDone=null; }
+  var o=$('tbRoute'); if (o && o.parentNode) o.parentNode.removeChild(o);
+}
+function tbRouteSend(r, auto){
+  var now=Date.now(), body={topic:tbRqTopic(tb.code), title:'🛣 손님 경로 선택', priority:4, tags:['motorway'],
+      message:'#ROUTE '+JSON.stringify({k:r.k, n:r.n, auto:auto?1:0, ts:now})};
+  try { fetch(TB_RELAY, {method:'POST', body:JSON.stringify(body), mode:'cors'}).catch(function(){}); } catch(e){}
+}
+function tbRoutesShow(m){
+  var rs=(m.routes||[]).slice(0,3), L=tbLang(), X=TB_ROUTE_TXT[L]||TB_ROUTE_TXT.en, K=TB_ROUTE_TXT.ko,
+      S=(L==='ko' ? TB_ROUTE_TXT.en : K), ov, list, foot, secs, i, done=false;
+  if (!rs.length || !$('tabScr')) return;
+  tbRouteClose();
+  secs = tb.routeWait || 30;
+  function pick(r, auto){
+    if (done) return; done=true;
+    if (tb.routeTimer){ clearInterval(tb.routeTimer); tb.routeTimer=null; }
+    tbRouteSend(r, auto);
+    clear(ov);
+    ov.appendChild(el('div',{cls:'tr-done'},[
+      el('div',{cls:'tr-ck', text:'✓'}),
+      el('div',{cls:'tr-dn k'+r.k, text:X.names[r.k]||r.n}),
+      el('div',{cls:'tr-dok', text: L==='ko' ? (K.names[r.k]||r.n)+' '+K.ok : X.ok}),
+      L==='ko' ? null : el('div',{cls:'tr-dok2', text:(K.names[r.k]||r.n)+' '+K.ok})
+    ]));
+    tb.routeDone=setTimeout(tbRouteClose, 5000);
+  }
+  list=el('div',{cls:'tr-list'});
+  for (i=0;i<rs.length;i++) (function(r){
+    var tot=(r.f||0)+(r.toll||0);
+    list.appendChild(el('button',{cls:'tr-card k'+r.k, type:'button', onclick:function(e){ e.stopPropagation(); pick(r, false); }},[
+      el('div',{cls:'tr-top'},[
+        el('span',{cls:'tr-n'},[X.names[r.k]||r.n, el('i',{text:S.names[r.k]||r.n})]),
+        el('b',{cls:'tr-t num', text:guideMinutes(r.t, L)})
+      ]),
+      el('div',{cls:'tr-f num', text:(tot ? X.tot+' '+guideFare(tot, L)+' · ' : '')+tbKm(r.d)}),
+      (r.rd && r.rd.length) ? el('div',{cls:'tr-r', text:r.rd.join(' → ')}) : null
+    ]));
+  })(rs[i]);
+  foot=el('div',{cls:'tr-foot num', text:secs+X.left});
+  ov=el('div',{cls:'tbroute', id:'tbRoute'},[
+    el('div',{cls:'tr-h', text:X.h}),
+    L==='ko' ? el('div',{cls:'tr-h2', text:TB_ROUTE_TXT.en.h}) : el('div',{cls:'tr-h2', text:K.h}),
+    m.dest && m.dest.n ? el('div',{cls:'tr-to', text:(L==='ko' ? K.to : X.to+' · '+K.to)+' · '+m.dest.n}) : null,
+    list, foot
+  ]);
+  $('tabScr').appendChild(ov);
+  tb.routeTimer=setInterval(function(){
+    secs--;
+    if (secs<=0){ var d=rs[0], j; for (j=0;j<rs.length;j++) if (rs[j].k==='0') d=rs[j]; pick(d, true); return; }
+    foot.textContent=secs+X.left;
+  }, 1000);
+}
 if (typeof document !== 'undefined' && document.addEventListener){
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
   else init();
