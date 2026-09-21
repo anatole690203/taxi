@@ -1409,6 +1409,9 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
   .tbpane.trip .tt-qrtxt b{font-size:clamp(18px,2.5vh,28px)!important}
   .tbpane.trip .tt-qrtxt span{font-size:clamp(15px,1.9vh,22px)!important}
 }
+.tbreq.acked{background:radial-gradient(ellipse at 50% 45%,#1f7a45 0%,#0f3320 55%,#0b1a12 100%)}
+.tbreq.acked .big{color:#fff}
+.tbreq.acked .what{color:#D6FFE6}
 /* 관리 화면 탭 */
 .tgtabs{display:flex;gap:8px;margin:0 0 12px}
 .tgtabs button{flex:1;min-height:48px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:17px;font-weight:700}
@@ -1896,6 +1899,12 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
         <button class="btn" type="button" id="pfPhotoDel">지우기</button>
         <input type="file" id="pfPhotoFile" class="pffile" accept="image/*">
       </div>
+      <div class="field"><label for="pfTvText">📺 대기화면 TV 자막 문구</label>
+        <input id="pfTvText" maxlength="80" placeholder="신앙상담 · 심리상담 · 선교봉사후원 환영">
+        <div class="empty">태블릿 대기 화면 기사 카드 옆 TV 아래로 흐르는 자막입니다. 비워 두면 기본 문구가 나옵니다.</div></div>
+      <div class="field"><label for="pfTagline">인사 문구</label>
+        <input id="pfTagline" maxlength="40" placeholder="안전하고 편안하게 모시겠습니다">
+        <div class="empty">태블릿 대기 화면의 인사와 기사 카드, 주행 화면 카드에 나옵니다. 비워 두면 기본 문구가 나옵니다. [프로필 저장]을 누르면 태블릿에 바로 반영됩니다.</div></div>
       <div class="pfrow2">
         <div class="field"><label for="pfNameKo">이름</label><input id="pfNameKo" maxlength="20" placeholder="홍길동"></div>
         <div class="field"><label for="pfNameEn">영문 이름</label><input id="pfNameEn" maxlength="30" placeholder="Hong Gil-dong"></div>
@@ -1951,7 +1960,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
         <input type="file" id="tbMediaFile" class="pffile" accept="image/*,video/*" multiple>
       </div>
       <div class="empty" id="tbMediaMsg">폰에서 고른 사진·영상이 태블릿으로 전송되어 태블릿에 저장됩니다. 사진은 자동으로 줄여 보내고, 영상은 한 개 15MB(약 30초)까지 보낼 수 있습니다. 보낼 때 태블릿이 켜져 있고 인터넷에 연결돼 있어야 받습니다.</div>
-      <button class="btn" type="button" id="tbActsSend" style="width:100%;margin-top:8px">📷 프로필 활동 사진을 태블릿 TV로 다시 보내기</button>
+      <button class="btn" type="button" id="tbActsSend" style="width:100%;margin-top:8px">📷 프로필 사진·활동 사진을 태블릿 TV로 다시 보내기</button>
       <button class="btn" type="button" id="tbMediaClear" style="width:100%;margin-top:8px">위에서 고른 칸의 태블릿 사진·영상 모두 지우기</button>
       <div class="field" style="margin-top:14px"><label for="tmapMapKey">T맵 지도용 키 (지도 전용으로 따로 발급)</label>
         <input class="keyin" id="tmapMapKey" type="text" inputmode="latin" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="openapi.sk.com에서 지도용 앱을 하나 더 만들어 받은 키">
@@ -7049,7 +7058,7 @@ var profile=null, pfDraft=null, guestProfile=null;
 function pfOwn(o,k){ return Object.prototype.hasOwnProperty.call(o,k); }
 function emptyProfile(){
   return {nameKo:'', nameEn:'', plate:'', carModel:'', carColor:'', op:'개인', fr:[], langs:['ko'], pay:['카드','현금'],
-          deg:{div:true, psy:true, sw:true, pa:true}, photo:'', acts:[], donate:'', show:true};
+          deg:{div:true, psy:true, sw:true, pa:true}, photo:'', acts:[], donate:'', show:true, tvText:'', tagline:''};
 }
 function pfStr(v, n){ return typeof v==='string' ? v.trim().slice(0, n||40) : ''; }
 function pfPick(arr, allowed){
@@ -7065,6 +7074,7 @@ function normProfile(p){
   if (!p || typeof p!=='object') return e;
   e.nameKo=pfStr(p.nameKo,20); e.nameEn=pfStr(p.nameEn,30); e.plate=pfStr(p.plate,15);
   e.carModel=pfStr(p.carModel,20); e.carColor=pfStr(p.carColor,10);
+  e.tvText=pfStr(p.tvText,80); e.tagline=pfStr(p.tagline,40);
   if (PF_OPS.indexOf(p.op)>=0) e.op=p.op;
   if (pfOwn(p,'fr')) e.fr=pfPick(p.fr, PF_FRS);
   if (pfOwn(p,'langs')) e.langs=pfPick(p.langs, ['ko','en','ja','zh']);
@@ -7374,6 +7384,7 @@ function pfFill(){
   var i, box=$('pfDeg');
   pfDraft=JSON.parse(JSON.stringify(loadProfile()));
   $('pfNameKo').value=pfDraft.nameKo; $('pfNameEn').value=pfDraft.nameEn; $('pfPlate').value=pfDraft.plate;
+  if ($('pfTvText')) $('pfTvText').value=pfDraft.tvText||''; if ($('pfTagline')) $('pfTagline').value=pfDraft.tagline||'';
   $('pfCar').value=pfDraft.carModel; $('pfColor').value=pfDraft.carColor; $('pfDonate').value=pfDraft.donate;
   $('pfShow').checked=pfDraft.show;
   pfChips('pfOp', PF_OPS.map(function(v){ return {v:v, n:v}; }), 'op');
@@ -7394,6 +7405,7 @@ function pfSave(){
   var ok, next;
   pfDraft.nameKo=$('pfNameKo').value; pfDraft.nameEn=$('pfNameEn').value; pfDraft.plate=$('pfPlate').value;
   pfDraft.carModel=$('pfCar').value; pfDraft.carColor=$('pfColor').value;
+  pfDraft.tvText=$('pfTvText').value; pfDraft.tagline=$('pfTagline').value;
   pfDraft.donate=$('pfDonate').value.trim();
   pfDraft.show=$('pfShow').checked;
   if (pfDraft.donate && !validDonate(pfDraft.donate)){ toast('후원 페이지 주소는 https://로 시작하는 주소여야 합니다'); return; }
@@ -8397,6 +8409,7 @@ function rqConnect(){
     if (d.time && Date.now()/1000-d.time > 180) return;
     /* 태블릿에서 손님이 경로를 골랐다 */
     if (String(d.message).indexOf('#MEDIA ')===0){ tbMediaAck(String(d.message).slice(7)); return; }
+    if (String(d.message).indexOf('#PFSYNC ')===0){ tbPfSyncReply(String(d.message).slice(8)); return; }
     if (String(d.message).indexOf('#ROUTE ')===0){ try { routePicked(JSON.parse(String(d.message).slice(7))); } catch(x){} return; }
     rqShow(String(d.message).slice(0,80));
   };
@@ -8519,6 +8532,7 @@ function tbReqSend(r, L){
                   body:JSON.stringify({v:1, type:'ack', ts:now}), clear:true}]};
   try { fetch(TB_RELAY, {method:'POST', body:JSON.stringify(body), mode:'cors'}).catch(function(){}); } catch(e){}
   tbReqSentView(r, L, ui);
+  tbAckPollStart(now);
 }
 function tbReqSentView(r, L, ui){
   var b=$('tbReqDone');
@@ -8533,8 +8547,17 @@ function tbReqSentView(r, L, ui){
 /* 기사님이 [알겠습니다]를 누르면: 부탁하기 버튼이 6초 동안 초록색으로 바뀌어
    작은 기사 사진과 함께 '확인했습니다'를 보여 준다 (다른 화면 내용은 가리지 않는다) */
 function tbAck(){
-  var L=tb.reqLang||tbLang(), ui=TB_REQ_UI[L]||TB_REQ_UI.en, b=$('tbReqBtn'), av, src;
+  var L=tb.reqLang||tbLang(), ui=TB_REQ_UI[L]||TB_REQ_UI.en, b=$('tbReqBtn'), av, src, box=$('tbReqDone');
+  tbAckPollStop();
   tbReqClose();
+  /* 화면 가운데 큰 초록 확인 (5초) */
+  if (box && $('tbReq')){
+    clear(box);
+    box.appendChild(el('div',{cls:'big', text:'👍 '+(L==='ko' ? '알겠습니다' : ui.ack)}));
+    box.appendChild(el('div',{cls:'what', text: L==='ko' ? '기사님이 확인했습니다 · The driver got it!' : '알겠습니다 · '+TB_REQ_UI.ko.ack}));
+    $('tbReq').className='tbreq on sent acked';
+    tb.reqTimer=setTimeout(tbReqClose, 5000);
+  }
   if (!b) return;
   clear(b);
   av=el('span',{cls:'dav'});
@@ -8548,7 +8571,40 @@ function tbAck(){
   ]));
   b.className=b.className.replace(/\s*\back\b/g,'')+' ack';
   if (tb.ackTimer) clearTimeout(tb.ackTimer);
-  tb.ackTimer=setTimeout(tbReqBtnPaint, 6000);
+  tb.ackTimer=setTimeout(tbReqBtnPaint, 11000);
+}
+/* 실시간 연결이 겉으로만 살아 있고 신호가 안 들어올 때를 대비해, 부탁을 보낸 뒤 90초 동안
+   3초마다 신호 중계에 직접 "확인(ack) 왔나?"를 물어본다 (예전에는 이 경우 초록 확인이 끝내 안 떴다) */
+function tbAckPollStart(since){
+  tbAckPollStop();
+  tb.ackPollN=0;
+  tb.ackPoll=setInterval(function(){
+    if (++tb.ackPollN>30){ tbAckPollStop(); return; }
+    try {
+      fetch(TB_RELAY+tbTopic(tb.code)+'/json?poll=1&since='+Math.floor(since/1000), {cache:'no-store', mode:'cors'})
+        .then(function(r){ return r.text(); })
+        .then(function(t){
+          String(t||'').split('\n').forEach(function(line){
+            var d, m;
+            if (!line || !tb.ackPoll) return;
+            try { d=JSON.parse(line); m=JSON.parse(d.message||'null'); } catch(e){ return; }
+            if (!m || m.type!=='ack') return;
+            if (d.id){ if (tb.seen[d.id]) return; tb.seen[d.id]=1; }
+            tbAck();
+          });
+        })['catch'](function(){});
+    } catch(e){}
+  }, 3000);
+}
+function tbAckPollStop(){ if (tb.ackPoll){ clearInterval(tb.ackPoll); tb.ackPoll=null; } }
+/* 태블릿 → 폰: "TV 프로필 사진 맞나?" (켜질 때, 대기 화면이 될 때 10분에 한 번) */
+var TB_ACT_SIG_T='airportCallLog.tbActSigT.v1';
+function tbPfSyncAsk(force){
+  if (typeof tb==='undefined' || !tb.code) return;
+  if (!force && Date.now()-(tb.pfAskAt||0) < 600000) return;
+  tb.pfAskAt=Date.now();
+  var body={topic:tbRqTopic(tb.code), title:'TV', priority:1, message:'#PFSYNC '+(sGet(TB_ACT_SIG_T)||'-')};
+  try { fetch(TB_RELAY, {method:'POST', body:JSON.stringify(body), mode:'cors'}).catch(function(){}); } catch(e){}
 }
 
 /* ── 운행 시작·끝 ── */
@@ -9700,6 +9756,7 @@ function tbStart(){
   tbConnect();
   fxLoad();
   tbIdle();
+  setTimeout(function(){ tbPfSyncAsk(true); }, 4000);
   if (!tb.clockTimer) tb.clockTimer=setInterval(tbClock, 10000);
   document.addEventListener('visibilitychange', function(){
     if (document.hidden) return;
@@ -9747,8 +9804,8 @@ function tbConnect(again){
     if (m.type==='keys'){ tbKeys(m); return; }
     if (m.type==='routes'){ tbRoutesShow(m); return; }
     if (m.type==='media'){ tbMediaRecv(m, d.attachment); return; }
-    if (m.type==='media_clear'){ tbMediaClear(m.album, m.src); return; }
-    if (m.type==='pf'){ tbPfSave({car:m.car||''}); tbPfPaint(); return; }
+    if (m.type==='media_clear'){ if (m.src==='act') sSet(TB_ACT_SIG_T, String(m.sig||'')); tbMediaClear(m.album, m.src); return; }
+    if (m.type==='pf'){ tbPfSave({car:m.car||'', tk:m.tk, tg:m.tg}); return; }
     if (m.type==='ride') tbRide(m);
     else if (m.type==='alight'){ if (m.voice!==undefined) tb.voice=!!m.voice; tbAlight(m.lang); }
     else if (m.type==='trip') tbTripMsg(m);
@@ -10012,7 +10069,7 @@ function tbDrvCard(tr, L){
   $('ttDrvN').textContent='';   /* 태블릿에는 기사 이름(한·영·일·중)을 보이지 않는다 */
   try { $('ttDrvC').textContent=carText(pr, 'ko', true)||''; } catch(e){ $('ttDrvC').textContent=''; }
   if ($('ttDrvC').textContent){ tbPfSave({car:$('ttDrvC').textContent}); }
-  $('ttDrvD').textContent=DRV_TAGLINE.ko||'';
+  $('ttDrvD').textContent=tbTagline();
   box.style.display='flex';
 }
 /* 갤러리 화면 아래 손님용 QR 문구 */
@@ -11061,6 +11118,7 @@ function tiStart(){
   if ($('tiDrv')) $('tiDrv').style.display='';   /* 상담·선교 안내와 TV가 있으므로 이름이 없어도 보인다 */
   tiWxLoad(false);
   tvStart();
+  tbPfSyncAsk(false);
   if (tb.tiTimer) return;
   if (!isNum(tb.tiIdx)) tb.tiIdx=Math.floor(Math.random()*997);
   tb.tiHello=0;
@@ -11375,7 +11433,7 @@ function tbMediaSend(list){
   (function next(){
     var f=files.shift(), isV;
     if (!f){
-      tbMediaNote(ok+'개를 보냈습니다.'+(big ? ' 15MB가 넘는 영상 '+big+'개는 보내지 못했습니다(영상을 짧게 잘라 다시 시도하세요).' : '')+(bad ? ' '+bad+'개는 보내지 못했습니다. 인터넷 연결을 확인하세요.' : '')+' 태블릿이 받으면 알려 드립니다.');
+      tbMediaNote(ok+'개를 보냈습니다.'+(big ? ' 크기가 커서 '+big+'개는 보내지 못했습니다. 영상은 짧게 잘라 보내거나 태블릿에서 직접 넣어 주세요.' : '')+(bad ? ' '+bad+'개는 보내지 못했습니다. 인터넷 연결을 확인하세요.' : '')+' 태블릿이 받으면 알려 드립니다.');
       tbMediaWait=ok;
       return;
     }
@@ -11386,7 +11444,7 @@ function tbMediaSend(list){
       var meta={v:1, type:'media', ts:Date.now(), album:tbMediaAlbum, kind:kind, n:encodeURIComponent(String(f.name||'').slice(0,60))},
           url=TB_RELAY+tbTopic(code)+'?m='+encodeURIComponent(JSON.stringify(meta))+'&f='+encodeURIComponent(tbMediaSafeName(f.name, kind));
       fetch(url, {method:'PUT', body:blob, mode:'cors'})
-        .then(function(r){ if (r.ok) ok++; else bad++; next(); }, function(){ bad++; next(); });
+        .then(function(r){ if (r.ok) ok++; else if (r.status===413) big++; else bad++; next(); }, function(){ bad++; next(); });
     }
     if (isV){
       if (f.size>TB_MEDIA_MAX){ big++; next(); return; }
@@ -11398,7 +11456,7 @@ function tbMediaSend(list){
 }
 function tbMediaAck(rest){
   var p=rest.split('|'), what=p[0];
-  if (what==='cleared' && p[3]==='act') return;   /* 활동 사진을 새로 보내기 전 옛 것을 비운 것: 알리지 않는다 */
+  if (p[3]==='act'){ if (what==='ok') tbMediaNote('태블릿 TV가 프로필 사진을 받았습니다'+(p[2] ? ' (지금 '+p[2]+'개)' : '')+'.'); if (what==='fail') toast('태블릿이 프로필 사진을 받지 못했습니다. [다시 보내기]를 눌러 주세요'); return; }   /* 프로필 사진 자동 연동은 운전 중 방해되지 않게 조용히 */
   var album= p[1]==='gal' ? '운행 중 갤러리' : '대기화면 TV', cnt=p[2] ? ' (지금 '+p[2]+'개)' : '';
   if (what==='ok'){ toast('태블릿이 '+album+' 사진·영상을 받아 저장했습니다'+cnt); tbMediaNote('태블릿이 받아 저장했습니다'+cnt+'.'); }
   else if (what==='full') toast('태블릿 '+album+' 칸이 가득 찼습니다(50개). 몇 개 지운 뒤 보내세요');
@@ -11430,11 +11488,11 @@ function tbMediaRecv(m, att){
       if (kind==='video' && !/^video\//.test(b.type||'')) b=b.slice(0, b.size, 'video/mp4');
       try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){}); } catch(e){}
       tgWrite(function(st){ st.add({kind:kind, blob:b, name:name, size:b.size, at:Date.now(), album:album, src:m.src||''}); }, function(okk){
-        if (!okk){ tbMediaSay('fail', album); return; }
-        tbMediaSay('ok', album, cnt+1);
+        if (!okk){ if (m.src==='act') sSet(TB_ACT_SIG_T, 'x'); tbMediaSay('fail', album, '', m.src); return; }
+        tbMediaSay('ok', album, cnt+1, m.src);
         tbMediaRefresh(album);
       });
-    })['catch'](function(){ tbMediaSay('fail', album); });
+    })['catch'](function(){ if (m.src==='act') sSet(TB_ACT_SIG_T, 'x'); tbMediaSay('fail', album, '', m.src); });
   });
 }
 function tbMediaClear(album, src){
@@ -11451,7 +11509,22 @@ function tbSendPf(){
   var p=profile || null, car='';
   if (!tbPairCode() || !p) return;
   try { car=carText(p, 'ko', true)||''; } catch(e){ car=''; }
-  tbSend('pf', null, '', null, {car:String(car).slice(0,40)});
+  tbSend('pf', null, '', null, {car:String(car).slice(0,40), tk:String(p.tvText||'').slice(0,80), tg:String(p.tagline||'').slice(0,40)});
+}
+/* TV로 보낼 프로필 사진: 대표 프로필 사진 + 활동 사진 */
+function tbActsList(){
+  var out=[], p=profile||{}, i;
+  if (p.photo && /^data:image\//.test(p.photo)) out.push(p.photo);
+  for (i=0;i<(p.acts||[]).length;i++) if (/^data:image\//.test(p.acts[i]||'')) out.push(p.acts[i]);
+  return out;
+}
+/* 태블릿이 "TV 사진 맞나?"(#PFSYNC 태블릿이 가진 표시)를 물으면: 문구·차종은 늘 다시 보내고, 사진은 다를 때만 다시 보낸다 */
+var tbPfSyncAt=0;
+function tbPfSyncReply(tsig){
+  if (Date.now()-tbPfSyncAt < 60000) return;
+  tbPfSyncAt=Date.now();
+  try { tbSendPf(); } catch(e){}
+  if (String(tsig||'').trim()!==tbActsSig(tbActsList())) tbSendActs(true);
 }
 function tbActsSig(acts){
   var s=acts.map(function(a){ return a.length+':'+a.slice(-48); }).join('|'), h=0, i;
@@ -11460,17 +11533,17 @@ function tbActsSig(acts){
 }
 /* 프로필 '활동 사진'을 태블릿 대기화면 TV 칸으로. 바뀐 경우에만(또는 다시 보내기) 옛 활동 사진을 비우고 새로 보낸다 */
 function tbSendActs(force){
-  var code=tbPairCode(), acts=((profile && profile.acts) || []).slice(), sig=tbActsSig(acts), total=acts.length, ok=0, bad=0, k=0;
+  var code=tbPairCode(), acts=tbActsList(), sig=tbActsSig(acts), total=acts.length, ok=0, bad=0, k=0;
   if (!code){ if (force) toast('설정에서 태블릿을 먼저 연결하세요'); return; }
   if (!force && sGet(TB_ACTS_SIG_KEY)===sig) return;
-  tbSend('media_clear', null, '', null, {album:'tv', src:'act'});
+  tbSend('media_clear', null, '', null, {album:'tv', src:'act', sig:sig});
   if (!total){ sSet(TB_ACTS_SIG_KEY, sig); if (force) toast('보낼 활동 사진이 없습니다. 프로필에 활동 사진을 넣어 주세요'); return; }
-  tbMediaNote('프로필 활동 사진 '+total+'장을 태블릿 TV로 보내는 중…');
+  tbMediaNote('프로필 사진 '+total+'장을 태블릿 TV로 보내는 중…');
   setTimeout(function next(){
     var src=acts.shift();
     if (!src){
       if (!bad) sSet(TB_ACTS_SIG_KEY, sig);
-      tbMediaNote('프로필 활동 사진 '+ok+'장을 태블릿 TV로 보냈습니다.'+(bad ? ' '+bad+'장은 보내지 못했습니다. 인터넷을 확인하고 [다시 보내기]를 눌러 주세요.' : ''));
+      tbMediaNote('프로필 사진 '+ok+'장을 태블릿 TV로 보냈습니다.'+(bad ? ' '+bad+'장은 보내지 못했습니다. 인터넷을 확인하고 [다시 보내기]를 눌러 주세요.' : ''));
       return;
     }
     k++;
@@ -11483,8 +11556,28 @@ function tbSendActs(force){
 }
 /* ── 태블릿 쪽: 차종을 기억해 대기 화면 카드에 ── */
 function tbPfLoad(){ try { return JSON.parse(sGet(TB_PF_KEY)||'{}')||{}; } catch(e){ return {}; } }
-function tbPfSave(o){ var p=tbPfLoad(); if (o && o.car) p.car=String(o.car).slice(0,40); try { sSet(TB_PF_KEY, JSON.stringify(p)); } catch(e){} tbPfPaint(); }
-function tbPfPaint(){ var c=$('tiPfCar'); if (c) c.textContent=tbPfLoad().car||''; }
+function tbPfSave(o){
+  var p=tbPfLoad();
+  if (o){
+    if (typeof o.car==='string' && (o.car || o.tk!==undefined)) p.car=o.car.slice(0,40);
+    if (typeof o.tk==='string') p.tk=o.tk.slice(0,80);
+    if (typeof o.tg==='string') p.tg=o.tg.slice(0,40);
+  }
+  try { sSet(TB_PF_KEY, JSON.stringify(p)); } catch(e){}
+  tbPfPaint();
+}
+/* 대기 화면 카드의 차종 · TV 자막 · 인사 문구 (설정 프로필에서 바꾼 문구, 비었으면 기본 문구) */
+var TV_TK_DEFAULT='신앙상담 · 심리상담 · 선교봉사후원 환영', TAG_DEFAULT='안전하고 편안하게 모시겠습니다';
+function tbTagline(){ return tbPfLoad().tg || TAG_DEFAULT; }
+function tbPfPaint(){
+  var p=tbPfLoad(), c=$('tiPfCar'), tk=document.querySelector('#tbIdle .ti-tk span'), t=p.tk||TV_TK_DEFAULT, g=p.tg||TAG_DEFAULT, gap='\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0', i, ds;
+  if (c) c.textContent=p.car||'';
+  if (tk) tk.textContent=t+gap+t+gap;
+  ds=document.querySelectorAll('#tbIdle .ti-pfd'); for (i=0;i<ds.length;i++) ds[i].textContent=g;
+  if (typeof TI_HELLO!=='undefined' && TI_HELLO) TI_HELLO[0]=g;
+  if ($('tiHello') && typeof tb!=='undefined' && !tb.tiHello) $('tiHello').textContent=g;
+  if ($('ttDrvD')) $('ttDrvD').textContent=g;
+}
 if (typeof document !== 'undefined' && document.addEventListener){
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
   else init();
