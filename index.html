@@ -1915,11 +1915,10 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
         <div class="pfinrow"><input id="pfTvText" maxlength="80" placeholder="신앙상담 · 심리상담 · 선교봉사후원 환영"><button class="btn primary" type="button" id="pfTvApply">변경</button></div>
         <div class="pfstate" id="pfTvState"></div>
         <div class="empty">태블릿 대기 화면 기사 카드 옆 TV 아래로 흐르는 자막입니다. 비워 두고 [변경]을 누르면 기본 문구가 나옵니다.</div></div>
-      <div class="field"><label for="pfTagline">인사 문구</label>
+      <div class="field"><label for="pfTagline">프로필 인사문구</label>
         <div class="pfinrow"><input id="pfTagline" maxlength="40" placeholder="안전하고 편안하게 모시겠습니다"><button class="btn primary" type="button" id="pfTgApply">변경</button></div>
         <div class="pfstate" id="pfTgState"></div>
         <div class="empty">태블릿 대기 화면의 인사와 기사 카드, 주행 화면 카드에 나옵니다. 비워 두고 [변경]을 누르면 기본 문구가 나옵니다.</div></div>
-      <div class="pfstate" id="pfTvPhotoState"></div>
       <div class="pfrow2">
         <div class="field"><label for="pfNameKo">이름</label><input id="pfNameKo" maxlength="20" placeholder="홍길동"></div>
         <div class="field"><label for="pfNameEn">영문 이름</label><input id="pfNameEn" maxlength="30" placeholder="Hong Gil-dong"></div>
@@ -1939,6 +1938,9 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
         <div class="pfphotos" id="pfPhotos"></div>
         <div class="empty" id="pfActCount"></div>
         <input type="file" id="pfActFile" class="pffile" accept="image/*" multiple>
+        <button class="btn primary" type="button" id="pfTvSend" style="width:100%;margin-top:10px">📷 프로필 사진·활동 사진을 태블릿 TV로 보내기</button>
+        <div class="pfstate" id="pfTvPhotoState"></div>
+        <div class="empty">프로필 사진과 위의 활동 사진이 태블릿 대기 화면 TV에 차례로 나옵니다. [프로필 저장]을 눌러도 자동으로 보내집니다.</div>
       </div>
       <div class="field"><label for="pfDonate">후원 페이지 주소 (선택)</label>
         <input id="pfDonate" type="url" inputmode="url" placeholder="https://">
@@ -7462,6 +7464,7 @@ function initProfileForm(){
   });
   $('pfSave').addEventListener('click', pfSave);
   $('pfTvApply').addEventListener('click', function(){ pfTextApply('tk'); });
+  $('pfTvSend').addEventListener('click', function(){ tbSendActs(true, true); });
   $('pfTgApply').addEventListener('click', function(){ pfTextApply('tg'); });
   $('pfTvText').addEventListener('input', pfTextState);
   $('pfTagline').addEventListener('input', pfTextState);
@@ -8620,13 +8623,18 @@ function tbAckPollStart(since){
 }
 function tbAckPollStop(){ if (tb.ackPoll){ tb.ackPoll.forEach(function(t){ clearTimeout(t); }); tb.ackPoll=null; } }
 /* 태블릿 → 폰: "TV 프로필 사진 맞나?" (켜질 때, 대기 화면이 될 때 10분에 한 번) */
-var TB_ACT_SIG_T='airportCallLog.tbActSigT.v1';
+var TB_ACT_SIG_T='airportCallLog.tbActSigT.v2';
 function tbPfSyncAsk(force){
   if (typeof tb==='undefined' || !tb.code) return;
   if (!force && Date.now()-(tb.pfAskAt||0) < 600000) return;
   tb.pfAskAt=Date.now();
-  var body={topic:tbRqTopic(tb.code), title:'TV', priority:1, message:'#PFSYNC '+(sGet(TB_ACT_SIG_T)||'-')};
-  try { fetch(TB_RELAY, {method:'POST', body:JSON.stringify(body), mode:'cors'}).catch(function(){}); } catch(e){}
+  var sig=sGet(TB_ACT_SIG_T)||'-';
+  /* 표시만 믿지 않고 이 태블릿에 실제로 있는 그 표시의 사진 장수를 센다 */
+  tgAll(function(rows){
+    var n=rows.filter(function(r){ return tbAlbumOf(r)==='tv' && r.src==='act' && r.b===sig; }).length;
+    var body={topic:tbRqTopic(tb.code), title:'TV', priority:1, message:'#PFSYNC '+sig+'|'+n};
+    try { fetch(TB_RELAY, {method:'POST', body:JSON.stringify(body), mode:'cors'}).catch(function(){}); } catch(e){}
+  });
 }
 
 /* ── 운행 시작·끝 ── */
@@ -11493,6 +11501,7 @@ function tbMediaAck(rest){
     if (Date.now()-tbActsUserAt < 120000) toast('태블릿이 프로필 사진을 다 받지 못했습니다. [다시 보내기]를 눌러 주세요');
     return;
   }
+  if (p[3]==='act' && what==='fail'){ pfPhotoState('⚠ 태블릿이 사진 하나를 받지 못했습니다. 다 받으면 바뀌고, 모자라면 옛 사진을 그대로 둡니다.', 'warn'); return; }
   if (p[3]==='act'){ if (what==='ok') tbMediaNote('태블릿 TV가 프로필 사진을 받았습니다'+(p[2] ? ' (지금 '+p[2]+'개)' : '')+'.'); if (what==='fail') toast('태블릿이 프로필 사진을 받지 못했습니다. [다시 보내기]를 눌러 주세요'); return; }   /* 프로필 사진 자동 연동은 운전 중 방해되지 않게 조용히 */
   var album= p[1]==='gal' ? '운행 중 갤러리' : '대기화면 TV', cnt=p[2] ? ' (지금 '+p[2]+'개)' : '';
   if (what==='ok'){ toast('태블릿이 '+album+' 사진·영상을 받아 저장했습니다'+cnt); tbMediaNote('태블릿이 받아 저장했습니다'+cnt+'.'); }
@@ -11577,7 +11586,7 @@ function tbMediaClear(album, src){
 }
 
 /* ═══════════ 폰 → 태블릿: 프로필 차종 · 활동 사진(TV) ═══════════ */
-var TB_ACTS_SIG_KEY='airportCallLog.tbActsSig.v1', TB_PF_KEY='airportCallLog.tbPf.v1';
+var TB_ACTS_SIG_KEY='airportCallLog.tbActsSig.v2', TB_PF_KEY='airportCallLog.tbPf.v1';
 function tbSendPf(){
   var p=profile || null, car='';
   if (!tbPairCode() || !p) return;
@@ -11597,7 +11606,9 @@ function tbPfSyncReply(tsig){
   if (Date.now()-tbPfSyncAt < 60000) return;
   tbPfSyncAt=Date.now();
   try { tbSendPf(); } catch(e){}
-  if (String(tsig||'').trim()!==tbActsSig(tbActsList())) tbSendActs(true);
+  var p=String(tsig||'').trim().split('|'), list=tbActsList();
+  if (p[0]!==tbActsSig(list) || (parseInt(p[1],10)||0) < list.length) tbSendActs(true);
+  else { sSet(TB_ACTS_SIG_KEY, p[0]); pfPhotoState('✅ 태블릿 TV 프로필 사진 '+list.length+'장 반영됨 ('+hhmm(Date.now())+' 확인)', 'ok'); }
 }
 function tbActsSig(acts){
   var s=acts.map(function(a){ return a.length+':'+a.slice(-48); }).join('|'), h=0, i;
@@ -11606,31 +11617,42 @@ function tbActsSig(acts){
 }
 /* 프로필 '활동 사진'을 태블릿 대기화면 TV 칸으로. 바뀐 경우에만(또는 다시 보내기) 옛 활동 사진을 비우고 새로 보낸다 */
 function tbSendActs(force, user){
-  /* 예전: 태블릿의 옛 프로필 사진을 먼저 지운 뒤 새로 보냈다 → 받다가 하나라도 실패하면 TV에서 사진이 사라졌다.
-     지금: 새 사진을 모두 보낸 뒤 '확정(media_commit)'을 보내고, 태블릿이 새 사진을 전부 받았을 때만 옛 사진을 지운다 */
-  var code=tbPairCode(), acts=tbActsList(), sig=tbActsSig(acts), total=acts.length, ok=0, bad=0, k=0;
-  if (!code){ if (force) toast('설정에서 태블릿을 먼저 연결하세요'); return; }
+  /* 새 사진을 모두 보낸 뒤 '확정(media_commit)'을 보내고, 태블릿이 새 사진을 전부 받았을 때만 옛 사진과 바꾼다.
+     '보냈음' 기록(TB_ACTS_SIG_KEY)은 태블릿이 확정해 줬을 때만 남긴다 (예전에는 보내기만 해도 남겨 다시 안 보냈다) */
+  var code=tbPairCode(), acts=tbActsList(), sig=tbActsSig(acts), total=acts.length, ok=0, k=0, why={};
+  if (!code){ if (force){ toast('설정에서 태블릿을 먼저 연결하세요'); pfPhotoState('태블릿이 연결되어 있지 않습니다. 설정의 [태블릿 연결 QR 보기]로 먼저 연결하세요.', 'warn'); } return; }
   if (!force && sGet(TB_ACTS_SIG_KEY)===sig) return;
+  if (tbActsBusy){ if (user) toast('지금 보내는 중입니다. 잠시만 기다려 주세요'); return; }
   if (user) tbActsUserAt=Date.now();
-  if (!total){ tbSend('media_commit', null, '', null, {album:'tv', src:'act', sig:sig, n:0}); return; }
-  tbMediaNote('프로필 사진 '+total+'장을 태블릿 TV로 보내는 중…');
-  pfPhotoState('⏳ 태블릿 TV로 프로필 사진 '+total+'장을 보내는 중…', '');
+  if (!total){ tbSend('media_commit', null, '', null, {album:'tv', src:'act', sig:sig, n:0}); pfPhotoState('보낼 프로필 사진이 없습니다. 프로필 사진이나 활동 사진을 넣고 저장하세요.', 'warn'); return; }
+  tbActsBusy=true;
+  pfPhotoState('⏳ 태블릿 TV로 보내는 중… 0 / '+total, '');
   (function next(){
     var src=acts.shift();
     if (!src){
-      tbMediaNote('프로필 사진 '+ok+'장을 보냈습니다. 태블릿이 모두 받으면 알려 드립니다.'+(bad ? ' '+bad+'장은 보내지 못했습니다.' : ''));
-      tbSend('media_commit', null, '', null, {album:'tv', src:'act', sig:sig, n:total});
-      setTimeout(function(){ if (sGet(TB_ACTS_SIG_KEY)!==sig) pfPhotoState('⚠ 태블릿 응답이 없습니다. 태블릿이 켜져 있는지 확인한 뒤 [다시 보내기]를 눌러 주세요.', 'warn'); }, 45000);
+      tbActsBusy=false;
+      var reason=Object.keys(why).map(function(c){ return c==='429' ? '중계 서버에 요청이 많아 잠시 막혔습니다' : c==='413' ? '사진이 너무 큽니다' : c==='0' ? '인터넷 연결이 끊겼습니다' : '중계 서버 응답 '+c; }).join(', ');
+      if (!ok){ pfPhotoState('⚠ 보내지 못했습니다'+(reason ? ' ('+reason+')' : '')+'. 잠시 뒤 다시 눌러 주세요.', 'warn'); if (user) toast('프로필 사진을 보내지 못했습니다'); return; }
+      tbSend('media_commit', null, '', null, {album:'tv', src:'act', sig:sig, n:ok});
+      pfPhotoState('⏳ '+ok+'장을 보냈습니다'+(ok<total ? ' ('+(total-ok)+'장 실패: '+reason+')' : '')+'. 태블릿이 받는 중… (태블릿이 켜져 있어야 합니다)', '');
+      setTimeout(function(){ if (sGet(TB_ACTS_SIG_KEY)!==sig) pfPhotoState('⚠ 태블릿 응답이 없습니다. 태블릿이 켜져 있고 인터넷에 연결돼 있는지 확인한 뒤 다시 눌러 주세요.', 'warn'); }, 60000);
       return;
     }
     k++;
-    (function(kk){
-      fetch(src).then(function(r){ return r.blob(); }).then(function(b){
-        var meta={v:1, type:'media', ts:Date.now(), album:'tv', kind:'img', src:'act', b:sig, k:kk, n:encodeURIComponent('프로필 사진 '+kk)},
-            url=TB_RELAY+tbTopic(code)+'?m='+encodeURIComponent(JSON.stringify(meta))+'&f=pf_'+kk+'.jpg';
-        return fetch(url, {method:'PUT', body:b, mode:'cors'});
-      }).then(function(r){ if (r && r.ok) ok++; else bad++; next(); }, function(){ bad++; next(); });
-    })(k);
+    (function(kk, tries){
+      function put(){
+        fetch(src).then(function(r){ return r.blob(); }).then(function(b){
+          var meta={v:1, type:'media', ts:Date.now(), album:'tv', kind:'img', src:'act', b:sig, k:kk, n:encodeURIComponent('프로필 사진 '+kk)},
+              url=TB_RELAY+tbTopic(code)+'?m='+encodeURIComponent(JSON.stringify(meta))+'&f=pf_'+kk+'.jpg';
+          return fetch(url, {method:'PUT', body:b, mode:'cors'});
+        }).then(function(r){
+          if (r && r.ok){ ok++; pfPhotoState('⏳ 태블릿 TV로 보내는 중… '+ok+' / '+total, ''); setTimeout(next, 400); return; }
+          if (r && r.status===429 && tries<3){ tries++; pfPhotoState('⏳ 중계 서버가 잠시 막혀 기다렸다 다시 보냅니다… ('+kk+' / '+total+')', ''); setTimeout(put, 6000*tries); return; }
+          why[String(r ? r.status : 0)]=1; setTimeout(next, 400);
+        }, function(){ why['0']=1; setTimeout(next, 400); });
+      }
+      put();
+    })(k, 0);
   })();
 }
 /* ── 태블릿 쪽: 차종을 기억해 대기 화면 카드에 ── */
@@ -11659,7 +11681,7 @@ function tbPfPaint(){
 }
 
 /* ═══ 설정: 문구 [변경] 버튼과 태블릿 반영 확인 ═══ */
-var PF_APPLIED_KEY='airportCallLog.pfApplied.v1', pfWait=null, tbActsUserAt=0;
+var PF_APPLIED_KEY='airportCallLog.pfApplied.v1', pfWait=null, tbActsUserAt=0, tbActsBusy=false;
 function pfAppliedLoad(){ try { return JSON.parse(sGet(PF_APPLIED_KEY)||'null'); } catch(e){ return null; } }
 function pfStateSet(id, t, cls){ var e=$(id); if (!e) return; e.textContent=t||''; e.className='pfstate'+(cls ? ' '+cls : ''); }
 function pfPhotoState(t, cls){ pfStateSet('pfTvPhotoState', t, cls); }
