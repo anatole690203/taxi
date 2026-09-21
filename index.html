@@ -1346,6 +1346,56 @@ body.solo{overflow:hidden;background:#101215}
 .tbroute .tr-dn.k0{color:#A79BFF}.tbroute .tr-dn.k2{color:#FFC61E}
 .tbroute .tr-dok{font-size:clamp(26px,3vh,36px);margin-top:1.4vh}
 .tbroute .tr-dok2{font-size:clamp(22px,2.4vh,28px);color:#C9CED4;margin-top:.8vh}
+/* ═══ 태블릿 대기 화면: 기사 카드 = 왼쪽 프로필 · 오른쪽 여백에 옛날 브라운관 TV ═══ */
+#tbIdle .ti-drv{gap:clamp(10px,2vw,22px);padding:16px 16px 12px;align-items:center;background:rgba(14,16,20,.82);border-color:rgba(255,255,255,.14)}
+#tbIdle .ti-pf{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;width:clamp(100px,14vw,140px)}
+#tbIdle .ti-pf .dav{width:clamp(80px,9.5vw,110px);height:clamp(80px,9.5vw,110px)}
+#tbIdle .ti-pf .tb-name{font-size:clamp(20px,2.2vh,26px);text-align:center;line-height:1.25;word-break:keep-all}
+#tbIdle .ti-svc{flex:1;min-width:0;display:flex;justify-content:center}
+#tbIdle .ti-tv{position:relative;width:100%;max-width:clamp(320px,56vw,520px);padding-top:26px;filter:drop-shadow(0 16px 18px rgba(0,0,0,.7))}
+/* 토끼귀 안테나 */
+#tbIdle .ti-ant{position:absolute;left:50%;top:0;width:60px;height:34px;margin-left:-30px}
+#tbIdle .ti-ant::before{content:'';position:absolute;left:50%;bottom:0;width:22px;height:9px;margin-left:-11px;border-radius:6px 6px 0 0;background:#2a2c30}
+#tbIdle .ti-ant i{position:absolute;left:50%;bottom:6px;width:3px;height:44px;background:linear-gradient(#cfd3d8,#7d838b);border-radius:2px;transform-origin:bottom center}
+#tbIdle .ti-ant i:first-child{transform:rotate(-32deg)}#tbIdle .ti-ant i:last-child{transform:rotate(30deg)}
+/* 나무결 몸통: 왼쪽 브라운관 + 오른쪽 조작판 */
+#tbIdle .ti-tvbz{position:relative;display:flex;gap:10px;padding:14px 12px 16px 14px;border-radius:18px;
+  background:repeating-linear-gradient(95deg,rgba(0,0,0,.08) 0 3px,rgba(0,0,0,0) 3px 9px),linear-gradient(160deg,#8a5a33,#5b3a1f 55%,#3f2814);
+  box-shadow:inset 0 2px 0 rgba(255,220,170,.35),inset 0 -3px 0 rgba(0,0,0,.55),0 0 70px rgba(255,190,90,.22)}
+#tbIdle .ti-crt{position:relative;flex:1;min-width:0;aspect-ratio:4/3;padding:10px;border-radius:22px;background:linear-gradient(#2a2622,#0e0c0a);box-shadow:inset 0 0 0 3px #d9c4a4,inset 0 0 0 5px #1a1613}
+#tbIdle .ti-tvscr{position:relative;width:100%;height:100%;border-radius:18px 18px 18px 18px / 26px 26px 26px 26px;overflow:hidden;background:#000;box-shadow:inset 0 0 0 1px #000,inset 0 0 40px rgba(0,0,0,.95)}
+#tbIdle .ti-tvscr::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,rgba(0,0,0,0) 1px 3px)}
+#tbIdle .ti-tvscr::after{content:'';position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;
+  background:radial-gradient(ellipse 60% 45% at 28% 18%,rgba(255,255,255,.28),rgba(255,255,255,0) 70%),radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.6) 100%)}
+#tbIdle .ti-tvon{position:absolute;left:22px;top:20px;z-index:5;padding:2px 8px;border-radius:4px;background:rgba(214,40,40,.92);color:#fff;font-size:11px;font-weight:800;letter-spacing:.06em;animation:tvBlink 2s infinite}
+@keyframes tvBlink{0%,60%{opacity:1}80%{opacity:.35}100%{opacity:1}}
+/* 천천히 흐르는 자막 */
+#tbIdle .ti-tk{position:absolute;left:10px;right:10px;bottom:10px;z-index:5;height:clamp(24px,2.8vh,32px);overflow:hidden;background:rgba(10,12,18,.8);border-top:2px solid #FFC61E;white-space:nowrap;border-radius:0 0 18px 18px}
+#tbIdle .ti-tk span{display:inline-block;line-height:clamp(24px,2.8vh,32px);padding-left:100%;font-size:clamp(15px,1.7vh,20px);font-weight:700;color:#FFF3C4;animation:tvTk 48s linear infinite}
+@keyframes tvTk{to{transform:translateX(-100%)}}
+/* 오른쪽 조작판: 손잡이 2개 · 스피커 · 전원 불빛 */
+#tbIdle .ti-pnl{flex:none;width:clamp(42px,6vw,60px);display:flex;flex-direction:column;align-items:center;gap:10px;padding:6px 0}
+#tbIdle .ti-pnl b{width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e8e2d8,#8d8478 60%,#4a433b);box-shadow:0 2px 3px rgba(0,0,0,.7);position:relative}
+#tbIdle .ti-pnl b::after{content:'';position:absolute;left:50%;top:12%;width:3px;height:36%;margin-left:-1.5px;background:#2b2622;border-radius:2px}
+#tbIdle .ti-pnl em{flex:1;width:70%;border-radius:6px;background:repeating-linear-gradient(0deg,#2a1d12 0 3px,#6b4a2b 3px 6px);box-shadow:inset 0 0 4px rgba(0,0,0,.7)}
+#tbIdle .ti-led{width:8px;height:8px;border-radius:50%;background:#ff3b3b;box-shadow:0 0 6px #ff3b3b,0 0 12px rgba(255,59,59,.7)}
+/* 다리 */
+#tbIdle .ti-ft{display:flex;justify-content:space-between;padding:0 12%}
+#tbIdle .ti-ft i{width:14%;height:12px;border-radius:0 0 4px 4px;background:linear-gradient(#3f2814,#1e1108)}
+#tbIdle .tv-s{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease;background:#000 center/cover no-repeat}
+#tbIdle .tv-s.on{opacity:1}
+#tbIdle .tv-s svg{display:block;width:100%;height:100%}
+#tbIdle .tv-s video{display:block;width:100%;height:100%;object-fit:cover}
+#tbIdle .tv-s.kb{animation:tvKB 8s ease-out forwards}
+@keyframes tvKB{from{transform:scale(1)}to{transform:scale(1.1)}}
+#tbIdle .tv-cap{position:absolute;left:0;right:0;bottom:clamp(24px,2.8vh,32px);padding:26px 16px 8px;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.72));color:#fff}
+#tbIdle .tv-cap b{display:block;font-size:clamp(17px,2vh,25px);font-weight:700;line-height:1.25}
+#tbIdle .tv-cap i{display:block;font-style:normal;font-size:clamp(12px,1.4vh,16px);opacity:.85;margin-top:2px}
+@media (prefers-reduced-motion:reduce){#tbIdle .tv-s.kb,#tbIdle .ti-tk span,#tbIdle .ti-tvon{animation:none}}
+/* 관리 화면 탭 */
+.tgtabs{display:flex;gap:8px;margin:0 0 12px}
+.tgtabs button{flex:1;min-height:48px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:17px;font-weight:700}
+.tgtabs button.on{border-color:#FFC61E;color:#FFC61E;background:#2A2A1E}
 /* ═══ 태블릿 대기 화면: 사진이 천천히 확대되며 넘어가고, 시계·날씨·4개 국어 인사 ═══ */
 #tbIdle.idle2{padding:0;justify-content:flex-end;align-items:stretch;text-align:left;gap:0;overflow:hidden}
 #tbIdle .ti-bg{position:absolute;inset:0;background:#101215 center/cover no-repeat;opacity:0;transition:opacity 1.6s ease}
@@ -2073,6 +2123,7 @@ body.solo{overflow:hidden;background:#101215}
     <button class="tb-go" type="button" id="tbGo">화면을 눌러 시작</button>
     <div class="tb-help">누르면 소리, 화면 켜짐 유지, 위치 사용을 차례로 허용해 달라고 묻습니다. 모두 허용해 주세요. 위치는 목적지 도착을 알아채는 데만 씁니다.</div>
     <button class="tb-phone" type="button" id="tbGalMgr">🖼 갤러리 사진·영상 넣기</button>
+    <button class="tb-phone" type="button" id="tbTvMgr">📺 대기화면 TV 사진·영상 넣기</button>
     <button class="tb-phone" type="button" id="tbNotTablet">이 기기는 기사용 휴대폰입니다 · 일반 앱으로</button>
     <button class="tb-phone" type="button" id="tbSelfUpdate" style="margin-top:0">태블릿 새 버전 받기</button>
   </div>
@@ -2084,7 +2135,23 @@ body.solo{overflow:hidden;background:#101215}
       <div class="tb-best">Best Seoul Taxi</div>
       <div class="ti-hello" id="tiHello">안전하고 편안하게 모시겠습니다</div>
       <div class="ti-hello2">환영합니다 · Welcome · ようこそ · 欢迎</div>
-      <div class="ti-drv" id="tiDrv"><div class="dav" id="tbAv"></div><div class="tb-name" id="tbName"></div></div>
+      <div class="ti-drv" id="tiDrv">
+        <div class="ti-pf"><div class="dav" id="tbAv"></div><div class="tb-name" id="tbName"></div></div>
+        <div class="ti-svc">
+          <div class="ti-tv" aria-hidden="true">
+            <div class="ti-ant"><i></i><i></i></div>
+            <div class="ti-tvbz">
+              <div class="ti-crt">
+                <div class="ti-tvscr" id="tiTvScr"></div>
+                <span class="ti-tvon">● ON AIR</span>
+                <div class="ti-tk"><span>신앙상담 · 심리상담 · 선교후원 환영 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 신앙상담 · 심리상담 · 선교후원 환영 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+              </div>
+              <div class="ti-pnl"><b></b><b></b><em></em><i class="ti-led"></i></div>
+            </div>
+            <div class="ti-ft"><i></i><i></i></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="tbpane" id="tbMsg">
@@ -2163,7 +2230,8 @@ body.solo{overflow:hidden;background:#101215}
   </div>
   <div class="tgmgr" id="tgMgr" aria-hidden="true">
     <div class="tgbox">
-      <div class="tgtop"><b>갤러리 사진·영상</b><button type="button" class="tgx" id="tgClose">닫기</button></div>
+      <div class="tgtop"><b id="tgTitle">갤러리 사진·영상</b><button type="button" class="tgx" id="tgClose">닫기</button></div>
+      <div class="tgtabs" id="tgTabs"><button type="button" data-a="gal" class="on">🖼 갤러리</button><button type="button" data-a="tv">📺 대기화면 TV</button></div>
       <div class="tgtxt">여기서 넣은 사진·영상은 이 태블릿에만 저장되고, 운행 중 갤러리 화면에서 차례로 나옵니다. 사진은 5초씩, 영상은 끝까지 재생한 뒤 다음으로 넘어갑니다. 태블릿 새 버전을 받아도 지워지지 않습니다.</div>
       <div class="tgbtns">
         <label class="tb-go" for="tgFile">＋ 사진·영상 추가</label>
@@ -10058,7 +10126,10 @@ var TG_DB='airportCallLog.tabletGallery', TG_STORE='media', TG_MAX=50,
     TG_VIDEO_MAX=500*1024*1024, TG_PHOTO_SIDE=1920,
     TG_MIX_KEY='airportCallLog.tabletGalMix.v1', TG_SOUND_KEY='airportCallLog.tabletGalSound.v1',
     TB_SLIDE_MS=5000, TB_VIDEO_CAP=10*60000;
-var tg={db:null, items:[], urls:[], ver:0, busy:false};
+var tg={db:null, items:[], tv:[], urls:[], ver:0, busy:false, album:'gal'};
+var TV_MIX_KEY='airportCallLog.tabletTvMix.v1';
+/* 관리 화면에서 지금 보고 있는 칸: 'gal' 갤러리 / 'tv' 대기화면 TV */
+function tgCur(){ return tg.album==='tv' ? tg.tv : tg.items; }
 function tgOpen(cb){
   var r;
   if (tg.db){ cb(tg.db); return; }
@@ -10099,12 +10170,12 @@ function tgLoad(cb){
   tgAll(function(rows){
     var i, u;
     for (i=0;i<tg.urls.length;i++){ try { URL.revokeObjectURL(tg.urls[i]); } catch(e){} }
-    tg.urls=[]; tg.items=[];
+    tg.urls=[]; tg.items=[]; tg.tv=[];
     for (i=0;i<rows.length;i++){
       if (!rows[i] || !rows[i].blob) continue;
       try { u=URL.createObjectURL(rows[i].blob); } catch(e){ continue; }
       tg.urls.push(u);
-      tg.items.push({id:rows[i].id, kind: rows[i].kind==='video' ? 'video' : 'img', url:u, name:rows[i].name||'', size:rows[i].size||0});
+      (rows[i].album==='tv' ? tg.tv : tg.items).push({id:rows[i].id, kind: rows[i].kind==='video' ? 'video' : 'img', url:u, name:rows[i].name||'', size:rows[i].size||0});
     }
     tg.ver++;
     if (cb) cb();
@@ -10137,7 +10208,7 @@ function tgSize(b){
   return Math.max(1, Math.round(b/1024/1024))+'MB';
 }
 function tgAddFiles(list){
-  var files=Array.prototype.slice.call(list||[]), room=TG_MAX-tg.items.length, total, n=0, ok=0, bad=0, big=0, cut=0;
+  var files=Array.prototype.slice.call(list||[]), room=TG_MAX-tgCur().length, total, n=0, ok=0, bad=0, big=0, cut=0;
   if (!files.length || tg.busy) return;
   if (room<=0){ tgNote('사진·영상은 '+TG_MAX+'개까지 넣을 수 있습니다. 몇 개 지운 뒤 넣어 주세요'); return; }
   if (files.length>room){ cut=files.length-room; files=files.slice(0, room); }
@@ -10160,12 +10231,12 @@ function tgAddFiles(list){
     isV=/^video\//.test(f.type||'') || /\.(mp4|m4v|mov|webm|3gp|mkv)$/i.test(f.name||'');
     if (isV){
       if (f.size>TG_VIDEO_MAX){ big++; next(); return; }
-      tgWrite(function(st){ st.add({kind:'video', blob:f.slice(0, f.size, f.type||'video/mp4'), name:f.name||'', size:f.size, at:Date.now()}); },
+      tgWrite(function(st){ st.add({kind:'video', blob:f.slice(0, f.size, f.type||'video/mp4'), name:f.name||'', size:f.size, at:Date.now(), album:tg.album}); },
         function(s){ if (s) ok++; else bad++; next(); });
     } else {
       tgShrink(f, function(b){
         if (!b){ bad++; next(); return; }
-        tgWrite(function(st){ st.add({kind:'img', blob:b, name:f.name||'', size:b.size, at:Date.now()}); },
+        tgWrite(function(st){ st.add({kind:'img', blob:b, name:f.name||'', size:b.size, at:Date.now(), album:tg.album}); },
           function(s){ if (s) ok++; else bad++; next(); });
       });
     }
@@ -10175,7 +10246,7 @@ function tgRender(){
   var grid=$('tgGrid'), nImg=0, nVid=0;
   if (!grid) return;
   clear(grid);
-  tg.items.forEach(function(it){
+  tgCur().forEach(function(it){
     var cell=el('div',{cls:'tgc'}), m;
     if (it.kind==='video'){
       nVid++;
@@ -10194,10 +10265,11 @@ function tgRender(){
     }},['✕']));
     grid.appendChild(cell);
   });
-  $('tgCount').textContent = tg.items.length
+  $('tgCount').textContent = tgCur().length
     ? '사진 '+nImg+'장 · 영상 '+nVid+'개 (최대 '+TG_MAX+'개) · 넣은 순서대로 나옵니다'
-    : '아직 넣은 사진·영상이 없습니다. 지금은 앱에 들어 있는 기본 사진이 나옵니다.';
-  $('tgMix').checked = sGet(TG_MIX_KEY)!=='0';
+    : (tg.album==='tv' ? '아직 넣은 사진·영상이 없습니다. 지금은 기본 감동 문구 화면 5장이 나옵니다.'
+                       : '아직 넣은 사진·영상이 없습니다. 지금은 앱에 들어 있는 기본 사진이 나옵니다.');
+  $('tgMix').checked = sGet(tg.album==='tv' ? TV_MIX_KEY : TG_MIX_KEY)!=='0';
   $('tgSound').checked = sGet(TG_SOUND_KEY)==='1';
   $('tgUse').textContent='';
   try {
@@ -10221,6 +10293,8 @@ function tgCloseMgr(){
 function tgPreview(){
   if (tg.busy) return;
   tgCloseMgr();
+  /* 대기화면 TV 칸이면 대기 화면을 미리 본다. 화면을 누르면 관리 화면으로 돌아온다 */
+  if (tg.album==='tv'){ tb.tvPrev=true; tb.tvIdx=0; tvStop(); tbPane('tbIdle'); return; }
   clear($('ttGalDest'));
   $('ttGalDest').appendChild(el('b',{text:'미리 보기'}));
   $('ttGalDest').appendChild(document.createTextNode(' · 화면을 누르면 돌아갑니다'));
@@ -10231,11 +10305,19 @@ function tgPreview(){
   tbPane('tbGal');
 }
 function tgBind(){
-  $('tbGalMgr').addEventListener('click', tgOpenMgr);
+  $('tbGalMgr').addEventListener('click', function(){ tgSetAlbum('gal'); tgOpenMgr(); });
+  $('tbTvMgr').addEventListener('click', function(){ tgSetAlbum('tv'); tgOpenMgr(); });
+  Array.prototype.forEach.call($('tgTabs').getElementsByTagName('button'), function(b){
+    b.addEventListener('click', function(){ tgSetAlbum(b.getAttribute('data-a')); tgNote(''); tgRender(); });
+  });
+  $('tbIdle').addEventListener('click', function(){
+    if (!tb.tvPrev) return;
+    tb.tvPrev=false; tbPane('tbStart'); tgOpenMgr();
+  });
   $('tgClose').addEventListener('click', tgCloseMgr);
   $('tgPrev').addEventListener('click', tgPreview);
   $('tgFile').addEventListener('change', function(){ var fs=this.files; tgAddFiles(fs); this.value=''; });
-  $('tgMix').addEventListener('change', function(){ sSet(TG_MIX_KEY, this.checked ? '1' : '0'); });
+  $('tgMix').addEventListener('change', function(){ sSet(tg.album==='tv' ? TV_MIX_KEY : TG_MIX_KEY, this.checked ? '1' : '0'); });
   $('tgSound').addEventListener('change', function(){ sSet(TG_SOUND_KEY, this.checked ? '1' : '0'); });
   $('tbGal').addEventListener('click', function(){
     if (this.className.indexOf('prev')<0) return;
@@ -10954,8 +11036,9 @@ function flapPlay(){
 var TI_HELLO=['안전하고 편안하게 모시겠습니다','We will take you safely and comfortably.','安全で快適にお送りいたします。','我们将安全舒适地送您到达目的地。'];
 function tiStart(){
   if (typeof tb==='undefined') return;
-  if ($('tiDrv')) $('tiDrv').style.display = ($('tbName') && $('tbName').textContent) ? '' : 'none';
+  if ($('tiDrv')) $('tiDrv').style.display='';   /* 상담·선교 안내와 TV가 있으므로 이름이 없어도 보인다 */
   tiWxLoad(false);
+  tvStart();
   if (tb.tiTimer) return;
   if (!isNum(tb.tiIdx)) tb.tiIdx=Math.floor(Math.random()*997);
   tb.tiHello=0;
@@ -10966,6 +11049,7 @@ function tiStart(){
 }
 function tiStop(){
   if (typeof tb==='undefined') return;
+  tvStop();
   if (tb.tiTimer){ clearInterval(tb.tiTimer); tb.tiTimer=null; }
   if (tb.tiHTimer){ clearInterval(tb.tiHTimer); tb.tiHTimer=null; }
 }
@@ -11146,6 +11230,92 @@ function tbRoutesShow(m){
     if (secs<=0){ var d=rs[0], j; for (j=0;j<rs.length;j++) if (rs[j].k==='0') d=rs[j]; pick(d, true); return; }
     foot.textContent=secs+X.left;
   }, 1000);
+}
+
+/* ───── 관리 화면 칸 바꾸기 (갤러리 / 대기화면 TV) ───── */
+var TG_TXT_GAL=null;
+function tgSetAlbum(a){
+  var tabs=$('tgTabs') ? $('tgTabs').getElementsByTagName('button') : [], i, txt=document.querySelector('#tgMgr .tgtxt'), mix=$('tgMix') && $('tgMix').parentNode;
+  tg.album = a==='tv' ? 'tv' : 'gal';
+  for (i=0;i<tabs.length;i++) tabs[i].className = tabs[i].getAttribute('data-a')===tg.album ? 'on' : '';
+  if (txt && TG_TXT_GAL===null) TG_TXT_GAL=txt.textContent;
+  if ($('tgTitle')) $('tgTitle').textContent = tg.album==='tv' ? '대기화면 TV 사진·영상' : '갤러리 사진·영상';
+  if (txt) txt.textContent = tg.album==='tv'
+    ? '여기서 넣은 사진·영상은 이 태블릿에만 저장되고, 대기 화면 기사 프로필 옆 TV 상자에서 소리 없이 차례로 나옵니다. 사진은 7초씩, 영상은 끝까지(최대 1분) 재생합니다. 선교·봉사 사진이나 상담 안내 영상을 넣어 보세요.'
+    : TG_TXT_GAL;
+  if (mix && mix.lastChild) mix.lastChild.textContent = tg.album==='tv' ? ' 기본 감동 문구 화면도 함께 보이기' : ' 앱에 들어 있는 기본 사진도 함께 보이기';
+  if ($('tgSound')) $('tgSound').parentNode.style.display = tg.album==='tv' ? 'none' : '';
+}
+/* ───── 대기 화면 TV: 기본 감동 문구 화면 5장 ───── */
+var TV_SCENES=[
+ {ko:'오늘도 당신을 응원합니다', en:'We are cheering for you today',
+  svg:'<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="tvs1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B1B4A"/><stop offset=".55" stop-color="#E9788A"/><stop offset="1" stop-color="#FFC878"/></linearGradient><radialGradient id="tvs1g" cx=".5" cy=".6" r=".4"><stop offset="0" stop-color="#FFF4C9"/><stop offset="1" stop-color="#FFF4C9" stop-opacity="0"/></radialGradient></defs><rect width="320" height="180" fill="url(#tvs1)"/><circle cx="165" cy="108" r="70" fill="url(#tvs1g)"/><circle cx="165" cy="108" r="21" fill="#FFF1C1"/><path d="M0 128 L60 102 L112 122 L168 94 L228 120 L282 104 L320 116 L320 180 L0 180Z" fill="#3A2448"/><path d="M0 150 L80 130 L150 146 L220 128 L320 146 L320 180 L0 180Z" fill="#221430"/><g fill="#221430"><rect x="166" y="70" width="4" height="26"/><rect x="159" y="77" width="18" height="4"/></g></svg>'},
+ {ko:'마음의 짐, 잠시 내려놓으세요', en:'Rest your heart for a moment',
+  svg:'<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="tvs2" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#FFE3B0"/><stop offset=".55" stop-color="#C8566E"/><stop offset="1" stop-color="#3B1530"/></radialGradient><linearGradient id="tvs2h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8FA3"/><stop offset="1" stop-color="#E0284F"/></linearGradient></defs><rect width="320" height="180" fill="url(#tvs2)"/><g stroke="#FFF3D6" stroke-opacity=".35" stroke-width="2"><path d="M160 90 L20 10"/><path d="M160 90 L300 10"/><path d="M160 90 L0 90"/><path d="M160 90 L320 90"/><path d="M160 90 L60 0"/><path d="M160 90 L260 0"/></g><path d="M160 132 C126 108 108 92 108 72 C108 58 118 48 131 48 C144 48 154 55 160 66 C166 55 176 48 189 48 C202 48 212 58 212 72 C212 92 194 108 160 132Z" fill="url(#tvs2h)" stroke="#FFE0E6" stroke-width="3"/></svg>'},
+ {ko:'평안이 함께하기를', en:'Peace be with you',
+  svg:'<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="tvs3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FD3F0"/><stop offset=".62" stop-color="#FDE7C8"/><stop offset=".63" stop-color="#4AA3C8"/><stop offset="1" stop-color="#1D5F8A"/></linearGradient></defs><rect width="320" height="180" fill="url(#tvs3)"/><circle cx="238" cy="96" r="18" fill="#FFF6DA"/><g stroke="#FFF6DA" stroke-opacity=".55" stroke-width="2"><path d="M200 124 H276"/><path d="M212 134 H264"/><path d="M224 144 H252"/></g><g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M86 62 q12 -10 24 0 q12 -10 24 0"/><path d="M142 42 q9 -8 18 0 q9 -8 18 0"/><path d="M58 88 q7 -6 14 0 q7 -6 14 0"/></g></svg>'},
+ {ko:'함께 세계를 섬깁니다', en:'Serving the world together',
+  svg:'<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="tvs4" cx=".5" cy=".5" r=".75"><stop offset="0" stop-color="#1E3A6E"/><stop offset="1" stop-color="#0A1026"/></radialGradient><radialGradient id="tvs4g" cx=".38" cy=".35" r=".8"><stop offset="0" stop-color="#6FE0C8"/><stop offset="1" stop-color="#1B6AA8"/></radialGradient></defs><rect width="320" height="180" fill="url(#tvs4)"/><g fill="#fff" fill-opacity=".7"><circle cx="30" cy="30" r="1.4"/><circle cx="290" cy="40" r="1.6"/><circle cx="60" cy="150" r="1.2"/><circle cx="270" cy="150" r="1.4"/><circle cx="240" cy="20" r="1"/></g><ellipse cx="160" cy="92" rx="112" ry="30" fill="none" stroke="#FFC878" stroke-opacity=".7" stroke-width="2" transform="rotate(-12 160 92)"/><circle cx="160" cy="90" r="50" fill="url(#tvs4g)"/><g fill="none" stroke="#E6FFF8" stroke-opacity=".55" stroke-width="1.6"><ellipse cx="160" cy="90" rx="22" ry="50"/><path d="M110 90 H210"/><path d="M116 66 H204"/><path d="M116 114 H204"/></g><g fill="#FF7A95"><path d="M62 104 c-5 -4 -8 -7 -8 -10 c0 -3 2 -5 5 -5 c1.5 0 2.5 1 3 2 c.5 -1 1.5 -2 3 -2 c3 0 5 2 5 5 c0 3 -3 6 -8 10z"/><path d="M262 76 c-5 -4 -8 -7 -8 -10 c0 -3 2 -5 5 -5 c1.5 0 2.5 1 3 2 c.5 -1 1.5 -2 3 -2 c3 0 5 2 5 5 c0 3 -3 6 -8 10z"/></g></svg>'},
+ {ko:'당신은 혼자가 아닙니다', en:'You are not alone',
+  svg:'<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="tvs5" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="#6B3A12"/><stop offset="1" stop-color="#120A06"/></radialGradient><radialGradient id="tvs5g" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFD27A" stop-opacity=".9"/><stop offset="1" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><linearGradient id="tvs5f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C8"/><stop offset="1" stop-color="#FF9A2E"/></linearGradient></defs><rect width="320" height="180" fill="url(#tvs5)"/><circle cx="160" cy="70" r="62" fill="url(#tvs5g)"/><path d="M160 44 C150 58 148 70 152 80 C155 88 165 88 168 80 C172 70 170 58 160 44Z" fill="url(#tvs5f)"/><rect x="157" y="84" width="6" height="8" fill="#3A2A1A"/><rect x="138" y="92" width="44" height="72" rx="6" fill="#F4E9D8"/><rect x="138" y="92" width="44" height="10" rx="5" fill="#FFFFFF" fill-opacity=".55"/><ellipse cx="160" cy="166" rx="54" ry="7" fill="#000" fill-opacity=".35"/></svg>'}
+];
+function tvList(){
+  var own=(tg.tv||[]).map(function(it){ return {kind:it.kind, url:it.url}; }), base=TV_SCENES.map(function(s){ return {kind:'scene', s:s}; }), out=[], i, j=0;
+  if (!own.length) return base;
+  if (sGet(TV_MIX_KEY)==='0') return own;
+  /* 직접 넣은 사진·영상 두 개마다 기본 화면 한 장 */
+  /* 기본 화면 5장이 모두 한 번씩은 돌도록 목록을 충분히 길게 만든다 */
+  for (i=0;i<Math.max(own.length, base.length*2);i++){ out.push(own[i%own.length]); if (i%2===1) out.push(base[(j++)%base.length]); }
+  return out;
+}
+function tvStart(){
+  if (typeof tb==='undefined' || tb.tvRun || !$('tiTvScr')) return;
+  tb.tvRun=true; tb.tvTok=(tb.tvTok||0)+1;
+  if (!isNum(tb.tvIdx)) tb.tvIdx=0;
+  if (!tg.ver) tgLoad(function(){ tvNext(tb.tvTok); }); else tvNext(tb.tvTok);
+}
+function tvStop(){
+  var box=$('tiTvScr'), vs, i;
+  if (typeof tb==='undefined') return;
+  tb.tvRun=false; tb.tvTok=(tb.tvTok||0)+1;
+  if (tb.tvTimer){ clearTimeout(tb.tvTimer); tb.tvTimer=null; }
+  if (!box) return;
+  vs=box.getElementsByTagName('video');
+  for (i=0;i<vs.length;i++){ try { vs[i].pause(); } catch(e){} }
+}
+function tvNext(tok){
+  var box=$('tiTvScr'), L, it, node, v, done=false, olds, i;
+  if (!box || !tb.tvRun || tok!==tb.tvTok) return;
+  L=tvList(); if (!L.length) return;
+  it=L[tb.tvIdx % L.length]; tb.tvIdx++;
+  function go(ms){ if (tb.tvTimer) clearTimeout(tb.tvTimer); tb.tvTimer=setTimeout(function(){ if (!done){ done=true; tvNext(tok); } }, ms); }
+  node=el('div',{cls:'tv-s'});
+  if (it.kind==='scene'){
+    node.innerHTML=it.s.svg;
+    node.appendChild(el('div',{cls:'tv-cap'},[el('b',{text:it.s.ko}), el('i',{text:it.s.en})]));
+    go(7000);
+  } else if (it.kind==='img'){
+    node.className='tv-s kb';
+    node.style.backgroundImage='url("'+it.url+'")';
+    node.style.transformOrigin=(25+Math.floor(Math.random()*50))+'% '+(30+Math.floor(Math.random()*40))+'%';
+    go(7000);
+  } else {
+    v=document.createElement('video');
+    v.muted=true; v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.autoplay=true; v.preload='auto'; v.src=it.url;
+    v.onended=function(){ go(300); };
+    v.onerror=function(){ go(300); };
+    node.appendChild(v);
+    try { var p=v.play(); if (p && p['catch']) p['catch'](function(){ go(3000); }); } catch(e){}
+    go(60000);   /* 긴 영상도 1분까지만 */
+  }
+  box.appendChild(node);
+  void node.offsetWidth; node.className+=' on';
+  /* 이전 화면은 서서히 사라진 뒤 치운다 (영상은 멈춘다) */
+  olds=Array.prototype.slice.call(box.childNodes, 0, -1);
+  for (i=0;i<olds.length;i++) (function(o){
+    o.className=o.className.replace(/\s*\bon\b/g,'');
+    setTimeout(function(){ var vv=o.getElementsByTagName('video')[0]; if (vv){ try { vv.pause(); } catch(e){} } if (o.parentNode) o.parentNode.removeChild(o); }, 1400);
+  })(olds[i]);
 }
 if (typeof document !== 'undefined' && document.addEventListener){
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
