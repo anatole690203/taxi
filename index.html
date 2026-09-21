@@ -347,7 +347,7 @@ a.brow:active{background:#2a2e34}
 .ai-card.c-free{border-left-color:#7A828C}
 .ai-card.c-free .opt{color:#A7ADB5}
 .ai-card.c-free .go{color:#A7ADB5}
-.btn.guidebtn{width:100%;margin-top:8px;background:#A8CBFF;border-color:#A8CBFF;color:#17191c;font-weight:700}
+.btn.guidebtn{width:100%;margin-top:8px;background:#3a2f45;border-color:#5b4a6b;color:#fff;font-weight:700}
 /* 경유 간선도로 LED 전광판 */
 .roadled{margin:0 0 10px;padding:8px 10px;border-radius:6px;background:#0B0D10;border:1px solid #2A2F36;box-shadow:inset 0 0 0 1px #15181d}
 .roadled .cap{font-size:11px;color:#6F757D;letter-spacing:.5px;margin-bottom:6px}
@@ -444,10 +444,11 @@ a.brow:active{background:#2a2e34}
 .destdet .dd-addr{color:var(--muted)}
 .destdet .dd-bld{color:var(--sign);font-weight:700;margin-top:2px;font-size:15px}
 .destdet .dd-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:2px 0 8px;border-bottom:1px solid #2F343B;margin-bottom:2px}
-.destdet .dd-head .t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.destdet .dd-head .t{display:flex;flex-direction:column;gap:10px;min-width:0}
 .destdet .dd-head b{font-size:19px;color:var(--sign);line-height:1.2}
-.destdet .dd-head .s{font-size:12.5px;color:var(--muted)}
-.destdet .nvbtn{flex:none;text-decoration:none;padding:7px 10px;border-radius:4px;background:#03C75A;color:#fff;font-size:13px;font-weight:700;white-space:nowrap}
+.destdet .dd-head .s{font-size:15px;font-weight:600;color:#A8CBFF}
+.destdet .dd-k.src{font-size:15px;font-weight:600;color:#A8CBFF}
+.destdet .nvbtn{flex:none;text-decoration:none;padding:9px 16px;border-radius:999px;border:0;background:#03C75A;color:#fff;font-size:14px;font-weight:700;white-space:nowrap;line-height:1.2;font-family:inherit}
 .destdet .swl{display:inline-block;padding:1px 6px;border-radius:3px;background:#E6186C;color:#fff;font-size:11.5px;font-weight:700;vertical-align:1px}
 .destdet .telrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .destdet .telbtn{text-decoration:none;padding:7px 11px;border-radius:4px;background:#1F9D55;color:#fff;font-size:13px;font-weight:700;white-space:nowrap}
@@ -505,7 +506,30 @@ input.keyin::placeholder{color:#7A6A93;font-weight:400}
 .tabbar .in{display:flex;width:100%;max-width:560px}
 .tabbar button{font-size:15px}
 .tabbar button{flex:1;height:var(--tabh);border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;border-top:3px solid transparent;padding:0 1px;letter-spacing:-.5px}
-.tabbar button[aria-selected="true"]{color:var(--sign);border-top-color:var(--sign)}
+.tabbar button[aria-selected="true"]{color:var(--sign);border-top-color:transparent}
+.tabbar .in{gap:6px;padding:6px 10px}
+.tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:calc(var(--tabh) - 6px);border-radius:12px;font-size:12.5px;letter-spacing:0;border-top:0;transition:background .15s}
+.tabbar button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-selected="true"]{background:rgba(255,200,30,.14);color:var(--sign);font-weight:700}
+.sec.today{border-left-color:var(--sign)}
+.sec h3 small{font-size:12.5px;font-weight:500;color:var(--muted);margin-left:6px}
+.goal{margin-top:10px}
+.goal .gl{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted)}
+.goal .gl b{color:var(--ink);font-size:15px}
+.goal .gt{height:14px;background:#23272e;border-radius:7px;overflow:hidden;margin-top:6px}
+.goal .gt i{display:block;height:100%;background:var(--sign);border-radius:7px;transition:width .3s}
+.goal .gt i.done{background:#3DDC84}
+.goal .gset{margin-top:8px;font-size:13px;color:#A8CBFF;background:transparent;border:1px solid #A8CBFF;border-radius:4px;padding:6px 10px}
+.hotgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hothd{font-size:13px;font-weight:700;padding:5px 8px;border-radius:4px;margin-bottom:6px;text-align:center}
+.hothd.fgn{background:#16261C;color:#8FF0BC;border:1px solid #03C75A}
+.hothd.loc{background:#2A2540;color:#D6CFFF;border:1px solid #6C5CE7}
+.hotrow{display:flex;align-items:center;gap:8px;padding:7px 6px;border-bottom:1px dashed #23272e;font-size:14px;background:transparent;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;color:var(--ink)}
+.hotrow .rk{color:var(--muted);font-size:12px;width:14px}
+.hotrow .zn{flex:1;font-weight:600}
+.hotrow .ct{font-size:12px;color:var(--muted)}
+.wkline{font-size:15px;line-height:1.5;color:var(--ink);padding:4px 0 8px}
+.wkline b{color:var(--sign)}
 /* 네비 탭: 누르지 않았을 때도 노란 글자와 보라 테두리로 눈에 띄게 */
 
 /* 시트·토스트 */
@@ -1357,8 +1381,8 @@ body.solo{overflow:hidden;background:#101215}
 
     <div class="board" id="board"></div>
 
-    <div class="sec">
-      <h3>최근 내역</h3>
+    <div class="sec blue">
+      <h3>운행경로</h3>
       <div id="recent"></div>
     </div>
   </section>
@@ -1367,14 +1391,14 @@ body.solo{overflow:hidden;background:#101215}
     <div class="sec gray" id="paxSec"><h3>인천공항 예상 인원</h3>
       <div id="paxBox"><div class="empty">공항 정보 서버를 연결하면 제1·2터미널 입국장·출국장의 시간대별 예상 인원이 여기에 나옵니다. 설정 탭의 <b>공항 정보 서버 주소</b>에 주소를 넣어 주세요.</div></div>
     </div>
-    <div class="sec airT2" id="airSec"><h3>항공사 → 터미널</h3>
+    <div class="sec airT1" id="airSec"><h3>항공사 → 터미널</h3>
       <div class="field" style="margin-bottom:8px">
         <input id="airQ" type="search" autocomplete="off" placeholder="항공사 이름·코드·편명 (예: 델타, DL, OZ102)">
       </div>
       <div class="airlegend"><span><i class="t1"></i>제1여객터미널 (T1)</span><span><i class="t2"></i>제2여객터미널 (T2)</span></div>
       <div id="airList"></div>
     </div>
-    <div class="sec airT1" id="airSecT1">
+    <div class="sec airT2" id="airSecT1">
       <div id="airListT1"></div>
       <div class="empty" id="airBase"></div>
       <button class="btn" type="button" id="airUpd" style="width:100%;margin-top:6px">오늘 운항편으로 업데이트</button>
@@ -1451,6 +1475,12 @@ body.solo{overflow:hidden;background:#101215}
   </section>
 
   <section class="view" id="v-stat" aria-label="통계">
+    <div class="sec" id="weekSec">
+      <h3>이번 달 한눈에</h3>
+      <div id="weekBest" class="wkline"></div>
+      <div class="sum" id="perKm"></div>
+    </div>
+
     <div class="filters">
       <select id="stDays" aria-label="기간">
         <option value="0" selected>전체 기간</option>
@@ -1505,9 +1535,63 @@ body.solo{overflow:hidden;background:#101215}
       <table class="heat num" id="heat"></table>
       <div class="tops" id="tops"></div>
     </div>
+  
+    <div id="bookWrap">
+    <div class="sec">
+      <h3>오늘 입력</h3>
+      <div class="field">
+        <label class="hi" for="bkAmount">금액 (원)</label>
+        <div class="pick">
+          <input id="bkAmount" type="text" inputmode="numeric" placeholder="예: 72000">
+          <button type="button" id="bkSave" class="mini mic">저장</button>
+        </div>
+      </div>
+      <div class="grp"><div class="lab air">수입</div>
+        <div class="seg wrap" id="segIncome"></div>
+      </div>
+      <div class="grp"><div class="lab city">지출</div>
+        <div class="seg wrap" id="segExpense"></div>
+      </div>
+      <div class="field" style="margin-top:8px">
+        <label for="bkMemo">메모 (선택)</label>
+        <input id="bkMemo" type="text" placeholder="예: 인천공항 T1, 카드">
+      </div>
+    </div>
+    <div class="sec green">
+      <h3>오늘</h3>
+      <div class="sum" id="bkToday"></div>
+    </div>
+    <div class="sec blue">
+      <h3>월별 집계</h3>
+      <div class="filters" style="padding:0 0 10px">
+        <select id="bkMonth" aria-label="월 선택"></select>
+      </div>
+      <div class="sum" id="bkMonthSum"></div>
+      <div id="bkCats"></div>
+    </div>
+    <div class="sec gray">
+      <h3>최근 내역</h3>
+      <div id="bkList"></div>
+      <button class="btn" type="button" id="bkCsv" style="margin-top:10px">장부 CSV로 내보내기</button>
+    </div>
+  </div>
   </section>
 
-  <section class="view" id="v-ret" aria-label="귀로">
+  <section class="view" id="v-today" aria-label="오늘">
+    <div class="sec today" id="todaySec">
+      <h3>오늘 <small id="todayDate"></small></h3>
+      <div class="sum" id="todaySum"></div>
+      <div class="goal" id="goalBox"></div>
+    </div>
+    <div class="sec blue" id="hotSec">
+      <h3>지금 시간대 콜 많은 곳 <small id="hotWhen"></small></h3>
+      <div class="hotgrid">
+        <div class="hotcol"><div class="hothd fgn">외국인</div><div id="hotFgn"></div></div>
+        <div class="hotcol"><div class="hothd loc">현지인</div><div id="hotLoc"></div></div>
+      </div>
+      <div class="hint" id="hotHint"></div>
+    </div>
+
     <div class="sec gray" id="tqSec">
       <h3>공항 택시 대기 · 함께 보고</h3>
       <div class="empty">인천공항공사는 택시 승강장 대기 대수를 공개하지 않습니다(주차장·운항편·승객 예고만 공개). 대신 이 앱을 쓰는 기사들이 현장에서 본 대수를 보고하면 서로 공유되어, 아래 <b>앞에 선 택시(대)</b>에 자동으로 들어갑니다.</div>
@@ -1573,7 +1657,7 @@ body.solo{overflow:hidden;background:#101215}
       <button class="btn guidebtn" type="button" id="btnGuideTop" style="margin:0 0 12px">승객에게 요금·시간 보여주기</button>
       <div class="field">
         <div class="pick"><div class="selwrap"><select id="rdFrom"></select><div class="sellabel" id="rdFromLabel" aria-hidden="true"></div></div>
-          <button type="button" id="btnHere" class="mini gps" title="현위치로 잡기">현위치</button></div>
+          <button type="button" id="btnHere" class="mini gps" title="현위치로 잡기">📍 현위치</button></div>
       </div>
       <div class="field">
         <div class="pick"><select id="rdTo"></select>
@@ -1608,45 +1692,7 @@ body.solo{overflow:hidden;background:#101215}
     </div>
   </section>
 
-  <section class="view" id="v-book" aria-label="장부">
-    <div class="sec">
-      <h3>오늘 입력</h3>
-      <div class="field">
-        <label class="hi" for="bkAmount">금액 (원)</label>
-        <div class="pick">
-          <input id="bkAmount" type="text" inputmode="numeric" placeholder="예: 72000">
-          <button type="button" id="bkSave" class="mini mic">저장</button>
-        </div>
-      </div>
-      <div class="grp"><div class="lab air">수입</div>
-        <div class="seg wrap" id="segIncome"></div>
-      </div>
-      <div class="grp"><div class="lab city">지출</div>
-        <div class="seg wrap" id="segExpense"></div>
-      </div>
-      <div class="field" style="margin-top:8px">
-        <label for="bkMemo">메모 (선택)</label>
-        <input id="bkMemo" type="text" placeholder="예: 인천공항 T1, 카드">
-      </div>
-    </div>
-    <div class="sec green">
-      <h3>오늘</h3>
-      <div class="sum" id="bkToday"></div>
-    </div>
-    <div class="sec blue">
-      <h3>월별 집계</h3>
-      <div class="filters" style="padding:0 0 10px">
-        <select id="bkMonth" aria-label="월 선택"></select>
-      </div>
-      <div class="sum" id="bkMonthSum"></div>
-      <div id="bkCats"></div>
-    </div>
-    <div class="sec gray">
-      <h3>최근 내역</h3>
-      <div id="bkList"></div>
-      <button class="btn" type="button" id="bkCsv" style="margin-top:10px">장부 CSV로 내보내기</button>
-    </div>
-  </section>
+  
 
   <section class="view" id="v-data" aria-label="데이터">
     <div class="sec" id="pfSec"><h3>기사 프로필</h3>
@@ -1800,11 +1846,23 @@ body.solo{overflow:hidden;background:#101215}
   </section>
 </div>
 
+
+  <section class="view" id="v-log" aria-label="기록">
+    <div class="sec">
+      <h3>운행 기록 <small id="logCount"></small></h3>
+      <div class="btns" style="margin:0 0 10px">
+        <button class="btn" type="button" id="logMap">지도에서 경로 보기</button>
+        <button class="btn" type="button" id="logCsv">기록 CSV 내보내기</button>
+      </div>
+      <div id="logList"></div>
+      <button class="btn" type="button" id="logMore" style="width:100%;margin-top:10px">더 보기</button>
+    </div>
+  </section>
+
 <nav class="tabbar" aria-label="화면 전환"><div class="in" role="tablist">
-  <button type="button" role="tab" data-tab="v-ret" aria-selected="false">귀로</button>
-  <button type="button" role="tab" data-tab="v-stat" aria-selected="false">통계</button>
-  <button type="button" role="tab" data-tab="v-book" aria-selected="false">차계부</button>
-  <button type="button" role="tab" data-tab="v-data" aria-selected="false">설정</button>
+  <button type="button" role="tab" data-tab="v-today" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg><span>오늘</span></button>
+  <button type="button" role="tab" data-tab="v-stat" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>수익</span></button>
+  <button type="button" role="tab" data-tab="v-log" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>기록</span></button>
 </div></nav>
 
 <div class="guide" id="guide" aria-hidden="true">
@@ -2661,7 +2719,7 @@ function kakaoJamLevel(st){
 
 /* 처음 열었을 때의 지도 중심과 배율.
    카카오는 레벨을 직접 지정한다. 레벨 7 = 경복궁~용산이 한 화면에 들어오는 범위. */
-var MAP_HOME = {lat:37.5580, lng:126.9920, zoom:13, kakaoLevel:7};
+var MAP_HOME = {lat:37.5640, lng:126.9900, zoom:13, kakaoLevel:7};
 var SPOT_CATS = [
   {key:'history', name:'역사문화', color:'#C792EA'},
   {key:'shop',    name:'쇼핑·먹자', color:'#F4A259'},
@@ -4008,6 +4066,128 @@ function renderBoard(){
       [el('div',{cls:'bar'},[el('i',{style:'width:'+pct+'%'})])],
       el('div',{cls:'ct num'},[el('b',{text: recs[i].exact+'건'}), '인접 '+recs[i].near])));
   }
+}
+/* ───────── 오늘 탭 ───────── */
+var GOAL_KEY='airportCallLog.goal.v1';
+/* 큰 숫자 칸 (sumGrid보다 단순: 원하는 칸만) — cells=[{v:'글자', l:'이름', c:'색'}] */
+function numGrid(box, cells){
+  var i; clear(box);
+  for (i=0;i<cells.length;i++) box.appendChild(el('div',null,[el('b',{cls:'num', style: cells[i].c ? 'color:'+cells[i].c : '', text:cells[i].v}), el('span',{text:cells[i].l})]));
+}
+function dayGoal(){ var v=parseInt(sGet(GOAL_KEY)||'0',10); return isNaN(v) ? 0 : v; }
+function renderToday(){
+  var now=Date.now(), today=dayKey(now), n=0, i, r, last=null, led=ledgerSummary(ledger, today), goal=dayGoal(), pct, gb, d=new Date(now);
+  if (!$('todaySum')) return;
+  for (i=0;i<records.length;i++){ r=records[i]; if (dayKey(r.ts)===today){ n++; if (!last || r.ts>last.ts) last=r; } }
+  $('todayDate').textContent=(d.getMonth()+1)+'월 '+d.getDate()+'일 '+DAYS[dayIdx(now)]+'요일';
+  numGrid($('todaySum'), [
+    {v:won(led.income), l:'오늘 매출', c:'var(--sign)'},
+    {v:String(n)+'건', l:'운행 건수'},
+    {v:won(led.net), l:'오늘 순수익', c:'#3DDC84'},
+    {v: last ? hhmm(last.ts) : '–', l:'마지막 운행'},
+    {v: n ? won(Math.round(led.income/n)) : '–', l:'건당 매출'},
+    {v: led.income ? Math.round(led.expense/led.income*100)+'%' : '–', l:'경비 비중'}
+  ]);
+  /* 목표 매출 진행 막대 */
+  gb=$('goalBox'); clear(gb);
+  if (goal>0){
+    pct=Math.min(100, Math.round(led.income/goal*100));
+    gb.appendChild(el('div',{cls:'gl'},[el('span',null,['목표 ',el('b',{text:won(goal)})]), el('span',null,[el('b',{text:pct+'%'}), ' · '+(led.income>=goal ? '달성' : won(goal-led.income)+' 남음')])]));
+    gb.appendChild(el('div',{cls:'gt'},[el('i',{cls: pct>=100 ? 'done' : '', style:'width:'+pct+'%'})]));
+  } else {
+    gb.appendChild(el('div',{cls:'hint', text:'하루 목표 매출을 정하면 진행 막대가 나옵니다.'}));
+  }
+  gb.appendChild(el('button',{cls:'gset', type:'button', text: goal>0 ? '목표 바꾸기' : '목표 정하기', onclick:function(){
+    var v=prompt('하루 목표 매출(원)', goal>0 ? String(goal) : '250000');
+    if (v===null) return;
+    v=parseInt(String(v).replace(/[^\d]/g,''),10);
+    if (isNaN(v) || v<=0){ toast('숫자로 넣어 주세요'); return; }
+    sSet(GOAL_KEY, String(v)); renderToday();
+  }}));
+  renderHot(now);
+}
+/* 지금 시간대 콜 많은 곳 — 외국인 / 현지인 따로 (기록의 외국인 표시 기준) */
+function renderHot(now){
+  var fgn=[], loc=[], i, r;
+  if (!$('hotFgn')) return;
+  for (i=0;i<records.length;i++){ r=records[i]; if (r.fgn) fgn.push(r); else loc.push(r); }
+  $('hotWhen').textContent=DAYS[dayIdx(now)]+'요일 '+bucketName(bucketIdx(now))+'대';
+  hotList($('hotFgn'), recommend(fgn, now));
+  hotList($('hotLoc'), recommend(loc, now));
+  $('hotHint').textContent = (fgn.length || loc.length)
+    ? '같은 요일·시간대 기록에 가중치를 두고 앞뒤 시간대도 반영했습니다. 지역을 누르면 길안내가 열립니다.'
+    : '기록이 쌓이면 여기에 외국인·현지인 손님이 많았던 곳이 따로 나옵니다. 지금은 공개 자료 기준 기본 순위입니다.';
+}
+function hotList(box, recs){
+  var i, list, n;
+  clear(box);
+  list = recs.length ? recs.map(function(x){ return {zone:x.zone, ct:x.exact+'건'}; }) : DEFAULT_RANK.map(function(z){ return {zone:z, ct:'기본'}; });
+  n=Math.min(4, list.length);
+  for (i=0;i<n;i++){
+    (function(zn){
+      var z=zoneByName(zn), app=getNaviApp();
+      box.appendChild(el('button',{cls:'hotrow', type:'button', onclick:function(){
+        if (z && z.dest && isNum(z.dest.lat)){ if (app==='naver') startNaverNavi(lastHere, z.dest); else startKakaoNavi(z.dest.lat, z.dest.lng, z.dest.n); }
+        else toast(zn+': 안내 지점이 없는 권역입니다');
+      }},[el('span',{cls:'rk num', text:String(i+1)}), el('span',{cls:'zn', text:zn}), el('span',{cls:'ct', text:list[i].ct})]));
+    })(list[i].zone);
+  }
+}
+/* ───────── 수익 탭: 이번 달 한눈에 ───────── */
+function renderProfit(){
+  var now=Date.now(), mk=monthKey(now), i, r, cell={}, best=null, k, km=0, led=ledgerSummary(ledger, mk), fuel=0, box, dirN={}, topDir='';
+  if (!$('weekBest')) return;
+  for (i=0;i<records.length;i++){
+    r=records[i];
+    if (monthKey(r.ts)!==mk) continue;
+    k=dayIdx(r.ts)+'-'+bucketIdx(r.ts);
+    cell[k]=cell[k]||{n:0, d:dayIdx(r.ts), b:bucketIdx(r.ts), dir:{}};
+    cell[k].n++; cell[k].dir[r.dir]=(cell[k].dir[r.dir]||0)+1;
+    if (isNum(r.dkm)) km+=r.dkm;
+  }
+  for (k in cell) if (Object.prototype.hasOwnProperty.call(cell,k) && (!best || cell[k].n>best.n)) best=cell[k];
+  box=$('weekBest'); clear(box);
+  if (best){
+    for (k in best.dir) if (Object.prototype.hasOwnProperty.call(best.dir,k) && (!topDir || best.dir[k]>best.dir[topDir])) topDir=k;
+    box.appendChild(el('span',null,[el('b',{text:DAYS[best.d]+'요일 '+bucketName(best.b)+'대'}), ' '+dirLabel(topDir)+' 운행이 가장 많았습니다 ('+best.n+'건).']));
+  } else {
+    box.appendChild(el('span',{cls:'hint', text:'이번 달 운행 기록이 쌓이면 요일·시간대별로 가장 좋았던 때를 알려 드립니다.'}));
+  }
+  fuel=led.byCat['LPG']||0;
+  numGrid($('perKm'), [
+    {v: km>0 ? won(Math.round(led.income/km)) : '–', l:'매출 원/km', c:'var(--sign)'},
+    {v: km>0 ? won(Math.round(fuel/km)) : '–', l:'연료 원/km', c:'#FF8A80'},
+    {v: km>0 ? won(Math.round((led.income-fuel)/km)) : '–', l:'연료 뺀 원/km', c:'#3DDC84'},
+    {v: won(led.income), l:'이달 매출'},
+    {v: won(fuel), l:'이달 연료비'},
+    {v: km>0 ? Math.round(km)+'km' : '–', l:'거리 기록된 운행'}
+  ]);
+  if (km<=0) $('perKm').appendChild(el('div',{cls:'hint', text:'km당 계산은 목적지까지 거리가 기록된 운행(T맵 경로를 받은 운행)만 씁니다.'}));
+}
+/* ───────── 기록 탭 ───────── */
+var logShown=20;
+function renderLog(){
+  var box=$('logList'), sorted=records.slice().sort(function(a,b){ return b.ts-a.ts; }), i, r, n=Math.min(logShown, sorted.length), meta;
+  if (!box) return;
+  clear(box);
+  $('logCount').textContent=records.length ? records.length+'건' : '';
+  if (!n){ box.appendChild(el('div',{cls:'empty', text:'아직 저장된 운행 기록이 없습니다.'})); $('logMore').style.display='none'; return; }
+  for (i=0;i<n;i++){
+    r=sorted[i];
+    meta=[dirLabel(r.dir), r.type];
+    if (r.term) meta.push(r.term);
+    if (isNum(r.fare)) meta.push(r.fare.toLocaleString('ko-KR')+'원');
+    if (isNum(r.dkm)) meta.push(r.dkm+'km');
+    if (r.fgn) meta.push('외국인');
+    (function(id){
+      box.appendChild(el('button',{cls:'item', style:'border-left-color:'+dirColor(r.dir), type:'button', onclick:function(){ openEdit(id); }},[
+        el('span',{cls:'t num', style:'color:'+dirColor(r.dir), text: hhmm(r.ts)}),
+        el('span',null,[el('span',{cls:'z', text:(r.dn ? r.zone+' → '+r.dn : r.zone)}), el('br'), el('span',{cls:'m', text: mdDay(r.ts)+' '+meta.join(', ')})]),
+        el('span',{cls:'m', text:'수정'})
+      ]));
+    })(r.id);
+  }
+  $('logMore').style.display = sorted.length>n ? '' : 'none';
 }
 function renderRecent(){
   var box=$('recent'), sorted=records.slice().sort(function(a,b){ return b.ts-a.ts; }), i, r, n=Math.min(8, sorted.length), meta;
@@ -5642,7 +5822,8 @@ function renderRoad(){
   var outsideZones = coordDest && assignZone(dp.lat, dp.lng)===OTHER;
   if (outsideZones && !real){
     box.appendChild(el('div',{cls:'tops', style:'margin:10px 0 0'}, ptNodes(fp, from).concat([' → '+dp.n])));
-    box.appendChild(el('div',{cls:'ralt', text:'서울 권역 밖 목적지라 권역표 안내는 쓰지 않습니다. T맵(실시간 교통)을 누르면 실제 경로와 경유 간선도로가 나옵니다.'}));
+    box.appendChild(el('div',{cls:'ralt', text:'서울 권역 밖 목적지라 권역표 안내는 쓰지 않습니다.'}));
+    box.appendChild(el('div',{cls:'ralt', text:'T맵(실시간 교통)을 누르면 실제 경로와 경유 간선도로가 나옵니다.'}));
     box.appendChild(el('button',{cls:'btn navi kmprev', type:'button', onclick:function(){ previewNaver(lastHere||fp, dp); }},
       [el('span',{cls:'bl1', text:'네이버 지도 미리보기'}), el('span',{cls:'bl2', text:dp.n})]));
     return;
@@ -6040,7 +6221,7 @@ function paintDestDetail(box, det){
         el('b',{text:det.place}),
         el('span',{cls:'s', text:[det.pcat, (det.blog!==null && det.blog!==undefined) ? '블로그 후기 '+Number(det.blog).toLocaleString('ko-KR')+'건' : ''].filter(Boolean).join(' · ')})
       ]),
-      el('button',{cls:'nvbtn', type:'button', text:'네이버에서 보기', onclick:function(){ window.location.href=naverSearchScheme(det.place+' '+dongOf(det.addr||det.jibun)); }})
+      el('button',{cls:'nvbtn', type:'button', text:'네이버 플레이스', onclick:function(){ window.location.href=naverSearchScheme(det.place+' '+dongOf(det.addr||det.jibun)); }})
     ]));
   }
   /* 법정동: 지번 주소 · 행정동: 행정동 이름(시·구 포함) · 도로명: 도로명 주소 */
@@ -6048,7 +6229,7 @@ function paintDestDetail(box, det){
   hName = det.reg && det.reg.hFull ? det.reg.hFull : (det.reg && det.reg.h ? det.reg.h : '');
   if (bName) box.appendChild(ddRow('법정동', bName, 'b'));
   if (det.addr) box.appendChild(ddRow('도로명', fullAddr(det.addr)));
-  if (det.pt && det.pt.src) box.appendChild(el('div',{cls:'dd-k', text:'주소 위치 찾기: '+(det.pt.src==='naver' ? '네이버 지도' : '카카오 지도')}));
+  if (det.pt && det.pt.src) box.appendChild(el('div',{cls:'dd-k src', text:(det.pt.src==='naver' ? '네이버 지도 연동' : '카카오 지도 연동')}));
   if (det.mismatch) box.appendChild(el('div',{cls:'dd-warn', text:'⚠ 말한 번지('+addrNum(det.asked)+')와 찾은 번지('+addrNum(det.jibun)+')가 다릅니다. 아래 다른 후보를 눌러 보세요'}));
   box.appendChild(ddRow('건물명', det.bld ? el('b',{cls:'bld', text:det.bld}) : el('span',{cls:'none', text:'등록된 건물명 없음'})));
   /* 1층 상가: 이 건물(도로명 주소가 같은) 가게만. 주변 가게는 적지 않는다 */
@@ -6100,7 +6281,7 @@ function paintDestDetail(box, det){
 function paintDestMsg(msg, pt){
   var a=fullAddr(pt.n||''), b=fullAddr(pt.addr||'');
   clear(msg);
-  msg.appendChild(el('div',{cls:'dk', text:'도착지:'}));
+  msg.appendChild(el('div',{cls:'dk', text:'도착'}));
   msg.appendChild(el('div',{cls:'dm', text:a}));
   if (b && b!==a) msg.appendChild(el('div',{cls:'dm', text:'('+b+')'}));
 }
@@ -7376,8 +7557,8 @@ function renderAir(){
   if (!hits.length){
     box.appendChild(el('div',{cls:'empty', text:'표에 없는 항공사입니다. 손님 항공권이나 인천공항 홈페이지에서 터미널을 확인하세요.'}));
   } else if (!airNorm(q)){
-    ['T2','T1'].forEach(function(t){
-      var b = t==='T2' ? box : box1;
+    ['T1','T2'].forEach(function(t){
+      var b = t==='T1' ? box : box1;
       b.appendChild(el('div',{cls:'airgrp', text: t==='T2' ? '제2여객터미널 (T2)' : '제1여객터미널 (T1)'}));
       hits.filter(function(a){ return a.t===t; }).forEach(function(a){ b.appendChild(airRow(a)); });
     });
@@ -10206,21 +10387,22 @@ function showTab(id){
   var views=document.querySelectorAll('.view'), tabs=document.querySelectorAll('.tabbar button, .toptabs button'), i;
   for (i=0;i<views.length;i++) views[i].className = views[i].id===id ? 'view on' : 'view';
   for (i=0;i<tabs.length;i++) tabs[i].setAttribute('aria-selected', tabs[i].getAttribute('data-tab')===id ? 'true':'false');
-  if ($('appHead')) $('appHead').className = 'apphead' + ((id==='v-ret' || id==='v-stat' || id==='v-book') ? ' noplate' : '');
+  if ($('appHead')) $('appHead').className = 'apphead' + ((id==='v-today' || id==='v-stat' || id==='v-log') ? ' noplate' : '');
   currentTab=id;
   if (id==='v-map') ensureMap();
-  if (id==='v-stat') renderStats();
-  if (id==='v-ret'){ autoFare(); renderReturn(); }
+  if (id==='v-stat'){ renderStats(); renderProfit(); renderBook(); }
+  if (id==='v-today'){ renderToday(); autoFare(); renderReturn(); }
+  if (id==='v-log') renderLog();
   if (id==='v-road'){ fillRoadSelects(); if ($('roadListWrap') && $('roadListWrap').style.display!=='none') renderRoadList(); if (!$('roadResult').firstChild) renderRoad(); roadLedTick(); }
-  if (id==='v-book') renderBook();
   if (id==='v-air'){ renderAir(); loadPax(); }
   if (id==='v-data') renderStore();
   window.scrollTo(0,0);
 }
 function renderAll(){
   lastBucketKey=''; renderClock(); renderRecent();
-  if (currentTab==='v-stat') renderStats();
-  if (currentTab==='v-ret') renderRush();
+  if (currentTab==='v-stat'){ renderStats(); renderProfit(); renderBook(); }
+  if (currentTab==='v-today'){ renderToday(); renderRush(); }
+  if (currentTab==='v-log') renderLog();
   if (currentTab==='v-data') renderStore();
   if (map) drawRecords();
 }
@@ -10315,6 +10497,12 @@ function init(){
   });
   $('stDays').addEventListener('change', renderStats);
   $('stDir').addEventListener('change', renderStats);
+  if ($('logMap')) $('logMap').addEventListener('click', function(){ showTab('v-map'); });
+  if ($('logCsv')) $('logCsv').addEventListener('click', function(){
+    if (!records.length){ toast('내보낼 기록이 없습니다'); return; }
+    download('공항콜기록_'+stamp()+'.csv', toCSV(records), 'text/csv;charset=utf-8');
+  });
+  if ($('logMore')) $('logMore').addEventListener('click', function(){ logShown+=20; renderLog(); });
   $('btnCsv').addEventListener('click', function(){
     if (!records.length){ toast('내보낼 기록이 없습니다'); return; }
     download('공항콜기록_'+stamp()+'.csv', toCSV(records), 'text/csv;charset=utf-8');
