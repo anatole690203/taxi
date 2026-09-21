@@ -1306,6 +1306,14 @@ body.solo{overflow:hidden;background:#101215}
 .digis{grid-template-columns:repeat(3,minmax(0,1fr))}
 .rushrow{grid-template-columns:122px 1fr 44px}
 .rushrow>span:first-child{white-space:nowrap;font-size:13px}
+.ai-card .fee{margin-top:6px;font-size:15px;color:#fff;line-height:1.45}
+.ai-card .hd .hl{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:10px;min-width:0}
+/* 합계는 아래 '통행료 · 예상 요금' 줄과 같은 색·굵기·크기 */
+.ai-card .sum2{color:#fff;font-size:15px;font-weight:400;white-space:nowrap}
+.ai-card .hd .tm{white-space:nowrap;flex:none}
+.ai-card .hd .tm.long{font-size:24px}
+.tt-galeta .ge{white-space:nowrap}
+.tt-galeta .ge2{margin-left:.9em}
 /* ═══ 태블릿 대기 화면: 사진이 천천히 확대되며 넘어가고, 시계·날씨·4개 국어 인사 ═══ */
 #tbIdle.idle2{padding:0;justify-content:flex-end;align-items:stretch;text-align:left;gap:0;overflow:hidden}
 #tbIdle .ti-bg{position:absolute;inset:0;background:#101215 center/cover no-repeat;opacity:0;transition:opacity 1.6s ease}
@@ -6102,6 +6110,16 @@ function runAiRoute(){
   }
   next();
 }
+/* 경로 카드: 제목 바로 옆(같은 줄)에 흰 글씨 합계 = 예상 요금 + 통행료 (손님이 내는 돈) */
+function aiSum(sm){
+  var toll=sm.toll||0, fare=sm.taxi||0;
+  return fare ? el('span',{cls:'sum2 num', text:'합계 '+(fare+toll).toLocaleString('ko-KR')+'원'}) : null;
+}
+/* 제목 밑 흰 글씨: 통행료 · 예상 요금 */
+function aiFee(sm){
+  var toll=sm.toll||0, fare=sm.taxi||0;
+  return el('div',{cls:'fee num', text:(toll ? '통행료 '+toll.toLocaleString('ko-KR')+'원' : '통행료 없음')+(fare ? ' · 예상요금 '+fare.toLocaleString('ko-KR')+'원' : '')});
+}
 function renderAi(results, sp, ep){
   var box=$('aiResult'), i, r, best, card, jamTxt, j;
   clear(box);
@@ -6129,14 +6147,12 @@ function renderAi(results, sp, ep){
     card=el('div',{cls: 'ai-card '+optClass(r.opt.n)+' tap', title:'누르면 T맵 길안내가 시작됩니다',
       onclick:(function(p){ return function(){ startTmapNavi(p.lat, p.lng, p.n); }; })(ep)},[
       el('div',{cls:'hd'},[
-        el('span',{cls:'opt', text: (i===0?BEST_ROUTE_TAG:'')+r.opt.n}),
-        el('span',{cls:'tm num', text: fmtMin(r.sum.time)})
+        el('span',{cls:'hl'},[el('span',{cls:'opt', text: (i===0?BEST_ROUTE_TAG:'')+r.opt.n}), aiSum(r.sum)]),
+        el('span',{cls: fmtMin(r.sum.time).indexOf('시간')>=0 ? 'tm num long' : 'tm num', text: fmtMin(r.sum.time)})
       ]),
-      el('div',{cls:'li', text: fmtKm(r.sum.dist)+(r.sum.toll?' · 통행료 '+r.sum.toll.toLocaleString('ko-KR')+'원':' · 통행료 없음')+(r.sum.taxi?' · 예상 요금 '+r.sum.taxi.toLocaleString('ko-KR')+'원':'')})
+      aiFee(r.sum)
     ]);
-    if (r.sum.roads.length){
-      card.appendChild(el('div',{cls:'li', text:'주요 도로: '+r.sum.roads.map(function(x){return x.n;}).join(' → ')}));
-    }
+    card.appendChild(el('div',{cls:'li', text: fmtKm(r.sum.dist)+(r.sum.roads.length ? ' · 주요 도로: '+r.sum.roads.map(function(x){return x.n;}).join(' → ') : '')}));
     card.appendChild(el('div',{cls:'go', text:'이 카드를 누르면 T맵 길안내가 시작됩니다'}));
     if (r.sum.jams.length){
       jamTxt=[];
@@ -8546,10 +8562,21 @@ var ETA_TEXT={
   ja:{left:'残り距離', eta:'到着予定', soon:'まもなく到着', about:'約'},
   zh:{left:'剩余距离', eta:'预计到达', soon:'即将到达', about:'约'}
 };
+/* 갤러리 화면 윗줄: '남은거리 62 km  도착시간 오후 4:41'.
+   외국인 손님(입력 탭 외국인 체크 등)이면 영어로 'Distance left 62 km  Arrival time 4:41 PM' */
+function tbGalEtaPaint(n){
+  var b=$('ttGalEta'), en=tbForeign();
+  if (!b) return;
+  clear(b);
+  if (!n) return;
+  if (n.sec<=0){ b.appendChild(el('span',{cls:'ge', text: en ? 'Arriving soon' : '곧 도착'})); return; }
+  b.appendChild(el('span',{cls:'ge', text:(en ? 'Distance left ' : '남은거리 ')+tbKm(n.dist)}));
+  b.appendChild(el('span',{cls:'ge ge2', text: en ? 'Arrival time '+tbHMLang(n.eta, 'en') : '도착시간 '+tbHM12(n.eta)}));
+}
 function tbEtaPaint(){
   var n=tbEtaNow(), L=tbLang(), k=ETA_TEXT.ko, x=ETA_TEXT[L]||ETA_TEXT.en, box=$('ttEta'), pct, both=(L!=='ko');
   if (!box) return;
-  if (!n){ box.style.display='none'; if ($('ttGalEta')) $('ttGalEta').textContent=''; tbMapPaint(); return; }
+  if (!n){ box.style.display='none'; if ($('ttGalEta')) tbGalEtaPaint(null); tbMapPaint(); return; }
   box.style.display='';
   $('ttEtaK1').textContent = both ? k.left+' · '+x.left : k.left;
   $('ttEtaV1').textContent = n.sec<=0 ? k.soon : tbKm(n.dist);
@@ -8562,7 +8589,7 @@ function tbEtaPaint(){
   /* 출발 → 도착 막대 위로 택시가 움직인다 */
   if ($('ttEtaCar')) $('ttEtaCar').style.left='calc(10px + (100% - 20px) * '+(pct/100).toFixed(4)+')';
   if ($('ttEtaTo')) $('ttEtaTo').textContent=(tb.ride && tb.ride.n) || (tb.trip && tb.trip.d) || '도착';
-  if ($('ttGalEta')) $('ttGalEta').textContent = n.sec>0 ? k.left+' '+tbKm(n.dist)+' · '+k.eta+' '+tbHM12(n.eta)+(both ? '  ·  '+x.eta+' '+tbHMLang(n.eta, L) : '') : k.soon;
+  if ($('ttGalEta')) tbGalEtaPaint(n);
   tbMapPaint();
 }
 /* ── 태블릿 지도 (Leaflet + OpenStreetMap) ── */
@@ -9267,7 +9294,20 @@ function gdNaver(sp, food){
   if (path) return 'https://m.place.naver.com/'+path+(food ? '/around?filter=90' : '/home');
   return 'https://map.naver.com/p/search/'+encodeURIComponent(sp.name.ko+(food ? ' 맛집' : ''));
 }
-function gdGoogle(sp){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(sp.name.en+', Seoul'); }
+/* 구글지도: 손님이 고른 언어로 연다 (웹은 hl=언어, 앱은 손님 휴대폰 언어를 따름).
+   예전에는 웹 주소를 새 탭(target=_blank)으로 열어, 안드로이드에서 새 탭의 구글지도 웹과
+   구글지도 앱이 한꺼번에 떠 화면이 겹쳐 보였다. 지금은 안드로이드는 구글지도 앱으로 바로
+   (앱이 없으면 같은 탭에서 웹), 아이폰 등은 같은 탭에서 연다. 새 탭은 만들지 않는다 */
+var GD_HL={ko:'ko', en:'en', ja:'ja', zh:'zh-CN'};
+function gdGoogle(sp, L){
+  if (!GD_HL[L]) L='en';
+  return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((L==='ko' ? sp.name.ko : sp.name.en)+', Seoul')+'&hl='+GD_HL[L];
+}
+function gdGoogleOpen(sp, L){
+  var web=gdGoogle(sp, L);
+  if (isAndroid()) window.location.href='intent://'+web.replace(/^https:\/\//,'')+'#Intent;scheme=https;package=com.google.android.apps.maps;S.browser_fallback_url='+encodeURIComponent(web)+';end';
+  else window.location.href=web;
+}
 /* 사진: 중계 서버에서 한 번 받아 두고 7일 동안 다시 쓴다 */
 function gdPhoto(sp, cb){
   var c=gdPhotos[sp.id];
@@ -9414,7 +9454,7 @@ function guideLandBoot(){
     el('div',{cls:'gl-sub', text:sp.sub[L]||sp.sub.en}),
     el('a',{cls:'gl-btn main', href:gdNaver(sp,false), target:'_blank', rel:'noopener'},[t.map]),
     el('a',{cls:'gl-btn', href:gdNaver(sp,true), target:'_blank', rel:'noopener'},['🍽 '+t.food]),
-    L==='ko' ? null : el('a',{cls:'gl-btn', href:gdGoogle(sp), target:'_blank', rel:'noopener'},['🌐 '+t.gmap]),
+    el('a',{cls:'gl-btn gmap', href:gdGoogle(sp, L), rel:'noopener', onclick:function(e){ e.preventDefault(); e.stopPropagation(); gdGoogleOpen(sp, L); }},['🌐 '+t.gmap]),
     el('div',{cls:'gl-tip', text:t.tip}),
     el('div',{cls:'gl-by', text:'🚕 Best Seoul Taxi'})
   ]);
@@ -10801,7 +10841,7 @@ if (navigator.serviceWorker && location.protocol==='https:' && !/[?&](g|p)=/.tes
 
 
 /* ───────── 큰 숫자 30px: 칸을 넘치면 넘치지 않을 만큼만 줄인다 ───────── */
-var FIT_SEL='.sum b, .digis b, .plan .big, .ai-card .big, .ai-card .tm, .airbadge.big, .retbig';
+var FIT_SEL='.sum b, .digis b, .plan .big, .ai-card .big, .airbadge.big, .retbig';
 function fitNums(){
   var els=document.querySelectorAll(FIT_SEL), i, e, fs, g;
   for (i=0;i<els.length;i++){
