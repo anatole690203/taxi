@@ -11055,6 +11055,30 @@ function routePicked(o){
   ];
   document.body.appendChild(el('div',{cls:'rpick', id:'routePick', role:'dialog', 'aria-modal':'true'}, kids));
   if (navigator.vibrate){ try { navigator.vibrate([200,100,200]); } catch(e){} }
+  if (k==='0') routeAutoOpen(ep);
+}
+/* 교통최적 경로(= T맵 기본 경로)는 T맵 바로안내를 자동으로 열어 본다.
+   크롬은 사람이 화면을 누르지 않은 상태에서 다른 앱을 여는 것을 막을 때가 있어,
+   2.5초 안에 T맵으로 넘어가지(이 화면이 뒤로 가지) 않으면 [T맵 안내 시작] 버튼을 그대로 남긴다.
+   넘어갔을 때만 운행 시작(태블릿 탑승 안내·기록)을 처리해, 막혔다가 버튼을 누를 때 두 번 나가지 않게 한다 */
+function routeAutoOpen(ep){
+  var gone=false, how=document.querySelector('#routePick .rp-how');
+  if (how) how.textContent='T맵을 자동으로 여는 중입니다…';
+  function onVis(){
+    if (!document.hidden || gone) return;
+    gone=true;
+    document.removeEventListener('visibilitychange', onVis);
+    routePickClose();
+    try { navStarted(ep.lat, ep.lng, ep.n); } catch(e){}
+  }
+  document.addEventListener('visibilitychange', onVis);
+  setTimeout(function(){ if (!gone){ try { window.location.href=tmapNaviUrl(ep.lat, ep.lng, ep.n); } catch(e){} } }, 400);
+  setTimeout(function(){
+    document.removeEventListener('visibilitychange', onVis);
+    if (gone) return;
+    var h=document.querySelector('#routePick .rp-how');
+    if (h) h.textContent='T맵이 자동으로 열리지 않았습니다. 아래 버튼을 눌러 주세요.';
+  }, 2500);
 }
 /* ── 태블릿 쪽: 경로 카드 3장 ── */
 var TB_ROUTE_TXT={
