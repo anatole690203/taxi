@@ -1547,6 +1547,32 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tbdon .dn-body.gv.both .dg-qr.sm{width:clamp(96px,10.5vh,122px);height:clamp(96px,10.5vh,122px)}
 .tbdon .dn-body.gv.both .dg-note{font-size:clamp(14px,1.55vh,17px)}
 .tbdon .dg-tile b{color:#141414!important}
+/* 활동사진: 사진틀(어두운 칸·흐린 배경) 없이 모든 사진을 같은 크기(세로 3:4)로.
+   가로 사진(설교 사진 등)도 같은 크기에 맞춰 가운데를 보여 준다. 누르면 크게 보기에서 전체가 보인다 */
+.tbdon .dn-body.ph .dn-ph{display:flex!important;align-items:center;justify-content:center;background:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}
+.tbdon .dn-body.ph .dn-ph .bl{display:none!important}
+.tbdon .dn-body.ph .dn-ph .im{position:relative!important;inset:auto!important;display:block;height:100%;aspect-ratio:3/4;max-width:100%;background-size:cover!important;background-position:center 40%!important;background-repeat:no-repeat;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+/* ── 후원 화면 다듬기 ── */
+/* 하트: 모두 '후원 안내를 준비하고 있습니다' 옆과 같은 분홍 원 + 흰 하트 */
+.tbdon .dn-hrt{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;margin-right:8px;border-radius:50%;background:linear-gradient(135deg,#F06292,#C2185B);border:2px solid rgba(255,255,255,.85);box-shadow:0 4px 12px rgba(233,30,99,.45);vertical-align:-7px}
+.tbdon .dn-hrt svg{width:56%;height:56%}
+.tbdon .dg-tile .ic.hrt{border-radius:50%!important;background:linear-gradient(135deg,#F06292,#C2185B)!important;border:2px solid rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(122,14,58,.45)}
+/* [활동사진] 탭(선택됨): 회색 */
+.tbdon .dn-tabs button[data-t="ph"].on{background:linear-gradient(135deg,#8E8E96 0%,#5C5C64 100%)!important;border-color:transparent!important;color:#fff!important;box-shadow:0 8px 22px rgba(0,0,0,.35)!important}
+/* 활동사진 아래 이전·다음: 회색 (사진 뒤 바탕색은 없음) */
+.tbdon .dn-pg button{background:#6E6E76!important;color:#fff!important;box-shadow:0 6px 16px rgba(0,0,0,.3)!important}
+/* 후원 안내: 배너·타일은 원래 크기 그대로. 흰 카드만 원래 자리보다 세 줄쯤 아래로 */
+.tbdon .dn-body.gv .dg-card{margin-top:6vh}
+/* QR 후원 카드: 색깔 타일(메뉴)과 어울리는 크기로 */
+.tbdon .dn-body.gv .dg-card{padding:1.8vh 2.2vw;gap:1.2vh}
+.tbdon .dn-body.gv .dg-row{gap:20px}
+.tbdon .dn-body.gv .dg-qr:not(.sm){width:clamp(126px,14vh,150px);height:clamp(126px,14vh,150px);padding:7px;border-width:2px}
+.tbdon .dn-body.gv .dg-acct .dg-pill{font-size:13px;padding:4px 11px}
+.tbdon .dn-body.gv .dg-acct .dg-org{font-size:clamp(17px,2vh,21px);margin-top:2px}
+.tbdon .dn-body.gv .dg-acct .dg-num{font-size:clamp(20px,2.4vh,25px)}
+.tbdon .dn-body.gv .dg-acct .dg-holder{font-size:clamp(14px,1.65vh,17px)}
+.tbdon .dn-body.gv .dg-acct .dg-hint{font-size:clamp(13px,1.5vh,15px);margin-top:2px}
+.tbdon .dn-body.gv .dg-acct .dg-hint .hc,.tbdon .dn-body.gv .dg-acct .dg-hint .hc svg{width:20px;height:20px}
 /* 관리 화면 탭 */
 .tgtabs{display:flex;gap:8px;margin:0 0 12px}
 .tgtabs button{flex:1;min-height:48px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:17px;font-weight:700}
@@ -11998,7 +12024,7 @@ function tbDonOpen(which){
   }
   tabs=el('div',{cls:'dn-tabs'},[
     el('button',{type:'button', 'data-t':'ph', onclick:function(){ show('ph'); }},['📷 활동사진 · Photos']),
-    el('button',{type:'button', 'data-t':'gv', onclick:function(){ show('gv'); }},['💗 후원 안내 · How to give'])
+    el('button',{type:'button', 'data-t':'gv', onclick:function(){ show('gv'); }},[dgIc('heart','dn-hrt'), '후원 안내 · How to give'])
   ]);
   ov=el('div',{cls:'tbdon', id:'tbDon', role:'dialog', 'aria-modal':'true'},[
     el('div',{cls:'dn-top'},[
@@ -12069,7 +12095,7 @@ function dgIc(k, cls){ var e=el('span',{cls:cls||'ic'}); e.innerHTML=DG_IC[k]; r
 function tbDonGive(body){
   /* 손님 눈에 잘 들어오게: 활동사진 띠 → 색깔 타일 3개 → 흰 카드(계좌·QR) → 안내 */
   var d=tbPfLoad().don||{}, hasAcct=!!(d.acct && d.holder), hasUrl=/^https?:\/\//.test(d.url||''), ph=tbDonPhotoList(), bg=ph.length ? ph[Math.min(1, ph.length-1)].url : '', card, row, qr, qr2;
-  body.className='dn-body gv';
+  body.className='dn-body gv'+(hasAcct ? ' acct' : '');   /* 계좌 카드(QR)가 있으면 배너·타일을 조금 줄여 한 화면에 */
   body.appendChild(el('div',{cls:'dg-hero'},[
     el('div',{cls:'dg-hero-bg', style: bg ? 'background-image:url("'+bg+'")' : ''}),
     el('div',{cls:'dg-hero-tx'},[
@@ -12079,9 +12105,9 @@ function tbDonGive(body){
     ])
   ]));
   body.appendChild(el('div',{cls:'dg-tiles'},[
-    el('div',{cls:'dg-tile pink'},[dgIc('heart'), el('b',{text:'소아암 어린이 돌봄'}), el('span',{text:'치료 중인 아이와 가족을 찾아가 돌봅니다'}), el('i',{text:'Children with cancer'})]),
+    el('div',{cls:'dg-tile pink'},[dgIc('heart','ic hrt'), el('b',{text:'소아암 어린이 돌봄'}), el('span',{text:'치료 중인 아이와 가족을 찾아가 돌봅니다'}), el('i',{text:'Children with cancer'})]),
     el('div',{cls:'dg-tile teal'},[dgIc('cap'), el('b',{text:'결손아동 장학금 위문품'}), el('span',{text:'교육비와 생활물품을 전합니다'}), el('i',{text:'Scholarships & care'})]),
-    el('div',{cls:'dg-tile amber'},[dgIc('chat'), el('b',{text:'신앙·심리 상담'}), el('span',{text:'고민·고충 상담 함께 기도합니다'}), el('i',{text:'Faith & counseling'})])
+    el('div',{cls:'dg-tile amber'},[dgIc('chat'), el('b',{text:'신앙·심리 상담'}), el('span',{text:'고민 고충 무료상담\n함께 기도해요', style:'white-space:pre-line'}), el('i',{text:'Faith & counseling'})])
   ]));
   card=el('div',{cls:'dg-card'});
   if (hasAcct){
