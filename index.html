@@ -1583,6 +1583,12 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tbdon .dn-tabs button[data-t="ph"].on{background:linear-gradient(160deg,#26A69A 0%,#00695C 100%)!important}
 /* 4. [닫기]: 신앙·심리 상담 칸과 같은 주황 (글씨는 검정) */
 .tbdon .dn-x{background:linear-gradient(160deg,#FFB74D 0%,#EF6C00 100%)!important;border-color:transparent!important;color:#141414!important;box-shadow:0 6px 16px rgba(239,108,0,.35)}
+/* 1. 활동사진: 칸에 꽉 채우지 않고 사진 전체가 다 보이게 */
+.tbdon .dn-body.ph .dn-ph .im{background-size:contain!important;background-position:center!important}
+/* 2. [활동사진]·[후원 안내] 탭을 한 칸 아래로 */
+.tbdon .dn-tabs{margin-top:26px}
+/* 3. 색깔 메뉴 3개를 두 칸 아래로 */
+.tbdon .dn-body.gv .dg-tiles{margin-top:52px}
 /* 관리 화면 탭 */
 .tgtabs{display:flex;gap:8px;margin:0 0 12px}
 .tgtabs button{flex:1;min-height:48px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:17px;font-weight:700}
@@ -12117,7 +12123,7 @@ function tbDonGive(body){
   body.appendChild(el('div',{cls:'dg-tiles'},[
     el('div',{cls:'dg-tile pink'},[dgIc('heart','ic hrt'), el('b',{text:'소아암 어린이 돌봄'}), el('span',{text:'치료 중인 아이와 가족을 찾아가 돌봅니다'}), el('i',{text:'Children with cancer'})]),
     el('div',{cls:'dg-tile teal'},[dgIc('cap'), el('b',{text:'결손아동 장학금 위문품'}), el('span',{text:'교육비와 생활물품을 전합니다'}), el('i',{text:'Scholarships & care'})]),
-    el('div',{cls:'dg-tile amber'},[dgIc('chat'), el('b',{text:'신앙·심리 상담'}), el('span',{text:'고민 고충 무료상담\n함께 기도해요', style:'white-space:pre-line'}), el('i',{text:'Faith & counseling'})])
+    el('div',{cls:'dg-tile amber'},[dgIc('chat'), el('b',{text:'신앙·심리 무료상담'}), el('span',{text:'고민 고충 무료상담\n함께 기도해요', style:'white-space:pre-line'}), el('i',{text:'Faith & counseling'})])
   ]));
   card=el('div',{cls:'dg-card'});
   if (hasAcct){
