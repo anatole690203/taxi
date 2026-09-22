@@ -1589,6 +1589,13 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tbdon .dn-tabs{margin-top:26px}
 /* 3. 색깔 메뉴 3개를 두 칸 아래로 */
 .tbdon .dn-body.gv .dg-tiles{margin-top:52px}
+/* 활동사진: 칸 네 개를 모두 같은 크기로(설교 사진이 들어가는 칸 기준), 사진은 칸 안에 전체가 보이게.
+   사진 모양이 달라도 칸이 같아 가지런히 보인다 */
+.tbdon .dn-body.ph .dn-ph{background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.12);border-radius:14px!important;box-shadow:0 6px 18px rgba(0,0,0,.35)!important}
+.tbdon .dn-body.ph .dn-ph .im{position:absolute!important;inset:10px!important;width:auto!important;height:auto!important;background-size:contain!important;background-position:center!important;border-radius:6px}
+/* 활동사진: 칸을 사진 모양에 맞춰 여백 없이. 세로 포스터끼리는 크기가 같고, 가로 사진만 폭에 맞춰 납작하게 */
+.tbdon .dn-body.ph .dn-ph{display:flex!important;align-items:center;justify-content:center;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;overflow:visible!important}
+.tbdon .dn-body.ph .dn-ph img.im{position:static!important;inset:auto!important;display:block;max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;background:none!important;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.45)}
 /* 관리 화면 탭 */
 .tgtabs{display:flex;gap:8px;margin:0 0 12px}
 .tgtabs button{flex:1;min-height:48px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:17px;font-weight:700}
@@ -12068,8 +12075,8 @@ function tbDonPhotos(body, list){
     list.slice(pg*per, pg*per+per).forEach(function(it, j){
       var idx=pg*per+j;
       grid.appendChild(el('button',{cls:'dn-ph', type:'button', 'aria-label':'사진 크게 보기 '+(idx+1), onclick:function(){ tbDonLight(list, idx); }},[
-        el('span',{cls:'bl', style:'background-image:url("'+it.url+'")'}),
-        el('span',{cls:'im', style:'background-image:url("'+it.url+'")'})
+        /* 사진 크기에 칸을 맞춘다 (img 자체 크기) → 사진 둘레에 여백이 생기지 않는다 */
+        el('img',{cls:'im', src:it.url, alt:''})
       ]));
     });
     if (num) num.textContent=(pg+1)+' / '+pages;
