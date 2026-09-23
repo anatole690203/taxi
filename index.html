@@ -549,7 +549,7 @@ input.keyin::placeholder{color:#7A6A93;font-weight:400}
 .fgrid input{width:100%;min-height:44px;padding:6px 10px;background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--ink);font:inherit;font-size:16px}
 .fgrid input.auto{border-style:dashed;color:var(--sign);font-weight:700}
 .fbtn{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.tabbar button .ext{display:inline-block;margin-left:3px;font-size:10px;font-style:normal;color:#A8CBFF;vertical-align:top}
+.tabbar button .ext{margin-left:4px;font:inherit;color:inherit;vertical-align:baseline}
 #dayBaseSeg button{min-height:46px}
 /* ── 관리 앱(manage.html)을 운행 앱 위에 띄운다: 운행 앱(태블릿 연결·내비 상태)은 그대로 살아 있다 ── */
 .mgwrap{position:fixed;inset:0;z-index:4000;background:var(--slate)}
@@ -1986,10 +1986,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
       <h3>오늘 입력</h3>
       <div class="field">
         <label class="hi" for="bkAmount">금액 (원)</label>
-        <div class="pick">
-          <input id="bkAmount" type="text" inputmode="numeric" placeholder="예: 72000">
-          <button type="button" id="bkSave" class="mini mic">저장</button>
-        </div>
+        <input id="bkAmount" type="text" inputmode="numeric" placeholder="예: 72000">
       </div>
       <div class="grp"><div class="lab air">수입</div>
         <div class="seg wrap" id="segIncome"></div>
@@ -2000,6 +1997,10 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
       <div class="field" style="margin-top:8px">
         <label for="bkMemo">메모 (선택)</label>
         <input id="bkMemo" type="text" placeholder="예: 인천공항 T1, 카드">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+        <button class="btn primary" type="button" id="bkSaveInc">수입 저장</button>
+        <button class="btn" type="button" id="bkSaveExp" style="border-color:#EF5350;color:#FF8A80">지출 저장</button>
       </div>
     </div>
     <div class="sec green">
@@ -7143,7 +7144,7 @@ function rideSheet(hereZone){
 }
 
 /* ───────── 장부 화면 ───────── */
-var ledger=[], bkCat='현금', bkFilled=false;
+var ledger=[], bkCat='우버', bkExp='LPG', bkFilled=false;   /* 수입 기본 우버, 지출 기본 LPG */
 function loadLedger(){
   var raw=sGet(LEDGER_KEY), arr;
   if (raw){ try { arr=JSON.parse(raw); if (Object.prototype.toString.call(arr)==='[object Array]') ledger=arr.filter(validEntry); } catch(e){ ledger=[]; } }
@@ -7156,7 +7157,7 @@ function fillBookCats(){
   function mk(box, list){
     for (i=0;i<list.length;i++){
       (function(c){
-        box.appendChild(el('button',{type:'button','data-v':c, onclick:function(){ bkCat=c; markBookCat(); }},[c]));
+        box.appendChild(el('button',{type:'button','data-v':c, onclick:function(){ if (isIncomeCat(c)) bkCat=c; else bkExp=c; markBookCat(); }},[c]));
       })(list[i]);
     }
   }
@@ -7167,17 +7168,21 @@ function markBookCat(){
   var bs=$('segIncome').getElementsByTagName('button'), i;
   for (i=0;i<bs.length;i++) bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-v')===bkCat ? 'true':'false');
   bs=$('segExpense').getElementsByTagName('button');
-  for (i=0;i<bs.length;i++) bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-v')===bkCat ? 'true':'false');
+  for (i=0;i<bs.length;i++) bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-v')===bkExp ? 'true':'false');
+  if ($('bkSaveInc')) $('bkSaveInc').textContent='수입 저장 · '+bkCat;
+  if ($('bkSaveExp')) $('bkSaveExp').textContent='지출 저장 · '+bkExp;
 }
-function saveEntry(){
-  var v=parseFare($('bkAmount').value), memo=$('bkMemo').value.replace(/^\s+|\s+$/g,''), e;
+function saveEntry(kind){
+  var v=parseFare($('bkAmount').value), memo=$('bkMemo').value.replace(/^\s+|\s+$/g,''), e, cat;
+  kind = kind==='expense' ? 'expense' : 'income';
+  cat = kind==='income' ? bkCat : bkExp;
   if (!v){ toast('금액을 입력하세요'); return; }
   e={id:'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), ts:Date.now(),
-     kind: isIncomeCat(bkCat) ? 'income' : 'expense', cat:bkCat, amount:v, memo:memo.slice(0,60)};
+     kind: kind, cat:cat, amount:v, memo:memo.slice(0,60)};
   ledger.push(e); persistLedger();
   $('bkAmount').value=''; $('bkMemo').value='';
   renderBook();
-  toast(bkCat+' '+won(v)+' 저장했습니다');
+  toast(cat+' '+won(v)+' 저장했습니다');
 }
 function sumGrid(box, sum, labels){
   clear(box);
@@ -11704,8 +11709,9 @@ function init(){
     showTab(tid);
   });
   $('btnAi').addEventListener('click', runAiRoute);
-  $('bkSave').addEventListener('click', saveEntry);
-  $('bkAmount').addEventListener('keydown', function(e){ if (e.keyCode===13){ e.preventDefault(); saveEntry(); } });
+  $('bkSaveInc').addEventListener('click', function(){ saveEntry('income'); });
+  $('bkSaveExp').addEventListener('click', function(){ saveEntry('expense'); });
+  $('bkAmount').addEventListener('keydown', function(e){ if (e.keyCode===13){ e.preventDefault(); saveEntry('income'); } });
   $('bkMonth').addEventListener('change', renderBook);
   $('bkCsv').addEventListener('click', function(){
     if (!ledger.length){ toast('내보낼 장부 내역이 없습니다'); return; }

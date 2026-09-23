@@ -389,7 +389,7 @@ function sumDays(M, keys){
 }
 
 /* ───────── 기간 ───────── */
-var P={mode:'m', anchor:null};
+var P={mode:'d', anchor:null};   /* 수익 화면은 '일'로 시작한다 */
 function periodOf(mode, anchor){
   var d=kd(anchor), start, end, keys=[], k, today=todayKey();
   if (mode==='d'){ start=anchor; end=anchor; }
@@ -773,36 +773,43 @@ function exportRecCsv(){
 }
 
 /* ═════════ 화면: 장부 ═════════ */
-var BK={cat:'현금', month:null, date:null};
+var BK={inc:'우버', exp:null, month:null, date:null};   /* 수입 기본 우버, 지출 기본 LPG(따로 연 모드는 설정의 연료) */
 function fuelCatName(){ return CFG.fuel && FUELS[CFG.fuel] ? CFG.fuel : 'LPG'; }
 function renderBook(){
   var box=$('vw-book'), today=todayKey(), i, s, ex=EXPENSE_CATS.slice(), mk, d, tot={inc:0, exp:0}, e, cats={}, mx=0, k, list, ck, isInc;
   if (!EMBED && ex.indexOf(fuelCatName())<0) ex.unshift(fuelCatName());
   if (!BK.date) BK.date=today;
+  if (!BK.exp || ex.indexOf(BK.exp)<0) BK.exp = EMBED ? 'LPG' : fuelCatName();
   clear(box);
   s=sec('','장부 적기');
   var amt=el('input',{cls:'tin', type:'text', inputmode:'numeric', placeholder:'예: 72000', style:'font-size:22px;font-weight:700'});
   var dt=el('input',{cls:'tin', type:'date', value:BK.date, max:today});
   var memo=el('input',{cls:'tin', type:'text', placeholder:'메모 (선택)'});
-  function catSeg(list2, kindLab){
+  var saveInc, saveExp;
+  function catSeg(list2, kindLab, kind){
     var g=el('div',{cls:'seg wrap'});
-    list2.forEach(function(c){ g.appendChild(el('button',{type:'button','aria-pressed': BK.cat===c?'true':'false', text:c, onclick:function(){
-      var bs=g.parentNode ? g.parentNode.querySelectorAll('.seg button') : [], j;
-      BK.cat=c; for (j=0;j<bs.length;j++) bs[j].setAttribute('aria-pressed', bs[j].textContent===c ? 'true':'false'); }})); });
+    list2.forEach(function(c){ g.appendChild(el('button',{type:'button','aria-pressed': BK[kind]===c?'true':'false', text:c, onclick:function(){
+      var bs=g.querySelectorAll('button'), j;
+      BK[kind]=c; for (j=0;j<bs.length;j++) bs[j].setAttribute('aria-pressed', bs[j].textContent===c ? 'true':'false');
+      saveInc.textContent='수입 저장 · '+BK.inc; saveExp.textContent='지출 저장 · '+BK.exp; }})); });
     return [el('div',{cls:'lab', text:kindLab}), g];
   }
-  s.appendChild(el('div',{cls:'row2'},[el('div',{cls:'field'},[el('label',{text:'금액(원)'}), amt]), el('div',{cls:'field'},[el('label',{text:'날짜'}), dt])]));
-  catSeg(INCOME_CATS,'수입').forEach(function(n){ s.appendChild(n); });
-  catSeg(ex,'지출').forEach(function(n){ s.appendChild(n); });
-  s.appendChild(el('div',{cls:'field', style:'margin-top:10px'},[el('label',{text:'메모'}), memo]));
-  s.appendChild(el('button',{cls:'btn primary full', type:'button', text:'저장', onclick:function(){
-    var v=parseNum(amt.value), key=dt.value||today, ts;
-    if (!v){ toast('금액을 넣어 주세요'); return; }
+  function saveAs(kind){
+    var v=parseNum(amt.value), key=dt.value||today, ts, cat=kind==='income' ? BK.inc : BK.exp;
+    if (!v){ toast('금액을 넣어 주세요'); amt.focus(); return; }
     if (key>today){ toast('앞으로 올 날짜는 넣을 수 없습니다'); return; }
     ts = key===today ? Date.now() : kd(key).getTime();
-    mutate(K.led, function(a){ a.push({id:newId('b'), ts:ts, kind: INCOME_CATS.indexOf(BK.cat)>=0 ? 'income' : 'expense', cat:BK.cat, amount:v, memo:memo.value.slice(0,60)}); });
-    BK.date=key; BK.month=key.slice(0,7); toast(BK.cat+' '+won(v)+' 저장했습니다'); renderAll();
-  }}));
+    mutate(K.led, function(a){ a.push({id:newId('b'), ts:ts, kind:kind, cat:cat, amount:v, memo:memo.value.slice(0,60)}); });
+    BK.date=key; BK.month=key.slice(0,7); toast(cat+' '+won(v)+' 저장했습니다'); renderAll();
+  }
+  s.appendChild(el('div',{cls:'row2'},[el('div',{cls:'field'},[el('label',{text:'금액(원)'}), amt]), el('div',{cls:'field'},[el('label',{text:'날짜'}), dt])]));
+  saveInc=el('button',{cls:'btn primary', type:'button', text:'수입 저장 · '+BK.inc, onclick:function(){ saveAs('income'); }});
+  saveExp=el('button',{cls:'btn danger', type:'button', text:'지출 저장 · '+BK.exp, onclick:function(){ saveAs('expense'); }});
+  catSeg(INCOME_CATS,'수입','inc').forEach(function(n){ s.appendChild(n); });
+  catSeg(ex,'지출','exp').forEach(function(n){ s.appendChild(n); });
+  s.appendChild(el('div',{cls:'field', style:'margin-top:10px'},[el('label',{text:'메모'}), memo]));
+  s.appendChild(el('div',{cls:'btn2'},[saveInc, saveExp]));
+  s.appendChild(el('div',{cls:'hint', text:'수입 줄과 지출 줄에서 하나씩 고른 뒤, 넣은 금액을 어느 쪽으로 저장할지 누르세요.'}));
   box.appendChild(s);
   if (!BK.month) BK.month=today.slice(0,7);
   mk=BK.month; d=new Date(+mk.slice(0,4), +mk.slice(5,7)-1, 1, 12);
