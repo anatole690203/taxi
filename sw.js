@@ -1,14 +1,27 @@
-/* 공항콜 기록기 — 서비스 워커 v2
+/* 공항콜 기록기 — 서비스 워커 v3
    앱을 휴대폰에 저장해 둔다. 지하차도나 터널에서도 열린다.
-   앱을 새로 올릴 때는 아래 CACHE 번호를 하나 올린다. */
-var CACHE = 'airportcall-v2';
+   앱을 새로 올릴 때는 아래 CACHE 번호를 하나 올린다.
+
+   v3에서 고친 것 (2026-09-24)
+   - 예전에는 받은 화면(html)을 무엇이든 './index.html' 이름으로 저장했다.
+     관리 앱(manage.html)을 열면 저장된 운행 앱이 관리 앱으로 덮여서,
+     인터넷이 끊긴 곳에서 운행 앱 대신 관리 앱이 뜰 수 있었다.
+     → 이제 페이지마다 제 이름으로 저장한다.
+   - 404 같은 오류 응답도 저장하던 것을, 정상 응답만 저장하게 했다.
+   - 관리 앱 파일도 미리 저장해서 터널에서도 열린다.
+   - 번호를 v3로 올려 오염된 v2 저장본은 지운다. */
+var CACHE = 'airportcall-v3';
 
 var SHELL = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './manage.html',
+  './manifest-manage.json',
+  './manage-icon-192.png',
+  './manage-icon-512.png'
 ];
 
 self.addEventListener('install', function(e){
@@ -16,7 +29,9 @@ self.addEventListener('install', function(e){
   e.waitUntil(
     caches.open(CACHE).then(function(c){
       return Promise.all(SHELL.map(function(u){
-        return c.add(u).catch(function(){});
+        return fetch(u, {cache:'no-store'}).then(function(res){
+          if (res && res.ok) return c.put(u, res);
+        }).catch(function(){});
       }));
     })
   );
@@ -37,8 +52,15 @@ self.addEventListener('message', function(e){
   if (e.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
+/* 화면을 저장할 이름: 주소 뒤의 ?·# 는 떼고, '/'는 index.html로 본다 */
+function pageKey(url){
+  var p = url.pathname;
+  if (/\/$/.test(p)) p += 'index.html';
+  return url.origin + p;
+}
+
 self.addEventListener('fetch', function(e){
-  var req = e.request, url;
+  var req = e.request, url, key;
   if (req.method !== 'GET') return;
   try { url = new URL(req.url); } catch(err){ return; }
 
@@ -51,14 +73,18 @@ self.addEventListener('fetch', function(e){
      그냥 fetch 하면 브라우저가 들고 있던 옛 파일을 그대로 돌려준다.
      이게 앱을 고쳐 올려도 안 바뀌던 진짜 원인이었다 */
   if (req.mode === 'navigate' || /\.html($|\?)/.test(url.pathname)){
+    key = pageKey(url);
     e.respondWith(
       fetch(req.url, {cache:'no-store'}).then(function(res){
-        var copy = res.clone();
-        caches.open(CACHE).then(function(c){ c.put('./index.html', copy); });
+        if (res && res.ok && url.origin === self.location.origin){
+          var copy = res.clone();
+          caches.open(CACHE).then(function(c){ c.put(key, copy); });
+        }
         return res;
       }).catch(function(){
-        return caches.match(req).then(function(r){
-          return r || caches.match('./index.html');
+        /* 인터넷이 끊겼을 때: 그 페이지의 저장본 → 없으면 운행 앱 */
+        return caches.match(key).then(function(r){
+          return r || caches.match(self.location.origin + '/index.html');
         });
       })
     );
