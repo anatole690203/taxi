@@ -1596,6 +1596,10 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 /* 활동사진: 칸을 사진 모양에 맞춰 여백 없이. 세로 포스터끼리는 크기가 같고, 가로 사진만 폭에 맞춰 납작하게 */
 .tbdon .dn-body.ph .dn-ph{display:flex!important;align-items:center;justify-content:center;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;overflow:visible!important}
 .tbdon .dn-body.ph .dn-ph img.im{position:static!important;inset:auto!important;display:block;max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;background:none!important;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.45)}
+/* 활동사진: 네 칸 모두 같은 크기. 사진은 칸 안에 전부 보이고, 남는 자리는 같은 사진을 흐리게 깔아 채운다 */
+.tbdon .dn-body.ph .dn-ph{position:relative;display:flex!important;align-items:center;justify-content:center;overflow:hidden!important;border-radius:14px!important;background:#0b0d10!important;border:0!important;box-shadow:0 8px 20px rgba(0,0,0,.45)!important;padding:0!important}
+.tbdon .dn-body.ph .dn-ph .bl{position:absolute!important;inset:-12%!important;display:block;background:center/cover no-repeat;filter:blur(20px) brightness(.5);z-index:0}
+.tbdon .dn-body.ph .dn-ph img.im{position:relative!important;z-index:1;inset:auto!important;display:block;max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;background:none!important;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5)}
 /* 관리 화면 탭 */
 .tgtabs{display:flex;gap:8px;margin:0 0 12px}
 .tgtabs button{flex:1;min-height:48px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:17px;font-weight:700}
@@ -12075,7 +12079,8 @@ function tbDonPhotos(body, list){
     list.slice(pg*per, pg*per+per).forEach(function(it, j){
       var idx=pg*per+j;
       grid.appendChild(el('button',{cls:'dn-ph', type:'button', 'aria-label':'사진 크게 보기 '+(idx+1), onclick:function(){ tbDonLight(list, idx); }},[
-        /* 사진 크기에 칸을 맞춘다 (img 자체 크기) → 사진 둘레에 여백이 생기지 않는다 */
+        /* 칸 크기는 모두 같게, 사진은 전부 보이게. 남는 자리는 같은 사진을 흐리게 깔아 채운다 */
+        el('span',{cls:'bl', style:'background-image:url("'+it.url+'")'}),
         el('img',{cls:'im', src:it.url, alt:''})
       ]));
     });
