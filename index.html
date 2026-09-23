@@ -1600,6 +1600,22 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tbdon .dn-body.ph .dn-ph{position:relative;display:flex!important;align-items:center;justify-content:center;overflow:hidden!important;border-radius:14px!important;background:#0b0d10!important;border:0!important;box-shadow:0 8px 20px rgba(0,0,0,.45)!important;padding:0!important}
 .tbdon .dn-body.ph .dn-ph .bl{position:absolute!important;inset:-12%!important;display:block;background:center/cover no-repeat;filter:blur(20px) brightness(.5);z-index:0}
 .tbdon .dn-body.ph .dn-ph img.im{position:relative!important;z-index:1;inset:auto!important;display:block;max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;background:none!important;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+/* 활동사진: 네 장 모두 칸을 꽉 채워 같은 크기로 (사진 윗부분이 잘 보이도록 위쪽 기준) */
+.tbdon .dn-body.ph .dn-ph img.im{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover;object-position:center 32%;border-radius:12px!important}
+/* 여행가이드: 지금 내 주변 명소 */
+.tbgd .gd-sec.near{color:#7EE0C8}
+.tbgd .gd-nsub{margin:1vh 0 .6vh;font-size:clamp(17px,2vh,22px);font-weight:700;color:#E6E8EB}
+.tbgd .gd-nsrc{margin:.8vh 0 1.4vh;font-size:clamp(13px,1.5vh,16px);color:#8A9099}
+/* 여행가이드 목록 맨 위: 서울 공식 관광 안내 QR 카드 */
+.tbgd .gd-vs{display:flex;align-items:center;gap:3vw;margin:0 0 1.6vh;padding:1.8vh 3vw;border-radius:18px;background:linear-gradient(135deg,#1e6f66,#134b45);border:2px solid #2A9D8F}
+.tbgd .gd-vs .gd-qr{flex:none;margin:0;padding:8px;border-radius:12px;background:#fff}
+.tbgd .gd-vs .gd-qrbox{width:clamp(120px,14vh,170px);height:clamp(120px,14vh,170px);display:flex;align-items:center;justify-content:center}
+.tbgd .gd-vs .gd-qrbox canvas,.tbgd .gd-vs .gd-qrbox img{width:100%!important;height:100%!important}
+.tbgd .gd-vs-tx{flex:1;min-width:0}
+.tbgd .gd-vs-tx b{display:block;font-size:clamp(21px,2.6vh,30px);font-weight:800;color:#fff;word-break:keep-all}
+.tbgd .gd-vs-tx i{display:block;font-style:normal;font-size:clamp(15px,1.8vh,19px);color:#BFE9E2;margin-top:4px}
+.tbgd .gd-vs-tx p{margin:8px 0 0;font-size:clamp(16px,1.9vh,21px);color:#fff;line-height:1.45;word-break:keep-all}
+.tbgd .gd-vs-tx .u{display:inline-block;margin-top:8px;padding:5px 12px;border-radius:8px;background:rgba(0,0,0,.3);color:#FFC61E;font-size:clamp(14px,1.6vh,17px)}
 /* 관리 화면 탭 */
 .tgtabs{display:flex;gap:8px;margin:0 0 12px}
 .tgtabs button{flex:1;min-height:48px;border:1px solid #3A3F46;border-radius:8px;background:#1E2126;color:#C9CED4;font-size:17px;font-weight:700}
@@ -9794,12 +9810,150 @@ function gdUpDnPaint(){
   $('gdUp').disabled = b.scrollTop<=4;
   $('gdDn').disabled = b.scrollTop>=b.scrollHeight-b.clientHeight-4;
 }
+
+/* ═══ 서울 공식 관광 안내(비짓서울)를 손님 폰으로 ═══
+   한국어·영어는 공식 주소가 확인된 각 언어 누리집으로, 일본어·중국어는 언어 고르는 첫 화면으로 보낸다 */
+var GD_VS={
+  ko:{t:'서울 공식 관광 안내', s:'Visit Seoul · 서울시 공식 관광 누리집',
+      d:'명소, 맛집, 축제, 무료 도보해설관광까지 서울 여행 정보가 한곳에 있습니다.',
+      q:'휴대폰 카메라로 QR을 찍으세요'},
+  en:{t:'Official Seoul Travel Guide', s:'Visit Seoul · official tourism website',
+      d:'Attractions, food, festivals and free walking tours — all in one place.',
+      q:'Scan the QR with your phone camera'},
+  ja:{t:'ソウル公式観光案内', s:'Visit Seoul · ソウル市公式観光サイト',
+      d:'観光地、グルメ、祭り、無料ウォーキングツアーまでまとまっています。',
+      q:'スマートフォンのカメラでQRを読み取ってください'},
+  zh:{t:'首尔官方旅游指南', s:'Visit Seoul · 首尔市官方旅游网站',
+      d:'景点、美食、庆典和免费徒步讲解游览尽在其中。',
+      q:'请用手机相机扫描二维码'}
+};
+function gdVisitUrl(L){
+  return L==='ko' ? 'https://korean.visitseoul.net/' : L==='en' ? 'https://english.visitseoul.net/' : 'https://www.visitseoul.net/';
+}
+/* ═══ 지금 내 주변 명소·맛집 (한국관광공사 자료, 기존 여행가이드 워커 사용) ═══ */
+var GD_NEAR={
+  ko:{h:'📍 지금 내 주변', s:'차가 있는 곳에서 가까운 곳', sight:'명소', food:'맛집', load:'주변을 찾는 중…', none:'주변 정보를 가져오지 못했습니다.', src:'출처: 한국관광공사', map:'QR을 찍으면 휴대폰 지도에서 열립니다'},
+  en:{h:'📍 Near you now', s:'Close to where the taxi is now', sight:'Attractions', food:'Food', load:'Looking around…', none:'Could not load nearby places.', src:'Source: Korea Tourism Organization', map:'Scan the QR to open it in your phone map'},
+  ja:{h:'📍 今いる場所の周辺', s:'タクシーの現在地から近い場所', sight:'観光地', food:'グルメ', load:'周辺を探しています…', none:'周辺情報を取得できませんでした。', src:'出典：韓国観光公社', map:'QRを読み取るとスマホの地図で開きます'},
+  zh:{h:'📍 我的周边', s:'距离出租车当前位置很近', sight:'景点', food:'美食', load:'正在查找周边…', none:'无法获取周边信息。', src:'来源：韩国观光公社', map:'扫描二维码可在手机地图中打开'}
+};
+var gdNearCache={at:0, key:'', data:null};
+function gdNearPos(){
+  var p=tb.pos || tb.rideFrom || null;
+  return (p && isNum(p.lat) && isNum(p.lng)) ? p : null;
+}
+function gdNearFetch(L, cb){
+  var p=gdNearPos(), base=tb.tourUrl, key, out={sight:[], food:[]}, left=2;
+  if (!p || !base){ cb(null); return; }
+  key=L+':'+p.lat.toFixed(3)+','+p.lng.toFixed(3);
+  if (gdNearCache.key===key && Date.now()-gdNearCache.at < 600000){ cb(gdNearCache.data); return; }
+  ['sight','food'].forEach(function(kind){
+    fetch(base+'/tour?lat='+p.lat+'&lng='+p.lng+'&lang='+L+'&kind='+kind, {cache:'no-store'})
+      .then(function(r){ return r.json(); })
+      .then(function(j){ if (j && j.items) out[kind]=j.items.slice(0,4); })
+      ['catch'](function(){})
+      .then(function(){
+        if (--left) return;
+        if (!out.sight.length && !out.food.length){ cb(null); return; }
+        gdNearCache={at:Date.now(), key:key, data:out};
+        cb(out);
+      });
+  });
+}
+function gdNearSection(body, L){
+  var x=GD_NEAR[L]||GD_NEAR.en, wrap, msg;
+  if (!gdNearPos() || !tb.tourUrl) return;   /* GPS나 여행가이드 서버가 없으면 넣지 않는다 */
+  wrap=el('div',{cls:'gd-near'});
+  wrap.appendChild(el('div',{cls:'gd-sec near'},[x.h+(L==='ko' ? '' : ' · '+GD_NEAR.ko.h)]));
+  msg=el('div',{cls:'gd-hint', text:x.load});
+  wrap.appendChild(msg);
+  body.appendChild(wrap);
+  gdNearFetch(L, function(data){
+    if (!wrap.parentNode) return;
+    clear(wrap);
+    wrap.appendChild(el('div',{cls:'gd-sec near'},[x.h+(L==='ko' ? '' : ' · '+GD_NEAR.ko.h)]));
+    if (!data){ wrap.appendChild(el('div',{cls:'gd-hint', text:x.none})); return; }
+    [['sight','🏛'],['food','🍽']].forEach(function(a){
+      var list=data[a[0]], grid;
+      if (!list || !list.length) return;
+      wrap.appendChild(el('div',{cls:'gd-nsub', text:a[1]+' '+x[a[0]]}));
+      grid=el('div',{cls:'gd-grid'});
+      list.forEach(function(it){
+        var th=el('span',{cls:'th'},[a[1]]), nm=String(it.n||'');
+        gdNearPhoto(nm, function(img){ if (img){ th.style.backgroundImage='url("'+img+'")'; th.textContent=''; th.className='th has'; } });
+        grid.appendChild(el('button',{type:'button', onclick:function(e){ e.stopPropagation(); gdNearDetail({n:nm, d:it.d, kind:a[0]}); gdKeep(); }},[
+          th, el('span',{cls:'nm'},[el('b',{text:nm}), el('i',{text: isNum(it.d) ? tbKm(it.d) : x[a[0]]})])
+        ]));
+      });
+      wrap.appendChild(grid);
+    });
+    wrap.appendChild(el('div',{cls:'gd-nsrc', text:x.src}));
+  });
+}
+function gdNearPhoto(name, cb){
+  var p=gdNearPos();
+  if (!tb.tourUrl || !p || !name){ cb(''); return; }
+  fetch(tb.tourUrl+'/photo?kw='+encodeURIComponent(name)+'&lat='+p.lat+'&lng='+p.lng, {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(j){ cb(j && j.ok && j.img ? String(j.img).replace(/^http:\/\//,'https://') : ''); })
+    ['catch'](function(){ cb(''); });
+}
+function gdNearMapUrl(name, L){
+  return L==='ko' ? 'https://map.naver.com/p/search/'+encodeURIComponent(name)
+                  : 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(name)+'&hl='+(L==='zh' ? 'zh-CN' : L);
+}
+function gdNearDetail(it){
+  var L=gdLang(), t=GD_TEXT[L]||GD_TEXT.en, x=GD_NEAR[L]||GD_NEAR.en, body=$('gdBody'),
+      box=el('div',{cls:'gd-card'}), ph=el('div',{cls:'gd-photo'},[el('span',{cls:'gd-ic', text: it.kind==='food' ? '🍽' : '🏛'})]),
+      qr=el('div',{cls:'gd-qrbox'}), url=gdNearMapUrl(it.n, L);
+  tb.gdCur=null;
+  gdTop(L, true);
+  clear(body);
+  box.appendChild(ph);
+  gdNearPhoto(it.n, function(img){ if (img){ ph.style.backgroundImage='url("'+img+'")'; ph.className='gd-photo has'; } });
+  box.appendChild(el('div',{cls:'gd-body'},[
+    el('div',{cls:'gd-info'},[
+      el('div',{cls:'gd-type', text: (it.kind==='food' ? x.food : x.sight)+(isNum(it.d) ? ' · '+tbKm(it.d) : '')}),
+      el('div',{cls:'gd-name', text:it.n}),
+      el('div',{cls:'gd-desc', text:x.s}),
+      el('div',{cls:'gd-sub', text:x.src})
+    ]),
+    el('div',{cls:'gd-qr'},[qr, el('span',{text:x.map})])
+  ]));
+  body.appendChild(box);
+  body.appendChild(el('button',{type:'button', cls:'gd-close', onclick:function(e){ e.stopPropagation(); gdClose(); }},[t.close]));
+  loadQrLib(function(ok){
+    if (!ok) return;
+    try { new QRCode(qr, {text:url, width:220, height:220, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
+  });
+  body.scrollTop=0; setTimeout(gdUpDnPaint, 50);
+}
+function gdVsCard(L){
+  var v=GD_VS[L]||GD_VS.en, qr=el('div',{cls:'gd-qrbox'}), url=gdVisitUrl(L), card;
+  card=el('div',{cls:'gd-vs'},[
+    el('div',{cls:'gd-qr'},[qr]),
+    el('div',{cls:'gd-vs-tx'},[
+      el('b',{text:'📱 '+v.t}),
+      el('i',{text:v.s}),
+      el('p',{text:v.q}),
+      el('span',{cls:'u', text:url.replace(/^https:\/\//,'').replace(/\/$/,'')})
+    ])
+  ]);
+  loadQrLib(function(ok){
+    if (!ok){ qr.appendChild(el('div',{cls:'gd-qrw', text:'QR'})); return; }
+    try { new QRCode(qr, {text:url, width:200, height:200, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
+  });
+  return card;
+}
 function gdList(){
   var L=gdLang(), t=GD_TEXT[L]||GD_TEXT.en, body=$('gdBody'), grid;
   tb.gdCur=null;
   gdTop(L, false);
   clear(body);
-  body.appendChild(el('div',{cls:'gd-hint', text:t.list}));
+  /* 안내 문구 자리에 서울시 공식 관광 누리집(비짓서울) QR을 바로 띄운다 */
+  body.appendChild(gdVsCard(L));
+  /* 지금 차가 있는 곳 주변 명소·맛집 (한국관광공사 자료) */
+  gdNearSection(body, L);
   GD_GROUPS.forEach(function(g){
   body.appendChild(el('div',{cls:'gd-sec g-'+g.id, text:g.ic+' '+(g.name[L]||g.name.en)}));
   grid=el('div',{cls:'gd-grid'});
@@ -10288,6 +10442,44 @@ var TB_QR_TEXT={
   zh:{sub:'扫描二维码，即可在手机上查看目的地、预计时间和车费。'}
 };
 /* 5분 뒤: 갤러리 사진 슬라이드 + 아래에 손님용 QR */
+/* ── 갤러리 화면 아래 QR: 1분마다 번갈아 ──
+   ① 손님 안내 QR (목적지·예상시간·예상요금이 손님 폰에서 열림)
+   ② 📱 서울 공식 관광 안내 QR (손님 언어에 맞는 비짓서울) */
+function tbGalQrPaint(which){
+  var tr=tb.trip, L=(tb.tripLang && tb.tripLang!=='ko' && GUIDE_TEXT[tb.tripLang]) ? tb.tripLang : 'en',
+      LV=tb.tripLang || tbLang(), box=$('ttQr'), url, v, vk;
+  if (!box || !tr) return;
+  clear(box);
+  if (which==='vs'){
+    v=GD_VS[LV]||GD_VS.en; vk=GD_VS.ko;
+    url=gdVisitUrl(LV);
+    $('ttQrCap').textContent='📱 '+vk.t;
+    $('ttQrSub').textContent=vk.q;
+    $('ttQrSub2').textContent=(LV==='ko') ? vk.s : (v.t+' · '+v.q);
+  } else {
+    url=location.href.split('?')[0].split('#')[0].replace(/index\.html$/,'')+'?g='+tbGuestG(tr.g);
+    $('ttQrCap').textContent=TB_QR_TEXT.ko.cap;
+    $('ttQrSub').textContent=TB_QR_TEXT.ko.sub;
+    $('ttQrSub2').textContent=(TB_QR_TEXT[L]||TB_QR_TEXT.en).sub;
+    if (!tr.g) return;
+  }
+  loadQrLib(function(ok){
+    if (!ok) return;
+    try { clear(box); new QRCode(box, {text:url, width:320, height:320, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
+  });
+}
+var TB_GAL_QR_MS=60000;
+function tbGalQrStart(){
+  tbGalQrStop();
+  tb.galQrWhich='guest';
+  tbGalQrPaint('guest');
+  tb.galQrTimer=setInterval(function(){
+    if (!$('tbGal') || $('tbGal').className.indexOf(' on')<0){ tbGalQrStop(); return; }
+    tb.galQrWhich = tb.galQrWhich==='guest' ? 'vs' : 'guest';
+    tbGalQrPaint(tb.galQrWhich);
+  }, TB_GAL_QR_MS);
+}
+function tbGalQrStop(){ if (tb && tb.galQrTimer){ clearInterval(tb.galQrTimer); tb.galQrTimer=null; } }
 function tbShowGal(){
   var tr=tb.trip, ko=GUIDE_TEXT.ko, L=(tb.tripLang && tb.tripLang!=='ko' && GUIDE_TEXT[tb.tripLang]) ? tb.tripLang : 'en',
       x=GUIDE_TEXT[L]||GUIDE_TEXT.en, url, box;
@@ -10300,16 +10492,8 @@ function tbShowGal(){
   $('ttGalDest').appendChild(el('span',{cls:'tt-galeta', id:'ttGalEta'}));
   tbEtaPaint();
   $('tbGal').className=$('tbGal').className.replace(/\s*\bprev\b/g,'');
-  $('ttQrCap').textContent=TB_QR_TEXT.ko.cap;
-  $('ttQrSub').textContent=TB_QR_TEXT.ko.sub;
-  $('ttQrSub2').textContent=(TB_QR_TEXT[L]||TB_QR_TEXT.en).sub;
-  /* QR: 손님 휴대폰에서 목적지·시간·요금 화면이 열린다 */
-  box=$('ttQr'); clear(box);
-  url=location.href.split('?')[0].split('#')[0].replace(/index\.html$/,'')+'?g='+tbGuestG(tr.g);
-  if (tr.g) loadQrLib(function(ok){
-    if (!ok) return;
-    try { clear(box); new QRCode(box, {text:url, width:320, height:320, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
-  });
+  /* QR 두 가지를 1분마다 번갈아 보여 준다: ① 손님 안내(목적지·예상시간·예상요금) ② 서울 공식 관광 안내 */
+  tbGalQrStart();
   tbSlideStart();
   tbPane('tbGal');
   tbStat();
