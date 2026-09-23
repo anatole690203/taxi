@@ -9863,22 +9863,50 @@ function gdNearPos(){
   var p=tb.pos || tb.rideFrom || null;
   return (p && isNum(p.lat) && isNum(p.lng)) ? p : null;
 }
+/* 병원·의원·약국 같은 의료 관련 장소는 손님 안내에 맞지 않아 뺀다 (한국관광공사 외국어 자료에 많이 들어 있다) */
+var GD_NEAR_SKIP=/병원|의원|의료|치과|한의|클리닉|보건소|약국|검진|성형|피부과|안과|내과|외과|산부인|정형|요양|재활|hospital|clinic|medical|medipact|dental|pharmacy|病院|医院|医療|医疗|诊所|药局|藥局/i;
+function gdNearSkip(n){ return GD_NEAR_SKIP.test(String(n||'')); }
+function gdNearKoName(n){
+  /* 외국어 목록의 이름은 'MEDIPACT (메디팩트)' 처럼 괄호 안에 한국어가 들어 있다 */
+  var m=/\(([^()]*[가-힣][^()]*)\)\s*$/.exec(String(n||''));
+  return m ? m[1].replace(/\s+/g,'') : '';
+}
 function gdNearFetch(L, cb){
-  var p=gdNearPos(), base=tb.tourUrl, key, out={sight:[], food:[]}, left=2;
+  /* 한국관광공사 자료는 언어마다 등록된 곳이 달라서, 그대로 쓰면 언어를 바꿀 때 다른 곳이 나온다.
+     그래서 한국어 목록을 기준으로 삼고, 외국어 목록에 같은 곳이 있으면 그 나라 말 이름으로 바꿔 보여 준다 */
+  var p=gdNearPos(), base=tb.tourUrl, key, ko={sight:[], food:[]}, fo={sight:[], food:[]},
+      langs = (L==='ko') ? ['ko'] : ['ko', L], left=2*langs.length;
   if (!p || !base){ cb(null); return; }
   key=L+':'+p.lat.toFixed(3)+','+p.lng.toFixed(3);
   if (gdNearCache.key===key && Date.now()-gdNearCache.at < 600000){ cb(gdNearCache.data); return; }
-  ['sight','food'].forEach(function(kind){
-    fetch(base+'/tour?lat='+p.lat+'&lng='+p.lng+'&lang='+L+'&kind='+kind, {cache:'no-store'})
-      .then(function(r){ return r.json(); })
-      .then(function(j){ if (j && j.items) out[kind]=j.items.slice(0,4); })
-      ['catch'](function(){})
-      .then(function(){
-        if (--left) return;
-        if (!out.sight.length && !out.food.length){ cb(null); return; }
-        gdNearCache={at:Date.now(), key:key, data:out};
-        cb(out);
+  function done(){
+    var out={sight:[], food:[]}, map={};
+    if (--left) return;
+    ['sight','food'].forEach(function(kind){
+      fo[kind].forEach(function(it){ var k=gdNearKoName(it.n); if (k) map[k]=it.n; });
+    });
+    ['sight','food'].forEach(function(kind){
+      out[kind]=ko[kind].slice(0,4).map(function(it){
+        var k=String(it.n||'').replace(/\s+/g,'');
+        return {n: (L!=='ko' && map[k]) ? map[k] : it.n, d:it.d};
       });
+    });
+    if (!out.sight.length && !out.food.length){ cb(null); return; }
+    gdNearCache={at:Date.now(), key:key, data:out};
+    cb(out);
+  }
+  langs.forEach(function(lg){
+    ['sight','food'].forEach(function(kind){
+      fetch(base+'/tour?lat='+p.lat+'&lng='+p.lng+'&lang='+lg+'&kind='+kind, {cache:'no-store'})
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          if (!j || !j.items) return;
+          if (lg==='ko') ko[kind]=j.items.filter(function(it){ return !gdNearSkip(it.n); });
+          else fo[kind]=j.items.filter(function(it){ return !gdNearSkip(it.n); });
+        })
+        ['catch'](function(){})
+        .then(done);
+    });
   });
 }
 function gdNearSection(body, L){
@@ -12290,8 +12318,8 @@ function tbDonOpen(which){
     if (t==='ph') tbDonPhotos(body, list); else tbDonGive(body);
   }
   tabs=el('div',{cls:'dn-tabs'},[
-    el('button',{type:'button', 'data-t':'ph', onclick:function(){ show('ph'); }},['📷 활동사진 · Photos']),
-    el('button',{type:'button', 'data-t':'gv', onclick:function(){ show('gv'); }},[dgIc('heart','dn-hrt'), '후원 안내 · How to give'])
+    el('button',{type:'button', 'data-t':'gv', onclick:function(){ show('gv'); }},[dgIc('heart','dn-hrt'), '후원 안내 · How to give']),
+    el('button',{type:'button', 'data-t':'ph', onclick:function(){ show('ph'); }},['📷 활동사진 · Photos'])
   ]);
   ov=el('div',{cls:'tbdon', id:'tbDon', role:'dialog', 'aria-modal':'true'},[
     el('div',{cls:'dn-top'},[
@@ -12303,7 +12331,7 @@ function tbDonOpen(which){
   ov.addEventListener('pointerdown', tbDonKeep, true);
   $('tabScr').appendChild(ov);
   tbDonKeep();
-  show(which || (list.length ? 'ph' : 'gv'));
+  show(which || 'gv');   /* 열면 [후원 안내]가 먼저 보인다 */
 }
 function tbDonPhotos(body, list){
   /* 한 화면에 4장(2줄×2칸)을 크게. 4장보다 많으면 아래 [‹ 이전] 1 / 3 [다음 ›] 로 넘긴다.
