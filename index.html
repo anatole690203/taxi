@@ -1191,7 +1191,7 @@ body.solo{overflow:hidden;background:#101215}
 .tt-qrtxt{display:flex;flex-direction:column;gap:.8vh;word-break:keep-all;text-align:left}
 .tt-qrtxt b{font-size:clamp(20px,3.2vh,34px);color:#fff;line-height:1.25}
 .tt-qrtxt span{font-size:clamp(16px,2.4vh,26px);color:#E6E8EB;line-height:1.45}
-.tt-qrtxt span#ttQrSub2{font-size:clamp(13px,1.9vh,20px);color:#A9B0B8;line-height:1.4}
+.tt-qrtxt span#ttQrSub2{white-space:pre-line;font-size:clamp(13px,1.9vh,20px);color:#A9B0B8;line-height:1.4}
 .tbstat{position:absolute;right:14px;bottom:10px;font-size:13px;color:#5B626B}
 .tbstat b{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#5B626B;vertical-align:middle}
 .tbstat b.ok{background:#2ecc71}
@@ -1602,6 +1602,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tbdon .dn-body.ph .dn-ph img.im{position:relative!important;z-index:1;inset:auto!important;display:block;max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;background:none!important;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5)}
 /* 활동사진: 네 장 모두 칸을 꽉 채워 같은 크기로 (사진 윗부분이 잘 보이도록 위쪽 기준) */
 .tbdon .dn-body.ph .dn-ph img.im{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover;object-position:center 32%;border-radius:12px!important}
+.tbgd .gd-vs-tx .gd-vsx{display:inline-block;margin:10px 0 0 10px;padding:8px 20px;border:0;border-radius:10px;background:#fff;color:#111;font-size:clamp(15px,1.8vh,19px);font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.3)}
 /* 여행가이드: 지금 내 주변 명소 */
 .tbgd .gd-sec.near{color:#7EE0C8}
 .tbgd .gd-nsub{margin:1vh 0 .6vh;font-size:clamp(17px,2vh,22px);font-weight:700;color:#E6E8EB}
@@ -1629,7 +1630,9 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 #tbIdle.idle2::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(8,10,14,.62),rgba(8,10,14,.05) 26%,rgba(8,10,14,.1) 46%,rgba(8,10,14,.93) 80%)}
 #tbIdle .ti-top{position:absolute;left:5vw;top:3.2vh;z-index:2}
 #tbIdle .tb-clock{margin:0;font-size:clamp(40px,5.4vh,72px);font-weight:700;color:#fff;line-height:1}
-#tbIdle .ti-wx{margin-top:1vh;font-size:clamp(22px,2.4vh,30px);color:#E6E9EE;min-height:1.2em}
+#tbIdle .ti-wx{margin-top:1vh;color:#E6E9EE;min-height:1.2em}
+.ti-wx .l1{display:block;font-size:clamp(22px,2.4vh,30px)}
+.ti-wx .l2{display:block;margin-top:.4vh;font-size:clamp(15px,1.7vh,20px);color:#C7CDD6;word-break:keep-all}
 #tbIdle .ti-bot{position:relative;z-index:2;padding:0 5vw 5vh}
 #tbIdle .tb-best{font-size:clamp(46px,5.6vh,76px)}
 #tbIdle .ti-hello{font-size:clamp(28px,3.2vh,40px);font-weight:700;margin-top:.6vh;transition:opacity .5s;min-height:1.3em}
@@ -9334,6 +9337,12 @@ function tbShareNew(){
   } catch(e){}
 }
 function tbShareUrl(){ return tb.share ? location.href.split('?')[0].split('#')[0].replace(/index\.html$/,'')+'?s='+tb.share.tok : ''; }
+function tbShareLine(pts){
+  var out=[], n=pts.length, step=Math.max(1, Math.ceil(n/40)), i;
+  for (i=0;i<n;i+=step) out.push([Math.round(pts[i][0]*1e4)/1e4, Math.round(pts[i][1]*1e4)/1e4]);
+  if (out.length<2 || out[out.length-1][0]!==Math.round(pts[n-1][0]*1e4)/1e4) out.push([Math.round(pts[n-1][0]*1e4)/1e4, Math.round(pts[n-1][1]*1e4)/1e4]);
+  return out;
+}
 function tbShareSend(done, cancel){
   var s=tb.share, d=tb.ride, p=tb.pos, n, msg;
   if (!s || (!s.on && !done)) return;   /* 끝 소식(도착·종료)은 지금 보는 사람이 없어도 남겨 둔다 → 나중에 열어도 보인다 */
@@ -9342,6 +9351,8 @@ function tbShareSend(done, cancel){
   if (p && Date.now()-p.at < 180000){ msg.lat=Math.round(p.lat*1e5)/1e5; msg.lng=Math.round(p.lng*1e5)/1e5; }
   if (d){ msg.dy=Math.round(d.lat*1e5)/1e5; msg.dx=Math.round(d.lng*1e5)/1e5; }
   if (sGet(TB_MAPKEY_KEY)) msg.mk=sGet(TB_MAPKEY_KEY);
+  /* 운행 경로선도 함께 보낸다 → 가족 폰 지도에도 파란 경로가 그려진다 (중계 글자 수 제한 때문에 40점으로 줄인다) */
+  if (!done && tb.eta && tb.eta.line && tb.eta.line.length>1){ msg.ln=tbShareLine(tb.eta.line); msg.li=tb.eta.at; }
   n = done ? null : tbEtaNow();
   if (n){ msg.r=Math.round(n.dist); msg.e=Math.round(n.eta); }
   if (done) msg.done=1;
@@ -9500,13 +9511,19 @@ function shareBoot(){
     if (st.mk && !tmFail){
       if (!tmf) tmf=tmapFrame($('shMap'), st.mk, function(){ tmFail=true; tmf=null; paint(); }, true);
       /* 지금 차가 지나는 곳을 가까이 (도로·건물이 보이게). 처음 한 번만 확대하고, 그 뒤로는 가족이 직접 넓히거나 좁힌 크기를 그대로 두고 차를 따라간다 */
-      tmf.set({car: isNum(st.lat) ? [st.lat, st.lng] : null, dest: isNum(st.dy) ? [st.dy, st.dx] : null, fit:!tmFit, near: isNum(st.lat) ? SH_MAP_NEAR : 0});
+      tmf.set({car: isNum(st.lat) ? [st.lat, st.lng] : null, dest: isNum(st.dy) ? [st.dy, st.dx] : null,
+               line: (st.ln && st.ln.length>1) ? st.ln : null, lineId: st.li||0,
+               fit:!tmFit, near: isNum(st.lat) ? SH_MAP_NEAR : 0});
       tmFit=true;
       return;
     }
     if (!window.L) return;
     if (!map){ try { map=L.map($('shMap'), {zoomControl:true}); L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; OpenStreetMap'}).addTo(map); map.setView([37.5665,126.978], 11); } catch(e){ map=null; return; } }
     var pts=[];
+    if (st.ln && st.ln.length>1 && map.__lineId!==(st.li||0)){
+      try { if (map.__line) map.removeLayer(map.__line); } catch(e){}
+      try { map.__line=L.polyline(st.ln, {color:'#2F6BFF', weight:6, opacity:.95}).addTo(map); map.__lineId=st.li||0; } catch(e){}
+    }
     if (isNum(st.lat)){ if (!car) car=L.circleMarker([st.lat, st.lng], {radius:10, color:'#fff', weight:3, fillColor:'#3D8BFF', fillOpacity:1}).addTo(map); else car.setLatLng([st.lat, st.lng]); pts.push([st.lat, st.lng]); }
     if (isNum(st.dy)){ if (!dst) dst=L.circleMarker([st.dy, st.dx], {radius:11, color:'#fff', weight:3, fillColor:'#FF5A5F', fillOpacity:1}).addTo(map); else dst.setLatLng([st.dy, st.dx]); pts.push([st.dy, st.dx]); }
     if (isNum(st.lat)){ try { if (!map.__near){ map.setView([st.lat, st.lng], SH_MAP_NEAR); map.__near=true; } else map.panTo([st.lat, st.lng]); } catch(e){} }
@@ -9814,7 +9831,7 @@ function gdUpDnPaint(){
 /* ═══ 서울 공식 관광 안내(비짓서울)를 손님 폰으로 ═══
    한국어·영어는 공식 주소가 확인된 각 언어 누리집으로, 일본어·중국어는 언어 고르는 첫 화면으로 보낸다 */
 var GD_VS={
-  ko:{t:'서울 공식 관광 안내', s:'Visit Seoul · 서울시 공식 관광 누리집',
+  ko:{t:'서울 공식 관광안내', s:'Visit Seoul · 서울시 공식 관광 누리집',
       d:'명소, 맛집, 축제, 무료 도보해설관광까지 서울 여행 정보가 한곳에 있습니다.',
       q:'휴대폰 카메라로 QR을 찍으세요'},
   en:{t:'Official Seoul Travel Guide', s:'Visit Seoul · official tourism website',
@@ -9828,7 +9845,11 @@ var GD_VS={
       q:'请用手机相机扫描二维码'}
 };
 function gdVisitUrl(L){
-  return L==='ko' ? 'https://korean.visitseoul.net/' : L==='en' ? 'https://english.visitseoul.net/' : 'https://www.visitseoul.net/';
+  /* 비짓서울 공식 언어별 주소 (공식 누리집의 다국어 메뉴에서 확인) */
+  return L==='ja' ? 'https://japanese.visitseoul.net/'
+       : L==='zh' ? 'https://chinese.visitseoul.net/'
+       : L==='en' ? 'https://english.visitseoul.net/'
+       : 'https://korean.visitseoul.net/';
 }
 /* ═══ 지금 내 주변 명소·맛집 (한국관광공사 자료, 기존 여행가이드 워커 사용) ═══ */
 var GD_NEAR={
@@ -9936,7 +9957,8 @@ function gdVsCard(L){
       el('b',{text:'📱 '+v.t}),
       el('i',{text:v.s}),
       el('p',{text:v.q}),
-      el('span',{cls:'u', text:url.replace(/^https:\/\//,'').replace(/\/$/,'')})
+      el('span',{cls:'u', text:url.replace(/^https:\/\//,'').replace(/\/$/,'')}),
+      el('button',{type:'button', cls:'gd-vsx', onclick:function(e){ e.stopPropagation(); gdClose(); }},['닫기 · Close'])
     ])
   ]);
   loadQrLib(function(ok){
@@ -10455,7 +10477,8 @@ function tbGalQrPaint(which){
     url=gdVisitUrl(LV);
     $('ttQrCap').textContent='📱 '+vk.t;
     $('ttQrSub').textContent=vk.q;
-    $('ttQrSub2').textContent=(LV==='ko') ? vk.s : (v.t+' · '+v.q);
+    /* 한국어 손님이면 아래 줄에 영어를 함께 적는다 */
+    $('ttQrSub2').textContent=(LV==='ko') ? (vk.s+'\n'+GD_VS.en.t+' · '+GD_VS.en.q) : (v.t+' · '+v.q);
   } else {
     url=location.href.split('?')[0].split('#')[0].replace(/index\.html$/,'')+'?g='+tbGuestG(tr.g);
     $('ttQrCap').textContent=TB_QR_TEXT.ko.cap;
@@ -11541,19 +11564,52 @@ function tiHelloNext(){
   h.className='ti-hello out';
   setTimeout(function(){ tb.tiHello=(tb.tiHello+1)%TI_HELLO.length; h.textContent=TI_HELLO[tb.tiHello]; h.className='ti-hello'; }, 500);
 }
+/* 대기 화면 날씨: 지금 기온 + 최저/최고 · 강수확률 · 미세먼지 (Open-Meteo, 키 없이 무료) */
+var TI_WX_TXT={
+  ko:{lo:'최저', hi:'최고', rain:'강수', pm10:'미세', pm25:'초미세', g:['정보 없음','좋음','보통','나쁨','매우나쁨']},
+  en:{lo:'Low', hi:'High', rain:'Rain', pm10:'PM10', pm25:'PM2.5', g:['–','Good','Moderate','Bad','Very bad']},
+  ja:{lo:'最低', hi:'最高', rain:'降水', pm10:'PM10', pm25:'PM2.5', g:['–','良い','普通','悪い','非常に悪い']},
+  zh:{lo:'最低', hi:'最高', rain:'降水', pm10:'PM10', pm25:'PM2.5', g:['–','优','中等','差','很差']}
+};
+function tiWxPaint(){
+  var w=tb.tiWx, box=$('tiWx'), L=tbLang(), t=TI_WX_TXT[L]||TI_WX_TXT.en, a=[], g;
+  if (!box || !w || !isNum(w.temp)) return;
+  clear(box);
+  box.appendChild(el('span',{cls:'l1', text:wxIconDN(w.code, w.day, w.rain||0, w.snow||0)+' '+Math.round(w.temp)+'° · Seoul'}));
+  if (isNum(w.lo) && isNum(w.hi)) a.push(t.lo+' '+Math.round(w.lo)+'° / '+t.hi+' '+Math.round(w.hi)+'°');
+  if (isNum(w.pop)) a.push(t.rain+' '+Math.round(w.pop)+'%');
+  if (isNum(w.pm10)){ g=aqGrade(w.pm10, false); a.push(t.pm10+' '+t.g[g.c]); }
+  if (isNum(w.pm25)){ g=aqGrade(w.pm25, true); a.push(t.pm25+' '+t.g[g.c]); }
+  if (a.length) box.appendChild(el('span',{cls:'l2', text:a.join(' · ')}));
+}
 function tiWxLoad(force){
-  var p=(tb.pos && isNum(tb.pos.lat)) ? tb.pos : {lat:37.5665, lng:126.978};
+  var p=(tb.pos && isNum(tb.pos.lat)) ? tb.pos : {lat:37.5665, lng:126.978}, left=2, got={};
   if (!force && tb.tiWxAt && Date.now()-tb.tiWxAt < 20*60000) return;
   tb.tiWxAt=Date.now();
+  function end(){
+    var c, d;
+    if (--left>0) return;
+    c=got.f && got.f.current; d=got.f && got.f.daily;
+    if (!c || !isNum(c.temperature_2m)){ tb.tiWxAt=0; return; }
+    tb.tiWx={temp:c.temperature_2m, code:c.weather_code, day:c.is_day, rain:c.precipitation||0, snow:c.snowfall||0,
+      lo: (d && d.temperature_2m_min) ? d.temperature_2m_min[0] : null,
+      hi: (d && d.temperature_2m_max) ? d.temperature_2m_max[0] : null,
+      pop: (d && d.precipitation_probability_max) ? d.precipitation_probability_max[0] : null,
+      pm10: (got.a && got.a.current) ? got.a.current.pm10 : null,
+      pm25: (got.a && got.a.current) ? got.a.current.pm2_5 : null, at:Date.now()};
+    tiWxPaint();
+  }
   try {
-    fetch('https://api.open-meteo.com/v1/forecast?latitude='+p.lat.toFixed(3)+'&longitude='+p.lng.toFixed(3)+'&current=temperature_2m,precipitation,snowfall,weather_code,is_day&timezone=Asia%2FSeoul', {cache:'no-store'})
-      .then(function(r){ return r.json(); })
-      .then(function(j){
-        var c=j && j.current;
-        if (!c || !$('tiWx') || !isNum(c.temperature_2m)) return;
-        $('tiWx').textContent=wxIconDN(c.weather_code, c.is_day, c.precipitation||0, c.snowfall||0)+' '+Math.round(c.temperature_2m)+'° · Seoul';
-      })['catch'](function(){ tb.tiWxAt=0; });
-  } catch(e){}
+    fetch('https://api.open-meteo.com/v1/forecast?latitude='+p.lat.toFixed(3)+'&longitude='+p.lng.toFixed(3)
+      +'&current=temperature_2m,precipitation,snowfall,weather_code,is_day'
+      +'&daily=temperature_2m_min,temperature_2m_max,precipitation_probability_max&forecast_days=1&timezone=Asia%2FSeoul', {cache:'no-store'})
+      .then(function(r){ return r.json(); }).then(function(j){ got.f=j; })['catch'](function(){})
+      .then(end);
+    fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude='+p.lat.toFixed(3)+'&longitude='+p.lng.toFixed(3)
+      +'&current=pm10,pm2_5&timezone=Asia%2FSeoul', {cache:'no-store'})
+      .then(function(r){ return r.json(); }).then(function(j){ got.a=j; })['catch'](function(){})
+      .then(end);
+  } catch(e){ tb.tiWxAt=0; }
 }
 /* 외국인 손님이면 그 언어를 크게: 폰이 보낸 언어, 없으면 외국인 체크 → 영어 */
 function tbFlipLang(lang){
