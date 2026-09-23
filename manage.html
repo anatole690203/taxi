@@ -6,7 +6,12 @@
 <meta name="theme-color" content="#17191c">
 <meta name="mobile-web-app-capable" content="yes">
 <title>택시 수익 기록</title>
-<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest-manage.json">
+<link rel="icon" href="manage-icon-192.png">
+<link rel="apple-touch-icon" href="manage-apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="수익기록">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
@@ -1188,6 +1193,10 @@ function init(){
   go(h || (EMBED ? 'stat' : 'today'));
 }
 if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
+/* 따로 설치해 쓸 때: 운행 앱과 같은 sw.js(같은 범위)를 등록한다. 이미 등록돼 있으면 아무 일도 없다 */
+if (!EMBED && navigator.serviceWorker && location.protocol==='https:'){
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
 </script>
 </body>
 </html>
