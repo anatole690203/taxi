@@ -11329,7 +11329,8 @@ function talkIn(raw){
    마이크 소리를 목소리 대역(120~4000Hz)만 남기고, 말소리를 또렷하게(2.5kHz 강조), 작은 소리는 키우고 큰 소리는 눌러(압축) 증폭한 뒤
    그 소리를 음성 인식에 넣는다. 폰 크롬이 이 방식을 못 받으면 폰 마이크(잡음 제거·자동 음량)로 바로 듣는다.
    알아들은 문장은 한국어로 바꿔 보여 주고 읽어 주며, 태블릿에도 "손님이 한 말 / 기사님이 받은 뜻"을 띄운다. */
-var ear={on:false, rec:null, stream:null, ac:null, track:null, direct:false, paused:false, lastHit:0, mute:0, lastTx:'', lastTxAt:0, lvIv:null, rt:null};
+var EAR_DIRECT_KEY='airportCallLog.earDirect.v1';
+var ear={on:false, rec:null, stream:null, ac:null, track:null, direct:sGet(EAR_DIRECT_KEY)==='1', probe:null, paused:false, lastHit:0, mute:0, lastTx:'', lastTxAt:0, lvIv:null, rt:null};
 function earLangName(){ return {en:'영어', ja:'일본어', zh:'중국어'}[talk.lang]||'영어'; }
 function earBtn(){
   var b=$('tpEar');
@@ -11352,7 +11353,15 @@ function earMeter(an){
     var i, sum=0, v;
     an.getByteTimeDomainData(buf);
     for (i=0;i<buf.length;i++){ v=(buf[i]-128)/128; sum+=v*v; }
-    if ($('tpLvI')) $('tpLvI').style.width=Math.min(100, Math.round(Math.sqrt(sum/buf.length)*350))+'%';
+    v=Math.sqrt(sum/buf.length);
+    if ($('tpLvI')) $('tpLvI').style.width=Math.min(100, Math.round(v*350))+'%';
+    /* 증폭한 소리를 인식기가 받는지 검사: 말소리가 2초 넘게 들렸는데 인식기에서 아무 반응이 없으면
+       이 폰 크롬은 증폭 방식을 못 쓴다 → 폰 마이크로 바로 듣기로 바꾸고, 다음부터는 처음부터 그렇게 */
+    var pr=ear.probe;
+    if (pr && !pr.got && ear.rec && !ear.paused && Date.now()>=ear.mute){
+      if (v>0.02) pr.loud+=120;
+      if (pr.loud>=2000 && Date.now()-pr.t0>3000) earGoDirect('증폭 방식이 이 폰에서 되지 않아 폰 마이크로 바로 듣습니다');
+    }
   }, 120);
 }
 /* 목소리 증폭·응집 */
@@ -11374,12 +11383,21 @@ function earChain(stream){
   earMeter(an);
   return true;
 }
+function earGoDirect(msg){
+  var r=ear.rec;
+  ear.direct=true; ear.probe=null; sSet(EAR_DIRECT_KEY, '1');
+  ear.rec=null;
+  if (r){ r.onend=null; try { r.abort(); } catch(e){} }
+  earFreeStream();          /* 마이크를 먼저 놓아 줘야 인식기가 쓸 수 있다 */
+  if (msg) talkStatus('👂 '+msg);
+  clearTimeout(ear.rt); ear.rt=setTimeout(earRec, 500);
+}
 function earStart(){
   var SR=window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR){ talkStatus('이 브라우저는 음성 인식을 지원하지 않습니다.'); return; }
   if (ear.on) return;
   if (!tbPairCode()){ toast('태블릿을 먼저 연결하세요'); return; }
-  ear.on=true; ear.paused=false; ear.lastHit=Date.now();
+  ear.on=true; ear.paused=false; ear.lastHit=Date.now(); ear.probe=null;
   earBtn();
   talkStatus('👂 손님 말을 기다리는 중… (폰을 손님 쪽으로 향하게 두세요)');
   tbSend('earon', null, talk.lang, null, {tl:talk.lang});
@@ -11401,8 +11419,11 @@ function earRec(){
   if (!ear.on || ear.paused || ear.rec || talk.rec) return;
   r=new SR(); ear.rec=r;
   r.lang=talkLc(talk.lang); r.continuous=true; r.interimResults=true; r.maxAlternatives=1;
+  function alive(){ if (ear.probe && ear.probe.r===r){ ear.probe.got=true; if (!ear.direct) sSet(EAR_DIRECT_KEY, '0'); } }
+  r.onsoundstart=alive; r.onspeechstart=alive;
   r.onresult=function(e){
     var i, res, t;
+    alive();
     for (i=e.resultIndex;i<e.results.length;i++){
       res=e.results[i]; t=String(res[0].transcript||'').trim();
       if (!t) continue;
@@ -11424,6 +11445,9 @@ function earRec(){
     clearTimeout(ear.rt); ear.rt=setTimeout(earRec, 250);   /* 인식기가 쉬면 바로 다시 듣는다 */
   };
   useTrack = !ear.direct && ear.track && ear.ac && ear.ac.state==='running' && ear.track.readyState==='live';
+  /* 증폭 방식이 이미 통한 적이 있으면 검사를 이어 가지 않는다 */
+  if (useTrack && !(ear.probe && ear.probe.got)) ear.probe={r:r, t0:Date.now(), loud:0, got:false};
+  else if (useTrack && ear.probe) ear.probe.r=r;
   try { if (useTrack) r.start(ear.track); else r.start(); }
   catch(e){
     if (useTrack){ ear.direct=true; earFreeStream(); try { r.start(); return; } catch(x){} }
