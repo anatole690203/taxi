@@ -1735,6 +1735,13 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tk-lang button.on{background:#5FD4D4;border-color:#5FD4D4;color:#10262a;font-weight:800}
 .tk-mic{flex:1;min-height:clamp(64px,9vh,96px);border:0;border-radius:14px;background:#138A8A;color:#fff;font-size:clamp(20px,3vh,30px);font-weight:800}
 .tk-mic.on{background:#E53935;animation:tkPulse 1.2s ease-in-out infinite}
+.tk-mic.wait{background:#5A6069}
+.tk-pick{display:none}
+.tk-pick.on{display:flex;flex-direction:column;align-items:stretch;gap:1vh;margin:0 4vw 1.5vh}
+.tk-pq{text-align:center;font-size:clamp(16px,2.2vh,22px);color:#C9CED4}
+.tk-alt{min-height:clamp(52px,7vh,72px);padding:6px 16px;border:1px solid #3A3F46;border-radius:12px;background:#1E2227;color:#fff;font-size:clamp(18px,2.6vh,26px);font-weight:700;word-break:keep-all}
+.tk-alt.main{background:#1F7A3A;border-color:#2FA553}
+.tk-alt.again{background:transparent;color:#FFC61E;border-color:#FFC61E}
 .tk-x{min-height:clamp(64px,9vh,96px);padding:0 24px;border:0;border-radius:14px;background:#FF8A3D;color:#17191c;font-size:clamp(18px,2.6vh,26px);font-weight:800}
 .tk-st{min-height:24px;margin-top:1vh;text-align:center;font-size:clamp(15px,2vh,20px);color:#9AA0A8}
 @keyframes tkPulse{0%,100%{opacity:1}50%{opacity:.7}}
@@ -11093,21 +11100,26 @@ function talkLines(t){
    안드로이드 크롬은 같은 결과를 겹쳐 보내는 일이 있어 전부 이어 붙이면 "hello hello"가 된다.
    → 최종(isFinal) 결과 가운데 마지막 것만 쓰고, 후보(최대 3개) 중 믿음도가 가장 높은 것을 고른다 */
 function srPick(e){
-  var i, r, j, best=null, bc=-1, interim='';
+  var i, r, j, best=null, bc=-1, interim='', alts=[];
   for (i=e.resultIndex||0;i<e.results.length;i++){
     r=e.results[i];
     if (r.isFinal){
-      best=null; bc=-1;
-      for (j=0;j<r.length;j++){ var c=isNum(r[j].confidence) ? r[j].confidence : 0; if (best===null || c>bc){ best=r[j].transcript; bc=c; } }
+      best=null; bc=-1; alts=[];
+      for (j=0;j<r.length;j++){
+        var c=isNum(r[j].confidence) ? r[j].confidence : 0, tt=String(r[j].transcript||'').trim();
+        if (tt && alts.indexOf(tt)<0) alts.push(tt);
+        if (tt && (best===null || c>bc)){ best=tt; bc=c; }
+      }
     } else interim=r[0].transcript;
   }
-  return {fin:best!==null ? String(best).trim() : '', tmp:String(interim||'').trim()};
+  if (best!==null){ alts.splice(alts.indexOf(best),1); alts.unshift(best); }
+  return {fin:best!==null ? best : '', tmp:String(interim||'').trim(), conf:bc, alts:alts};
 }
 /* 한국어 문장 끝에 마침표·물음표가 없으면 붙인다 (번역기가 의문문을 더 정확히 옮긴다) */
 function talkPunct(ko){
   ko=String(ko||'').trim();
   if (!ko || /[.?!。？！]$/.test(ko)) return ko;
-  return ko + (/(까요|나요|습니까|을까|할까|는지요|어때요|괜찮으세요|있으세요|없으세요|드릴까요|맞죠|맞나요|인가요|건가요|세요요|가요)$/.test(ko) ? '?' : '.');
+  return ko + (/(까요|나요|습니까|을까|할까|는지요|어때요|괜찮으세요|있으세요|없으세요|드릴까요|맞죠|맞나요|인가요|건가요|가요|셨어요|시죠|이시지요)$/.test(ko) ? '?' : '.');
 }
 /* 자주 쓰는 말과 같은 문장이면 사람이 다듬은 번역을 그대로 쓴다 */
 function talkQuickMatch(ko, lang){
@@ -11288,18 +11300,14 @@ function talkIn(raw){
     } catch(e){}
     tbSend('talkin', null, l, null, {ko:ko.slice(0,300), t:t, tl:l});
   }
-  /* 원문 언어는 자동 감지: 손님이 고른 버튼과 실제로 말한 언어가 달라도 번역된다. 실패하면 고른 언어로 한 번 더 */
-  gtrTranslate(t, '', 'ko', function(ko, err){
-    if (ko || err==='nokey') done(ko, err);
-    else gtrTranslate(t, l, 'ko', done);
-  });
+  gtrTranslate(t, l, 'ko', done);
 }
 
 /* ── 태블릿 쪽 ── */
 var TK_UI={
-  en:{h:'🗣 Your driver says', hint:'Tap the button below and speak.\nYour words will be translated for the driver.', mic:'🎤 Tap and speak (English)', stop:'Listening… tap to stop', x:'Close', sent:'Sent to the driver', got:'The driver received:', you:'You said:', nosr:'Voice input is not available on this tablet.', again:'Sorry, I could not hear you. Please try again.', ask:'Talk with the driver (voice translation)'},
-  ja:{h:'🗣 運転手からのメッセージ', hint:'下のボタンを押して話してください。\n運転手に翻訳して伝えます。', mic:'🎤 押して話す（日本語）', stop:'聞いています…押すと停止', x:'閉じる', sent:'運転手に送りました', got:'運転手に伝わりました：', you:'あなた：', nosr:'このタブレットでは音声入力が使えません。', again:'聞き取れませんでした。もう一度お願いします。', ask:'運転手と話す（音声翻訳）'},
-  zh:{h:'🗣 司机对您说', hint:'请按下方按钮说话。\n我们会翻译给司机。', mic:'🎤 按下说话（中文）', stop:'正在听…再按停止', x:'关闭', sent:'已发送给司机', got:'司机已收到：', you:'您说：', nosr:'此平板无法使用语音输入。', again:'没有听清，请再说一次。', ask:'和司机对话（语音翻译）'}
+  en:{h:'🗣 Your driver says', hint:'Tap the button below and speak.\nYour words will be translated for the driver.', mic:'🎤 Tap and speak (English)', stop:'Listening… tap to stop', x:'Close', sent:'Sent to the driver', got:'The driver received:', you:'You said:', nosr:'Voice input is not available on this tablet.', wait:'Wait…', now:'Speak now (tap to stop)', chk:'Is this what you said? Tap to send.', redo:'Say again', again:'Sorry, I could not hear you. Please try again.', ask:'Talk with the driver (voice translation)'},
+  ja:{h:'🗣 運転手からのメッセージ', hint:'下のボタンを押して話してください。\n運転手に翻訳して伝えます。', mic:'🎤 押して話す（日本語）', stop:'聞いています…押すと停止', x:'閉じる', sent:'運転手に送りました', got:'運転手に伝わりました：', you:'あなた：', nosr:'このタブレットでは音声入力が使えません。', wait:'お待ちください…', now:'話してください（押すと停止）', chk:'この内容でよろしいですか？押すと送信します。', redo:'もう一度話す', again:'聞き取れませんでした。もう一度お願いします。', ask:'運転手と話す（音声翻訳）'},
+  zh:{h:'🗣 司机对您说', hint:'请按下方按钮说话。\n我们会翻译给司机。', mic:'🎤 按下说话（中文）', stop:'正在听…再按停止', x:'关闭', sent:'已发送给司机', got:'司机已收到：', you:'您说：', nosr:'此平板无法使用语音输入。', wait:'请稍等…', now:'请说话（再按停止）', chk:'您说的是这个吗？按下即发送。', redo:'重新说', again:'没有听清，请再说一次。', ask:'和司机对话（语音翻译）'}
 };
 function tkL(){ var l=tb.talkLang; return (l && TK_UI[l]) ? l : 'en'; }
 function tbTalkBind(){
@@ -11332,6 +11340,7 @@ function tbTalkClose(){
   if (tb.talkTimer){ clearTimeout(tb.talkTimer); tb.talkTimer=null; }
   if ($('tbTalk')) $('tbTalk').className='tbtalk';
   $('tkMain').textContent=''; $('tkKo').textContent=''; $('tkYou').textContent=''; $('tkSt').textContent='';
+  tkPickClear();
 }
 /* 아무 일이 없으면 1분 뒤 닫는다 */
 function tbTalkKeep(){ if (tb.talkTimer) clearTimeout(tb.talkTimer); tb.talkTimer=setTimeout(tbTalkClose, 60000); }
@@ -11366,33 +11375,73 @@ function tbTalkIn(m){
   $('tkSt').textContent='';
   tbTalkKeep();
 }
+/* 손님이 말한 내용을 보내기 전에 확인받는다.
+   인식이 틀리면(예: "yeah I'm going to be for sale") 그대로 기사님께 가던 문제 → 화면에 후보를 보여 주고 손님이 고른다.
+   믿음도가 높으면 4초 뒤 저절로 보낸다 */
+function tkPickBox(){
+  var b=$('tkPick');
+  if (!b){ b=el('div',{cls:'tk-pick', id:'tkPick'}); $('tkYou').parentNode.insertBefore(b, $('tkYou').nextSibling); }
+  return b;
+}
+function tkPickClear(){ if (tb.talkAuto){ clearInterval(tb.talkAuto); tb.talkAuto=null; } if ($('tkPick')){ clear($('tkPick')); $('tkPick').className='tk-pick'; } }
+function tkPickShow(alts, conf, L){
+  var ui=TK_UI[L]||TK_UI.en, box=tkPickBox(), n=4, first;
+  tkPickClear(); box.className='tk-pick on';
+  box.appendChild(el('div',{cls:'tk-pq', text:ui.chk}));
+  alts.slice(0,3).forEach(function(t, i){
+    var btn=el('button',{type:'button', cls: i===0 ? 'tk-alt main' : 'tk-alt', onclick:function(e){ e.stopPropagation(); tkPickClear(); tbTalkSend(t, L); }},[(i===0 ? '✔ ' : '')+t]);
+    if (!i) first=btn;
+    box.appendChild(btn);
+  });
+  box.appendChild(el('button',{type:'button', cls:'tk-alt again', onclick:function(e){ e.stopPropagation(); tkPickClear(); $('tkSt').textContent=''; tbTalkMic(); }},['↻ '+ui.redo]));
+  $('tkSt').textContent='';
+  tbTalkKeep();
+  /* 인식기가 확실하다고 할 때만 저절로 보낸다 */
+  if (conf>=0.75){
+    first.appendChild(el('span',{cls:'tk-cd', text:' ('+n+')'}));
+    tb.talkAuto=setInterval(function(){
+      n--; var cd=first.querySelector('.tk-cd');
+      if (n<=0){ tkPickClear(); tbTalkSend(alts[0], L); return; }
+      if (cd) cd.textContent=' ('+n+')';
+    }, 1000);
+  }
+}
 function tbTalkMic(){
-  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, L=tkL(), ui=TK_UI[L], r, last='', sent=false;
+  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, L=tkL(), ui=TK_UI[L], r, fin=null, tmp='', done=false;
   tbTalkKeep();
   if (!SR){ $('tkSt').textContent=ui.nosr; return; }
   if (tb.talkRec){ try { tb.talkRec.stop(); } catch(e){} return; }
+  tkPickClear();
   try { window.speechSynthesis.cancel(); } catch(e){}
   r=new SR(); tb.talkRec=r;
   r.lang=talkLc(L); r.interimResults=true; r.continuous=false; r.maxAlternatives=3;
-  $('tkMic').className='tk-mic on'; $('tkMic').textContent=ui.stop;
+  /* 마이크가 실제로 켜질 때까지는 "잠깐만요" — 켜지기 전에 말하면 앞말이 잘려 엉뚱한 문장이 된다 */
+  $('tkMic').className='tk-mic wait'; $('tkMic').textContent='⏳ '+ui.wait;
   $('tkSt').textContent='';
-  function go(t){ if (sent || !t) return; sent=true; tbTalkSend(t, L); }
+  r.onstart=function(){ if (tb.talkRec!==r) return; $('tkMic').className='tk-mic on'; $('tkMic').textContent='🔴 '+ui.now; };
   r.onresult=function(e){
     var p=srPick(e);
-    if (p.tmp) last=p.tmp;
+    if (p.tmp) tmp=p.tmp;
     $('tkSt').textContent='"'+(p.fin||p.tmp)+'"';
     tbTalkKeep();
-    if (p.fin){ last=p.fin; go(p.fin); }
+    if (p.fin) fin=p;
   };
   r.onerror=function(ev){
-    if (ev && ev.error==='aborted') return;
-    if (last) return;
-    $('tkSt').textContent = (ev && ev.error==='network') ? '⚠ Network error' : ui.again;
+    var er=ev && ev.error;
+    if (er==='aborted') return;
+    if (fin || tmp) return;
+    $('tkSt').textContent = er==='network' ? '⚠ Network error' : er==='not-allowed' ? '⚠ Microphone blocked' : ui.again;
   };
-  /* 멈춤을 눌러 최종 결과가 오지 않아도 들은 말은 보낸다 (예전에는 이때 말이 사라졌다) */
-  r.onend=function(){ tb.talkRec=null; $('tkMic').className='tk-mic'; $('tkMic').textContent=TK_UI[tkL()].mic; go(last); };
-  /* 기사님 말을 읽어 주던 소리가 마이크에 섞이지 않게 잠깐 쉬고 시작 */
-  setTimeout(function(){ if (tb.talkRec!==r) return; try { r.start(); } catch(e){ r.onend(); } }, 300);
+  r.onend=function(){
+    if (done) return; done=true;
+    if (tb.talkRec===r) tb.talkRec=null;
+    $('tkMic').className='tk-mic'; $('tkMic').textContent=TK_UI[tkL()].mic;
+    /* 최종 결과가 있으면 후보를 보여 준다. 중간 결과만 있으면(도중에 끊김) 믿음도 0으로 확인받는다 — 저절로 보내지 않는다 */
+    if (fin && fin.alts.length) tkPickShow(fin.alts, fin.conf, L);
+    else if (tmp) tkPickShow([tmp], 0, L);
+  };
+  /* 버튼을 누른 그 순간에 바로 시작 (늦게 시작하면 앞말이 잘린다) */
+  try { r.start(); } catch(e){ r.onend(); }
 }
 /* 손님 말 보내기. 서버가 받았는지 확인하고, 안 되면 두 번 더 보낸다 */
 function tbTalkSend(t, L){
