@@ -11330,7 +11330,7 @@ function talkIn(raw){
    그 소리를 음성 인식에 넣는다. 폰 크롬이 이 방식을 못 받으면 폰 마이크(잡음 제거·자동 음량)로 바로 듣는다.
    알아들은 문장은 한국어로 바꿔 보여 주고 읽어 주며, 태블릿에도 "손님이 한 말 / 기사님이 받은 뜻"을 띄운다. */
 var EAR_DIRECT_KEY='airportCallLog.earDirect.v1';
-var ear={on:false, rec:null, stream:null, ac:null, track:null, direct:sGet(EAR_DIRECT_KEY)==='1', probe:null, paused:false, lastHit:0, mute:0, lastTx:'', lastTxAt:0, lvIv:null, rt:null};
+var ear={buf:[], bt:null, on:false, rec:null, stream:null, ac:null, track:null, direct:sGet(EAR_DIRECT_KEY)==='1', probe:null, paused:false, lastHit:0, mute:0, lastTx:'', lastTxAt:0, lvIv:null, rt:null};
 function earLangName(){ return {en:'영어', ja:'일본어', zh:'중국어'}[talk.lang]||'영어'; }
 function earBtn(){
   var b=$('tpEar');
@@ -11418,7 +11418,8 @@ function earRec(){
   var SR=window.SpeechRecognition || window.webkitSpeechRecognition, r, useTrack;
   if (!ear.on || ear.paused || ear.rec || talk.rec) return;
   r=new SR(); ear.rec=r;
-  r.lang=talkLc(talk.lang); r.continuous=true; r.interimResults=true; r.maxAlternatives=1;
+  /* 계속 듣기(continuous)는 안드로이드에서 문장을 잘게 자른다 → 한 문장씩 듣고 곧바로 다시 듣는다 */
+  r.lang=talkLc(talk.lang); r.continuous=false; r.interimResults=true; r.maxAlternatives=4;
   function alive(){ if (ear.probe && ear.probe.r===r){ ear.probe.got=true; if (!ear.direct) sSet(EAR_DIRECT_KEY, '0'); } }
   r.onsoundstart=alive; r.onspeechstart=alive;
   r.onresult=function(e){
@@ -11427,8 +11428,12 @@ function earRec(){
     for (i=e.resultIndex;i<e.results.length;i++){
       res=e.results[i]; t=String(res[0].transcript||'').trim();
       if (!t) continue;
-      if (!res.isFinal){ if (Date.now()>=ear.mute) talkStatus('👂 "'+t+'"'); continue; }
-      earGot(t, isNum(res[0].confidence) ? res[0].confidence : 0);
+      if (!res.isFinal){
+        if (Date.now()>=ear.mute){ talkStatus('👂 "'+(ear.buf.length ? ear.buf.join(' ')+' ' : '')+t+'"'); earBufWait(); }
+        continue;
+      }
+      var pk=earPickAlt(res);
+      earGot(pk.t, pk.c);
     }
   };
   r.onerror=function(ev){
@@ -11463,18 +11468,77 @@ function earSimilar(a, b){
   A.forEach(function(w){ if (set[w]) n++; });
   return n/A.length;
 }
+/* 영어 인식기가 모르는 서울 지명을 비슷한 영어 단어로 바꿔 버리는 것을 되돌린다 (예: Incheon → intern, Hinton) */
+var EAR_PLACE=['Incheon','Gimpo','Seoul','Myeongdong','Hongdae','Gangnam','Itaewon','Insadong','Bukchon','Dongdaemun','Namdaemun','Gyeongbokgung','Changdeokgung','Jamsil','Yeouido','Seongsu','Euljiro','Jongno','Gwanghwamun','Namsan','Lotte','Shilla','COEX','terminal','airport','station','hotel'];
+var EAR_FIX_ALWAYS=[
+  [/\b(myung|myong|miong|myeong|me young|mean|young)[\s-]?dong\b/gi,'Myeongdong'],
+  [/\bhong[\s-]?(day|dae|die|dye|they)\b/gi,'Hongdae'],
+  [/\bgang[\s-]?(nam|name|numb|mom)\b/gi,'Gangnam'],
+  [/\b(itai|itae|eat a|i ta|it a|ita)[\s-]?(won|one|wan)\b/gi,'Itaewon'],
+  [/\bdong[\s-]?(dae|day|die)[\s-]?(moon|mun|mon)\b/gi,'Dongdaemun'],
+  [/\bnam[\s-]?(dae|day|die)[\s-]?(moon|mun|mon)\b/gi,'Namdaemun'],
+  [/\b(insa|in sa|inside)[\s-]?dong\b/gi,'Insadong'],
+  [/\b(book|buk|boo)[\s-]?(chon|chun|john|shone)\b/gi,'Bukchon'],
+  [/\bjam[\s-]?(sil|seal|shil|sill)\b/gi,'Jamsil'],
+  [/\b(yeo|yo|yuh|you)[\s-]?(ui|we|wee|e)[\s-]?(do|dough|doe)\b/gi,'Yeouido'],
+  [/\b(gyeong|kyung|kyong|young|gyung)[\s-]?(bok|bock|book)(?:[\s-]?(?:gung|goong|kung))?(?:\s+palace)?\b/gi,'Gyeongbokgung'],
+  [/\b(nam[\s-]?san|nom[\s-]?san)\b/gi,'Namsan'],
+  [/\bsoul\b/gi,'Seoul']
+];
+/* 공항·터미널 이야기이거나 짧은 말일 때만 바꾼다 (진짜 intern·Hilton과 헷갈리지 않게) */
+var EAR_FIX_CTX=[
+  [/\b(interns?|inchon|in[\s-]?chon|in[\s-]?chun|in[\s-]?chan|in[\s-]?chen|in[\s-]?chin|inch[\s-]?on|inch[\s-]?in|in[\s-]?turn|in[\s-]?town|hinton|hinchon|inching|intention)\b/gi,'Incheon'],
+  [/\b(kimpo|kim[\s-]?po|gym[\s-]?po|gimbo|kimbo|kimball|gimpel|jim[\s-]?po)\b/gi,'Gimpo']
+];
+function earFix(t, lang){
+  var i, x=String(t||''), ctx;
+  if (lang!=='en') return x;
+  for (i=0;i<EAR_FIX_ALWAYS.length;i++) x=x.replace(EAR_FIX_ALWAYS[i][0], EAR_FIX_ALWAYS[i][1]);
+  ctx=/\b(airport|terminal|flight|airline|departure|arrival|international)\b/i.test(x) || x.split(/\s+/).length<=3;
+  if (ctx) for (i=0;i<EAR_FIX_CTX.length;i++) x=x.replace(EAR_FIX_CTX[i][0], EAR_FIX_CTX[i][1]);
+  /* "Incheon airport to …"처럼 앞뒤가 뒤집혀 들어와도 번역이 되게 공항 이름은 대문자로 */
+  x=x.replace(/\b(incheon|gimpo)\s+(international\s+)?airport\b/gi, function(m, a, b){ return a.charAt(0).toUpperCase()+a.slice(1).toLowerCase()+' '+(b ? 'International ' : '')+'Airport'; });
+  return x;
+}
+/* 후보 여러 개 중 서울 지명이 들어 있는 것을 먼저 고른다 */
+function earPickAlt(res){
+  var j, a, t, c, sc, best={t:String(res[0].transcript||'').trim(), c:isNum(res[0].confidence) ? res[0].confidence : 0, s:-1};
+  for (j=0;j<res.length;j++){
+    a=res[j]; t=String(a.transcript||'').trim(); if (!t) continue;
+    c=isNum(a.confidence) ? a.confidence : 0;
+    sc=(j===0 ? 0.15 : 0) + c;
+    EAR_PLACE.forEach(function(pl){ if (new RegExp('\\b'+pl+'\\b','i').test(earFix(t, talk.lang))) sc+=0.3; });
+    if (sc>best.s) best={t:t, c:(j===0 ? c : Math.max(c, best.c)), s:sc};
+  }
+  return best;
+}
+/* 조각 모으기: 손님이 말을 잠깐 쉬어도 1.6초 안에 이어 말하면 한 문장으로 합쳐서 번역한다 */
+function earBufWait(){ clearTimeout(ear.bt); ear.bt=setTimeout(earFlush, 1600); }
+function earFlush(){
+  var t;
+  clearTimeout(ear.bt); ear.bt=null;
+  if (!ear.buf.length) return;
+  t=ear.buf.join(' '); ear.buf=[];
+  t=earFix(t, talk.lang).replace(/\s+/g,' ').trim();
+  if (t.replace(/\s/g,'').length<2) return;
+  ear.lastHit=Date.now();
+  talkStatus('');
+  talkIn(talk.lang+'|'+t);
+}
 function earGot(t, c){
   t=String(t||'').replace(/\s+/g,' ').trim();
   if (t.replace(/\s/g,'').length<2) return;
   if (Date.now()<ear.mute) return;                                       /* 태블릿이 기사님 말을 읽어 주는 중 */
   if (ear.lastTx && Date.now()-ear.lastTxAt<30000 && earSimilar(t, ear.lastTx)>=0.6) return;
-  if (c>0 && c<0.35){ talkStatus('👂 잘 안 들렸습니다: "'+t+'" — 손님께 다시 말해 달라고 하세요'); return; }
+  if (c>0 && c<0.3){ talkStatus('👂 잘 안 들렸습니다: "'+t+'" — 손님께 다시 말해 달라고 하세요'); return; }
   ear.lastHit=Date.now();
-  talkStatus('');
-  talkIn(talk.lang+'|'+t);
+  ear.buf.push(t);
+  talkStatus('👂 "'+ear.buf.join(' ')+'" …');
+  earBufWait();
 }
 function earPause(){
   if (!ear.on) return;
+  earFlush();
   ear.paused=true; clearTimeout(ear.rt);
   if (ear.rec){ var r=ear.rec; ear.rec=null; try { r.abort(); } catch(e){} }
 }
@@ -11485,6 +11549,7 @@ function earResume(ms){
 }
 function earStop(){
   var was=ear.on;
+  earFlush();
   ear.on=false; ear.paused=false; clearTimeout(ear.rt);
   if (ear.rec){ var r=ear.rec; ear.rec=null; try { r.abort(); } catch(e){} }
   earFreeStream();
