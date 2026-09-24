@@ -1724,7 +1724,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tbtalk{position:absolute;inset:0;z-index:19;display:none;flex-direction:column;background:#101215;color:#fff;padding:3vh 4vw}
 .tbtalk.on{display:flex}
 .tk-h{font-size:clamp(18px,2.6vh,26px);font-weight:800;color:#5FD4D4;margin-bottom:1.5vh}
-.tk-main{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(34px,6.4vh,64px);font-weight:800;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere;overflow-y:auto}
+.tk-main{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;text-align:center;white-space:pre-line;font-size:clamp(34px,6.4vh,64px);font-weight:800;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere;overflow-y:auto}
 .tk-main.hint{font-size:clamp(22px,3.6vh,36px);font-weight:600;color:#C9CED4}
 .tk-ko{text-align:center;font-size:clamp(17px,2.4vh,24px);color:#9AA0A8;margin:1vh 0 1.5vh;word-break:keep-all}
 .tk-you{min-height:0;text-align:center;font-size:clamp(17px,2.4vh,24px);color:#FFC61E;margin-bottom:1.5vh;word-break:keep-all}
@@ -8664,7 +8664,7 @@ function bindTabletPhone(){
     sSet(TOUR_SRV_KEY, v.replace(/\/+$/,'')); toast(v ? '관광·맛집 정보 서버를 저장했습니다' : '서버 주소를 지웠습니다');
   });
   $('tourAll').addEventListener('change', function(){ sSet(TOUR_ALL_KEY, this.checked ? '1' : '0'); });
-  document.addEventListener('visibilitychange', function(){ if (!document.hidden) rqConnect(); });
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) rqConnect(true); });
   talkBind();
   renderTabletPhone();
 }
@@ -8780,26 +8780,41 @@ function tbSendKeys(){
   } catch(e){ toast('보내지 못했습니다'); }
 }
 /* 손님 요청 받기 (이 앱이 열려 있을 때). 내비를 볼 때는 ntfy 앱이 대신 알려 준다 */
-var rqEs=null, rqCode='';
-function rqConnect(){
+var rqEs=null, rqCode='', rqSeen={}, rqLast=0, rqWatch=null, rqStart=0;
+function rqHandle(d){
+  if (!d || (d.event && d.event!=='message') || !d.message) return;
+  if (d.id){ if (rqSeen[d.id]) return; rqSeen[d.id]=1; }
+  if (d.time && Date.now()/1000-d.time > 180) return;
+  /* 이 앱을 연 뒤에 온 것만 (다시 이을 때 예전 경로 선택 등이 되살아나지 않게) */
+  if (d.time && d.time*1000 < rqStart-5000) return;
+  /* 태블릿에서 손님이 경로를 골랐다 */
+  if (String(d.message).indexOf('#MEDIA ')===0){ tbMediaAck(String(d.message).slice(7)); return; }
+  if (String(d.message).indexOf('#PFSYNC ')===0){ tbPfSyncReply(String(d.message).slice(8)); return; }
+  if (String(d.message).indexOf('#PF ')===0){ tbPfApplied(String(d.message).slice(4)); return; }
+  if (String(d.message).indexOf('#TALK ')===0){ talkIn(String(d.message).slice(6)); return; }
+  if (String(d.message).indexOf('#ROUTE ')===0){ try { routePicked(JSON.parse(String(d.message).slice(7))); } catch(x){} return; }
+  rqShow(String(d.message).slice(0,80));
+}
+function rqConnect(force){
   var code=tbPairCode();
   if (!code || !window.EventSource || (typeof tb!=='undefined' && tb.on)) return;
-  if (rqEs && rqEs.readyState!==2 && rqCode===code) return;
+  if (!force && rqEs && rqEs.readyState!==2 && rqCode===code && Date.now()-rqLast < 120000) return;
   try { if (rqEs) rqEs.close(); } catch(e){}
-  try { rqEs=new EventSource(TB_RELAY+tbRqTopic(code)+'/sse'); rqCode=code; } catch(e){ rqEs=null; return; }
+  /* 다시 이을 때는 끊긴 동안(최근 3분) 온 것도 받는다. 이미 처리한 것은 id로 걸러진다 */
+  try { rqEs=new EventSource(TB_RELAY+tbRqTopic(code)+'/sse'+(rqCode===code ? '?since=3m' : '')); rqCode=code; } catch(e){ rqEs=null; return; }
+  rqLast=Date.now(); if (!rqStart) rqStart=rqLast;
+  rqEs.onopen=function(){ rqLast=Date.now(); };
   rqEs.onmessage=function(e){
     var d;
+    rqLast=Date.now();   /* keepalive도 여기로 온다 */
     try { d=JSON.parse(e.data); } catch(x){ return; }
-    if (!d || (d.event && d.event!=='message') || !d.message) return;
-    if (d.time && Date.now()/1000-d.time > 180) return;
-    /* 태블릿에서 손님이 경로를 골랐다 */
-    if (String(d.message).indexOf('#MEDIA ')===0){ tbMediaAck(String(d.message).slice(7)); return; }
-    if (String(d.message).indexOf('#PFSYNC ')===0){ tbPfSyncReply(String(d.message).slice(8)); return; }
-    if (String(d.message).indexOf('#PF ')===0){ tbPfApplied(String(d.message).slice(4)); return; }
-    if (String(d.message).indexOf('#TALK ')===0){ talkIn(String(d.message).slice(6)); return; }
-    if (String(d.message).indexOf('#ROUTE ')===0){ try { routePicked(JSON.parse(String(d.message).slice(7))); } catch(x){} return; }
-    rqShow(String(d.message).slice(0,80));
+    rqHandle(d);
   };
+  /* 연결 감시: 2분 넘게 소식이 없으면(소리 없이 끊김) 다시 잇는다 */
+  if (!rqWatch) rqWatch=setInterval(function(){
+    if (document.hidden || !rqEs) return;
+    if (rqEs.readyState===2 || Date.now()-rqLast > 120000) rqConnect(true);
+  }, 20000);
 }
 function rqShow(text){
   toast('🔔 손님 요청: '+text, '알겠습니다', function(){
@@ -11070,17 +11085,47 @@ var GTR_KEY_KEY='airportCallLog.gtrKey.v1';
 var TALK_LANG_KEY='airportCallLog.talkLang.v1';
 function gtrKey(){ return String(sGet(GTR_KEY_KEY)||'').trim(); }
 function talkLc(l){ return l==='ja' ? 'ja-JP' : l==='zh' ? 'zh-CN' : l==='ko' ? 'ko-KR' : 'en-US'; }
+/* 문장마다 줄을 나눈다: "Thank you. Enjoy your trip." → 두 줄. 3.5 같은 숫자는 나누지 않는다 */
+function talkLines(t){
+  return String(t||'').replace(/([.!?])\s+(?=\S)/g,'$1\n').replace(/([。！？])\s*(?=\S)/g,'$1\n').replace(/\n{2,}/g,'\n').trim();
+}
+/* 음성 인식 결과 고르기.
+   안드로이드 크롬은 같은 결과를 겹쳐 보내는 일이 있어 전부 이어 붙이면 "hello hello"가 된다.
+   → 최종(isFinal) 결과 가운데 마지막 것만 쓰고, 후보(최대 3개) 중 믿음도가 가장 높은 것을 고른다 */
+function srPick(e){
+  var i, r, j, best=null, bc=-1, interim='';
+  for (i=e.resultIndex||0;i<e.results.length;i++){
+    r=e.results[i];
+    if (r.isFinal){
+      best=null; bc=-1;
+      for (j=0;j<r.length;j++){ var c=isNum(r[j].confidence) ? r[j].confidence : 0; if (best===null || c>bc){ best=r[j].transcript; bc=c; } }
+    } else interim=r[0].transcript;
+  }
+  return {fin:best!==null ? String(best).trim() : '', tmp:String(interim||'').trim()};
+}
+/* 한국어 문장 끝에 마침표·물음표가 없으면 붙인다 (번역기가 의문문을 더 정확히 옮긴다) */
+function talkPunct(ko){
+  ko=String(ko||'').trim();
+  if (!ko || /[.?!。？！]$/.test(ko)) return ko;
+  return ko + (/(까요|나요|습니까|을까|할까|는지요|어때요|괜찮으세요|있으세요|없으세요|드릴까요|맞죠|맞나요|인가요|건가요|세요요|가요)$/.test(ko) ? '?' : '.');
+}
+/* 자주 쓰는 말과 같은 문장이면 사람이 다듬은 번역을 그대로 쓴다 */
+function talkQuickMatch(ko, lang){
+  var k=String(ko||'').replace(/[\s.?!,~]/g,''), i, q;
+  for (i=0;i<TALK_QUICK.length;i++){ q=TALK_QUICK[i]; if (q.ko.replace(/[\s.?!,~]/g,'')===k) return q[lang]||null; }
+  return null;
+}
 /* 구글 번역 v2. 키는 웹사이트 제한(taxi.lovech.co.kr)을 걸어 두면 이 앱에서만 쓰인다 */
 function gtrTranslate(text, src, tgt, cb){
   var key=gtrKey(), done=false;
   function fin(t, err){ if (done) return; done=true; cb(t, err); }
   if (!key){ fin(null, 'nokey'); return; }
-  if (src===tgt){ fin(text); return; }
+  if (src && src===tgt){ fin(text); return; }
   setTimeout(function(){ fin(null, 'timeout'); }, 12000);
   try {
     fetch('https://translation.googleapis.com/language/translate/v2?key='+encodeURIComponent(key), {
       method:'POST', mode:'cors', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({q:text, source: src==='zh' ? 'zh-CN' : src, target: tgt==='zh' ? 'zh-CN' : tgt, format:'text'})
+      body:JSON.stringify(src ? {q:text, source: src==='zh' ? 'zh-CN' : src, target: tgt==='zh' ? 'zh-CN' : tgt, format:'text', model:'nmt'} : {q:text, target: tgt==='zh' ? 'zh-CN' : tgt, format:'text', model:'nmt'})
     }).then(function(r){
       return r.json().then(function(j){ return {ok:r.ok, j:j}; }, function(){ return {ok:false, j:null}; });
     }).then(function(x){
@@ -11175,32 +11220,41 @@ function talkAdd(who, main, sub){
   return {box:b, sub:sEl};
 }
 function talkMic(){
-  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, r, txt='';
+  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, r, last='', sent=false;
   if (!SR){ talkStatus('이 브라우저는 음성 인식을 지원하지 않습니다. 글자로 적어 보내 주세요.'); return; }
   if (talk.rec){ try { talk.rec.stop(); } catch(e){} return; }
   try { window.speechSynthesis.cancel(); } catch(e){}
   r=new SR(); talk.rec=r;
-  r.lang='ko-KR'; r.interimResults=true; r.maxAlternatives=1;
+  r.lang='ko-KR'; r.interimResults=true; r.continuous=false; r.maxAlternatives=3;
   $('tpMic').className='tp-mic on'; $('tpMic').textContent='듣는 중… (다시 누르면 멈춤)';
   talkStatus('말씀하세요');
+  function go(t){ if (sent || !t) return; sent=true; talkStatus(''); talkGo(t); }
   r.onresult=function(e){
-    var i, t='';
-    for (i=0;i<e.results.length;i++) t+=e.results[i][0].transcript;
-    txt=t; talkStatus('"'+t+'"');
-    if (e.results[e.results.length-1].isFinal){ talkStatus(''); talkGo(t); txt=''; }
+    var p=srPick(e);
+    if (p.tmp) last=p.tmp;
+    talkStatus('"'+(p.fin||p.tmp)+'"');
+    if (p.fin){ last=p.fin; go(p.fin); }
   };
   r.onerror=function(ev){
+    if (ev && ev.error==='aborted') return;
+    if (last) return;   /* 들은 말이 있으면 끝날 때 보낸다 */
     talkStatus(ev && ev.error==='not-allowed' ? '마이크 권한이 필요합니다. 브라우저 설정에서 허용하세요.'
-             : ev && ev.error==='no-speech' ? '말소리가 들리지 않았습니다. 다시 눌러 주세요.' : '알아듣지 못했습니다. 다시 눌러 주세요.');
+             : ev && ev.error==='no-speech' ? '말소리가 들리지 않았습니다. 다시 눌러 주세요.'
+             : ev && ev.error==='network' ? '음성 인식 서버에 연결하지 못했습니다. 인터넷을 확인해 주세요.' : '알아듣지 못했습니다. 다시 눌러 주세요.');
   };
-  r.onend=function(){ talk.rec=null; $('tpMic').className='tp-mic'; $('tpMic').textContent='🎤 누르고 한국어로 말하기'; };
-  try { r.start(); } catch(e){ r.onend(); }
+  /* 멈춤을 눌러 최종 결과가 오지 않았어도 들은 말은 보낸다 */
+  r.onend=function(){ talk.rec=null; $('tpMic').className='tp-mic'; $('tpMic').textContent='🎤 누르고 한국어로 말하기'; go(last); };
+  /* 읽어 주던 소리가 마이크에 들어가지 않게 잠깐 쉬고 시작 */
+  setTimeout(function(){ if (talk.rec!==r) return; try { r.start(); } catch(e){ r.onend(); } }, 250);
 }
 function talkGo(ko){
   var item, lang=talk.lang;
   ko=String(ko||'').replace(/\s+/g,' ').trim().slice(0,300);
   if (!ko) return;
   if (!tbPairCode()){ toast('설정 탭에서 태블릿을 먼저 연결하세요'); return; }
+  ko=talkPunct(ko);
+  var qm=talkQuickMatch(ko, lang);
+  if (qm){ item=talkAdd('me', ko, qm); talkSendDone(ko, qm, item, lang); return; }
   item=talkAdd('me', ko, '번역 중…');
   gtrTranslate(ko, 'ko', lang, function(tx, err){
     if (!tx){ item.sub.textContent=gtrErrText(err); item.box.className+=' err'; return; }
@@ -11222,7 +11276,7 @@ function talkIn(raw){
   if (!talk.open) talkOpenPh(l); else if (l!=='ko' && l!==talk.lang){ talk.lang=l; talkPaintLang(); talkPaintQuick(); }
   try { if (navigator.vibrate) navigator.vibrate([200,100,200]); } catch(e){}
   item=talkAdd('gu', '…', t);
-  gtrTranslate(t, l, 'ko', function(ko, err){
+  function done(ko, err){
     if (!ko){ item.box.firstChild.textContent='(번역 안 됨) '+t; item.sub.textContent=gtrErrText(err); return; }
     item.box.firstChild.textContent=ko;
     try {
@@ -11233,6 +11287,11 @@ function talkIn(raw){
       }
     } catch(e){}
     tbSend('talkin', null, l, null, {ko:ko.slice(0,300), t:t, tl:l});
+  }
+  /* 원문 언어는 자동 감지: 손님이 고른 버튼과 실제로 말한 언어가 달라도 번역된다. 실패하면 고른 언어로 한 번 더 */
+  gtrTranslate(t, '', 'ko', function(ko, err){
+    if (ko || err==='nokey') done(ko, err);
+    else gtrTranslate(t, l, 'ko', done);
   });
 }
 
@@ -11283,7 +11342,7 @@ function tbTalkMsg(m){
   try { tbReqClose(); } catch(e){}
   tb.talkLang=L;
   tbTalkOpen(L);
-  $('tkMain').className='tk-main'; $('tkMain').textContent=tx;
+  $('tkMain').className='tk-main'; $('tkMain').textContent=talkLines(tx);
   $('tkKo').textContent=String(m.ko||'');
   $('tkSt').textContent='';
   /* 통역은 기사님이 직접 보낸 것이라 음성 설정과 상관없이 읽어 준다 */
@@ -11308,34 +11367,52 @@ function tbTalkIn(m){
   tbTalkKeep();
 }
 function tbTalkMic(){
-  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, L=tkL(), ui=TK_UI[L], r;
+  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, L=tkL(), ui=TK_UI[L], r, last='', sent=false;
   tbTalkKeep();
   if (!SR){ $('tkSt').textContent=ui.nosr; return; }
   if (tb.talkRec){ try { tb.talkRec.stop(); } catch(e){} return; }
   try { window.speechSynthesis.cancel(); } catch(e){}
   r=new SR(); tb.talkRec=r;
-  r.lang=talkLc(L); r.interimResults=true; r.maxAlternatives=1;
+  r.lang=talkLc(L); r.interimResults=true; r.continuous=false; r.maxAlternatives=3;
   $('tkMic').className='tk-mic on'; $('tkMic').textContent=ui.stop;
   $('tkSt').textContent='';
+  function go(t){ if (sent || !t) return; sent=true; tbTalkSend(t, L); }
   r.onresult=function(e){
-    var i, t='';
-    for (i=0;i<e.results.length;i++) t+=e.results[i][0].transcript;
-    $('tkSt').textContent='"'+t+'"';
-    if (e.results[e.results.length-1].isFinal) tbTalkSend(t, L);
+    var p=srPick(e);
+    if (p.tmp) last=p.tmp;
+    $('tkSt').textContent='"'+(p.fin||p.tmp)+'"';
+    tbTalkKeep();
+    if (p.fin){ last=p.fin; go(p.fin); }
   };
-  r.onerror=function(){ $('tkSt').textContent=ui.again; };
-  r.onend=function(){ tb.talkRec=null; $('tkMic').className='tk-mic'; $('tkMic').textContent=TK_UI[tkL()].mic; };
-  try { r.start(); } catch(e){ r.onend(); }
+  r.onerror=function(ev){
+    if (ev && ev.error==='aborted') return;
+    if (last) return;
+    $('tkSt').textContent = (ev && ev.error==='network') ? '⚠ Network error' : ui.again;
+  };
+  /* 멈춤을 눌러 최종 결과가 오지 않아도 들은 말은 보낸다 (예전에는 이때 말이 사라졌다) */
+  r.onend=function(){ tb.talkRec=null; $('tkMic').className='tk-mic'; $('tkMic').textContent=TK_UI[tkL()].mic; go(last); };
+  /* 기사님 말을 읽어 주던 소리가 마이크에 섞이지 않게 잠깐 쉬고 시작 */
+  setTimeout(function(){ if (tb.talkRec!==r) return; try { r.start(); } catch(e){ r.onend(); } }, 300);
 }
+/* 손님 말 보내기. 서버가 받았는지 확인하고, 안 되면 두 번 더 보낸다 */
 function tbTalkSend(t, L){
-  var ui=TK_UI[L]||TK_UI.en, body;
+  var ui=TK_UI[L]||TK_UI.en, body, tries=0;
   t=String(t||'').replace(/[\r\n|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,300);
-  if (!t || !tb.code) return;
-  body={topic:tbRqTopic(tb.code), title:'🗣 손님 말', message:'#TALK '+L+'|'+t, priority:3, tags:['speech_balloon']};
-  try { fetch(TB_RELAY, {method:'POST', body:JSON.stringify(body), mode:'cors'}).catch(function(){}); } catch(e){}
+  if (!t) return;
+  if (!tb.code){ $('tkSt').textContent='⚠ Not connected'; return; }
+  body=JSON.stringify({topic:tbRqTopic(tb.code), title:'🗣 손님 말', message:'#TALK '+L+'|'+t, priority:4, tags:['speech_balloon']});
   clear($('tkYou'));
   $('tkYou').appendChild(document.createTextNode(ui.you+' '+t));
-  $('tkSt').textContent='📨 '+ui.sent;
+  $('tkSt').textContent='📨 …';
+  function fail(){ if (++tries<3) setTimeout(post, 1500*tries); else $('tkSt').textContent='⚠ '+ui.again; }
+  function post(){
+    try {
+      fetch(TB_RELAY, {method:'POST', body:body, mode:'cors', cache:'no-store'}).then(function(r){
+        if (r && r.ok) $('tkSt').textContent='📨 '+ui.sent; else fail();
+      }, fail);
+    } catch(e){ fail(); }
+  }
+  post();
   tbTalkKeep();
 }
 /* 한국어로 먼저 말하고, 손님 언어(모르면 영어)로 한 번 더 말한다 */
