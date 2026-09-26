@@ -2470,6 +2470,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
       <div class="field">
         <label for="naviApp">길찾기·내비 앱 (지역과 호텔을 눌렀을 때 열림)</label>
         <select id="naviApp">
+          <option value="tmap">T맵 바로 길안내 (교통최적)</option>
           <option value="naver">네이버 지도 길찾기</option>
           <option value="kakaonavi">카카오내비 길안내</option>
           <option value="kakaomap">카카오맵 길찾기</option>
@@ -3563,15 +3564,19 @@ var KJS_URLS = ['https://t1.kakaocdn.net/kakao_js_sdk/2.7.5/kakao.min.js',
                 'https://t1.kakaocdn.net/kakao_js_sdk/v1/kakao.min.js'];
 function getNaviApp(){
   var v=sGet(NAVAPP_KEY);
-  return (v==='kakaonavi' || v==='kakaomap' || v==='naver') ? v : 'naver';
+  /* 2026-09-26: 지도에서 장소를 누르면 T맵 교통최적 경로로 바로 안내하기로 함 → 예전 설정값을 한 번만 T맵으로 옮긴다 */
+  if (sGet('airportCallLog.naviTmapMig.v1')!=='1'){ sSet('airportCallLog.naviTmapMig.v1','1'); sSet(NAVAPP_KEY,'tmap'); v='tmap'; }
+  return (v==='tmap' || v==='kakaonavi' || v==='kakaomap' || v==='naver') ? v : 'tmap';
 }
-function naviAppName(a){ return a==='kakaonavi' ? '카카오내비' : a==='kakaomap' ? '카카오맵' : '네이버 지도'; }
+function naviAppName(a){ return a==='tmap' ? 'T맵' : a==='kakaonavi' ? '카카오내비' : a==='kakaomap' ? '카카오맵' : '네이버 지도'; }
 function kakaoMapRouteUrl(lat, lng, name){
   return 'https://map.kakao.com/link/to/'+encodeURIComponent(name)+','+lat+','+lng;
 }
 /* 카카오내비는 앱을 직접 실행하므로 링크 주소는 카카오맵 길찾기를 예비로 둔다 */
 function routeUrl(lat, lng, name, app){
   app = app || getNaviApp();
+  /* T맵 바로안내: 교통최적(티맵 추천) 경로로 곧바로 음성 길안내 */
+  if (app==='tmap') return tmapNaviUrl(lat, lng, name);
   if (app==='kakaonavi'){
     var u=kakaoNaviUrl(lat, lng, name);
     return u || kakaoMapRouteUrl(lat, lng, name);
@@ -3580,7 +3585,7 @@ function routeUrl(lat, lng, name, app){
   return naverRouteUrl(lat, lng, name);
 }
 function navLinkHtml(lat, lng, name){
-  return '<a class="navlink" data-lat="'+lat+'" data-lng="'+lng+'" data-name="'+escapeHtml(name)+'" href="'+escapeHtml(routeUrl(lat,lng,name))+'">'+naviAppName(getNaviApp())+' 길찾기</a>';
+  return '<a class="navlink" data-lat="'+lat+'" data-lng="'+lng+'" data-name="'+escapeHtml(name)+'" href="'+escapeHtml(routeUrl(lat,lng,name))+'">'+(getNaviApp()==='tmap' ? 'T맵 길안내 (교통최적)' : naviAppName(getNaviApp())+' 길찾기')+'</a>';
 }
 var KNAVI_PKG = 'com.locnall.KimGiSa';
 var KNAVI_STORE = 'https://play.google.com/store/apps/details?id='+KNAVI_PKG;
