@@ -13,7 +13,7 @@
 /* 안심도착(?s)·여행가이드(?pl)·손님 안내(?g, ?p=1)·태블릿(?tablet) 주소로 열면
    그 화면이 준비될 때까지 기사용 입력 화면을 보여 주지 않는다 */
 (function(){
-  if (/[?&](s|pl|g|tablet)=|[?&]p=1\b/.test(location.search)){
+  if (/[?&](s|pl|g|tablet|bk)=|[?&]p=1\b/.test(location.search)){
     document.documentElement.className+=' bootx';
     setTimeout(function(){ document.documentElement.className=document.documentElement.className.replace(/\s*\bbootx\b/g,''); }, 5000);
   }
@@ -1059,7 +1059,7 @@ svg.cmp .ndl{transform-box:view-box;transform-origin:16px 16px;animation:cmpNdl 
 .tbguidebtn{background:#5B2A9B!important;color:#fff!important;border-color:#5B2A9B!important}
 .tbguidebtn .lb i{opacity:.9}
 /* QR로 연 손님 폰 화면: 뒤의 기사 화면 숨김 */
-body.solo>*:not(.shv):not(.gland):not(.pgend){display:none!important}
+body.solo>*:not(.shv):not(.gland):not(.pgend):not(.bkg){display:none!important}
 .pgend{position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;background:#101215;color:#fff;text-align:center}
 .pgend .pe-ic{font-size:56px}
 .pgend b{font-size:26px;color:#FFC61E}
@@ -1694,6 +1694,99 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tt-eta .tplab span:first-child{color:#C4A1FF}
 .tt-eta .tplab span:last-child{color:#3DDC84;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+
+/* ───── 손님 통역 · 예약 버튼 줄 (모든 탭 위에 항상) ───── */
+.xrow{display:flex;gap:8px;margin:8px 16px 0}
+.xrow button{flex:1 1 50%;min-height:48px;padding:0 6px;border:0;border-radius:4px;color:#fff;font-size:15px;font-weight:800;white-space:nowrap;position:relative}
+.xrow #talkOpen{background:#138A8A}
+.xrow #bkOpen{background:#6C4BD8}
+.xrow .bdg{position:absolute;top:-6px;right:-4px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#E53935;color:#fff;font-size:13px;font-weight:900;line-height:22px;box-shadow:0 0 0 2px var(--bg,#15171b)}
+/* ───── 기사 폰: 예약 화면 ───── */
+.bkph{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;background:#15171b;color:#EDEFF2;padding:max(12px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom))}
+.bkph.on{display:flex}
+.bk-h{display:flex;justify-content:space-between;align-items:center;margin:2px 0 10px}
+.bk-h b{font-size:22px}
+.bk-x{border:0;border-radius:10px;background:#FF8A3D;color:#17191c;font-weight:800;font-size:16px;padding:10px 18px}
+.bk-tabs{display:flex;gap:6px;margin-bottom:10px}
+.bk-tabs button{flex:1;border:0;border-radius:9px;background:#22262c;color:#C9CED4;font-size:15px;padding:10px 0;font-weight:600}
+.bk-tabs button.on{background:#138A8A;color:#fff;font-weight:800}
+.bk-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:10px}
+.bk-empty{color:#8E959E;font-size:15px;text-align:center;padding:26px 10px}
+.bk-card{background:#1E2227;border:1px solid #343941;border-radius:14px;padding:13px 14px;margin-bottom:10px;font-size:15px;line-height:1.5}
+.bk-card.new{border:2px solid #FFC81E;background:#221f14}
+.bk-tag{display:inline-block;font-size:12px;font-weight:800;padding:2px 8px;border-radius:10px;margin-right:6px}
+.bk-tag.y{background:#FFC81E;color:#17191c}.bk-tag.g{background:#138A8A;color:#fff}
+.bkph .t{font-size:13px;color:#A8AEB6}
+.bk-gr{display:grid;grid-template-columns:58px 1fr;row-gap:4px;margin:8px 0 10px;font-size:15px}
+.bk-gr>span{color:#A8AEB6}
+.bk-map{display:inline-block;margin-top:3px;font-size:13px;color:#8FD3FF}
+.bk-lb{font-size:13px;color:#A8AEB6;font-weight:700;margin:8px 0 6px}
+.bk-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.bk-chips button{border:1px solid #3A3F46;border-radius:20px;background:transparent;color:#EDEFF2;font-size:14px;padding:8px 12px}
+.bk-chips button.on{background:#FFC81E;border-color:#FFC81E;color:#17191c;font-weight:800}
+.bk-in{width:100%;box-sizing:border-box;background:#22262c;border:1px solid #343941;border-radius:10px;color:#EDEFF2;font-size:16px;padding:10px 12px;margin-bottom:8px}
+.bk-btn3{display:flex;gap:8px}
+.bk-b{flex:1;border:0;border-radius:12px;font-weight:800;font-size:15.5px;padding:13px 6px}
+.bk-b.acc{background:#2FA553;color:#fff}.bk-b.adjb{background:#343941;color:#fff}.bk-b.rej{background:#3a2226;color:#FF8A8A;border:1px solid #6b3139}
+.bk-adj{display:flex;gap:8px;align-items:center;margin-top:8px}
+.bk-adj span{font-size:14px;color:#A8AEB6;white-space:nowrap}
+.bk-adj .bk-in{margin:0;flex:1}
+.bk-st{min-height:18px;font-size:14px;color:#FFC81E;margin-top:6px}
+.bk-mini{background:#1E2227;border-radius:12px;padding:10px 12px;margin-bottom:7px;border-left:4px solid #2FA553}
+.bk-mini.off{border-left-color:#5A6069;opacity:.75}
+.bk-mt{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bk-mt b{font-size:16px}
+.bk-dd{background:#6C4BD8;color:#fff;font-size:13px;font-weight:800;border-radius:8px;padding:4px 8px;white-space:nowrap}
+.bk-dd.g{background:#343941}
+.bk-det{margin-top:6px;border-top:1px solid #2c3036;padding-top:4px}
+.bk-qr{display:block;width:100%;margin-top:12px;border:1px dashed #4a4f57;border-radius:12px;background:transparent;color:#C9CED4;font-size:15px;padding:12px}
+.bk-topic{font-family:monospace;font-size:14px;background:#f1f1f1;color:#111;border-radius:6px;padding:8px;word-break:break-all;user-select:all}
+/* ───── 손님 폰: 예약 화면 ───── */
+.bkg{position:fixed;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;box-sizing:border-box;background:#15171b;color:#EDEFF2;padding:max(18px,env(safe-area-inset-top)) max(18px,calc((100% - 560px)/2)) 40px;font-size:16px}
+.bkg-brand{display:flex;align-items:center;gap:11px;margin:2px 0 14px}
+.bkg-logo{width:46px;height:46px;border-radius:13px;background:#FFC81E;display:flex;align-items:center;justify-content:center;font-size:26px;flex:none}
+.bkg-brand b{display:block;font-size:20px}.bkg-brand span{font-size:14px;color:#A8AEB6}
+.bkg-lang{display:flex;gap:6px;margin-bottom:12px}
+.bkg-lang button{flex:1;border:1px solid #3A3F46;border-radius:9px;background:transparent;color:#C9CED4;font-size:14px;padding:8px 0}
+.bkg-lang button.on{background:#138A8A;border-color:#138A8A;color:#fff;font-weight:700}
+.bkg-lb{font-size:14px;color:#A8AEB6;font-weight:600;margin:12px 0 6px}
+.bkg input{width:100%;box-sizing:border-box;background:#22262c;border:1px solid #343941;border-radius:11px;color:#EDEFF2;font-size:16px;padding:12px;margin:0;color-scheme:dark;font-family:inherit}
+.bkg input::placeholder{color:#7E858E}
+.bkg-row{display:flex;gap:8px;align-items:center}
+.bkg-pill{flex:none;border:0;border-radius:20px;background:#6C4BD8;color:#fff;font-size:13px;font-weight:700;padding:9px 12px;white-space:nowrap}
+.bkg-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.bkg-chips button{border:1px solid #3A3F46;border-radius:20px;background:transparent;color:#EDEFF2;font-size:14.5px;padding:9px 13px}
+.bkg-chips button.on{background:#FFC81E;border-color:#FFC81E;color:#17191c;font-weight:800}
+.bkg-two{display:flex;gap:10px}.bkg-two>div{flex:1;min-width:0}
+.bkg-step{display:flex;align-items:center;justify-content:space-between;background:#22262c;border:1px solid #343941;border-radius:11px;padding:6px 8px;font-size:17px;font-weight:700}
+.bkg-step button{width:36px;height:36px;border:0;border-radius:9px;background:#343941;color:#fff;font-size:20px}
+.bkg-go{display:block;width:100%;margin-top:18px;border:0;border-radius:13px;background:#FFC81E;color:#17191c;font-weight:900;font-size:19px;padding:16px}
+.bkg-go:disabled{opacity:.6}
+.bkg-st{min-height:20px;margin-top:8px;font-size:14px;color:#C9CED4;text-align:center}
+.bkg-st.bad{color:#FF8A8A}
+.bkg-lock{font-size:12.5px;color:#8E959E;text-align:center;margin-top:10px}
+.bkg-err{background:#3a2226;border:1px solid #6b3139;color:#FFB4B4;border-radius:12px;padding:14px;margin:12px 0;line-height:1.5}
+.bkg-steps{display:flex;gap:5px;margin:2px 0 12px}.bkg-steps i{flex:1;height:5px;border-radius:3px;background:#2c3036}.bkg-steps i.on{background:#2FA553}
+.bkg-ok{margin:16px 0 14px;text-align:center}
+.bkg-big{width:76px;height:76px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:38px;background:#343941}
+.bkg-big.ok,.bkg-big.adj{background:#1F7A3A}.bkg-big.no,.bkg-big.cxl{background:#6b3139}
+.bkg-ok b{display:block;font-size:24px;margin-bottom:4px}.bkg-ok span{font-size:14.5px;color:#A8AEB6;line-height:1.5}
+.bkg-card{background:#1E2227;border:1px solid #343941;border-radius:14px;padding:13px 14px;margin-bottom:10px;line-height:1.55}
+.bkg-card .t{font-size:13px;color:#A8AEB6}.bkg-card .v{font-size:17px;font-weight:800}.bkg-card .v.adj{color:#FFC81E}
+.bkg-msg{background:#16324a;border-radius:14px 14px 14px 4px;padding:11px 13px;line-height:1.5;margin:4px 0 12px}
+.bkg-msg small{display:block;color:#8FB7D6;font-size:12.5px;margin-bottom:3px}
+.bkg-btn2{display:flex;gap:8px;margin-top:4px}
+.bkg-b{flex:1;display:block;text-align:center;text-decoration:none;border:1px solid #343941;border-radius:12px;background:#22262c;color:#EDEFF2;font-weight:800;font-size:15px;padding:13px 6px}
+/* ───── 태블릿: 예약 QR ───── */
+.tbreq-grid button.bkbtn{grid-column:1/-1;justify-content:center;background:#6C4BD8!important;border-color:#6C4BD8!important;color:#fff!important}
+.tbbk{position:absolute;inset:0;z-index:95;background:rgba(10,11,13,.94);display:flex;align-items:center;justify-content:center}
+.tbbk-in{display:flex;flex-direction:column;align-items:center;gap:1.4vh;text-align:center;color:#fff;padding:0 6vw}
+.tbbk-ic{font-size:clamp(40px,6vh,64px)}
+.tbbk-in b{font-size:clamp(26px,3.6vh,40px)}
+.tbbk-in span{font-size:clamp(17px,2.3vh,24px);color:#C9CED4;max-width:32em;line-height:1.45}
+.tbbk-qr{background:#fff;padding:14px;border-radius:14px;margin-top:1vh}
+.tbbk-in i{font-style:normal;color:#8E959E;font-size:15px;margin-top:1vh}
+
 /* ───── 손님 통역 (폰·태블릿) ───── */
 #tbModeRow{flex-wrap:wrap}
 .tbmode .tbtalkbtn{flex:1 1 100%;min-height:48px;padding:0 8px;border:1px solid #138A8A;border-radius:4px;background:#138A8A;color:#fff;font-size:15px;font-weight:700;white-space:nowrap}
@@ -1841,7 +1934,10 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
       <label class="tbvoice" id="tbVoiceRow" title="체크하면 태블릿에서 음성도 함께 나옵니다"><input type="checkbox" id="tbVoice"> 🔊 음성</label>
       <label><input type="checkbox" id="tbBig"> 큰 글씨</label>
       <label><input type="checkbox" id="tbFgn"> 외국인</label>
-      <button type="button" class="tbtalkbtn" id="talkOpen">🗣 손님 통역 (태블릿)</button>
+    </div>
+    <div class="xrow" id="xRow">
+      <button type="button" id="talkOpen">🗣 손님 통역 (태블릿)</button>
+      <button type="button" id="bkOpen">📅 예약<span class="bdg" id="bkBdg" style="display:none">0</span></button>
     </div>
 </header>
 
@@ -8909,6 +9005,8 @@ function tbReqBuild(){
   });
   if (L!=='ko') grid.appendChild(el('button',{type:'button', cls:'talk', onclick:function(e){ e.stopPropagation(); tbReqClose(); tbTalkOpen(L); tbEarAsk(L); }},
     [el('span',{cls:'ic', text:'🗣'}), el('span',{cls:'tx'},[el('b',{text:(TK_UI[L]||TK_UI.en).ask})])]));
+  if (sGet(BK_TB_LINK_KEY)) grid.appendChild(el('button',{type:'button', cls:'bkbtn', onclick:function(e){ e.stopPropagation(); tbReqClose(); tbBkShow(L); }},
+    [el('span',{cls:'ic', text:'📅'}), el('span',{cls:'tx'},[el('b',{text:(BK_TB_TX[L]||BK_TB_TX.en)[1]})])]));
   grid.appendChild(el('button',{type:'button', cls:'close', onclick:function(e){ e.stopPropagation(); tbReqClose(); }},
     [L==='ko' ? '닫기 · Close' : L==='en' ? 'Close' : ui.close+' · Close']));
 }
@@ -10282,6 +10380,636 @@ function gdBind(){
   $('gdBody').addEventListener('scroll', gdUpDnPaint, {passive:true});
 }
 
+/* ═══════════ 직접 예약 (손님 → 기사) ═══════════
+   손님 링크: ?bk=<예약ID>&l=<언어>#k=<기사 공개키>   (# 뒤는 서버로 가지 않는다)
+   암호화: 손님 폰이 일회용 키(ECDH P-256)를 만들어 기사 공개키와 합친 비밀키(AES-GCM)로 내용을 잠근다.
+           → 중간 서버(ntfy)도, 링크를 가진 다른 손님도 읽을 수 없고, 기사 폰만 연다.
+           기사 답장은 그 손님과만 나눈 같은 비밀키로 잠가 그 손님 주제로 보낸다.
+   주제: bestaxi-bk-<예약ID> (손님→기사, 알림은 "새 예약 요청"이라는 글만)  /  bestaxi-bk-<예약ID>-<요청ID> (기사→손님) */
+var BK_KEY='airportCallLog.booking.v1', BK_LIST_KEY='airportCallLog.bookings.v1', BK_TB_LINK_KEY='airportCallLog.tbBkLink.v1';
+var BKC=(window.crypto && window.crypto.subtle) ? window.crypto.subtle : null;
+var BK_ABC='abcdefghijkmnpqrstuvwxyz23456789';
+function bkRand(n){
+  var a=new Uint8Array(n), s='', i;
+  window.crypto.getRandomValues(a);
+  for (i=0;i<n;i++) s+=BK_ABC.charAt(a[i]%BK_ABC.length);
+  return s;
+}
+function bkB64(buf){
+  var b=new Uint8Array(buf), s='', i;
+  for (i=0;i<b.length;i++) s+=String.fromCharCode(b[i]);
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function bkUnb64(str){
+  var s=String(str||'').replace(/-/g,'+').replace(/_/g,'/'), b, i;
+  while (s.length%4) s+='=';
+  s=atob(s); b=new Uint8Array(s.length);
+  for (i=0;i<s.length;i++) b[i]=s.charCodeAt(i);
+  return b;
+}
+function bkAesFromBits(bits){
+  return BKC.digest('SHA-256', bits).then(function(h){ return BKC.importKey('raw', h, {name:'AES-GCM'}, true, ['encrypt','decrypt']); });
+}
+function bkAesImport(b64){ return BKC.importKey('raw', bkUnb64(b64), {name:'AES-GCM'}, true, ['encrypt','decrypt']); }
+function bkAesExport(key){ return BKC.exportKey('raw', key).then(bkB64); }
+function bkEnc(key, obj){
+  var iv=window.crypto.getRandomValues(new Uint8Array(12));
+  return BKC.encrypt({name:'AES-GCM', iv:iv}, key, new TextEncoder().encode(JSON.stringify(obj))).then(function(ct){ return bkB64(iv)+'.'+bkB64(ct); });
+}
+function bkDec(key, str){
+  var p=String(str||'').split('.');
+  return BKC.decrypt({name:'AES-GCM', iv:bkUnb64(p[0])}, key, bkUnb64(p[1])).then(function(pt){ return JSON.parse(new TextDecoder().decode(pt)); });
+}
+function bkPubImport(b64){ return BKC.importKey('raw', bkUnb64(b64), {name:'ECDH', namedCurve:'P-256'}, true, []); }
+function bkBase(){ return location.href.split('?')[0].split('#')[0].replace(/index\.html$/,''); }
+function bkTopic(id){ return 'bestaxi-bk-'+id; }
+function bkPost(topic, body){
+  body.topic=topic;
+  return fetch(TB_RELAY, {method:'POST', mode:'cors', cache:'no-store', body:JSON.stringify(body)}).then(function(r){ if (!r || !r.ok) throw new Error('send '+(r && r.status)); return r; });
+}
+/* 서울 시각 */
+function bkKstNow(){ var d=new Date(Date.now()+9*3600000); return {date:d.toISOString().slice(0,10), time:d.toISOString().slice(11,16)}; }
+function bkWhenMs(date, time){ var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(date||''), t=/^(\d\d):(\d\d)$/.exec(time||''); if (!m || !t) return NaN; return Date.UTC(+m[1], +m[2]-1, +m[3], +t[1], +t[2]) - 9*3600000; }
+function bkLoc(L){ return L==='ko' ? 'ko-KR' : L==='ja' ? 'ja-JP' : L==='zh' ? 'zh-CN' : 'en-US'; }
+function bkFmtDate(date, L){
+  var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(date||''), d;
+  if (!m) return String(date||'');
+  d=new Date(Date.UTC(+m[1], +m[2]-1, +m[3], 12));
+  try {
+    if (L==='ko') return (+m[2])+'월 '+(+m[3])+'일('+d.toLocaleDateString('ko-KR',{weekday:'short', timeZone:'UTC'})+')';
+    return d.toLocaleDateString(bkLoc(L), {weekday:'short', month:'short', day:'numeric', timeZone:'UTC'});
+  } catch(e){ return date; }
+}
+function bkFmtTime(time, L){
+  var t=/^(\d\d):(\d\d)$/.exec(time||'');
+  if (!t) return String(time||'');
+  try { return new Date(Date.UTC(2000,0,1,+t[1],+t[2])).toLocaleTimeString(bkLoc(L), {hour:'numeric', minute:'2-digit', timeZone:'UTC'}); }
+  catch(e){ return time; }
+}
+
+/* ── 손님 화면 글 (영·일·중·한) ── */
+var BK_T={
+  en:{title:'Book your ride with the same driver', res:'Your booking', from:'Pick-up (hotel or address)', fromPh:'e.g. Lotte Hotel Seoul', myloc:'📍 My location', here:'📍 My current location',
+      to:'Drop-off', t1:'Incheon T1', t2:'Incheon T2', gmp:'Gimpo', other:'Other place…', otherPh:'Hotel, address or place', date:'Date', time:'Pick-up time', kst:'Seoul time',
+      pax:'People', bags:'Suitcases', name:'Your name', reach:'How can the driver reach you?', ctPh:'Number or ID', note:'Note (flight no. etc.)', notePh:'e.g. KE081, departs 10:40',
+      send:'Send booking request', lock:'🔒 Encrypted — only your driver can read it.', need:'Please fill in: ', sending:'Sending…', fail:'Could not send. Please check the internet and try again.',
+      waitT:'Request sent', waitS:'Waiting for your driver to reply. You will see the answer here.', okT:'Booking confirmed!', okS:'Your driver will be there on time.',
+      adjT:'New time suggested', adjS:'Your driver can pick you up at this time instead. If it does not work for you, please cancel.',
+      noT:'Driver not available', noS:'Sorry, the driver cannot take this booking.', cxlT:'Booking cancelled', cxlS:'Your booking has been cancelled.',
+      pick:'Pick-up', ppl:' people', bag:' suitcases', msg:'Message from your driver', car:'Car', cal:'📅 Add to calendar', cancel:'✖ Cancel booking',
+      cancelQ:'Cancel this booking?', keep:'Keep this page — open it again anytime to check.', other2:'This booking was made on another phone. Please open it on that phone.',
+      again:'Make another booking', bad:'This booking link is not complete. Please scan the QR code again.', noCrypto:'This browser cannot send an encrypted booking. Please open the link in Chrome or Safari.'},
+  ja:{title:'同じ運転手に予約する', res:'ご予約', from:'お迎え場所（ホテル・住所）', fromPh:'例：ロッテホテルソウル', myloc:'📍 現在地', here:'📍 現在地',
+      to:'行き先', t1:'仁川 T1', t2:'仁川 T2', gmp:'金浦', other:'その他…', otherPh:'ホテル・住所・場所', date:'日付', time:'お迎え時刻', kst:'ソウル時間',
+      pax:'人数', bags:'スーツケース', name:'お名前', reach:'運転手からの連絡先', ctPh:'番号またはID', note:'メモ（便名など）', notePh:'例：KE081 10:40発',
+      send:'予約をリクエスト', lock:'🔒 暗号化 — 運転手だけが読めます。', need:'入力してください：', sending:'送信中…', fail:'送信できませんでした。インターネットを確認して、もう一度お試しください。',
+      waitT:'リクエストを送りました', waitS:'運転手の返事を待っています。返事はこの画面に表示されます。', okT:'予約が確定しました！', okS:'運転手が時間通りにお迎えに参ります。',
+      adjT:'別の時刻のご提案', adjS:'運転手はこの時刻ならお迎えできます。ご都合が合わなければキャンセルしてください。',
+      noT:'予約をお受けできません', noS:'申し訳ありません。運転手はこの予約をお受けできません。', cxlT:'予約はキャンセルされました', cxlS:'ご予約はキャンセルされました。',
+      pick:'お迎え', ppl:'名', bag:'個', msg:'運転手からのメッセージ', car:'車', cal:'📅 カレンダーに追加', cancel:'✖ 予約をキャンセル',
+      cancelQ:'この予約をキャンセルしますか？', keep:'このページを保存しておくと、いつでも確認できます。', other2:'この予約は別のスマホで行われました。そのスマホで開いてください。',
+      again:'別の予約をする', bad:'予約リンクが不完全です。QRコードをもう一度読み取ってください。', noCrypto:'このブラウザでは暗号化した予約を送れません。ChromeかSafariで開いてください。'},
+  zh:{title:'预约同一位司机', res:'您的预约', from:'上车地点（酒店或地址）', fromPh:'例：首尔乐天酒店', myloc:'📍 我的位置', here:'📍 我的当前位置',
+      to:'目的地', t1:'仁川 T1', t2:'仁川 T2', gmp:'金浦', other:'其他地点…', otherPh:'酒店、地址或地点', date:'日期', time:'上车时间', kst:'首尔时间',
+      pax:'人数', bags:'行李箱', name:'您的姓名', reach:'司机如何联系您？', ctPh:'号码或ID', note:'备注（航班号等）', notePh:'例：KE081，10:40起飞',
+      send:'发送预约请求', lock:'🔒 已加密 — 只有司机能看到。', need:'请填写：', sending:'正在发送…', fail:'发送失败。请检查网络后重试。',
+      waitT:'请求已发送', waitS:'正在等待司机回复，回复会显示在这里。', okT:'预约已确认！', okS:'司机会准时来接您。',
+      adjT:'司机建议新的时间', adjS:'司机可以在这个时间来接您。如果不方便，请取消预约。',
+      noT:'司机无法接单', noS:'抱歉，司机无法接受这个预约。', cxlT:'预约已取消', cxlS:'您的预约已取消。',
+      pick:'上车', ppl:'人', bag:'个行李箱', msg:'司机留言', car:'车辆', cal:'📅 添加到日历', cancel:'✖ 取消预约',
+      cancelQ:'要取消这个预约吗？', keep:'请保存此页面，随时可以打开查看。', other2:'这个预约是在另一部手机上提交的，请在那部手机上打开。',
+      again:'再预约一次', bad:'预约链接不完整，请重新扫描二维码。', noCrypto:'此浏览器无法发送加密预约，请用 Chrome 或 Safari 打开。'},
+  ko:{title:'같은 기사님께 예약하기', res:'예약 내역', from:'출발지 (호텔·주소)', fromPh:'예: 롯데호텔 서울', myloc:'📍 내 위치', here:'📍 지금 내 위치',
+      to:'도착지', t1:'인천 T1', t2:'인천 T2', gmp:'김포', other:'다른 곳…', otherPh:'호텔·주소·장소', date:'날짜', time:'출발 시각', kst:'서울 시각',
+      pax:'인원', bags:'캐리어', name:'이름', reach:'기사님이 연락할 방법', ctPh:'번호 또는 아이디', note:'메모 (항공편 등)', notePh:'예: KE081, 10:40 출발',
+      send:'예약 요청 보내기', lock:'🔒 암호화 — 기사님만 읽을 수 있습니다.', need:'입력해 주세요: ', sending:'보내는 중…', fail:'보내지 못했습니다. 인터넷을 확인하고 다시 눌러 주세요.',
+      waitT:'요청을 보냈습니다', waitS:'기사님 답을 기다리는 중입니다. 답이 오면 이 화면에 나옵니다.', okT:'예약이 확정되었습니다!', okS:'기사님이 시간 맞춰 모시러 갑니다.',
+      adjT:'다른 시각을 제안했습니다', adjS:'기사님은 이 시각에 모시러 갈 수 있습니다. 어려우시면 예약을 취소해 주세요.',
+      noT:'예약을 받을 수 없습니다', noS:'죄송합니다. 기사님이 이 예약을 받을 수 없습니다.', cxlT:'예약이 취소되었습니다', cxlS:'예약이 취소되었습니다.',
+      pick:'출발', ppl:'명', bag:'개', msg:'기사님 메시지', car:'차량', cal:'📅 달력에 추가', cancel:'✖ 예약 취소',
+      cancelQ:'이 예약을 취소할까요?', keep:'이 페이지를 저장해 두면 언제든 다시 열어 확인할 수 있습니다.', other2:'이 예약은 다른 휴대폰에서 했습니다. 그 휴대폰에서 열어 주세요.',
+      again:'다른 예약하기', bad:'예약 링크가 완전하지 않습니다. QR을 다시 찍어 주세요.', noCrypto:'이 브라우저에서는 암호화 예약을 보낼 수 없습니다. 크롬이나 사파리로 열어 주세요.'}
+};
+var BK_CM=[['wa','WhatsApp'],['kk','KakaoTalk'],['ln','LINE'],['wc','WeChat'],['em','Email'],['ph','Phone']];
+function bkCmName(k){ var i; for (i=0;i<BK_CM.length;i++) if (BK_CM[i][0]===k) return BK_CM[i][1]; return String(k||''); }
+function bkDestName(r, L){
+  var t=BK_T[L]||BK_T.en;
+  return r.to==='t1' ? t.t1 : r.to==='t2' ? t.t2 : r.to==='gmp' ? t.gmp : String(r.toTx||'');
+}
+function bkFromName(r, L){ return r.geo && !r.from ? (BK_T[L]||BK_T.en).here : String(r.from||''); }
+
+/* ── 손님 폰: 예약 화면 (?bk=) ── */
+function bookBoot(){
+  var m=/[?&]bk=([a-z0-9]{16})\b/.exec(location.search), rm=/[?&]r=([a-z0-9]{16})\b/.exec(location.search),
+      lm=/[?&]l=(ko|en|ja|zh)\b/.exec(location.search), km=/[#&]k=([A-Za-z0-9_-]{80,100})/.exec(location.hash), L, id, pub, root;
+  if (!m) return false;
+  id=m[1]; pub=km ? km[1] : '';
+  L = lm ? lm[1] : (/^ja/i.test(navigator.language||'') ? 'ja' : /^zh/i.test(navigator.language||'') ? 'zh' : /^ko/i.test(navigator.language||'') ? 'ko' : 'en');
+  root=el('div',{cls:'bkg'});
+  document.body.appendChild(root);
+  document.body.className+=' solo';
+  function paint(){
+    var t=BK_T[L]||BK_T.en;
+    clear(root);
+    document.title='Best Seoul Taxi · '+(rm ? t.res : t.title);
+    root.appendChild(el('div',{cls:'bkg-brand'},[el('div',{cls:'bkg-logo', text:'🚕'}), el('div',null,[el('b',{text:'Best Seoul Taxi'}), el('span',{text: rm ? t.res : t.title})])]));
+    root.appendChild(el('div',{cls:'bkg-lang'}, [['en','English'],['ja','日本語'],['zh','中文'],['ko','한국어']].map(function(a){
+      return el('button',{type:'button', cls: a[0]===L ? 'on' : '', onclick:function(){ L=a[0]; paint(); }},[a[1]]);
+    })));
+    if (!pub){ root.appendChild(el('div',{cls:'bkg-err', text:t.bad})); return; }
+    if (!BKC || !window.TextEncoder){ root.appendChild(el('div',{cls:'bkg-err', text:t.noCrypto})); return; }
+    if (rm) bkGuestStatus(root, id, pub, rm[1], L, t, function(){ rm=null; try { history.replaceState(null,'', bkBase()+'?bk='+id+'&l='+L+'#k='+pub); } catch(e){} paint(); });
+    else bkGuestForm(root, id, pub, L, t, function(rid){
+      rm=[null, rid];
+      try { history.replaceState(null,'', bkBase()+'?bk='+id+'&r='+rid+'&l='+L+'#k='+pub); } catch(e){}
+      paint();
+    });
+  }
+  paint();
+  return true;
+}
+var bkForm=null;   /* 언어를 바꿔도 적은 내용이 남게 */
+function bkGuestForm(root, id, pub, L, t, done){
+  var f=bkForm || (bkForm={from:'', geo:null, to:'t1', toTx:'', date:'', time:'', pax:1, bags:1, name:'', cm:'wa', ct:'', note:''}), now=bkKstNow(), st, go;
+  if (!f.date) f.date=now.date;
+  function inp(key, ph, type){
+    var n=el('input',{type:type||'text', placeholder:ph||'', value:f[key]||''});
+    n.addEventListener('input', function(){ f[key]=n.value; });
+    return n;
+  }
+  function lb(tx){ return el('div',{cls:'bkg-lb', text:tx}); }
+  function stepper(key, min, max){
+    var v=el('span',{text:String(f[key])});
+    function set(d){ f[key]=Math.max(min, Math.min(max, f[key]+d)); v.textContent=String(f[key]); }
+    return el('div',{cls:'bkg-step'},[el('button',{type:'button', onclick:function(){ set(-1); }},['−']), v, el('button',{type:'button', onclick:function(){ set(1); }},['+'])]);
+  }
+  function chips(list, key, after){
+    var box=el('div',{cls:'bkg-chips'});
+    list.forEach(function(a){
+      box.appendChild(el('button',{type:'button', cls: f[key]===a[0] ? 'on' : '', onclick:function(){ f[key]=a[0]; Array.prototype.forEach.call(box.children, function(c){ c.className=''; }); this.className='on'; if (after) after(); }},[a[1]]));
+    });
+    return box;
+  }
+  var fromIn=inp('from', t.fromPh), locBtn, toOther=inp('toTx', t.otherPh), dIn=inp('date','', 'date'), tIn=inp('time','', 'time');
+  dIn.min=now.date;
+  locBtn=el('button',{type:'button', cls:'bkg-pill', onclick:function(){
+    if (!navigator.geolocation) return;
+    locBtn.textContent='…';
+    navigator.geolocation.getCurrentPosition(function(p){
+      f.geo={lat:Math.round(p.coords.latitude*1e5)/1e5, lng:Math.round(p.coords.longitude*1e5)/1e5};
+      if (!f.from){ fromIn.placeholder=t.here; }
+      locBtn.textContent='✓ '+t.myloc.replace('📍 ','');
+    }, function(){ locBtn.textContent=t.myloc; }, {enableHighAccuracy:true, timeout:10000, maximumAge:60000});
+  }},[f.geo ? '✓ '+t.myloc.replace('📍 ','') : t.myloc]);
+  if (f.geo && !f.from) fromIn.placeholder=t.here;
+  toOther.style.display = f.to==='x' ? '' : 'none';
+  st=el('div',{cls:'bkg-st'});
+  go=el('button',{type:'button', cls:'bkg-go', onclick:send},[t.send]);
+  root.appendChild(el('div',{cls:'bkg-form'},[
+    lb(t.from), el('div',{cls:'bkg-row'},[fromIn, locBtn]),
+    lb(t.to), chips([['t1',t.t1],['t2',t.t2],['gmp',t.gmp],['x',t.other]], 'to', function(){ toOther.style.display = f.to==='x' ? '' : 'none'; if (f.to==='x') toOther.focus(); }), toOther,
+    el('div',{cls:'bkg-two'},[el('div',null,[lb(t.date), dIn]), el('div',null,[lb(t.time+' ('+t.kst+')'), tIn])]),
+    el('div',{cls:'bkg-two'},[el('div',null,[lb(t.pax), stepper('pax',1,6)]), el('div',null,[lb(t.bags), stepper('bags',0,8)])]),
+    lb(t.name), inp('name', ''),
+    lb(t.reach), chips(BK_CM.map(function(a){ return [a[0], a[1]]; }), 'cm'), inp('ct', t.ctPh),
+    lb(t.note), inp('note', t.notePh),
+    go, st,
+    el('div',{cls:'bkg-lock', text:t.lock})
+  ]));
+  function send(){
+    var miss=[], rid, rec;
+    f.from=String(f.from||'').trim(); f.toTx=String(f.toTx||'').trim(); f.name=String(f.name||'').trim(); f.ct=String(f.ct||'').trim();
+    if (!f.from && !f.geo) miss.push(t.from);
+    if (f.to==='x' && !f.toTx) miss.push(t.to);
+    if (!/^\d{4}-\d\d-\d\d$/.test(f.date)) miss.push(t.date);
+    if (!/^\d\d:\d\d$/.test(f.time)) miss.push(t.time);
+    if (!f.name) miss.push(t.name);
+    if (!f.ct) miss.push(t.reach);
+    if (miss.length){ st.textContent=t.need+miss.join(', '); st.className='bkg-st bad'; return; }
+    go.disabled=true; st.className='bkg-st'; st.textContent=t.sending;
+    rid=bkRand(16);
+    rec={v:2, rid:rid, lang:L, from:f.from.slice(0,120), geo:f.geo, to:f.to, toTx:f.toTx.slice(0,120), date:f.date, time:f.time, pax:f.pax, bags:f.bags,
+         name:f.name.slice(0,60), cm:f.cm, ct:f.ct.slice(0,80), note:String(f.note||'').trim().slice(0,200), ts:Date.now()};
+    var eph, aes;
+    BKC.generateKey({name:'ECDH', namedCurve:'P-256'}, true, ['deriveBits'])
+      .then(function(kp){ eph=kp; return bkPubImport(pub); })
+      .then(function(dp){ return BKC.deriveBits({name:'ECDH', public:dp}, eph.privateKey, 256); })
+      .then(bkAesFromBits)
+      .then(function(k){ aes=k; return Promise.all([bkEnc(aes, rec), BKC.exportKey('raw', eph.publicKey), bkAesExport(aes)]); })
+      .then(function(r){
+        var payload='BK2~'+bkB64(r[1])+'~'+r[0];
+        sSet('bst.bkg.'+rid, JSON.stringify({id:id, aes:r[2], req:rec, st:'wait', at:Date.now()}));
+        return bkPost(bkTopic(id), {title:'🚕 새 예약 요청', message:'새 예약 요청이 왔습니다. 눌러서 확인하세요.', priority:4, tags:['calendar'], click:bkBase()+'#bkin='+payload});
+      })
+      .then(function(){ bkForm=null; done(rid); })
+      .catch(function(){ go.disabled=false; st.className='bkg-st bad'; st.textContent=t.fail; });
+  }
+}
+function bkGuestStatus(root, id, pub, rid, L, t, again){
+  var raw=sGet('bst.bkg.'+rid), o=null, es=null, card;
+  try { o=JSON.parse(raw||'null'); } catch(e){ o=null; }
+  if (!o || !o.aes || !o.req){ root.appendChild(el('div',{cls:'bkg-err', text:t.other2})); root.appendChild(el('button',{type:'button', cls:'bkg-go', onclick:again},[t.again])); return; }
+  card=el('div');
+  root.appendChild(card);
+  function save(){ sSet('bst.bkg.'+rid, JSON.stringify(o)); }
+  function draw(){
+    var r=o.req, date=o.ndate||r.date, time=o.ntime||r.time, head, ic, T, S;
+    clear(card);
+    T = o.st==='ok' ? t.okT : o.st==='adj' ? t.adjT : o.st==='no' ? t.noT : o.st==='cxl' ? t.cxlT : t.waitT;
+    S = o.st==='ok' ? t.okS : o.st==='adj' ? t.adjS : o.st==='no' ? t.noS : o.st==='cxl' ? t.cxlS : t.waitS;
+    ic = o.st==='ok' || o.st==='adj' ? '✓' : o.st==='no' || o.st==='cxl' ? '✕' : '⏳';
+    card.appendChild(el('div',{cls:'bkg-steps'},[el('i',{cls:'on'}), el('i',{cls: o.st!=='wait' ? 'on' : ''}), el('i',{cls: o.st==='ok'||o.st==='adj' ? 'on' : ''})]));
+    head=el('div',{cls:'bkg-ok'},[el('div',{cls:'bkg-big '+(o.st||'wait'), text:ic}), el('b',{text:T}), el('span',{text:S})]);
+    card.appendChild(head);
+    card.appendChild(el('div',{cls:'bkg-card'},[
+      el('div',{cls:'t', text:t.pick+' ('+t.kst+')'}),
+      el('div',{cls:'v'+(o.st==='adj' ? ' adj' : ''), text:bkFmtDate(date, L)+' · '+bkFmtTime(time, L)}),
+      el('div',{text:bkFromName(r, L)+' → '+bkDestName(r, L)}),
+      el('div',{cls:'t', text:r.pax+t.ppl+' · '+r.bags+t.bag})
+    ]));
+    if (o.msg) card.appendChild(el('div',{cls:'bkg-msg'},[el('small',{text:t.msg}), String(o.msg)]));
+    if (o.car && (o.st==='ok' || o.st==='adj')) card.appendChild(el('div',{cls:'bkg-card'},[el('div',{cls:'t', text:t.car}), el('div',{cls:'v', text:o.car})]));
+    if (o.st==='ok' || o.st==='adj' || o.st==='wait'){
+      card.appendChild(el('div',{cls:'bkg-btn2'},[
+        (o.st==='ok' || o.st==='adj') ? el('a',{cls:'bkg-b', href:bkCalUrl(date, time, r, L), target:'_blank', rel:'noopener'},[t.cal]) : null,
+        el('button',{type:'button', cls:'bkg-b', onclick:cancel},[t.cancel])
+      ]));
+    } else card.appendChild(el('button',{type:'button', cls:'bkg-go', onclick:again},[t.again]));
+    card.appendChild(el('div',{cls:'bkg-lock', text:t.keep}));
+  }
+  function cancel(){
+    if (!window.confirm(t.cancelQ)) return;
+    bkAesImport(o.aes).then(function(k){ return bkEnc(k, {rid:rid, cancel:1, ts:Date.now()}); })
+      .then(function(ct){ return bkPost(bkTopic(id), {title:'🚕 예약 취소', message:'손님이 예약을 취소했습니다. 눌러서 확인하세요.', priority:4, tags:['x'], click:bkBase()+'#bkin=BKC~'+rid+'~'+ct}); })
+      .then(function(){ o.st='cxl'; save(); draw(); })
+      .catch(function(){ window.alert(t.fail); });
+  }
+  function onMsg(txt){
+    if (String(txt).indexOf('#BKR ')!==0) return;
+    bkAesImport(o.aes).then(function(k){ return bkDec(k, String(txt).slice(5)); }).then(function(d){
+      if (!d || d.rid!==rid || !d.ts || (o.at2 && d.ts<=o.at2)) return;
+      if (o.st==='cxl' && d.st!=='cxl') return;
+      o.at2=d.ts; o.st=d.st; o.msg=d.msg||''; o.car=d.car||''; o.ndate=d.date||''; o.ntime=d.time||'';
+      save(); draw();
+    }, function(){});
+  }
+  draw();
+  /* 기사님 답: 켜 둔 동안은 바로, 다시 열면 서버에 남은 답(최근)을 받아 온다 */
+  try {
+    es=new EventSource(TB_RELAY+bkTopic(id)+'-'+rid+'/sse?since=all');
+    es.onmessage=function(e){ var d; try { d=JSON.parse(e.data); } catch(x){ return; } if (d && d.event==='message' && d.message) onMsg(d.message); };
+  } catch(e){}
+}
+function bkCalUrl(date, time, r, L){
+  var ms=bkWhenMs(date, time), a, b, p;
+  function z(n){ return (n<10?'0':'')+n; }
+  function g(x){ var d=new Date(x); return d.getUTCFullYear()+z(d.getUTCMonth()+1)+z(d.getUTCDate())+'T'+z(d.getUTCHours())+z(d.getUTCMinutes())+'00Z'; }
+  if (!isNum(ms)) return '#';
+  a=g(ms); b=g(ms+3600000);
+  p='action=TEMPLATE&text='+encodeURIComponent('🚕 Best Seoul Taxi — '+bkDestName(r, L))+'&dates='+a+'/'+b+
+    '&details='+encodeURIComponent(bkFromName(r, L)+' → '+bkDestName(r, L))+'&location='+encodeURIComponent(bkFromName(r, L));
+  return 'https://calendar.google.com/calendar/render?'+p;
+}
+
+/* ── 기사 폰 ── */
+var bk={es:null, last:0, watch:null, seen:{}, tab:'new', open:false, me:null};
+function bkMe(){ var o=null; try { o=JSON.parse(sGet(BK_KEY)||'null'); } catch(e){ o=null; } return (o && /^[a-z0-9]{16}$/.test(o.id||'') && o.pub && o.priv) ? o : null; }
+function bkEnsure(cb){
+  var o=bkMe();
+  if (o){ cb(o); return; }
+  if (!BKC){ cb(null); return; }
+  BKC.generateKey({name:'ECDH', namedCurve:'P-256'}, true, ['deriveBits'])
+    .then(function(kp){ return Promise.all([BKC.exportKey('raw', kp.publicKey), BKC.exportKey('jwk', kp.privateKey)]); })
+    .then(function(r){ o={id:bkRand(16), pub:bkB64(r[0]), priv:r[1]}; sSet(BK_KEY, JSON.stringify(o)); cb(o); }, function(){ cb(null); });
+}
+function bkLink(o, L){ return bkBase()+'?bk='+o.id+(L ? '&l='+L : '')+'#k='+o.pub; }
+function bkList(){ var a=[]; try { a=JSON.parse(sGet(BK_LIST_KEY)||'[]'); } catch(e){ a=[]; } return Array.isArray(a) ? a : []; }
+function bkSave(a){ sSet(BK_LIST_KEY, JSON.stringify(a.slice(-200))); bkBadge(); if (bk.open) bkRender(); }
+function bkFind(a, rid){ var i; for (i=0;i<a.length;i++) if (a[i].rid===rid) return a[i]; return null; }
+function bkPast(b){ var ms=bkWhenMs(b.ndate||b.date, b.ntime||b.time); return b.st==='no' || b.st==='cxl' || (isNum(ms) && Date.now()>ms+3*3600000); }
+function bkBadge(){
+  var n=bkList().filter(function(b){ return b.st==='new' && !bkPast(b); }).length, x=$('bkBdg');
+  if (x){ x.textContent=String(n); x.style.display = n ? '' : 'none'; }
+}
+/* 받은 암호문 풀기: BK2~손님일회용공개키~내용 (새 요청) / BKC~요청ID~내용 (손님 취소) */
+function bkIngest(payload, quiet){
+  var p=String(payload||'').split('~'), me=bkMe();
+  if (!me || !BKC || p.length<3) return;
+  if (bk.seen[payload]) return; bk.seen[payload]=1;
+  if (p[0]==='BK2'){
+    var aesK;
+    BKC.importKey('jwk', me.priv, {name:'ECDH', namedCurve:'P-256'}, false, ['deriveBits'])
+      .then(function(priv){ return bkPubImport(p[1]).then(function(ep){ return BKC.deriveBits({name:'ECDH', public:ep}, priv, 256); }); })
+      .then(bkAesFromBits)
+      .then(function(k){ aesK=k; return Promise.all([bkDec(k, p[2]), bkAesExport(k)]); })
+      .then(function(r){
+        var d=r[0], a=bkList(), b;
+        if (!d || !/^[a-z0-9]{16}$/.test(d.rid||'') || bkFind(a, d.rid)) return;
+        b={rid:d.rid, lang:/^(en|ja|zh|ko)$/.test(d.lang) ? d.lang : 'en', from:String(d.from||''), geo:d.geo||null, to:d.to, toTx:String(d.toTx||''),
+           date:d.date, time:d.time, pax:+d.pax||1, bags:+d.bags||0, name:String(d.name||''), cm:d.cm, ct:String(d.ct||''), note:String(d.note||''),
+           aes:r[1], st:'new', rx:Date.now(), ts:d.ts||Date.now()};
+        a.push(b); bkSave(a);
+        bkTranslateIn(b);
+        if (!quiet){
+          try { if (navigator.vibrate) navigator.vibrate([200,100,200,100,300]); } catch(e){}
+          toast('🚕 새 예약 요청 · '+bkFmtDate(b.date,'ko')+' '+bkFmtTime(b.time,'ko'), '보기', function(){ bkOpen('new'); });
+        }
+      }).catch(function(){});
+  } else if (p[0]==='BKC'){
+    var a=bkList(), b=bkFind(a, p[1]);
+    if (!b) return;
+    bkAesImport(b.aes).then(function(k){ return bkDec(k, p[2]); }).then(function(d){
+      if (!d || d.rid!==b.rid || !d.cancel) return;
+      var a2=bkList(), b2=bkFind(a2, b.rid);
+      if (!b2 || b2.st==='cxl') return;
+      b2.st='cxl'; b2.cxlAt=Date.now(); bkSave(a2);
+      if (!quiet) toast('✖ 손님이 예약을 취소했습니다 · '+bkFmtDate(b2.date,'ko')+' '+bkFmtTime(b2.time,'ko'), '보기', function(){ bkOpen('past'); });
+    }).catch(function(){});
+  }
+}
+/* 손님 메모·직접 적은 장소를 한국어로 */
+function bkTranslateIn(b){
+  if (b.lang==='ko' || !gtrKey()) return;
+  var jobs=[['note','noteKo'],['from','fromKo'],['toTx','toKo']];
+  jobs.forEach(function(j){
+    if (!b[j[0]]) return;
+    gtrTranslate(b[j[0]], b.lang, 'ko', function(ko){
+      if (!ko) return;
+      var a=bkList(), x=bkFind(a, b.rid); if (!x) return;
+      x[j[1]]=ko; bkSave(a);
+    });
+  });
+}
+function bkConnect(){
+  var me=bkMe();
+  if (!me || !window.EventSource || (typeof tb!=='undefined' && tb.on)) return;
+  if (bk.es && bk.es.readyState!==2 && Date.now()-bk.last<120000) return;
+  try { if (bk.es) bk.es.close(); } catch(e){}
+  /* ntfy가 보관하는 최근 것(12시간)까지 받는다. 이미 받은 요청은 요청ID로 걸러진다 */
+  try { bk.es=new EventSource(TB_RELAY+bkTopic(me.id)+'/sse?since=12h'); } catch(e){ bk.es=null; return; }
+  bk.last=Date.now();
+  bk.es.onopen=function(){ bk.last=Date.now(); };
+  bk.es.onmessage=function(e){
+    var d, i;
+    bk.last=Date.now();
+    try { d=JSON.parse(e.data); } catch(x){ return; }
+    if (!d || d.event!=='message' || !d.click) return;
+    i=String(d.click).indexOf('#bkin=');
+    if (i>=0) bkIngest(decodeURIComponent(String(d.click).slice(i+6)), d.time && Date.now()/1000-d.time>600);
+  };
+  if (!bk.watch) bk.watch=setInterval(function(){ if (!document.hidden && (!bk.es || bk.es.readyState===2 || Date.now()-bk.last>120000)) bkConnect(); }, 30000);
+}
+/* 알림을 눌러 앱이 열렸을 때 (#bkin=...) */
+function bkFromHash(){
+  var i=location.hash.indexOf('bkin='), p;
+  if (i<0) return false;
+  p=decodeURIComponent(location.hash.slice(i+5));
+  try { history.replaceState(null, '', location.href.split('#')[0]); } catch(e){}
+  bkIngest(p, true);
+  setTimeout(function(){ bkOpen(p.indexOf('BKC')===0 ? 'past' : 'new'); }, 600);
+  return true;
+}
+/* 손님에게 답 보내기 */
+var BK_REPLY=[
+  {ko:'정문에서 기다리겠습니다.', en:"I'll wait at the main entrance.", ja:'正面玄関でお待ちしております。', zh:'我会在正门等您。'},
+  {ko:'로비에서 기다리겠습니다.', en:"I'll wait in the lobby.", ja:'ロビーでお待ちしております。', zh:'我会在大堂等您。'},
+  {ko:'도착하면 연락드리겠습니다.', en:"I'll message you when I arrive.", ja:'到着したらご連絡します。', zh:'我到了会联系您。'}
+];
+var BK_NO={ko:'죄송합니다. 그 시간에는 어렵습니다.', en:"Sorry, I'm not available at that time.", ja:'申し訳ありません。その時間は対応できません。', zh:'抱歉，那个时间我无法接单。'};
+function bkCarLine(L){
+  var p=profile||null, c='', pl='';
+  if (!p) return '';
+  try { c=carText(p, L==='ko' ? 'ko' : L, true)||''; } catch(e){ c=String(p.carModel||''); }
+  pl=String(p.plate||'').trim();
+  return (c + (pl ? ' · '+pl : '')).trim();
+}
+function bkReply(b, st, msg, cb){
+  var me=bkMe(), o;
+  if (!me){ cb(false); return; }
+  o={rid:b.rid, st:st, msg:msg||'', car: st==='ok'||st==='adj' ? bkCarLine(b.lang) : '', date: st==='adj' ? (b.ndate||'') : '', time: st==='adj' ? (b.ntime||'') : '', ts:Date.now()};
+  bkAesImport(b.aes).then(function(k){ return bkEnc(k, o); })
+    .then(function(ct){ return bkPost(bkTopic(me.id)+'-'+b.rid, {message:'#BKR '+ct}); })
+    .then(function(){
+      var a=bkList(), x=bkFind(a, b.rid);
+      if (x){ x.st=st; x.msg=msg||''; x.msgKo=b.msgKo||''; x.sentAt=Date.now(); if (st==='adj'){ x.ndate=b.ndate; x.ntime=b.ntime; } bkSave(a); }
+      cb(true);
+    }, function(){ cb(false); });
+}
+/* 서버(ntfy)는 12시간만 보관한다 → 앱을 열 때마다 앞으로 남은 예약의 답을 다시 올려 손님이 언제 열어도 보이게 */
+function bkKeepAlive(){
+  var a=bkList();
+  a.forEach(function(b){
+    var ms=bkWhenMs(b.ndate||b.date, b.ntime||b.time);
+    if ((b.st==='ok' || b.st==='adj' || b.st==='no') && b.sentAt && Date.now()-b.sentAt>8*3600000 && isNum(ms) && ms>Date.now()-3600000)
+      bkReply(b, b.st, b.msg, function(){});
+  });
+}
+
+/* ── 기사 폰: 예약 화면 ── */
+function bkOpen(tab){
+  var w=$('bkPh');
+  bkEnsure(function(me){
+    if (!me){ toast('이 브라우저에서는 예약 기능을 쓸 수 없습니다'); return; }
+    bk.me=me; bkConnect(); bkTabletLink(me);
+    if (!w){
+      w=el('div',{cls:'bkph', id:'bkPh'},[
+        el('div',{cls:'bk-h'},[el('b',{text:'📅 예약'}), el('button',{type:'button', cls:'bk-x', onclick:bkClose},['닫기'])]),
+        el('div',{cls:'bk-tabs', id:'bkTabs'}),
+        el('div',{cls:'bk-body', id:'bkBody'})
+      ]);
+      document.body.appendChild(w);
+    }
+    if (tab) bk.tab=tab;
+    w.className='bkph on'; bk.open=true;
+    bkRender();
+    bkKeepAlive();
+  });
+}
+function bkClose(){ var w=$('bkPh'); if (w) w.className='bkph'; bk.open=false; }
+function bkRender(){
+  var a=bkList(), body=$('bkBody'), tabs=$('bkTabs'), nw, up, past, list;
+  if (!body) return;
+  nw=a.filter(function(b){ return b.st==='new' && !bkPast(b); });
+  up=a.filter(function(b){ return (b.st==='ok' || b.st==='adj') && !bkPast(b); });
+  past=a.filter(function(b){ return bkPast(b) || b.st==='done'; });
+  function srt(x, y){ return (bkWhenMs(x.ndate||x.date, x.ntime||x.time)||0)-(bkWhenMs(y.ndate||y.date, y.ntime||y.time)||0); }
+  nw.sort(srt); up.sort(srt); past.sort(function(x,y){ return srt(y,x); });
+  clear(tabs);
+  [['new','새 요청 '+nw.length],['up','확정 '+up.length],['past','지난 예약']].forEach(function(t){
+    tabs.appendChild(el('button',{type:'button', cls: bk.tab===t[0] ? 'on' : '', onclick:function(){ bk.tab=t[0]; bkRender(); }},[t[1]]));
+  });
+  clear(body);
+  list = bk.tab==='up' ? up : bk.tab==='past' ? past : nw;
+  if (!list.length) body.appendChild(el('div',{cls:'bk-empty', text: bk.tab==='new' ? '새 예약 요청이 없습니다. 손님께 아래 예약 QR을 보여 주세요.' : bk.tab==='up' ? '확정된 예약이 없습니다.' : '지난 예약이 없습니다.'}));
+  list.forEach(function(b){ body.appendChild(bk.tab==='new' ? bkCardNew(b) : bkCardMini(b)); });
+  if (bk.tab==='new' && up.length){
+    body.appendChild(el('div',{cls:'bk-lb', text:'다가오는 예약'}));
+    up.slice(0,3).forEach(function(b){ body.appendChild(bkCardMini(b)); });
+  }
+  body.appendChild(el('button',{type:'button', cls:'bk-qr', onclick:bkShowQr},['▦ 손님용 예약 QR 보기 · 링크 복사']));
+}
+var BK_FLAG={en:'🇺🇸 영어', ja:'🇯🇵 일본어', zh:'🇨🇳 중국어', ko:'🇰🇷 한국어'};
+function bkAgo(ms){ var m=Math.round((Date.now()-ms)/60000); return m<1 ? '방금' : m<60 ? m+'분 전' : m<1440 ? Math.round(m/60)+'시간 전' : Math.round(m/1440)+'일 전'; }
+function bkDday(b){
+  var ms=bkWhenMs(b.ndate||b.date, b.ntime||b.time), k=bkKstNow(), d0=Date.UTC(+k.date.slice(0,4), +k.date.slice(5,7)-1, +k.date.slice(8,10)), m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(b.ndate||b.date||''), n;
+  if (!m || !isNum(ms)) return '';
+  n=Math.round((Date.UTC(+m[1], +m[2]-1, +m[3])-d0)/86400000);
+  return n<=0 ? (Date.now()<ms ? 'D-DAY' : '지남') : 'D-'+n;
+}
+function bkRows(b){
+  var g=el('div',{cls:'bk-gr'}), to=bkDestName(b,'ko');
+  function row(k, v){ if (v) { g.appendChild(el('span',{text:k})); g.appendChild(v.nodeType ? v : el('div',{text:v})); } }
+  row('일시', el('b',{text:bkFmtDate(b.ndate||b.date,'ko')+' '+bkFmtTime(b.ntime||b.time,'ko')+(b.ntime && b.ntime!==b.time ? ' (요청 '+bkFmtTime(b.time,'ko')+')' : '')}));
+  row('출발', el('div',null,[b.fromKo ? b.fromKo+' ' : (b.from || ''), b.fromKo ? el('span',{cls:'t', text:'('+b.from+')'}) : '', !b.from && b.geo ? '손님 현위치 ' : '',
+    b.geo ? el('a',{cls:'bk-map', href:'https://map.kakao.com/link/map/'+encodeURIComponent('손님 위치')+','+b.geo.lat+','+b.geo.lng, target:'_blank', rel:'noopener'},['📍 손님 위치 지도']) : '']));
+  row('도착', b.to==='x' ? el('div',null,[b.toKo ? b.toKo+' ' : b.toTx, b.toKo ? el('span',{cls:'t', text:'('+b.toTx+')'}) : '']) : ({t1:'인천공항 T1', t2:'인천공항 T2', gmp:'김포공항'}[b.to]||to));
+  row('인원', b.pax+'명 · 캐리어 '+b.bags+'개');
+  row('손님', b.name);
+  row('연락', bkCmName(b.cm)+' '+b.ct);
+  if (b.note) row('메모', el('div',null,[b.noteKo ? b.noteKo+' ' : b.note, b.noteKo ? el('span',{cls:'t', text:'('+b.note+')'}) : '']));
+  if (b.msg) row('보낸 말', b.msgKo || b.msg);
+  return g;
+}
+function bkCardNew(b){
+  var card, pick=0, custom=null, st, tIn, adjBox;
+  st=el('div',{cls:'bk-st'});
+  var chips=el('div',{cls:'bk-chips'});
+  function paintChips(){
+    clear(chips);
+    BK_REPLY.forEach(function(r, i){ chips.appendChild(el('button',{type:'button', cls: pick===i ? 'on' : '', onclick:function(){ pick=i; custom.style.display='none'; paintChips(); }},[r.ko])); });
+    chips.appendChild(el('button',{type:'button', cls: pick===-1 ? 'on' : '', onclick:function(){ pick=-1; custom.style.display=''; custom.focus(); paintChips(); }},['직접 적기…']));
+  }
+  custom=el('input',{type:'text', cls:'bk-in', placeholder:'한국어로 적으면 손님 언어로 번역됩니다', maxlength:'120'});
+  custom.style.display='none';
+  paintChips();
+  function msgFor(cb){
+    if (pick>=0){ cb(BK_REPLY[pick][b.lang]||BK_REPLY[pick].en, BK_REPLY[pick].ko); return; }
+    var ko=String(custom.value||'').trim();
+    if (!ko){ cb('', ''); return; }
+    if (b.lang==='ko'){ cb(ko, ko); return; }
+    if (!gtrKey()){ st.textContent='직접 적은 말은 번역 키가 있어야 보낼 수 있습니다 (설정 → 태블릿 → 통역용 번역 키). 위 문구를 골라 주세요.'; cb(null); return; }
+    st.textContent='번역 중…';
+    gtrTranslate(ko, 'ko', b.lang, function(tx){ if (!tx){ st.textContent='번역하지 못했습니다. 위 문구를 골라 주세요.'; cb(null); return; } cb(tx, ko); });
+  }
+  function go(stv, fixedMsg){
+    function send(msg, ko){
+      if (msg===null) return;
+      st.textContent='보내는 중…';
+      b.msgKo=ko;
+      bkReply(b, stv, msg, function(ok){
+        if (!ok){ st.textContent='보내지 못했습니다. 인터넷을 확인하고 다시 눌러 주세요.'; return; }
+        toast(stv==='no' ? '거절을 알렸습니다' : stv==='adj' ? '바뀐 시각으로 확정해 알렸습니다' : '예약을 확정해 알렸습니다');
+        if (stv!=='no') bk.tab='up';
+        bkRender();
+      });
+    }
+    if (fixedMsg) send(fixedMsg[b.lang]||fixedMsg.en, fixedMsg.ko); else msgFor(send);
+  }
+  tIn=el('input',{type:'time', cls:'bk-in', value:b.time});
+  adjBox=el('div',{cls:'bk-adj', style:'display:none'},[el('span',{text:'바꿀 시각'}), tIn,
+    el('button',{type:'button', cls:'bk-b acc', onclick:function(){
+      if (!/^\d\d:\d\d$/.test(tIn.value)){ st.textContent='시각을 넣어 주세요.'; return; }
+      b.ndate=b.date; b.ntime=tIn.value; go('adj');
+    }},['이 시각으로 확정'])]);
+  card=el('div',{cls:'bk-card new'},[
+    el('div',null,[el('span',{cls:'bk-tag y', text:'새 요청'}), el('span',{cls:'bk-tag g', text:BK_FLAG[b.lang]||b.lang}), el('span',{cls:'t', text:bkAgo(b.rx)})]),
+    bkRows(b),
+    el('div',{cls:'bk-lb', text:'손님께 보낼 말 (자동 번역)'}), chips, custom,
+    el('div',{cls:'bk-btn3'},[
+      el('button',{type:'button', cls:'bk-b acc', onclick:function(){ go('ok'); }},['✅ 수락']),
+      el('button',{type:'button', cls:'bk-b adjb', onclick:function(){ adjBox.style.display = adjBox.style.display==='none' ? '' : 'none'; }},['🕐 시간 조정']),
+      el('button',{type:'button', cls:'bk-b rej', onclick:function(){ if (window.confirm('이 예약을 거절할까요?')) go('no', BK_NO); }},['거절'])
+    ]),
+    adjBox, st
+  ]);
+  return card;
+}
+function bkCardMini(b){
+  var dd=bkDday(b), cls='bk-mini'+(b.st==='cxl' || b.st==='no' ? ' off' : ''), stTx={ok:'확정', adj:'시간 조정 확정', no:'거절함', cxl:'손님 취소', new:'답 안 함', done:'완료'}[b.st]||'', det=null, box;
+  box=el('div',{cls:cls, onclick:function(){ if (det){ det.style.display = det.style.display==='none' ? '' : 'none'; } }},[
+    el('div',{cls:'bk-mt'},[
+      el('div',null,[el('b',{text:bkFmtDate(b.ndate||b.date,'ko')+' '+bkFmtTime(b.ntime||b.time,'ko')}), el('br'),
+        el('span',{cls:'t', text:(b.fromKo||b.from||'손님 위치')+' → '+({t1:'인천 T1', t2:'인천 T2', gmp:'김포'}[b.to]||b.toKo||b.toTx)+' · '+(BK_FLAG[b.lang]||'').split(' ')[0]+' '+b.name})]),
+      el('span',{cls:'bk-dd'+((b.st==='ok'||b.st==='adj') && !bkPast(b) ? '' : ' g'), text:(b.st==='ok'||b.st==='adj') && !bkPast(b) ? dd : stTx})
+    ])
+  ]);
+  det=el('div',{cls:'bk-det', style:'display:none'},[bkRows(b),
+    (b.st==='ok' || b.st==='adj') && !bkPast(b) ? el('button',{type:'button', cls:'bk-b rej', style:'width:100%;margin-top:6px', onclick:function(e){
+      e.stopPropagation();
+      if (!window.confirm('이 확정 예약을 취소하고 손님께 알릴까요?')) return;
+      bkReply(b, 'no', BK_NO[b.lang]||BK_NO.en, function(ok){ toast(ok ? '손님께 취소를 알렸습니다' : '보내지 못했습니다'); });
+    }},['예약 취소하고 손님께 알리기']) : null]);
+  box.appendChild(det);
+  return box;
+}
+function bkShowQr(){
+  var me=bkMe(), url, box, L='en', lang;
+  if (!me) return;
+  box=el('div',{cls:'tbqr'});
+  function draw(){
+    url=bkLink(me, L);
+    clear(box);
+    loadQrLib(function(ok){
+      if (!ok){ box.appendChild(el('div',{style:'color:#5B626B;font-size:13px', text:'QR 도구를 받지 못했습니다. 아래 [링크 복사]를 쓰세요.'})); return; }
+      try { new QRCode(box, {text:url, width:250, height:250, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.L}); } catch(e){}
+    });
+  }
+  lang=el('div',{cls:'bk-chips', style:'justify-content:center;margin:6px 0'});
+  [['en','English'],['ja','日本語'],['zh','中文'],['ko','한국어']].forEach(function(a){
+    lang.appendChild(el('button',{type:'button', cls: a[0]===L ? 'on' : '', onclick:function(){ L=a[0]; Array.prototype.forEach.call(lang.children, function(c){ c.className=''; }); this.className='on'; draw(); }},[a[1]]));
+  });
+  openSheet([
+    el('h3',{style:'margin:0 0 6px;font-size:18px', text:'손님용 예약 QR'}),
+    el('div',{cls:'empty', text:'손님이 이 QR을 찍으면 기사님께 직접 예약하는 화면이 열립니다. 고른 언어로 열립니다.'}),
+    lang, box,
+    el('button',{cls:'btn', type:'button', style:'width:100%;margin-top:8px', onclick:function(){
+      var u=bkLink(me, L);
+      if (navigator.share){ navigator.share({title:'Best Seoul Taxi', text:'Book your ride', url:u}).catch(function(){}); return; }
+      try { navigator.clipboard.writeText(u).then(function(){ toast('링크를 복사했습니다'); }); } catch(e){ window.prompt('링크', u); }
+    }},['🔗 링크 보내기 · 복사']),
+    el('div',{cls:'empty', style:'margin-top:10px', text:'새 예약 알림을 받으려면 ntfy 앱에서 아래 주제를 한 번 구독하세요: '}),
+    el('div',{cls:'bk-topic', text:bkTopic(me.id)}),
+    el('a',{cls:'btn', href:'ntfy://ntfy.sh/'+bkTopic(me.id), style:'display:block;text-align:center;margin-top:6px'},['🔔 ntfy 앱에서 구독하기']),
+    el('button',{cls:'btn', type:'button', style:'width:100%;margin-top:8px', onclick:closeSheet},['닫기'])
+  ]);
+  draw();
+  bkTabletLink(me);
+}
+/* 태블릿에도 예약 링크를 보내 둔다 (공개키만 들어 있어 알려져도 괜찮은 주소) */
+function bkTabletLink(me){
+  if (!me || !tbPairCode()) return;
+  if (sGet('airportCallLog.bkTbSent.v1')===tbPairCode()+me.id) return;
+  var p=tbSend('bklink', null, '', null, {u:bkLink(me, '')});
+  if (p && p.then) p.then(function(r){ if (r && r.ok) sSet('airportCallLog.bkTbSent.v1', tbPairCode()+me.id); }, function(){});
+}
+function bkBind(){
+  if (!$('bkOpen')) return;
+  $('bkOpen').addEventListener('click', function(){ bkOpen(); });
+  bkBadge();
+  if (bkMe()){ bkConnect(); bkTabletLink(bkMe()); }
+  bkFromHash();
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && bkMe()) bkConnect(); });
+  window.addEventListener('hashchange', bkFromHash);
+}
+
+/* ── 태블릿: 부탁하기 화면의 "다음에도 이 기사님 예약" ── */
+var BK_TB_TX={en:['📅','Book this driver again','Scan with your phone to book your next ride (airport, hotel, tour).'],
+  ja:['📅','この運転手をまた予約','スマホで読み取ると、次の乗車（空港・ホテル・観光）を予約できます。'],
+  zh:['📅','下次再约这位司机','用手机扫码即可预约下次用车（机场、酒店、观光）。'],
+  ko:['📅','다음에도 이 기사님 예약','휴대폰으로 찍으면 다음 이동(공항·호텔·관광)을 예약할 수 있습니다.']};
+function tbBkShow(L){
+  var u=sGet(BK_TB_LINK_KEY)||'', t=BK_TB_TX[L]||BK_TB_TX.en, ov, box, tm;
+  if (!u) return;
+  u=u.replace(/([?&])l=(ko|en|ja|zh)/,'$1').replace('?bk=', '?l='+L+'&bk=');
+  box=el('div',{cls:'tbbk-qr'});
+  ov=el('div',{cls:'tbbk', onclick:function(){ clearTimeout(tm); if (ov.parentNode) ov.parentNode.removeChild(ov); }},[
+    el('div',{cls:'tbbk-in'},[el('div',{cls:'tbbk-ic', text:'🚕'}), el('b',{text:t[1]}), el('span',{text:t[2]}), box, el('i',{text: L==='ko' ? '화면을 누르면 닫힙니다' : L==='ja' ? 'タップで閉じる' : L==='zh' ? '点击关闭' : 'Tap to close'})])
+  ]);
+  ($('tabScr')||document.body).appendChild(ov);
+  loadQrLib(function(ok){ if (ok){ try { new QRCode(box, {text:u, width:300, height:300, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.L}); } catch(e){} } });
+  tm=setTimeout(function(){ if (ov.parentNode) ov.parentNode.removeChild(ov); }, 90000);
+}
+
 /* ── 태블릿 쪽 ── */
 var tb={on:false, code:'', name:'', es:null, esWatch:null, lastEv:0, wake:null, watch:null, pos:null,
         ride:null, alightAt:0, backTimer:null, clockTimer:null, seen:{}, speakQ:[],
@@ -10424,6 +11152,7 @@ function tbConnect(again){
     if (m.type==='media_commit'){ tbMediaCommit(m); return; }
     if (m.type==='talk'){ tbTalkMsg(m); return; }
     if (m.type==='talkin'){ tbTalkIn(m); return; }
+    if (m.type==='bklink'){ if (/^https:\/\/[^\s]+\?bk=[a-z0-9]{16}#k=[A-Za-z0-9_-]{80,100}$/.test(String(m.u||''))) sSet(BK_TB_LINK_KEY, String(m.u)); return; }
     if (m.type==='earon'){ tbEarState(m, true); return; }
     if (m.type==='earoff'){ tbEarState(m, false); return; }
     if (m.type==='ride') tbRide(m);
@@ -12600,8 +13329,10 @@ function init(){
   bindAir();
   function bootShow(){ document.documentElement.className=document.documentElement.className.replace(/\s*\bbootx\b/g,''); }
   if (shareBoot()){ bootShow(); return; }   /* 가족이 도착 예정 공유 주소로 들어왔으면 그 화면만 */
+  if (bookBoot()){ bootShow(); return; }   /* 손님이 예약 QR을 찍었으면 예약 화면만 */
   if (guideLandBoot()){ bootShow(); return; }   /* 손님이 여행 가이드 QR을 찍었으면 그 안내 화면만 */
   if (tabletBoot()){ bootShow(); primeVoices(); return; }   /* 뒷좌석 태블릿이면 태블릿 안내 화면만 쓴다 */
+  try { bkBind(); } catch(e){}   /* 직접 예약: 버튼·알림 받기 */
   openFromQr();   /* QR을 찍고 들어왔으면 곧장 승객 화면 */
   bootShow();
   primeVoices();
