@@ -1810,6 +1810,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .mn-gh.k1{color:#B79CFF}.mn-gh.k2{color:#FFC81E}.mn-gh.k3{color:#7FD4F7}.mn-gh.k4{color:#A8AEB6}
 .mn-it .h{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .mn-it .h b{font-size:16px}
+.mn-it .h b small{font-size:12.5px;font-weight:600;color:var(--mute,#A8AEB6)}
 .mn-it .st{font-size:13px;font-weight:800;border-radius:6px;padding:2px 7px;white-space:nowrap}
 .mn-it .st.r{background:#3a2226;color:#FF8A8A}.mn-it .st.y{background:#3a3218;color:#FFD65A}.mn-it .st.g{background:#18321f;color:#6FE08F}
 .mn-it .bar{height:6px;border-radius:3px;background:#343941;margin:7px 0 5px;overflow:hidden}
@@ -11074,35 +11075,35 @@ var MNT_GROUPS={1:'자주 교체', 2:'10~18만km', 3:'20만km 분기점', 4:'25�
 var MNT_ITEMS=[
   {g:1, id:'acf',   n:'에어컨·공기필터',           mo:3,      note:'표에는 "상시" · 2~3개월마다 갈아 주기'},
   {g:1, id:'oil',   n:'엔진오일',                 km:10000,  note:'1만km마다 · 25만km 이후 조금씩 보충 · 갈 때 등속조인트 구리스 누수도 확인'},
-  {g:1, id:'tire',  n:'타이어 위치 교환',          km:30000,  rng:'3~5만km', note:'X자로 교환 · 휠밸런스도 함께'},
+  {g:1, id:'tire',  n:'타이어 위치교환', sub:'3~5만 주기 X자 형태 위치교환', km:30000, rng:'3~5만km', note:'교환할 때 휠밸런스도 봐 주면 더 좋다'},
   {g:1, id:'tirex', n:'타이어 교환',              mo:12,     note:'1년마다 · 마모·옆면 갈라짐도 함께 확인'},
   {g:1, id:'mis',   n:'미션오일',                 km:70000,  note:'7만km마다 꼭 · 순환식/드레인식 선택'},
-  {g:1, id:'ffl',   n:'연료필터 (하부)',           km:70000,  note:'자주 갈면 출력이 더 좋다'},
-  {g:1, id:'ffb',   n:'연료필터 (봄베·실린더 쪽)',  km:80000,  rng:'8~10만km', note:'하부 두 번 갈 때 한 번'},
-  {g:2, id:'plug',  n:'점화플러그 (4개)',          km:140000, note:'백금 플러그 · 시동·출력 저하가 주 증상'},
+  {g:1, id:'ffl',   n:'연료필터', sub:'하부', km:70000, note:'7만km 정도마다 · 자주 갈면 출력이 더 좋다'},
+  {g:1, id:'ffb',   n:'연료필터', sub:'봄베<실린더 쪽>', km:80000, rng:'8~10만km', note:'하부 두 번 갈 때 봄베 쪽 한 번'},
+  {g:2, id:'plug',  n:'점화플러그', sub:'백금플러그 - 시동과 출력', km:140000, note:'4개 · 14만km 주기 · 시동 불량·출력 저하가 주 증상'},
   {g:2, id:'bat',   n:'배터리',                   km:150000, mo:24, note:'2년 또는 15만km · 교환 때 뚜껑에 날짜 적기 (80·90암페어)'},
   {g:2, id:'inj',   n:'인젝터 클리닝',             km:150000, note:'또는 첨가제'},
-  {g:2, id:'bfl',   n:'브레이크오일',              km:150000, rng:'15~20만km', note:'DOT 규격은 차량 매뉴얼 권장품 · 브레이크가 딱딱해지면 점검'},
+  {g:2, id:'bfl',   n:'브레이크오일', sub:'부족 시 보충', km:150000, rng:'15~20만km', note:'평소 부족하면 보충 · 수분이 차면 베이퍼록(브레이크가 말을 안 듣는 현상) · 브레이크가 딱딱해지면 점검 · DOT 규격은 차량 매뉴얼 권장품'},
   {g:2, id:'coil',  n:'점화코일',                  km:180000, note:'점화플러그 두 번 갈 때 한 번 정도'},
   {g:3, id:'cool',  n:'부동액',                   km:200000, rng:'20~25만km', note:'평소 보충하다가 20~25만km에 통째로 교환'},
-  {g:3, id:'itms',  n:'ITMS(통합 열관리) 점검',     km:200000, note:'이 차는 서머스탯 대신 ITMS · 교환 여부는 정비소 판단 · 과열 시 수온계 확인'},
+  {g:3, id:'itms',  n:'냉각 계통 예방정비', sub:'라디에이터·팬·서모스탯·워터펌프', km:200000, note:'엔진의 열을 식혀 주는 부품들 · 과열되면 수온계가 고온으로 올라감 · 서모스탯(thermostat, 자동 온도조절기)은 복지정비 약 10만원, 20만km쯤 미리 교환 · 이 차(누우 L2.0)는 서모스탯 대신 ITMS(통합 열관리)라 부품·비용은 정비소에서 확인'},
   {g:3, id:'hose',  n:'라디에이터 상하 호스',       km:200000, note:'20만km 분기점 항목'},
-  {g:3, id:'thr',   n:'스로틀바디 청소',            km:200000, note:'카본 찌꺼기 · 20만km 분기점 항목'},
+  {g:3, id:'thr',   n:'스로틀바디 청소', sub:'상시 청소', km:200000, note:'엑셀을 밟을 때 개폐가 반복돼 때·오일·카본 찌꺼기가 낌 · 수시로 청소, 늦어도 20만km'},
   {g:3, id:'mount', n:'엔진·미션 미미(마운트) 부싱', km:200000, note:'차량 떨림 예방'},
-  {g:3, id:'bush',  n:'하체 부싱류',               km:200000, rng:'20~25만km', note:'고무·부싱·쇼바 전반 점검 · 부싱만 갈아도 절약'},
+  {g:3, id:'bush',  n:'하체소음', sub:'고무·부싱·쇼바', km:200000, rng:'20~25만km', note:'하체소음·불안정하면 고무·부싱·쇼바 전반 점검 · 20~25만km에 부싱류만 갈아도 금액 절약'},
   {g:3, id:'belt',  n:'팬벨트·베어링',             km:200000, rng:'20~25만km', note:'벨트 장력 수시 점검 · 베어링 약 2~5만원'},
-  {g:4, id:'gen',   n:'발전기 브러시',             km:250000, note:'네비에 전압 14.5V면 정상'},
+  {g:4, id:'gen',   n:'제너레이터 브러시', sub:'상시 체크', km:250000, note:'알터네이터 = 제네레이터 = 제네라다(발전기) · 약 25만km에서 브러시 교체 · 네비에 전압 14.5V면 정상 · 베어링까지 약 2~5만원'},
   {g:4, id:'o2',    n:'산소센서 (앞뒤 2개)',        km:300000, rng:'30~35만km', note:'오래 두면 센서가 고착돼 흡기 매니폴드까지 갈 수 있음'}
 ];
 var MNT_CHECK=[
   ['브레이크 패드','앞바퀴가 더 빨리 닳음 · 육안 확인 후 교체 · 뒷바퀴 EPB는 정비소에서'],
   ['충진구(정전) 필터','충전이 느려지면 교체'],
   ['와이퍼','날만 교체(약 5천원) · 유막 청소 2주마다'],
-  ['휠얼라인먼트','수시로, 장비 좋은 곳에서'],
+  ['휠얼라인먼트','수시로, 최신식 장비 좋은 곳에서'],
   ['냉각수 호스','낡거나 굳으면 교체'],
   ['등속조인트','엔진오일 갈 때 구리스 누수 확인'],
   ['전조등·안개등','직접 교체 가능 · LED 추천'],
-  ['타이밍 체인','교환 부품 아님 · 시동 직후 "차르르" 쇳소리가 나면 점검']
+  ['타이밍 체인','체인 방식이라 교환 불필요 · 시동 직후 "차르르" 쇳소리가 나면 점검']
 ];
 var mnt=null;
 function mntLoad(){
@@ -11196,7 +11197,7 @@ function mntRender(){
     var d=x.d, s=x.s, w=Math.max(3, Math.min(100, Math.round(s.ratio*100)));
     if (d.g!==gPrev){ gPrev=d.g; box.appendChild(el('div',{cls:'mn-gh k'+d.g, text:MNT_GROUPS[d.g]})); }
     box.appendChild(el('button',{type:'button', cls:'mn-it k'+d.g, onclick:function(){ mntOpen(d.id); }},[
-      el('div',{cls:'h'},[el('b',{text:d.n}), el('span',{cls:'st '+s.lv, text:s.txt})]),
+      el('div',{cls:'h'},[el('b',null,[d.n, d.sub ? el('small',{text:' ('+d.sub+')'}) : null]), el('span',{cls:'st '+s.lv, text:s.txt})]),
       el('div',{cls:'bar'},[el('i',{cls:s.lv, style:'width:'+w+'%'})]),
       el('div',{cls:'m'},[el('span',{text:mntIvTxt(d, mntSt(d.id))}), el('span',{text:s.lastTxt})])
     ]));
@@ -11248,7 +11249,7 @@ function mntAskOdo(fromOut){
 function mntAlertSoon(){
   var bad=mntAll().filter(function(x){ return x.s.lv!=='g'; }).sort(function(a,b){ return (a.s.lv==='r'?0:1)-(b.s.lv==='r'?0:1) || b.s.ratio-a.s.ratio; });
   if (!bad.length) return;
-  setTimeout(function(){ toast('🔧 '+bad[0].d.n+' '+bad[0].s.txt+(bad.length>1 ? ' 외 '+(bad.length-1)+'개' : ''), '정비 보기', function(){ showTab('v-mnt'); }); }, 3200);
+  setTimeout(function(){ toast('🔧 '+bad[0].d.n+(bad[0].d.sub ? '('+bad[0].d.sub+')' : '')+' '+bad[0].s.txt+(bad.length>1 ? ' 외 '+(bad.length-1)+'개' : ''), '정비 보기', function(){ showTab('v-mnt'); }); }, 3200);
 }
 /* 정비 기록 창 (id가 비면 목록 밖 정비) */
 function mntOpen(id){
@@ -11281,7 +11282,7 @@ function mntOpen(id){
     if (!isNum(km) || km<0){ toast('계기판 km를 넣어 주세요'); return; }
     if (cost>0 && lIn.checked){
       loadLedger();
-      e={id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), ts:ts, kind:'expense', cat:'정비', amount:cost, memo:(name+(memo ? ' · '+memo : '')).slice(0,60)};
+      e={id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), ts:ts, kind:'expense', cat:'정비', amount:cost, memo:(name+(d && d.sub ? '('+d.sub+')' : '')+(memo ? ' · '+memo : '')).slice(0,60)};
       ledger.push(e); persistLedger(); led=e.id;
     }
     h={id:'h'+Date.now().toString(36), ts:ts, km:km, cost:cost, memo:memo.slice(0,40), led:led};
@@ -11319,7 +11320,7 @@ function mntOpen(id){
   }
   function f(label, inp){ return el('div',{cls:'mn-f'},[el('label',{text:label}), inp]); }
   openSheet([
-    el('h3',{style:'margin:0 0 2px;font-size:18px', text: d ? d.n+' 교체 기록' : '목록 밖 정비 기록'}),
+    el('h3',{style:'margin:0 0 2px;font-size:18px', text: d ? d.n+(d.sub ? ' ('+d.sub+')' : '')+' 교체 기록' : '목록 밖 정비 기록'}),
     d ? el('div',{cls:'empty', style:'margin-bottom:8px', text:mntIvTxt(d, st)+' · '+d.note}) : null,
     nm ? f('무엇을 했나요', nm) : null,
     el('div',{cls:'mn-two'},[f('날짜', dIn), f('계기판 km', kIn)]),
