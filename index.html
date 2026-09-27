@@ -1856,6 +1856,8 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .bc-ev.pend{border-left-style:dashed;background:transparent;outline:1px dashed var(--c);outline-offset:-1px}
 .bc-ev.past{opacity:.55}
 .bc-more{font-size:11px;color:#C9CED4;padding-left:3px}
+.bc-ho{display:block;font-size:10px;font-weight:700;line-height:1.25;padding:1px 2px;border-radius:3px;background:rgba(61,220,132,.18);color:#6FE08F;word-break:break-all;overflow:hidden;max-height:2.6em;text-align:center}
+.bc-ho.sub{background:rgba(255,138,61,.18);color:#FFB27A}
 .bc-day{font-size:15px;font-weight:800;margin:12px 0 6px}
 .bc-item{background:#1E2227;border-radius:12px;padding:10px 12px;margin-bottom:7px;border-left:5px solid var(--c)}
 .bc-item.pend{border-left-style:dashed}
@@ -11092,6 +11094,23 @@ function bkBind(){
 /* ── 예약 달력 ──
    손님 예약은 들어온 순서대로 보라·노랑·하늘·초록·연분홍·회색 (7번째부터 다시 보라) */
 var BK_COLORS=['#A07CFF','#FFC81E','#5EC8F5','#3DDC84','#FFB3C7','#A8AEB6'];
+/* 법정공휴일·대체공휴일 — 한국천문연구원 특일정보 기준 (2026년부터 노동절·제헌절 공휴일)
+   s:1 은 대체공휴일. 2028년 이후는 해가 바뀌기 전에 추가해야 한다 */
+var BK_HOLI={
+  '2026-01-01':['신정'],'2026-02-16':['설날 연휴'],'2026-02-17':['설날'],'2026-02-18':['설날 연휴'],
+  '2026-03-01':['삼일절'],'2026-03-02':['대체공휴일',1],'2026-05-01':['노동절'],'2026-05-05':['어린이날'],
+  '2026-05-24':['부처님오신날'],'2026-05-25':['대체공휴일',1],'2026-06-03':['지방선거'],'2026-06-06':['현충일'],
+  '2026-07-17':['제헌절'],'2026-08-15':['광복절'],'2026-08-17':['대체공휴일',1],
+  '2026-09-24':['추석 연휴'],'2026-09-25':['추석'],'2026-09-26':['추석 연휴'],
+  '2026-10-03':['개천절'],'2026-10-05':['대체공휴일',1],'2026-10-09':['한글날'],'2026-12-25':['성탄절'],
+  '2027-01-01':['신정'],'2027-02-06':['설날 연휴'],'2027-02-07':['설날'],'2027-02-08':['설날 연휴'],'2027-02-09':['대체공휴일',1],
+  '2027-03-01':['삼일절'],'2027-05-01':['노동절'],'2027-05-03':['대체공휴일',1],'2027-05-05':['어린이날'],
+  '2027-05-13':['부처님오신날'],'2027-06-06':['현충일'],'2027-07-17':['제헌절'],'2027-07-19':['대체공휴일',1],
+  '2027-08-15':['광복절'],'2027-08-16':['대체공휴일',1],
+  '2027-09-14':['추석 연휴'],'2027-09-15':['추석'],'2027-09-16':['추석 연휴'],
+  '2027-10-03':['개천절'],'2027-10-04':['대체공휴일',1],'2027-10-09':['한글날'],'2027-10-11':['대체공휴일',1],
+  '2027-12-25':['성탄절'],'2027-12-27':['대체공휴일',1]
+};
 function bkNextCi(a){ var mx=-1; a.forEach(function(b){ if (isNum(b.ci) && b.ci>mx) mx=b.ci; }); return mx+1; }
 function bkColor(b){
   if (!isNum(b.ci)){ var a=bkList().slice().sort(function(x,y){ return (x.rx||0)-(y.rx||0); }), i; for (i=0;i<a.length;i++) if (a[i].rid===b.rid) return BK_COLORS[i%6]; return BK_COLORS[0]; }
@@ -11124,7 +11143,9 @@ function bkRenderCal(body, a){
     (function(i){
       var dt=new Date(Date.UTC(y, m, 1-lead+i)), ds=dt.getUTCFullYear()+'-'+bkPad(dt.getUTCMonth()+1)+'-'+bkPad(dt.getUTCDate()),
           out=dt.getUTCMonth()!==m, dw=i%7, list=ev[ds]||[], kids=[], j;
-      kids.push(el('span',{cls:'bc-n'+(dw===0?' sun':dw===6?' sat':''), text:String(dt.getUTCDate())}));
+      var ho=BK_HOLI[ds];
+      kids.push(el('span',{cls:'bc-n'+(dw===0 || ho ? ' sun' : dw===6 ? ' sat' : ''), text:String(dt.getUTCDate())}));
+      if (ho) kids.push(el('span',{cls:'bc-ho'+(ho[1] ? ' sub' : ''), text: ho[1] ? '대체휴일' : ho[0]}));
       for (j=0;j<Math.min(2, list.length);j++) kids.push(bkChip(list[j]));
       if (list.length>2) kids.push(el('span',{cls:'bc-more', text:'+'+(list.length-2)}));
       grid.appendChild(el('button',{type:'button', cls:'bc-d'+(out?' out':'')+(ds===k.date?' today':'')+(ds===bk.sel?' sel':''), onclick:function(){
@@ -11136,10 +11157,10 @@ function bkRenderCal(body, a){
   /* 고른 날의 예약 */
   sel=bk.sel || k.date;
   list=ev[sel]||[];
-  body.appendChild(el('div',{cls:'bc-day', text:bkFmtDate(sel,'ko')+(sel===k.date ? ' · 오늘' : '')+(list.length ? ' · 예약 '+list.length+'건' : '')}));
+  body.appendChild(el('div',{cls:'bc-day'},[bkFmtDate(sel,'ko')+(sel===k.date ? ' · 오늘' : ''), BK_HOLI[sel] ? el('span',{cls:'bc-ho'+(BK_HOLI[sel][1] ? ' sub' : ''), style:'display:inline-block;margin-left:6px;font-size:12px', text:BK_HOLI[sel][0]}) : null, list.length ? ' · 예약 '+list.length+'건' : '']));
   if (!list.length) body.appendChild(el('div',{cls:'bk-empty', style:'padding:14px 10px', text:'이날은 예약이 없습니다.'}));
   list.forEach(function(b){ body.appendChild(bkCalItem(b)); });
-  body.appendChild(el('div',{cls:'bc-legend', text:'예약이 들어온 순서대로 보라 → 노랑 → 하늘 → 초록 → 연분홍 → 회색 · 점선은 아직 답하지 않은 요청'}));
+  body.appendChild(el('div',{cls:'bc-legend', text:'예약이 들어온 순서대로 보라 → 노랑 → 하늘 → 초록 → 연분홍 → 회색 · 점선은 아직 답하지 않은 요청 · 빨간 날짜와 초록 글씨는 법정공휴일, 주황 글씨는 대체공휴일'}));
   body.appendChild(el('button',{type:'button', cls:'bk-qr', onclick:bkShowQr},['▦ 손님용 예약 QR 보기 · 링크 복사']));
 }
 function bkPlaceShort(b){
