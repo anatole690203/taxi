@@ -166,6 +166,11 @@ button{cursor:pointer}
 .toast.on{display:block}
 :focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.sec.red{border-left-color:#FF8A80}
+.sec.red h3{color:#FF8A80}
+.mrow{display:flex;justify-content:space-between;gap:8px;padding:6px 0;font-size:14px;border-bottom:1px solid #23272e}
+.mrow span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -210,7 +215,7 @@ var PAYS = ['앱결제','카드','현금'];
 var TYPES_EMBED = ['우버XL','카카오','길손','예약'];
 var TYPES_SOLO  = ['카카오','우버','티머니GO','길손','예약'];
 var INCOME_CATS  = ['현금','카드','우버','카카오','기타수입'];
-var EXPENSE_CATS = ['LPG','통행료','세차','소모품','보험','식대','기타지출'];
+var EXPENSE_CATS = ['LPG','통행료','세차','정비','소모품','보험','식대','기타지출'];
 var FUELS = {LPG:{u:'L', p:1100}, '휘발유':{u:'L', p:1650}, '경유':{u:'L', p:1500}, '전기':{u:'kWh', p:320}};
 var COLORS = ['#FFC81E','#8AB6F9','#3DDC84','#C792EA','#FF8A80','#F4A259','#A7ADB5'];
 var BUCKET_SHORT = ['0시','3시','6시','9시','12시','15시','18시','21시'];
@@ -556,6 +561,26 @@ function renderStat(){
     {v: cur.rideRate!==null ? Math.round(cur.rideRate*100)+'%' : '–', l:'승차율', c:'var(--ok)', s: cur.offMs ? '손님 태운 시간 '+durTxt(cur.offMs) : '하차 시각이 쌓이면 나옵니다'},
     {v: cur.avg ? won(cur.avg) : '–', l:'건당 평균', s: cur.perMin ? '탑승 1분당 '+won(cur.perMin) : ''}
   ]));
+  /* 경비 내역 — 운행 앱 [정비] 탭에서 넣은 정비 비용도 여기에 합산된다 */
+  (function(){
+    var keys={}, ex={}, tot=0, list=[], mx=0, k, s, i, e, cols={'LPG':'#FFC81E','정비':'#FF8A80','통행료':'#8AB6F9','세차':'#3DDC84','식대':'#C792EA'};
+    for (i=0;i<pc.keys.length;i++) keys[pc.keys[i]]=1;
+    for (i=0;i<L.length;i++){ e=L[i]; if (e.kind!=='expense' || !keys[dk(e.ts)]) continue; ex[e.cat||'기타지출']=(ex[e.cat||'기타지출']||0)+e.amount; tot+=e.amount; if (e.cat==='정비') list.push(e); }
+    if (!tot) return;
+    s=sec('red','경비 내역', won(tot));
+    for (k in ex) if (Object.prototype.hasOwnProperty.call(ex,k)) mx=Math.max(mx, ex[k]);
+    Object.keys(ex).sort(function(a,b){ return ex[b]-ex[a]; }).forEach(function(c){
+      s.appendChild(el('div',{cls:'hbar'},[el('span',{cls:'nm', text:c}),
+        el('span',{cls:'t'},[el('i',{style:'width:'+Math.max(3,Math.round(ex[c]/mx*100))+'%;background:'+(cols[c]||'#F4A259')})]), el('b',{cls:'num', text:won(ex[c])})]));
+    });
+    if (list.length){
+      list.sort(function(a,b){ return b.ts-a.ts; });
+      s.appendChild(el('div',{cls:'hint', style:'margin-top:10px;font-weight:700', text:'🔧 정비 지출 '+list.length+'건 · '+won(ex['정비']||0)}));
+      list.slice(0,12).forEach(function(x){ var d=new Date(x.ts);
+        s.appendChild(el('div',{cls:'mrow'},[el('span',{text:(d.getMonth()+1)+'/'+d.getDate()+' '+(x.memo||'정비')}), el('b',{cls:'num', text:won(x.amount)})])); });
+    }
+    box.appendChild(s);
+  })();
   var s1=sec('blue','호출 유형별 비중'), d1=donut(mapItems(cur.type),'건');
   s1.appendChild(d1 || el('div',{cls:'empty', text:'기록이 쌓이면 나옵니다.'}));
   box.appendChild(s1);

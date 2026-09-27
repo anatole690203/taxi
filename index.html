@@ -1787,6 +1787,48 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tbbk-qr{background:#fff;padding:14px;border-radius:14px;margin-top:1vh}
 .tbbk-in i{font-style:normal;color:#8E959E;font-size:15px;margin-top:1vh}
 
+
+/* ───── 정비 탭 ───── */
+[data-tab="v-mnt"]{position:relative}
+[data-tab="v-mnt"].mntwarn::after{content:'';position:absolute;top:4px;right:6px;width:9px;height:9px;border-radius:50%;background:#E53935;box-shadow:0 0 0 2px var(--bg,#15171b)}
+#v-mnt{padding:0 16px 24px}
+.mn-odo{background:var(--panel,#22262c);border-left:4px solid #FFC81E;border-radius:6px;padding:12px 13px;margin:10px 0 9px}
+.mn-odo .t{font-size:13px;color:var(--mute,#A8AEB6)}
+.mn-odo .r{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin:2px 0 3px}
+.mn-odo .v{font-size:28px;font-weight:900;letter-spacing:-.5px}
+.mn-odo .v small{display:block;font-size:13px;color:var(--mute,#A8AEB6);font-weight:600;letter-spacing:0}
+.mn-y{flex:none;border:0;border-radius:8px;background:#FFC81E;color:#17191c;font-weight:800;font-size:14px;padding:10px 12px}
+.mn-sum{display:flex;gap:6px;margin-bottom:9px}
+.mn-sum div{flex:1;text-align:center;border-radius:8px;padding:7px 0;font-size:13px;font-weight:700}
+.mn-sum b{display:block;font-size:20px}
+.mn-sum .red{background:#3a2226;color:#FF8A8A}.mn-sum .yel{background:#3a3218;color:#FFD65A}.mn-sum .grn{background:#18321f;color:#6FE08F}
+.mn-it{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:var(--panel,#22262c);border:0;border-left:4px solid #2FA553;border-radius:9px;padding:10px 12px;margin-bottom:6px}
+.mn-it.r{border-left-color:#E53935}.mn-it.y{border-left-color:#FFC81E}
+.mn-it .h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mn-it .h b{font-size:16px}
+.mn-it .st{font-size:13px;font-weight:800;border-radius:6px;padding:2px 7px;white-space:nowrap}
+.mn-it .st.r{background:#3a2226;color:#FF8A8A}.mn-it .st.y{background:#3a3218;color:#FFD65A}.mn-it .st.g{background:#18321f;color:#6FE08F}
+.mn-it .bar{height:6px;border-radius:3px;background:#343941;margin:7px 0 5px;overflow:hidden}
+.mn-it .bar i{display:block;height:100%}
+.mn-it .bar i.r{background:#E53935}.mn-it .bar i.y{background:#FFC81E}.mn-it .bar i.g{background:#2FA553}
+.mn-it .m{font-size:12.5px;color:var(--mute,#A8AEB6);display:flex;justify-content:space-between;gap:8px}
+.mn-lb{font-size:13px;color:var(--mute,#A8AEB6);font-weight:700;margin:12px 0 6px}
+.mn-chk{background:var(--panel,#22262c);border-radius:9px;padding:10px 12px;font-size:13.5px;line-height:1.6;color:#C9CED4}
+.mn-chk b{color:#EDEFF2}
+.mn-add{display:block;width:100%;margin-top:10px;border:1px dashed #4a4f57;border-radius:10px;background:transparent;color:#C9CED4;font:inherit;font-size:15px;padding:11px}
+.mn-etc{display:flex;justify-content:space-between;gap:8px;font-size:14px;padding:6px 2px;border-bottom:1px solid #2c3036}
+.mn-ask{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:14.5px}
+.mn-ask input{width:22px;height:22px;accent-color:#FFC61E}
+.mn-src{font-size:12px;color:#7E858E;margin-top:10px;line-height:1.5}
+.mn-in{width:100%;box-sizing:border-box;border:1px solid #cfd3d8;border-radius:8px;padding:10px 11px;font-size:16px;font-family:inherit}
+.mn-f{flex:1;min-width:0;margin-bottom:8px}.mn-f label{display:block;font-size:13px;font-weight:700;color:#5B626B;margin-bottom:4px}
+.mn-two{display:flex;gap:8px}
+.mn-cb{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:700;margin:2px 0 10px}
+.mn-cb input{width:22px;height:22px;accent-color:#FFC61E}
+.mn-hist{font-size:13px;color:#5B626B;margin-top:10px;line-height:1.5}
+.mn-hist>div{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #eceef0}
+.mn-hist button{border:0;background:transparent;color:#C62828;font-size:13px;padding:4px}
+
 /* ───── 손님 통역 (폰·태블릿) ───── */
 #tbModeRow{flex-wrap:wrap}
 .tbmode .tbtalkbtn{flex:1 1 100%;min-height:48px;padding:0 8px;border:1px solid #138A8A;border-radius:4px;background:#138A8A;color:#fff;font-size:15px;font-weight:700;white-space:nowrap}
@@ -1923,6 +1965,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
       <button type="button" role="tab" data-tab="v-air" aria-selected="false"><svg class="dice" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5" class="df"/><g class="dp"><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="17" r="2.3"/></g></svg><span>공항</span></button>
       <button type="button" role="tab" data-tab="v-map" aria-selected="false"><svg class="dice" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5" class="df"/><g class="dp"><circle cx="7" cy="7" r="2.3"/><circle cx="12" cy="12" r="2.3"/><circle cx="17" cy="17" r="2.3"/></g></svg><span>지도</span></button>
       <button type="button" role="tab" data-tab="v-rec" aria-selected="false"><svg class="dice" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5" class="df"/><g class="dp"><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="7" r="2.3"/><circle cx="7" cy="17" r="2.3"/><circle cx="17" cy="17" r="2.3"/></g></svg><span>입력</span></button>
+      <button type="button" role="tab" data-tab="v-mnt" aria-selected="false"><svg class="dice" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5" class="df"/><g class="dp"><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="7" r="2.3"/><circle cx="12" cy="12" r="2.3"/><circle cx="7" cy="17" r="2.3"/><circle cx="17" cy="17" r="2.3"/></g></svg><span>정비</span></button>
       <button type="button" role="tab" data-tab="v-data" aria-selected="false"><svg class="dice gear" viewBox="0 0 24 24" aria-hidden="true"><path class="df" d="M12 2.2l2 .5.5 2.2 1.9 1.1 2.1-.8 1.5 1.5-.8 2.1 1.1 1.9 2.2.5.5 2-.5 2-2.2.5-1.1 1.9.8 2.1-1.5 1.5-2.1-.8-1.9 1.1-.5 2.2-2 .5-2-.5-.5-2.2-1.9-1.1-2.1.8-1.5-1.5.8-2.1-1.1-1.9-2.2-.5-.5-2 .5-2 2.2-.5 1.1-1.9-.8-2.1 1.5-1.5 2.1.8 1.9-1.1.5-2.2z"/><circle class="dp" cx="12" cy="12" r="3.2"/></svg><span>설정</span></button>
     </div></nav>
     <div class="tbrow" id="tbRow">
@@ -2319,6 +2362,8 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
   </section>
 
   
+
+  <section class="view" id="v-mnt" aria-label="정비"><div id="mntBox"></div></section>
 
   <section class="view" id="v-data" aria-label="데이터">
     <div class="sec" id="pfSec"><h3>기사 프로필</h3>
@@ -3155,7 +3200,7 @@ function foreignGap(recs){
 /* ───────── 수입·경비 장부 ───────── */
 var LEDGER_KEY = 'airportCallLog.ledger.v1';
 var INCOME_CATS  = ['현금','카드','우버','카카오','기타수입'];
-var EXPENSE_CATS = ['LPG','통행료','세차','소모품','보험','식대','기타지출'];
+var EXPENSE_CATS = ['LPG','통행료','세차','정비','소모품','보험','식대','기타지출'];
 function isIncomeCat(c){ return inList(INCOME_CATS, c); }
 /* 하루 기준 시각(설정, 기본 새벽 4시) 전의 운행은 전날 근무로 묶는다 */
 function monthKey(ts){ var d=wdDate(ts); return d.getFullYear()+'-'+pad2(d.getMonth()+1); }
@@ -11015,6 +11060,275 @@ function tbBkShow(L){
   tm=setTimeout(function(){ if (ov.parentNode) ov.parentNode.removeChild(ov); }, 90000);
 }
 
+/* ═══════════ 정비 (소모품 교체 주기) ═══════════
+   주기 출처: "개인택시 및 LPG차량 생애주기표(부품별)" — 이영민의 개인택시
+   차량: 2027 스포티지 NQ5 LPi (누우 L2.0: 타이밍 체인 · 서머스탯 대신 ITMS)
+   주행거리: 계기판 km 입력 + 하루 평균으로 추정 (나중에 기아 커넥트 연동은 mntOdoSource만 바꾸면 된다) */
+var MNT_KEY='airportCallLog.maint.v1';
+var MNT_ITEMS=[
+  {id:'oil',   n:'엔진오일',                 km:10000,  note:'1만km마다 · 25만km 이후 조금씩 보충 · 갈 때 등속조인트 구리스 누수도 확인'},
+  {id:'tire',  n:'타이어 위치 교환',          km:30000,  rng:'3~5만km', note:'X자로 교환 · 휠밸런스도 함께'},
+  {id:'acf',   n:'에어컨·공기필터',           mo:3,      note:'표에는 "상시" · 2~3개월마다 갈아 주기'},
+  {id:'mis',   n:'미션오일',                 km:70000,  note:'7만km마다 꼭 · 순환식/드레인식 선택'},
+  {id:'ffl',   n:'연료필터 (하부)',           km:70000,  note:'자주 갈면 출력이 더 좋다'},
+  {id:'ffb',   n:'연료필터 (봄베·실린더 쪽)',  km:80000,  rng:'8~10만km', note:'하부 두 번 갈 때 한 번'},
+  {id:'plug',  n:'점화플러그 (4개)',          km:140000, note:'백금 플러그 · 시동·출력 저하가 주 증상'},
+  {id:'bat',   n:'배터리',                   km:150000, mo:24, note:'2년 또는 15만km · 교환 때 뚜껑에 날짜 적기 (80·90암페어)'},
+  {id:'inj',   n:'인젝터 클리닝',             km:150000, note:'또는 첨가제'},
+  {id:'bfl',   n:'브레이크오일',              km:150000, rng:'15~20만km', note:'DOT 규격은 차량 매뉴얼 권장품 · 브레이크가 딱딱해지면 점검'},
+  {id:'coil',  n:'점화코일',                  km:180000, note:'점화플러그 두 번 갈 때 한 번 정도'},
+  {id:'cool',  n:'부동액',                   km:200000, rng:'20~25만km', note:'평소 보충하다가 20~25만km에 통째로 교환'},
+  {id:'itms',  n:'ITMS(통합 열관리) 점검',     km:200000, note:'이 차는 서머스탯 대신 ITMS · 교환 여부는 정비소 판단 · 과열 시 수온계 확인'},
+  {id:'hose',  n:'라디에이터 상하 호스',       km:200000, note:'20만km 분기점 항목'},
+  {id:'thr',   n:'스로틀바디 청소',            km:200000, note:'카본 찌꺼기 · 20만km 분기점 항목'},
+  {id:'mount', n:'엔진·미션 미미(마운트) 부싱', km:200000, note:'차량 떨림 예방'},
+  {id:'bush',  n:'하체 부싱류',               km:200000, rng:'20~25만km', note:'고무·부싱·쇼바 전반 점검 · 부싱만 갈아도 절약'},
+  {id:'belt',  n:'팬벨트·베어링',             km:200000, rng:'20~25만km', note:'벨트 장력 수시 점검 · 베어링 약 2~5만원'},
+  {id:'gen',   n:'발전기 브러시',             km:250000, note:'네비에 전압 14.5V면 정상'},
+  {id:'o2',    n:'산소센서 (앞뒤 2개)',        km:300000, rng:'30~35만km', note:'오래 두면 센서가 고착돼 흡기 매니폴드까지 갈 수 있음'}
+];
+var MNT_CHECK=[
+  ['브레이크 패드','앞바퀴가 더 빨리 닳음 · 육안 확인 후 교체 · 뒷바퀴 EPB는 정비소에서'],
+  ['충진구(정전) 필터','충전이 느려지면 교체'],
+  ['와이퍼','날만 교체(약 5천원) · 유막 청소 2주마다'],
+  ['휠얼라인먼트','수시로, 장비 좋은 곳에서'],
+  ['냉각수 호스','낡거나 굳으면 교체'],
+  ['등속조인트','엔진오일 갈 때 구리스 누수 확인'],
+  ['전조등·안개등','직접 교체 가능 · LED 추천'],
+  ['타이밍 체인','교환 부품 아님 · 시동 직후 "차르르" 쇳소리가 나면 점검']
+];
+var mnt=null;
+function mntLoad(){
+  var o=null;
+  try { o=JSON.parse(sGet(MNT_KEY)||'null'); } catch(e){ o=null; }
+  if (!o || typeof o!=='object') o={};
+  if (!Array.isArray(o.odo)) o.odo=[];
+  if (!o.items || typeof o.items!=='object') o.items={};
+  if (!Array.isArray(o.etc)) o.etc=[];
+  if (!isNum(o.base)) o.base=Date.now();
+  if (o.askOut===undefined) o.askOut=true;
+  o.odo=o.odo.filter(function(x){ return x && isNum(x.ts) && isNum(x.km) && x.km>=0; }).sort(function(a,b){ return a.ts-b.ts; });
+  mnt=o; return o;
+}
+function mntSave(){ sSet(MNT_KEY, JSON.stringify(mnt)); mntBadge(); }
+function mntDef(id){ var i; for (i=0;i<MNT_ITEMS.length;i++) if (MNT_ITEMS[i].id===id) return MNT_ITEMS[i]; return null; }
+function mntSt(id){ return mnt.items[id] || (mnt.items[id]={hist:[]}); }
+function kmTxt(v){ return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+'km'; }
+function kmShort(km){ return km%10000===0 ? (km/10000)+'만km' : kmTxt(km); }
+function mntIvTxt(d, st){
+  var km=st.iv || d.km, mo=st.ivMo || d.mo, a=[];
+  if (km) a.push(st.iv ? kmShort(km) : (d.rng || kmShort(km)));
+  if (mo) a.push(mo%12===0 ? (mo/12)+'년' : mo+'개월');
+  return a.join(' 또는 ')+'마다';
+}
+/* 지금 주행거리: 마지막 계기판 값 + 하루 평균 × 지난 날수 (평균은 최근 60일 안의 입력 두 개 이상으로) */
+function mntOdoSource(){ return 'manual'; }   /* 나중에 'kia' 연동 자리 */
+function mntOdoEst(){
+  var o=mnt.odo, n=o.length, last, first=null, i, days, avg=null, km;
+  if (!n) return {km:0, est:false, avg:null, last:null};
+  last=o[n-1];
+  for (i=n-2;i>=0;i--){ if (last.ts-o[i].ts > 60*86400000) break; first=o[i]; }
+  if (first){ days=(last.ts-first.ts)/86400000; if (days>=2 && last.km>first.km) avg=Math.min(800, (last.km-first.km)/days); }
+  km=last.km;
+  if (avg){ days=(Date.now()-last.ts)/86400000; if (days>0.3) km=last.km+avg*Math.min(days, 45); }
+  return {km:Math.round(km), est: km!==last.km, avg:avg, last:last};
+}
+function mntStatus(d, cur){
+  var st=mntSt(d.id), iv=st.iv || d.km || 0, ivMo=st.ivMo || d.mo || 0, bKm=isNum(st.km) ? st.km : 0, bTs=isNum(st.ts) ? st.ts : mnt.base,
+      r={lv:'g', ratio:0, kmRem:null, dayRem:null, txt:''}, due, dd, lvK='g', lvD='g';
+  if (iv){ r.kmRem=iv-(cur-bKm); r.ratio=Math.max(r.ratio, (cur-bKm)/iv); lvK = r.kmRem<0 ? 'r' : r.kmRem<=Math.max(1000, iv*0.1) ? 'y' : 'g'; }
+  if (ivMo){
+    due=new Date(bTs); due.setMonth(due.getMonth()+ivMo);
+    r.dayRem=Math.round((due.getTime()-Date.now())/86400000);
+    r.ratio=Math.max(r.ratio, (Date.now()-bTs)/(due.getTime()-bTs));
+    lvD = r.dayRem<0 ? 'r' : r.dayRem<=Math.max(14, ivMo*3) ? 'y' : 'g';
+  }
+  r.lv = (lvK==='r' || lvD==='r') ? 'r' : (lvK==='y' || lvD==='y') ? 'y' : 'g';
+  function dayTxt(n){ n=Math.abs(n); return n>=365 ? Math.floor(n/365)+'년'+(Math.floor(n%365/30) ? ' '+Math.floor(n%365/30)+'개월' : '') : n>=45 ? Math.round(n/30)+'개월' : n+'일'; }
+  /* 둘 다 있으면 남은 비율이 더 적은(더 급한) 쪽으로 글을 쓴다 */
+  var fk = r.kmRem!==null ? r.kmRem/Math.max(1,iv) : Infinity, fd = r.dayRem!==null ? r.dayRem/Math.max(1,ivMo*30.4) : Infinity;
+  if (fk<=fd) r.txt = r.kmRem<0 ? kmTxt(-r.kmRem)+' 지남' : kmTxt(r.kmRem)+' 남음';
+  else r.txt = r.dayRem<0 ? dayTxt(r.dayRem)+' 지남' : r.dayRem===0 ? '오늘' : dayTxt(r.dayRem)+' 남음';
+  dd=st.hist && st.hist.length ? st.hist[st.hist.length-1] : null;
+  r.lastTxt = dd ? '지난번 '+mdTxt(dd.ts)+' · '+kmTxt(dd.km) : (isNum(st.km) && st.km>0 ? '기준 '+kmTxt(st.km) : '0km (출고)');
+  return r;
+}
+function mdTxt(ts){ var d=new Date(ts); return (d.getMonth()+1)+'/'+d.getDate(); }
+function mntAll(){
+  var cur=mntOdoEst().km;
+  return MNT_ITEMS.map(function(d){ return {d:d, s:mntStatus(d, cur)}; }).sort(function(a,b){
+    var o={r:0, y:1, g:2};
+    if (o[a.s.lv]!==o[b.s.lv]) return o[a.s.lv]-o[b.s.lv];
+    return b.s.ratio-a.s.ratio;
+  });
+}
+function mntBadge(){
+  var b=document.querySelector('[data-tab="v-mnt"]'), n;
+  if (!b || !mnt) return;
+  n=mntAll().filter(function(x){ return x.s.lv==='r'; }).length;
+  b.className = n ? 'mntwarn' : '';
+}
+function mntRender(){
+  var box=$('mntBox'), o, all, cnt={r:0,y:0,g:0}, sec2;
+  if (!box) return;
+  if (!mnt) mntLoad();
+  o=mntOdoEst(); all=mntAll();
+  all.forEach(function(x){ cnt[x.s.lv]++; });
+  clear(box);
+  box.appendChild(el('div',{cls:'mn-odo'},[
+    el('div',{cls:'t', text: o.est ? '지금 주행거리 (추정)' : '지금 주행거리'}),
+    el('div',{cls:'r'},[
+      el('div',{cls:'v'},[o.last ? kmTxt(o.km) : '—', o.avg ? el('small',{text:'하루 평균 '+Math.round(o.avg)+'km'}) : null]),
+      el('button',{type:'button', cls:'mn-y', onclick:function(){ mntAskOdo(false); }},['계기판 km 입력'])
+    ]),
+    el('div',{cls:'t', text: o.last ? '마지막 입력 '+mdTxt(o.last.ts)+' · '+kmTxt(o.last.km)+(o.avg ? '' : ' — 두 번 이상 넣으면 하루 평균으로 자동 추정합니다') : '계기판의 누적 주행거리를 넣어 주세요. 새 차면 지금 계기판 숫자 그대로 넣으면 됩니다.'})
+  ]));
+  box.appendChild(el('div',{cls:'mn-sum'},[
+    el('div',{cls:'red'},[el('b',{text:String(cnt.r)}),'지남']),
+    el('div',{cls:'yel'},[el('b',{text:String(cnt.y)}),'곧 교체']),
+    el('div',{cls:'grn'},[el('b',{text:String(cnt.g)}),'여유'])
+  ]));
+  all.forEach(function(x){
+    var d=x.d, s=x.s, w=Math.max(3, Math.min(100, Math.round(s.ratio*100)));
+    box.appendChild(el('button',{type:'button', cls:'mn-it '+s.lv, onclick:function(){ mntOpen(d.id); }},[
+      el('div',{cls:'h'},[el('b',{text:d.n}), el('span',{cls:'st '+s.lv, text:s.txt})]),
+      el('div',{cls:'bar'},[el('i',{cls:s.lv, style:'width:'+w+'%'})]),
+      el('div',{cls:'m'},[el('span',{text:mntIvTxt(d, mntSt(d.id))}), el('span',{text:s.lastTxt})])
+    ]));
+  });
+  box.appendChild(el('div',{cls:'mn-lb', text:'수시 점검'}));
+  sec2=el('div',{cls:'mn-chk'});
+  MNT_CHECK.forEach(function(c){ sec2.appendChild(el('div',null,[el('b',{text:c[0]}), ' — '+c[1]])); });
+  box.appendChild(sec2);
+  var etc=mnt.etc.slice(-5).reverse();
+  box.appendChild(el('button',{type:'button', cls:'mn-add', onclick:function(){ mntOpen(''); }},['＋ 목록 밖 정비 기록 (수리·세차용품 등)']));
+  if (etc.length){
+    box.appendChild(el('div',{cls:'mn-lb', text:'최근 목록 밖 정비'}));
+    etc.forEach(function(h){ box.appendChild(el('div',{cls:'mn-etc'},[el('span',{text:mdTxt(h.ts)+' · '+h.n+(h.memo ? ' · '+h.memo : '')}), el('b',{text: h.cost ? won(h.cost) : ''})])); });
+  }
+  var ask=el('input',{type:'checkbox'}); ask.checked=mnt.askOut!==false;
+  ask.addEventListener('change', function(){ mnt.askOut=ask.checked; mntSave(); });
+  box.appendChild(el('label',{cls:'mn-ask'},[ask, ' 퇴근할 때 계기판 km 물어보기']));
+  box.appendChild(el('div',{cls:'mn-src', text:'교체 주기: 개인택시 및 LPG차량 생애주기표(이영민의 개인택시) · 범위는 이른 쪽으로 알리고, 항목을 눌러 바꿀 수 있습니다. 비용을 넣으면 장부 지출 "정비"로 들어가 관리 앱 경비에 합산됩니다.'}));
+  mntBadge();
+}
+/* 계기판 km 입력 (퇴근할 때도) */
+function mntAskOdo(fromOut){
+  if (!mnt) mntLoad();
+  var o=mntOdoEst(), inp=el('input',{type:'number', inputmode:'numeric', cls:'mn-in', placeholder: o.last ? '예: '+o.km : '예: 1250', value:''});
+  function save(){
+    var v=parseInt(String(inp.value).replace(/[^\d]/g,''),10);
+    if (!isNum(v) || v<0 || v>2000000){ toast('숫자로 넣어 주세요'); return; }
+    if (o.last && v<o.last.km && !window.confirm('지난번('+kmTxt(o.last.km)+')보다 작습니다. 이 값으로 고칠까요?')) return;
+    if (o.last && v<o.last.km) mnt.odo=mnt.odo.filter(function(x){ return x.km<=v; });
+    /* 처음 넣은 값이 이미 크면(새 차가 아니거나 늦게 시작) 기록 없는 항목을 0km부터 셀지 묻는다 */
+    if (!o.last && v>3000 && window.confirm('계기판이 '+kmTxt(v)+'입니다.\n교체 기록이 없는 항목을 지금부터 계산할까요?\n\n[확인] 지금 '+kmTxt(v)+'부터 계산\n[취소] 0km(출고)부터 계산')){
+      MNT_ITEMS.forEach(function(d){ var st=mntSt(d.id); if (!st.hist || !st.hist.length){ st.km=v; st.ts=Date.now(); } });
+    }
+    mnt.odo.push({ts:Date.now(), km:v}); mnt.odo=mnt.odo.slice(-400); mntSave();
+    closeSheet(); toast('계기판 '+kmTxt(v)+' 저장');
+    if (currentTab==='v-mnt') mntRender();
+    mntAlertSoon();
+  }
+  openSheet([
+    el('h3',{style:'margin:0 0 4px;font-size:18px', text: fromOut ? '🔧 오늘 계기판 주행거리' : '🔧 계기판 주행거리'}),
+    el('div',{cls:'empty', text: fromOut ? '넣어 두면 오일·필터 교체 시기가 정확해집니다.' : '계기판의 누적 km를 그대로 넣으세요.'+(o.last ? ' 지금 추정 '+kmTxt(o.km) : '')}),
+    inp,
+    el('button',{cls:'btn primary', type:'button', style:'width:100%;margin-top:8px', onclick:save},['저장']),
+    el('button',{cls:'btn', type:'button', style:'width:100%;margin-top:6px', onclick:closeSheet},[fromOut ? '오늘은 건너뛰기' : '닫기'])
+  ]);
+  setTimeout(function(){ try { inp.focus(); } catch(e){} }, 250);
+}
+/* 계기판을 넣은 뒤 지났거나 곧인 항목을 한 번 알려 준다 */
+function mntAlertSoon(){
+  var bad=mntAll().filter(function(x){ return x.s.lv!=='g'; });
+  if (!bad.length) return;
+  setTimeout(function(){ toast('🔧 '+bad[0].d.n+' '+bad[0].s.txt+(bad.length>1 ? ' 외 '+(bad.length-1)+'개' : ''), '정비 보기', function(){ showTab('v-mnt'); }); }, 3200);
+}
+/* 정비 기록 창 (id가 비면 목록 밖 정비) */
+function mntOpen(id){
+  var d=id ? mntDef(id) : null, st=id ? mntSt(id) : null, o=mntOdoEst(), now=new Date(), ds, nm, dIn, kIn, cIn, mIn, lIn, ivIn=null, moIn=null, hist, nxt;
+  ds=now.getFullYear()+'-'+pad2(now.getMonth()+1)+'-'+pad2(now.getDate());
+  nm = d ? null : el('input',{type:'text', cls:'mn-in', placeholder:'예: 앞 브레이크 패드, 와이퍼 날', maxlength:'40'});
+  dIn=el('input',{type:'date', cls:'mn-in', value:ds, max:ds});
+  kIn=el('input',{type:'number', inputmode:'numeric', cls:'mn-in', value: o.last ? String(o.km) : ''});
+  cIn=el('input',{type:'text', inputmode:'numeric', cls:'mn-in', placeholder:'0'});
+  mIn=el('input',{type:'text', cls:'mn-in', placeholder:'정비소·메모', maxlength:'40'});
+  lIn=el('input',{type:'checkbox'}); lIn.checked=true;
+  if (d){
+    if (d.km) ivIn=el('input',{type:'number', inputmode:'numeric', cls:'mn-in', value:String(st.iv || d.km)});
+    if (d.mo) moIn=el('input',{type:'number', inputmode:'numeric', cls:'mn-in', value:String(st.ivMo || d.mo)});
+  }
+  nxt=el('span');
+  function paintNext(){ var k=parseInt(kIn.value,10), iv=ivIn ? parseInt(ivIn.value,10) : 0; nxt.textContent = d && iv && isNum(k) ? ' · 다음 교체 '+kmTxt(k+iv) : ''; }
+  kIn.addEventListener('input', paintNext); if (ivIn) ivIn.addEventListener('input', paintNext); paintNext();
+  function tsOf(v){ var p=/^(\d{4})-(\d\d)-(\d\d)$/.exec(v||''); if (!p) return Date.now(); if (v===ds) return Date.now(); return new Date(+p[1], +p[2]-1, +p[3], 12).getTime(); }
+  function saveIv(){
+    if (!d) return;
+    var iv=ivIn ? parseInt(ivIn.value,10) : 0, mo=moIn ? parseInt(moIn.value,10) : 0;
+    if (ivIn){ if (isNum(iv) && iv>=500 && iv!==d.km) st.iv=iv; else delete st.iv; }
+    if (moIn){ if (isNum(mo) && mo>=1 && mo!==d.mo) st.ivMo=mo; else delete st.ivMo; }
+  }
+  function save(){
+    var km=parseInt(String(kIn.value).replace(/[^\d]/g,''),10), cost=parseFare(cIn.value)||0, memo=String(mIn.value||'').trim(), ts=tsOf(dIn.value), h, name, led=null, e;
+    name = d ? d.n : String(nm.value||'').trim();
+    if (!d && !name){ toast('무엇을 정비했는지 적어 주세요'); return; }
+    if (!isNum(km) || km<0){ toast('계기판 km를 넣어 주세요'); return; }
+    if (cost>0 && lIn.checked){
+      loadLedger();
+      e={id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), ts:ts, kind:'expense', cat:'정비', amount:cost, memo:(name+(memo ? ' · '+memo : '')).slice(0,60)};
+      ledger.push(e); persistLedger(); led=e.id;
+    }
+    h={id:'h'+Date.now().toString(36), ts:ts, km:km, cost:cost, memo:memo.slice(0,40), led:led};
+    if (d){
+      saveIv();
+      st.hist=(st.hist||[]).concat([h]).sort(function(a,b){ return a.km-b.km || a.ts-b.ts; }).slice(-30);
+      st.km=st.hist[st.hist.length-1].km; st.ts=st.hist[st.hist.length-1].ts;
+    } else { h.n=name.slice(0,40); mnt.etc.push(h); mnt.etc=mnt.etc.slice(-200); }
+    /* 정비 때 본 계기판 값이 더 크면 주행거리도 맞춘다 */
+    var ol=mntOdoEst().last;
+    if (!ol || (km>ol.km && ts>=ol.ts)) mnt.odo.push({ts:ts, km:km});
+    mntSave(); closeSheet();
+    toast((d ? d.n : name)+' 기록'+(led ? ' · 지출 '+won(cost)+' (정비)' : '')+' 저장');
+    if (currentTab==='v-mnt') mntRender();
+    if (currentTab==='v-stat') renderBook();
+  }
+  function delH(h, list){
+    if (!window.confirm(mdTxt(h.ts)+' 기록을 지울까요?'+(h.led ? ' 장부의 정비 지출도 함께 지웁니다.' : ''))) return;
+    if (h.led){ loadLedger(); ledger=ledger.filter(function(x){ return x.id!==h.led; }); persistLedger(); }
+    if (d){
+      st.hist=st.hist.filter(function(x){ return x.id!==h.id; });
+      if (st.hist.length){ st.km=st.hist[st.hist.length-1].km; st.ts=st.hist[st.hist.length-1].ts; } else { delete st.km; delete st.ts; }
+    } else mnt.etc=mnt.etc.filter(function(x){ return x.id!==h.id; });
+    mntSave(); closeSheet(); if (currentTab==='v-mnt') mntRender();
+    toast('지웠습니다');
+  }
+  hist=el('div',{cls:'mn-hist'});
+  var hl = d ? (st.hist||[]).slice().reverse() : mnt.etc.slice().reverse().slice(0,10);
+  if (hl.length){
+    hist.appendChild(el('b',{text:'지난 기록'}));
+    hl.forEach(function(h){ hist.appendChild(el('div',null,[
+      el('span',{text:mdTxt(h.ts)+' · '+(h.n ? h.n+' · ' : '')+kmTxt(h.km)+(h.cost ? ' · '+won(h.cost) : '')+(h.memo ? ' · '+h.memo : '')}),
+      el('button',{type:'button', onclick:function(){ delH(h); }},['지우기'])
+    ])); });
+  }
+  function f(label, inp){ return el('div',{cls:'mn-f'},[el('label',{text:label}), inp]); }
+  openSheet([
+    el('h3',{style:'margin:0 0 2px;font-size:18px', text: d ? d.n+' 교체 기록' : '목록 밖 정비 기록'}),
+    d ? el('div',{cls:'empty', style:'margin-bottom:8px', text:mntIvTxt(d, st)+' · '+d.note}) : null,
+    nm ? f('무엇을 했나요', nm) : null,
+    el('div',{cls:'mn-two'},[f('날짜', dIn), f('계기판 km', kIn)]),
+    el('div',{cls:'mn-two'},[f('비용 (원)', cIn), f('정비소·메모', mIn)]),
+    el('label',{cls:'mn-cb'},[lIn, ' 관리 앱 지출(정비)로 합산']),
+    el('button',{cls:'btn primary', type:'button', style:'width:100%', onclick:save},['저장', nxt]),
+    hist,
+    (ivIn || moIn) ? el('div',{cls:'mn-two', style:'margin-top:10px'},[ivIn ? f('교체 주기 (km)', ivIn) : null, moIn ? f('교체 주기 (개월)', moIn) : null]) : null,
+    (ivIn || moIn) ? el('button',{cls:'btn', type:'button', style:'width:100%;margin-top:6px', onclick:function(){ saveIv(); mntSave(); closeSheet(); if (currentTab==='v-mnt') mntRender(); toast('교체 주기를 바꿨습니다'); }},['주기만 저장']) : null,
+    el('button',{cls:'btn', type:'button', style:'width:100%;margin-top:6px', onclick:closeSheet},['닫기'])
+  ]);
+}
+function mntInit(){ mntLoad(); mntBadge(); }
+
 /* ── 태블릿 쪽 ── */
 var tb={on:false, code:'', name:'', es:null, esWatch:null, lastEv:0, wake:null, watch:null, pos:null,
         ride:null, alightAt:0, backTimer:null, clockTimer:null, seen:{}, speakQ:[],
@@ -13058,6 +13372,7 @@ function wkOut(){
   h = t.net>=600000 && inc>0 ? Math.round(inc/(t.net/3600000)) : 0;
   renderToday();
   toast('퇴근 저장: 순영업 '+durTxt(t.net)+(h ? ', 시간당 '+won(h) : ''));
+  try { if (!mnt) mntLoad(); if (mnt.askOut!==false) setTimeout(function(){ mntAskOdo(true); }, 900); } catch(e){}
 }
 function wkDelBreak(sid, idx){
   var i, x=null;
@@ -13268,6 +13583,7 @@ function showTab(id){
   if (id==='v-road'){ fillRoadSelects(); if ($('roadListWrap') && $('roadListWrap').style.display!=='none') renderRoadList(); if (!$('roadResult').firstChild) renderRoad(); roadLedTick(); }
   if (id==='v-air'){ renderAir(); loadPax(); }
   if (id==='v-data') renderStore();
+  if (id==='v-mnt') mntRender();
   window.scrollTo(0,0);
 }
 function renderAll(){
@@ -13276,6 +13592,7 @@ function renderAll(){
   if (currentTab==='v-today'){ renderToday(); renderRush(); }
   if (currentTab==='v-log') renderLog();
   if (currentTab==='v-data') renderStore();
+  if (currentTab==='v-mnt') mntRender();
   if (map) drawRecords();
 }
 
@@ -13338,6 +13655,7 @@ function init(){
   if (guideLandBoot()){ bootShow(); return; }   /* 손님이 여행 가이드 QR을 찍었으면 그 안내 화면만 */
   if (tabletBoot()){ bootShow(); primeVoices(); return; }   /* 뒷좌석 태블릿이면 태블릿 안내 화면만 쓴다 */
   try { bkBind(); } catch(e){}   /* 직접 예약: 버튼·알림 받기 */
+  try { mntInit(); } catch(e){}   /* 정비: 교체 시기 빨간 점 */
   openFromQr();   /* QR을 찍고 들어왔으면 곧장 승객 화면 */
   bootShow();
   primeVoices();
