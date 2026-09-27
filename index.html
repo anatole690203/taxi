@@ -1834,6 +1834,34 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .mn-hist>div{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #eceef0}
 .mn-hist button{border:0;background:transparent;color:#C62828;font-size:13px;padding:4px}
 
+
+/* ───── 예약 달력 ───── */
+.bk-ht{display:flex;align-items:center;gap:8px}
+.bk-calbtn{width:48px;height:48px;border:1px solid #3A3F46;border-radius:12px;background:#22262c;font-size:26px;line-height:1;padding:0}
+.bk-calbtn.on{border:2px solid #FFC81E;background:#2c2717}
+.bc-nav{display:flex;align-items:center;gap:6px;margin:0 0 8px}
+.bc-nav b{flex:1;text-align:center;font-size:21px}
+.bc-nav button{min-width:44px;height:40px;border:0;border-radius:10px;background:#22262c;color:#EDEFF2;font-size:22px}
+.bc-nav .bc-today{font-size:14px;font-weight:700;padding:0 10px;background:#138A8A;color:#fff}
+.bc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.bc-wd{text-align:center;font-size:13px;font-weight:700;color:#C9CED4;padding:4px 0}
+.bc-wd.sun,.bc-n.sun{color:#FF6B6B}.bc-wd.sat,.bc-n.sat{color:#8AB6F9}
+.bc-d{min-height:100px;display:flex;flex-direction:column;align-items:stretch;gap:2px;padding:3px 2px;border:1px solid transparent;border-radius:8px;background:#1E2227;color:#EDEFF2;font:inherit;text-align:left;overflow:hidden}
+.bc-d.out{opacity:.35}
+.bc-d.today{border-color:#EDEFF2}
+.bc-d.sel{background:#2a2f37;border-color:#FFC81E}
+.bc-n{font-size:15px;font-weight:800;text-align:center;line-height:1.3}
+.bc-ev{display:block;font-size:10.5px;line-height:1.25;padding:1px 2px 1px 4px;border-left:3px solid var(--c);border-radius:3px;background:rgba(255,255,255,.06);background:color-mix(in srgb, var(--c) 22%, transparent);white-space:nowrap;overflow:hidden;text-overflow:clip;max-height:2.6em}
+.bc-ev i{display:block;font-style:normal;font-weight:800}
+.bc-ev.pend{border-left-style:dashed;background:transparent;outline:1px dashed var(--c);outline-offset:-1px}
+.bc-ev.past{opacity:.55}
+.bc-more{font-size:11px;color:#C9CED4;padding-left:3px}
+.bc-day{font-size:15px;font-weight:800;margin:12px 0 6px}
+.bc-item{background:#1E2227;border-radius:12px;padding:10px 12px;margin-bottom:7px;border-left:5px solid var(--c)}
+.bc-item.pend{border-left-style:dashed}
+.bc-item .bk-mt b{font-size:16px}
+.bc-legend{font-size:12px;color:#8E959E;margin:8px 2px 0;line-height:1.5}
+
 /* ───── 손님 통역 (폰·태블릿) ───── */
 #tbModeRow{flex-wrap:wrap}
 .tbmode .tbtalkbtn{flex:1 1 100%;min-height:48px;padding:0 8px;border:1px solid #138A8A;border-radius:4px;background:#138A8A;color:#fff;font-size:15px;font-weight:700;white-space:nowrap}
@@ -10763,6 +10791,7 @@ function bkIngest(payload, quiet){
         b={rid:d.rid, lang:/^(en|ja|zh|ko)$/.test(d.lang) ? d.lang : 'en', from:String(d.from||''), geo:d.geo||null, to:d.to, toTx:String(d.toTx||''),
            date:d.date, time:d.time, pax:+d.pax||1, bags:+d.bags||0, name:String(d.name||''), cm:d.cm, ct:String(d.ct||''), note:String(d.note||''),
            aes:r[1], st:'new', rx:Date.now(), ts:d.ts||Date.now()};
+        b.ci=bkNextCi(a);
         a.push(b); bkSave(a);
         bkTranslateIn(b);
         if (!quiet){
@@ -10816,7 +10845,12 @@ function bkConnect(){
 }
 /* 알림을 눌러 앱이 열렸을 때 (#bkin=...) */
 function bkFromHash(){
-  var i=location.hash.indexOf('bkin='), p;
+  var i=location.hash.indexOf('bkin='), p, r=/bkrem=([a-z0-9]{16})/.exec(location.hash);
+  if (r){
+    try { history.replaceState(null, '', location.href.split('#')[0]); } catch(e){}
+    setTimeout(function(){ var b=bkFind(bkList(), r[1]); if (b){ bk.view='cal'; bkCalGo(b.ndate||b.date); bk.sel=b.ndate||b.date; bk.open1=b.rid; } bkOpen(); }, 600);
+    return true;
+  }
   if (i<0) return false;
   p=decodeURIComponent(location.hash.slice(i+5));
   try { history.replaceState(null, '', location.href.split('#')[0]); } catch(e){}
@@ -10847,12 +10881,14 @@ function bkReply(b, st, msg, cb){
     .then(function(){
       var a=bkList(), x=bkFind(a, b.rid);
       if (x){ x.st=st; x.msg=msg||''; x.msgKo=b.msgKo||''; x.sentAt=Date.now(); if (st==='adj'){ x.ndate=b.ndate; x.ntime=b.ntime; } bkSave(a); }
+      if (x && (st==='ok' || st==='adj')) bkRemSchedule(x);
       cb(true);
     }, function(){ cb(false); });
 }
 /* 서버(ntfy)는 12시간만 보관한다 → 앱을 열 때마다 앞으로 남은 예약의 답을 다시 올려 손님이 언제 열어도 보이게 */
 function bkKeepAlive(){
   var a=bkList();
+  a.forEach(function(b){ if ((b.st==='ok' || b.st==='adj') && !bkPast(b)) bkRemSchedule(b); });
   a.forEach(function(b){
     var ms=bkWhenMs(b.ndate||b.date, b.ntime||b.time);
     if ((b.st==='ok' || b.st==='adj' || b.st==='no') && b.sentAt && Date.now()-b.sentAt>8*3600000 && isNum(ms) && ms>Date.now()-3600000)
@@ -10868,7 +10904,8 @@ function bkOpen(tab){
     bk.me=me; bkConnect(); bkTabletLink(me);
     if (!w){
       w=el('div',{cls:'bkph', id:'bkPh'},[
-        el('div',{cls:'bk-h'},[el('b',{text:'📅 예약'}), el('button',{type:'button', cls:'bk-x', onclick:bkClose},['닫기'])]),
+        el('div',{cls:'bk-h'},[el('div',{cls:'bk-ht'},[el('button',{type:'button', cls:'bk-calbtn', id:'bkCalBtn', 'aria-label':'예약 달력', onclick:bkToggleCal},['📅']), el('b',{id:'bkTitle', text:'예약'})]),
+          el('button',{type:'button', cls:'bk-x', onclick:bkClose},['닫기'])]),
         el('div',{cls:'bk-tabs', id:'bkTabs'}),
         el('div',{cls:'bk-body', id:'bkBody'})
       ]);
@@ -10884,6 +10921,8 @@ function bkClose(){ var w=$('bkPh'); if (w) w.className='bkph'; bk.open=false; }
 function bkRender(){
   var a=bkList(), body=$('bkBody'), tabs=$('bkTabs'), nw, up, past, list;
   if (!body) return;
+  if (bk.view==='cal'){ tabs.style.display='none'; if ($('bkTitle')) $('bkTitle').textContent='예약 달력'; if ($('bkCalBtn')) $('bkCalBtn').className='bk-calbtn on'; bkRenderCal(body, a); return; }
+  tabs.style.display=''; if ($('bkTitle')) $('bkTitle').textContent='예약'; if ($('bkCalBtn')) $('bkCalBtn').className='bk-calbtn';
   nw=a.filter(function(b){ return b.st==='new' && !bkPast(b); });
   up=a.filter(function(b){ return (b.st==='ok' || b.st==='adj') && !bkPast(b); });
   past=a.filter(function(b){ return bkPast(b) || b.st==='done'; });
@@ -11043,8 +11082,116 @@ function bkBind(){
   bkBadge();
   if (bkMe()){ bkConnect(); bkTabletLink(bkMe()); }
   bkFromHash();
-  document.addEventListener('visibilitychange', function(){ if (!document.hidden && bkMe()) bkConnect(); });
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && bkMe()){ bkConnect(); bkRemTick(); } });
   window.addEventListener('hashchange', bkFromHash);
+  setInterval(bkRemTick, 30000); setTimeout(bkRemTick, 4000);
+  setInterval(function(){ if (bkMe()) bkList().forEach(function(b){ if ((b.st==='ok' || b.st==='adj') && !bkPast(b)) bkRemSchedule(b); }); }, 30*60000);
+}
+
+
+/* ── 예약 달력 ──
+   손님 예약은 들어온 순서대로 보라·노랑·하늘·초록·연분홍·회색 (7번째부터 다시 보라) */
+var BK_COLORS=['#A07CFF','#FFC81E','#5EC8F5','#3DDC84','#FFB3C7','#A8AEB6'];
+function bkNextCi(a){ var mx=-1; a.forEach(function(b){ if (isNum(b.ci) && b.ci>mx) mx=b.ci; }); return mx+1; }
+function bkColor(b){
+  if (!isNum(b.ci)){ var a=bkList().slice().sort(function(x,y){ return (x.rx||0)-(y.rx||0); }), i; for (i=0;i<a.length;i++) if (a[i].rid===b.rid) return BK_COLORS[i%6]; return BK_COLORS[0]; }
+  return BK_COLORS[b.ci%6];
+}
+function bkToggleCal(){ bk.view = bk.view==='cal' ? 'list' : 'cal'; if (bk.view==='cal' && !isNum(bk.calY)){ var k=bkKstNow(); bkCalGo(k.date); } bkRender(); }
+function bkCalGo(date){ var m=/^(\d{4})-(\d\d)/.exec(date||''); if (!m) return; bk.calY=+m[1]; bk.calM=+m[2]-1; }
+function bkPad(n){ return (n<10?'0':'')+n; }
+function bkRenderCal(body, a){
+  var k=bkKstNow(), y, m, first, lead, dim, rows, i, grid, ev={}, sel, cell, list, kd, wk=['일','월','화','수','목','금','토'];
+  if (!isNum(bk.calY)) bkCalGo(k.date);
+  y=bk.calY; m=bk.calM;
+  a.forEach(function(b){
+    if (b.st==='no' || b.st==='cxl') return;
+    var d=b.ndate||b.date; (ev[d]||(ev[d]=[])).push(b);
+  });
+  Object.keys(ev).forEach(function(d){ ev[d].sort(function(x,z){ return String(x.ntime||x.time).localeCompare(String(z.ntime||z.time)); }); });
+  first=new Date(Date.UTC(y, m, 1)); lead=first.getUTCDay(); dim=new Date(Date.UTC(y, m+1, 0)).getUTCDate();
+  rows=Math.ceil((lead+dim)/7);
+  clear(body);
+  body.appendChild(el('div',{cls:'bc-nav'},[
+    el('button',{type:'button', 'aria-label':'이전 달', onclick:function(){ bk.calM--; if (bk.calM<0){ bk.calM=11; bk.calY--; } bkRender(); }},['‹']),
+    el('b',{text:y+'년 '+(m+1)+'월'}),
+    el('button',{type:'button', 'aria-label':'다음 달', onclick:function(){ bk.calM++; if (bk.calM>11){ bk.calM=0; bk.calY++; } bkRender(); }},['›']),
+    el('button',{type:'button', cls:'bc-today', onclick:function(){ bkCalGo(k.date); bk.sel=k.date; bkRender(); }},['오늘'])
+  ]));
+  grid=el('div',{cls:'bc-grid'});
+  wk.forEach(function(w, j){ grid.appendChild(el('div',{cls:'bc-wd'+(j===0?' sun':j===6?' sat':''), text:w})); });
+  for (i=0;i<rows*7;i++){
+    (function(i){
+      var dt=new Date(Date.UTC(y, m, 1-lead+i)), ds=dt.getUTCFullYear()+'-'+bkPad(dt.getUTCMonth()+1)+'-'+bkPad(dt.getUTCDate()),
+          out=dt.getUTCMonth()!==m, dw=i%7, list=ev[ds]||[], kids=[], j;
+      kids.push(el('span',{cls:'bc-n'+(dw===0?' sun':dw===6?' sat':''), text:String(dt.getUTCDate())}));
+      for (j=0;j<Math.min(2, list.length);j++) kids.push(bkChip(list[j]));
+      if (list.length>2) kids.push(el('span',{cls:'bc-more', text:'+'+(list.length-2)}));
+      grid.appendChild(el('button',{type:'button', cls:'bc-d'+(out?' out':'')+(ds===k.date?' today':'')+(ds===bk.sel?' sel':''), onclick:function(){
+        bk.sel=ds; if (out) bkCalGo(ds); bkRender();
+      }}, kids));
+    })(i);
+  }
+  body.appendChild(grid);
+  /* 고른 날의 예약 */
+  sel=bk.sel || k.date;
+  list=ev[sel]||[];
+  body.appendChild(el('div',{cls:'bc-day', text:bkFmtDate(sel,'ko')+(sel===k.date ? ' · 오늘' : '')+(list.length ? ' · 예약 '+list.length+'건' : '')}));
+  if (!list.length) body.appendChild(el('div',{cls:'bk-empty', style:'padding:14px 10px', text:'이날은 예약이 없습니다.'}));
+  list.forEach(function(b){ body.appendChild(bkCalItem(b)); });
+  body.appendChild(el('div',{cls:'bc-legend', text:'예약이 들어온 순서대로 보라 → 노랑 → 하늘 → 초록 → 연분홍 → 회색 · 점선은 아직 답하지 않은 요청'}));
+  body.appendChild(el('button',{type:'button', cls:'bk-qr', onclick:bkShowQr},['▦ 손님용 예약 QR 보기 · 링크 복사']));
+}
+function bkPlaceShort(b){
+  var to={t1:'인천T1', t2:'인천T2', gmp:'김포'}[b.to] || b.toKo || b.toTx || '';
+  return (b.fromKo || b.from || '손님 위치')+'→'+to;
+}
+function bkChip(b){
+  var c=bkColor(b), t=String(b.ntime||b.time||'');
+  return el('span',{cls:'bc-ev'+(b.st==='new' ? ' pend' : '')+(bkPast(b) ? ' past' : ''), style:'--c:'+c},[el('i',{text:t}), bkPlaceShort(b)]);
+}
+function bkCalItem(b){
+  var c=bkColor(b), open=bk.open1===b.rid, det, stTx={ok:'확정', adj:'시간 조정 확정', new:'답 안 함', done:'완료'}[b.st]||'', box;
+  det=el('div',{cls:'bk-det', style: open ? '' : 'display:none'},[bkRows(b),
+    b.st==='new' ? el('button',{type:'button', cls:'bk-b acc', style:'width:100%;margin-top:6px', onclick:function(e){ e.stopPropagation(); bk.view='list'; bk.tab='new'; bkRender(); }},['새 요청에서 답하기']) : null]);
+  box=el('div',{cls:'bc-item'+(b.st==='new' ? ' pend' : ''), style:'--c:'+c, onclick:function(){ det.style.display = det.style.display==='none' ? '' : 'none'; bk.open1 = det.style.display==='none' ? '' : b.rid; }},[
+    el('div',{cls:'bk-mt'},[
+      el('div',null,[el('b',{text:bkFmtTime(b.ntime||b.time,'ko')}), ' ', el('span',{text:bkPlaceShort(b)}), el('br'),
+        el('span',{cls:'t', text:(BK_FLAG[b.lang]||'').split(' ')[0]+' '+b.name+' · '+b.pax+'명 · 캐리어 '+b.bags+'개'})]),
+      el('span',{cls:'bk-dd'+(b.st==='new' ? ' g' : ''), text: b.st==='new' ? stTx : (bkPast(b) ? '지남' : bkDday(b))})
+    ]), det]);
+  return box;
+}
+/* ── 예약 1시간 전 알림 ──
+   ntfy 예약 발송(delay)으로 1시간 전에 기사 폰에 알림이 오게 한다. ntfy.sh는 3일 안쪽만 예약되므로
+   그보다 먼 예약은 앱을 열 때·30분마다 다시 살펴 3일 안으로 들어오면 예약한다.
+   알림에는 개인정보를 싣지 않는다 (시각만). 눌러서 열면 앱에서 내용을 본다. */
+function bkRemSchedule(b){
+  var me=bkMe(), d=b.ndate||b.date, t=b.ntime||b.time, ms=bkWhenMs(d, t), at, key=d+' '+t;
+  if (!me || !isNum(ms) || b.remKey===key) return;
+  at=ms-3600000;
+  if (at < Date.now()+60000) return;                       /* 이미 1시간 안 → 앱 안 안내만 */
+  if (at > Date.now()+3*86400000-10*60000) return;          /* 3일보다 멀면 나중에 */
+  bkPost(bkTopic(me.id), {title:'⏰ 1시간 뒤 예약', message:bkFmtDate(d,'ko')+' '+bkFmtTime(t,'ko')+' 예약이 있습니다. 눌러서 확인하세요.',
+    priority:5, tags:['alarm_clock'], delay:String(Math.round(at/1000)), click:bkBase()+'#bkrem='+b.rid})
+  .then(function(){ var a=bkList(), x=bkFind(a, b.rid); if (x){ x.remKey=key; sSet(BK_LIST_KEY, JSON.stringify(a.slice(-200))); } }, function(){});
+}
+/* 앱이 켜져 있으면 1시간 전에 화면 안내·진동·음성 */
+function bkRemTick(){
+  var a=bkList(), now=Date.now(), ch=false;
+  a.forEach(function(b){
+    var d=b.ndate||b.date, t=b.ntime||b.time, ms=bkWhenMs(d, t), key=d+' '+t;
+    if ((b.st!=='ok' && b.st!=='adj') || !isNum(ms) || b.remShown===key) return;
+    if (now>=ms-3600000 && now<ms){
+      b.remShown=key; ch=true;
+      try { if (navigator.vibrate) navigator.vibrate([300,150,300,150,500]); } catch(e){}
+      toast('⏰ '+Math.max(1, Math.round((ms-now)/60000))+'분 뒤 예약 · '+bkFmtTime(t,'ko')+' '+bkPlaceShort(b)+' · '+b.name, '보기', function(){ bk.view='cal'; bkCalGo(d); bk.sel=d; bk.open1=b.rid; bkOpen(); });
+      try {
+        if (window.speechSynthesis && !document.hidden){ var u=new window.SpeechSynthesisUtterance('한 시간 뒤 예약이 있습니다. '+bkFmtTime(t,'ko')+' 출발입니다.'); u.lang='ko-KR'; window.speechSynthesis.speak(u); }
+      } catch(e){}
+    }
+  });
+  if (ch) sSet(BK_LIST_KEY, JSON.stringify(a.slice(-200)));
 }
 
 /* ── 태블릿: 부탁하기 화면의 "다음에도 이 기사님 예약" ── */
