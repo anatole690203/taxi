@@ -950,10 +950,24 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 .tt-v2.tt-fx{color:#A8CBFF}
 .tt-galeta{display:block;margin-top:.4vh;font-size:clamp(14px,2vh,22px);color:#FFC61E}
 @media (min-aspect-ratio:1/1){
-  .tbpane.trip.on{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:3vw;row-gap:1.2vh;align-content:stretch}
-  .tbpane.trip .tt-drv{grid-column:1;grid-row:1}
-  .tbpane.trip .tt-top{grid-column:1;grid-row:2}
-  .tbpane.trip .tt-side{grid-column:2;grid-row:1 / span 2}
+  /* 가로 거치: 세로 화면과 같은 모양 — 기사 카드(버튼 포함)는 맨 위에 가로로 길게,
+     그 아래 왼쪽은 목적지·예상 시간, 오른쪽은 남은 거리·도착 예정·지도 */
+  .tbpane.trip.on{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);column-gap:3vw;row-gap:1.6vh;align-content:stretch;padding-top:3vh!important}
+  .tbpane.trip .tt-drv{grid-column:1 / -1;grid-row:1;margin-bottom:0!important}
+  .tbpane.trip .tt-top{grid-column:1;grid-row:2;min-height:0;margin-top:0!important;align-self:start}
+  .tbpane.trip .tt-side{grid-column:2;grid-row:2;min-height:0}
+  .tbpane.trip.nocard .tt-top,.tbpane.trip.nocard .tt-side{grid-row:1 / span 2}
+  .tbpane.trip .tt-drv .tx{display:flex;flex-direction:column;justify-content:center}
+  .tbpane.trip .tt-drv .c,.tbpane.trip .tt-drv .d{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tbcorner.incard{flex-direction:row;max-width:none;gap:10px}
+  .tbcorner.incard{flex:0 1 auto;min-width:0}
+  .tbcorner.incard .tbguidebtn,.tbcorner.incard .tbreqbtn{min-height:52px;white-space:nowrap;padding:4px 16px 4px 10px;gap:8px}
+  .tbcorner.incard .tbreqbtn .lb b{font-size:19px!important}
+  .tbcorner.incard .tbreqbtn .lb i{font-size:13.5px!important}
+  .tbcorner.incard .tbreqbtn .hi{font-size:22px}
+  .tbcorner.incard .tbguidebtn .gi svg.cmp{width:28px;height:28px}
+  .tbpane.trip .tt-dest{font-size:clamp(30px,5.6vh,56px)!important;line-height:1.2}
+  .tbpane.trip .tt-v{font-size:clamp(30px,5.4vh,54px)!important}
 }
 /* ── 어르신 큰 글씨 ── */
 .tabscr.big .tt-drv,.tabscr.big .tt-map,.tabscr.big .tt-dsub,.tabscr.big .tt-v2{display:none!important}
@@ -1023,6 +1037,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
   #tbGal .tt-slide .s{background-size:0 0}
   #tbGal .tt-slide .s::before{content:'';position:absolute;inset:-30px;background:inherit;background-size:cover;background-position:center;background-repeat:no-repeat;filter:blur(22px) brightness(.5)}
   #tbGal .tt-slide .s::after{content:'';position:absolute;inset:0;background:inherit;background-size:contain;background-position:center;background-repeat:no-repeat}
+  #tbGal .tt-slide .s[data-fill="1"]::after{background-size:cover}   /* 비율이 비슷한 사진은 위아래 빈틈 없이 꽉 */
   /* 오른쪽 위 두 버튼: 미리보기 크기 (갤러리 화면일 때만) */
   .tbcorner.pos-gal{top:16px;right:4vw;width:250px;gap:10px}
   .tbcorner.pos-gal .tbguidebtn,.tbcorner.pos-gal .tbreqbtn{min-height:50px;padding:4px 14px 4px 10px;gap:8px}
@@ -12049,6 +12064,27 @@ function tbSlideStart(){
   tb.slideRun=true;
   tbSlideShow(tb.slideIdx);
 }
+/* 가로 화면 갤러리: 사진과 칸의 비율이 비슷하면(25% 안) 칸을 꽉 채우고, 크게 다르면 통째로 + 흐린 배경.
+   비율은 사진마다 한 번만 잰다 */
+function tbSlideFit(node, it){
+  var im;
+  if (!node || !it || it.kind==='video') return;
+  function apply(){
+    var r=parseFloat(node.getAttribute('data-r')), b=node.parentNode ? node.parentNode.getBoundingClientRect() : null, br, d;
+    if (!r || !b || !b.height) return;
+    br=b.width/b.height; d=Math.max(r/br, br/r);
+    node.setAttribute('data-fill', d<=1.25 ? '1' : '0');
+  }
+  if (node.getAttribute('data-r')){ apply(); return; }
+  im=new Image();
+  im.onload=function(){ if (im.naturalWidth && im.naturalHeight){ node.setAttribute('data-r', String(im.naturalWidth/im.naturalHeight)); apply(); } };
+  im.src=it.url;
+}
+window.addEventListener('resize', function(){
+  var box=$('ttSlide'), L=(typeof tb!=='undefined' && tb.slideList) || [], k;
+  if (!box) return;
+  for (k=0;k<box.childNodes.length && k<L.length;k++) if (box.childNodes[k].getAttribute('data-r')) tbSlideFit(box.childNodes[k], L[k]);
+});
 function tbSlideShow(n){
   var box=$('ttSlide'), L=tb.slideList||[], N=L.length, k, node, nx;
   if (!N || !tb.slideRun) return;
@@ -12060,6 +12096,7 @@ function tbSlideShow(n){
     node.className = k===n ? 's on' : 's';
     if (k!==n && node.firstChild && node.firstChild.pause){ try { node.firstChild.pause(); } catch(e){} }
   }
+  tbSlideFit(box.childNodes[n], L[n]); tbSlideFit(box.childNodes[(n+1)%N], L[(n+1)%N]);
   if (L[n].kind==='video') tbSlideVideo(box.childNodes[n].firstChild, tb.slideTok);
   else tb.slideTimer=setTimeout(function(){ tbSlideShow(n+1); }, TB_SLIDE_MS);
   /* 다음이 영상이면 미리 받아 둔다 */
