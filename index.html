@@ -1005,6 +1005,33 @@ label.btn{display:inline-flex;align-items:center;justify-content:center;padding:
 /* 갤러리: 목적지 문단을 위로, 버튼은 목적지 첫 줄 높이에 */
 #tabScr .tbpane.gal{padding-top:28px;padding-bottom:max(5.5vh,56px)}
 #tabScr .tbpane.gal .tt-galdest{word-break:keep-all}
+/* ── 태블릿 가로 거치: 갤러리 사진이 잘리지 않게 (2026-09-27) ──
+   미리보기대로: 목적지 글 바로 아래부터 사진을 왼쪽에 크게·통째로(남는 곳은 같은 사진을 흐리게),
+   오른쪽 위 두 버튼은 작게, 그 아래 오른쪽 세로 줄에 QR(3.5cm = 182px)과 안내 */
+@media (orientation: landscape){
+  #tabScr .tbpane.gal.on{display:grid;grid-template-columns:minmax(0,1fr) 250px;grid-template-rows:auto minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:stretch;justify-items:stretch;padding-top:22px}
+  #tabScr .tbpane.gal .tt-galdest{grid-column:1;grid-row:1;padding-right:0}
+  #tabScr .tbpane.gal .tt-galdest::before{display:none}
+  #tabScr .tbpane.gal .tt-slide{grid-column:1;grid-row:2;min-height:0}
+  #tabScr .tbpane.gal.prev .tt-slide{grid-column:1 / -1}
+  #tabScr .tbpane.gal .tt-qr{grid-column:2;grid-row:1 / 3;margin-top:130px;position:relative;flex-direction:column;justify-content:center;align-items:center;padding:0!important;min-height:0}   /* QR은 검은 칸 정중앙 */
+  #tbGal .tt-qrbox{width:198px!important;height:198px!important;padding:8px!important}   /* 3.8cm */
+  #tbGal .tt-qrtxt{position:absolute;left:26px;right:0;top:calc(50% + 99px + 16px);gap:0}   /* 설명 글은 QR 바로 아래, QR 왼쪽 선에서 시작 */
+  #tbGal .tt-qrtxt b{margin-bottom:8px}
+  #tbGal #ttQrSub{white-space:pre;line-height:1.5;font-size:12.3px!important}
+  #tbGal #ttQrSub2{white-space:normal;margin-top:12px;font-size:12px!important;padding-right:10px}
+  #tbGal .tt-slide .s{background-size:0 0}
+  #tbGal .tt-slide .s::before{content:'';position:absolute;inset:-30px;background:inherit;background-size:cover;background-position:center;background-repeat:no-repeat;filter:blur(22px) brightness(.5)}
+  #tbGal .tt-slide .s::after{content:'';position:absolute;inset:0;background:inherit;background-size:contain;background-position:center;background-repeat:no-repeat}
+  /* 오른쪽 위 두 버튼: 미리보기 크기 (갤러리 화면일 때만) */
+  .tbcorner.pos-gal{top:16px;right:4vw;width:250px;gap:10px}
+  .tbcorner.pos-gal .tbguidebtn,.tbcorner.pos-gal .tbreqbtn{min-height:50px;padding:4px 14px 4px 10px;gap:8px}
+  .tbcorner.pos-gal .tbreqbtn .lb b{font-size:19px!important}
+  .tbcorner.pos-gal .tbreqbtn .lb i{font-size:13.5px!important}
+  .tbcorner.pos-gal .tbreqbtn .hi{font-size:22px}
+  .tbcorner.pos-gal .tbguidebtn .gi svg.cmp{width:28px;height:28px}
+}
+
 #tabScr .tbpane.gal .tt-galdest::before{content:'';float:right;width:min(250px,36vw);height:136px}
 .tbreqbtn.pos-gal{top:48px}
 /* 대기 화면: 버튼을 두 줄 아래로 */
