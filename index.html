@@ -13,7 +13,7 @@
 /* 안심도착(?s)·여행가이드(?pl)·손님 안내(?g, ?p=1)·태블릿(?tablet) 주소로 열면
    그 화면이 준비될 때까지 기사용 입력 화면을 보여 주지 않는다 */
 (function(){
-  if (/[?&](s|pl|g|tablet|bk)=|[?&]p=1\b/.test(location.search)){
+  if (/[?&](s|pl|g|tablet|bk|sos)=|[?&]p=1\b/.test(location.search)){
     document.documentElement.className+=' bootx';
     setTimeout(function(){ document.documentElement.className=document.documentElement.className.replace(/\s*\bbootx\b/g,''); }, 5000);
   }
@@ -1106,7 +1106,7 @@ svg.cmp .ndl{transform-box:view-box;transform-origin:16px 16px;animation:cmpNdl 
 .tbguidebtn{background:#5B2A9B!important;color:#fff!important;border-color:#5B2A9B!important}
 .tbguidebtn .lb i{opacity:.9}
 /* QR로 연 손님 폰 화면: 뒤의 기사 화면 숨김 */
-body.solo>*:not(.shv):not(.gland):not(.pgend):not(.bkg){display:none!important}
+body.solo>*:not(.shv):not(.gland):not(.pgend):not(.bkg):not(.sosv){display:none!important}
 .pgend{position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;background:#101215;color:#fff;text-align:center}
 .pgend .pe-ic{font-size:56px}
 .pgend b{font-size:26px;color:#FFC61E}
@@ -1965,7 +1965,59 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .lost-st{display:flex;gap:6px;margin:8px 0 4px}
 .lost-st button{flex:1;border:1px solid #cfd3d8;border-radius:18px;background:#fff;padding:8px 0;font-size:13.5px;font-family:inherit}
 .lost-st button.on{background:#FFC81E;border-color:#FFC81E;font-weight:800}
-.sosrow{display:flex;gap:6px;margin-bottom:6px}.sosrow input{flex:1;min-width:0}.sosrow input:first-child{flex:0 0 32%}
+.sosrow{display:flex;gap:6px;margin-bottom:6px}.sosrow input{flex:1;min-width:0;color:#1b1d21!important;background:#fff;font-weight:600}.sosrow input::placeholder{color:#8E959E;font-weight:400}.sosrow input:first-child{flex:0 0 32%}
+
+
+/* ───── SOS 실시간 위치 ───── */
+.sos-bar{position:fixed;left:0;right:0;top:0;z-index:5500;display:flex;align-items:center;gap:8px;padding:max(8px,env(safe-area-inset-top)) 10px 8px;background:#B71C1C;color:#fff;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.sos-bar .dot{width:10px;height:10px;border-radius:50%;background:#fff;animation:sosLit .6s ease-in-out infinite alternate;flex:none}
+.sos-bar b{white-space:nowrap}.sos-bar .n{flex:1;opacity:.85;font-size:12.5px;white-space:nowrap;overflow:hidden}
+.sos-bar button{border:1px solid #fff;background:transparent;color:#fff;border-radius:8px;padding:6px 9px;font-size:13px;font-weight:800;white-space:nowrap}
+.sos-bar button.end{background:#fff;color:#B71C1C}
+.sosv{position:fixed;inset:0;display:flex;flex-direction:column;background:#15171b;color:#EDEFF2;font-size:15px}
+.sosv-h{background:#B71C1C;padding:max(12px,env(safe-area-inset-top)) 14px 10px}
+.sosv-h b{display:block;font-size:19px}
+.sosv-h span{display:block;font-size:13px;opacity:.9;margin-top:2px}.sosv-h span.late{color:#FFD65A;font-weight:800}.sosv-h span.end{color:#FFD65A;font-weight:800}
+.sosv-card{padding:10px 14px;display:grid;gap:4px;background:#1E2227}
+.sosv-card .r{display:flex;gap:10px}.sosv-card .r span{width:96px;flex:none;color:#A8AEB6}.sosv-card a{color:#8FD3FF;font-weight:800}
+.sosv-map{flex:1;min-height:200px;background:#22262c}
+.sosv-btns{display:flex;gap:8px;padding:10px 14px max(12px,env(safe-area-inset-bottom))}
+.sosv-b{flex:1;text-align:center;text-decoration:none;border-radius:10px;padding:12px 6px;font-weight:900;background:#343941;color:#fff}
+.sosv-b.call{background:#2FA553}
+
+
+/* ───── 설정 탭 분류 메뉴: 큰 직사각형 3D 큐빅 버튼 (보라·노랑·하늘·연초록·회색 순서) ───── */
+.setmenu{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 9px;padding:14px 12px 26px}
+.settile{--c1:#8E6BFF;--c2:#6A48E0;--c3:#43289F;--tx:#fff;--sub:rgba(255,255,255,.82);
+  position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;width:100%;min-height:128px;
+  text-align:left;font:inherit;color:var(--tx);border:0;border-radius:13px;padding:11px 9px 10px;
+  background:linear-gradient(160deg,var(--c1) 0%,var(--c2) 70%);
+  box-shadow:0 7px 0 var(--c3),0 12px 18px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 6px rgba(0,0,0,.18);
+  transform:translateY(0);transition:transform .08s,box-shadow .08s}
+.settile::before{content:'';position:absolute;left:8px;right:8px;top:6px;height:38%;border-radius:10px 10px 30px 30px;background:linear-gradient(rgba(255,255,255,.32),rgba(255,255,255,0));pointer-events:none}
+.settile:active{transform:translateY(6px);box-shadow:0 1px 0 var(--c3),0 3px 8px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.35)}
+.settile.c0{--c1:#9B7BFF;--c2:#7050E8;--c3:#4A2DAA}
+.settile.c1{--c1:#FFD84A;--c2:#FFC21E;--c3:#B98800;--tx:#1b1d21;--sub:rgba(27,29,33,.78)}
+.settile.c2{--c1:#8FDDFF;--c2:#4FC0F2;--c3:#1E7FAE;--tx:#0f2230;--sub:rgba(15,34,48,.78)}
+.settile.c3{--c1:#B8F0BE;--c2:#84DE8E;--c3:#3F9A4B;--tx:#10281a;--sub:rgba(16,40,26,.78)}
+.settile.c4{--c1:#A9AFB8;--c2:#80878F;--c3:#4B5058;--tx:#fff;--sub:rgba(255,255,255,.85)}
+.settile.c5{--c1:#FFD2AE;--c2:#FFB37A;--c3:#C66F2E;--tx:#2a1606;--sub:rgba(42,22,6,.78)}   /* 연주황 (앱 설정) */
+.settile.wide{grid-column:1 / -1;min-height:92px}
+.settile.wide .tx i{white-space:normal;height:14px}
+.settile .tx em.none{visibility:hidden}
+.settile .tx em.up{margin-top:-8px;margin-bottom:14px}   /* 내용이 한 줄인 버튼은 상태 줄을 한 줄 위로 */   /* 상태 줄이 없어도 자리를 비워 두어 줄을 맞춘다 */
+.settile .ic{position:relative;display:block;height:32px;font-size:28px;line-height:32px;margin-bottom:6px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.settile .tx{position:relative;display:block;width:100%;min-width:0}
+.settile .tx b{display:block;height:20px;font-size:15px;font-weight:900;letter-spacing:-.5px;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 1px rgba(0,0,0,.18)}
+.settile .tx i{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;height:28px;font-style:normal;font-size:11px;color:var(--sub);margin-top:3px;line-height:14px;word-break:keep-all;white-space:pre-line}
+.settile .tx em{display:block;height:19px;line-height:15px;font-style:normal;font-size:10.5px;font-weight:800;color:var(--tx);margin-top:6px;padding:2px 5px;border-radius:7px;background:rgba(0,0,0,.14);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;box-sizing:border-box}
+.settile .ar{position:absolute;right:8px;top:8px;font-size:18px;font-weight:900;color:var(--sub)}
+.setgh{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--slate,#262A30);border-bottom:1px solid var(--line,#454B54)}
+.setgh b{font-size:18px}
+.setback{border:1px solid var(--line,#454B54);background:var(--board,#1B1E22);color:var(--ink,#EDEFF2);border-radius:10px;padding:8px 12px;font-size:15px;font-weight:800}
+.sethelp{display:none!important}
+.sec.helpon .sethelp{display:block!important}
+.helpbtn{float:right;border:0;background:transparent;color:var(--muted,#A8AEB6);font-size:12.5px;font-weight:700;padding:2px 4px;margin-left:6px}
 
 /* ───── 손님 통역 (폰·태블릿) ───── */
 #tbModeRow{flex-wrap:wrap}
@@ -2537,7 +2589,11 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
       <button class="btn primary" type="button" id="pfSave" style="margin-top:12px;width:100%">프로필 저장</button>
     </div>
     <div class="sec" id="sosSec"><h3>🚨 비상 연락처 (SOS)</h3>
-      <div class="empty">맨 위 빨간 SOS를 누르면 3초 뒤 <b>경찰 112로 보낼 신고 문자</b> 창이 열립니다(긴급 문구·신고 시각·차량번호·현재 위치 지도). 여기 넣은 가족 번호로는 비상 화면의 [가족에게도 위치 문자]로 보낼 수 있습니다. 차량번호·이름은 기사 프로필에서 가져옵니다.</div>
+      <div class="empty">맨 위 빨간 SOS를 누르면 3초 뒤 <b>경찰 112로 보낼 신고 문자</b> 창이 열립니다. 문자에는 긴급 문구, 아래 기사 이름·휴대폰·차량번호, 신고 시각, 현재 위치 지도, <b>실시간 위치(이동 경로) 링크</b>가 들어갑니다. 가족 번호로는 비상 화면의 [가족에게도 위치 문자]로 보낼 수 있습니다.</div>
+      <div class="lb" style="font-size:13px;color:var(--muted);font-weight:700;margin:4px 0 6px">긴급 문자에 들어갈 기사 정보</div>
+      <div class="sosrow"><input id="sosName" maxlength="12" placeholder="기사 이름"><input id="sosPhone" inputmode="tel" maxlength="20" placeholder="기사 휴대폰 010-0000-0000"></div>
+      <div class="sosrow"><input id="sosPlate" maxlength="16" placeholder="차량번호 (예: 서울 00바 0000)" style="flex:1"></div>
+      <div class="lb" style="font-size:13px;color:var(--muted);font-weight:700;margin:10px 0 6px">가족 연락처</div>
       <div class="sosrow"><input id="sosN1" maxlength="12" placeholder="이름 (예: 아내)"><input id="sosP1" inputmode="tel" maxlength="20" placeholder="010-0000-0000"></div>
       <div class="sosrow"><input id="sosN2" maxlength="12" placeholder="이름 (예: 아들)"><input id="sosP2" inputmode="tel" maxlength="20" placeholder="010-0000-0000"></div>
       <div class="btns"><button class="btn primary" type="button" id="sosSave">저장</button><button class="btn" type="button" id="sosTest">가족 시험 문자 열어 보기</button></div>
@@ -11615,14 +11671,15 @@ var SOS_KEY='airportCallLog.sos.v1';
 function sosCfg(){ var o=null; try { o=JSON.parse(sGet(SOS_KEY)||'null'); } catch(e){ o=null; } return (o && typeof o==='object') ? o : {}; }
 function sosNums(c){ return [c.p1, c.p2].map(function(x){ return String(x||'').replace(/[^\d+]/g,''); }).filter(function(x){ return x.length>=8; }); }
 function sosMsg(pos, forFamily){
-  var p=null, name='', plate='', d=new Date(), t;
-  try { p=loadProfile(); } catch(e){ p=null; }
-  if (p){ name=String(p.nameKo||'').trim(); plate=String(p.plate||'').trim(); }
+  var inf=sosInfo(), d=new Date(), t;
   t=d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
-  return (forFamily ? '[긴급] ' : '[112 긴급 신고] ')+'택시 기사'+(name ? ' '+name : '')+'입니다. 위험한 상황입니다. 도와주세요.'+
+  return (forFamily ? '[긴급] ' : '[112 긴급 신고] ')+'개인택시 기사입니다. 위험한 상황입니다. 도와주세요.'+
+    '\n개인택시 기사: '+(inf.name || '–')+
+    (inf.phone ? '\n휴대폰: '+inf.phone : '')+
+    '\n차량번호: '+(inf.plate || '–')+
     '\n신고 시각: '+t+
-    (plate ? '\n차량번호: '+plate : '')+
-    '\n현재 위치: '+(pos ? 'https://maps.google.com/?q='+pos.lat.toFixed(5)+','+pos.lng.toFixed(5) : '(위치 확인 중)');
+    '\n현재 위치: '+(pos ? 'https://maps.google.com/?q='+pos.lat.toFixed(5)+','+pos.lng.toFixed(5) : '(위치 확인 중)')+
+    (sosL.link ? '\n실시간 위치(GPS): '+sosL.link : '');
 }
 function sosSmsUrl(nums, body){ return 'sms:'+nums.join(',')+'?body='+encodeURIComponent(body); }
 /* 누르면: 버튼이 빨갛게 점등 · 화면이 비상 화면으로 → 3초 안에 [취소]하지 않으면 경찰 112로 보낼 문자 창 */
@@ -11635,6 +11692,7 @@ function sosOpen(){
     try { navigator.geolocation.getCurrentPosition(function(p){ pos={lat:p.coords.latitude, lng:p.coords.longitude}; if (msgBox) msgBox.textContent=sosMsg(pos); }, function(){}, {enableHighAccuracy:true, timeout:2500, maximumAge:15000}); } catch(e){}
   }
   try { if (navigator.vibrate) navigator.vibrate([300,100,300,100,300]); } catch(e){}
+  sosLivePrepare(function(){ if (msgBox) msgBox.textContent=sosMsg(pos); });
   lamp=el('div',{cls:'sos-lamp', text:String(n)});
   info=el('div',{cls:'sos-info', text:n+'초 뒤 경찰 112로 보낼 신고 문자 창이 열립니다. 잘못 눌렀으면 [취소]'});
   msgBox=el('div',{cls:'sos-msg', text:sosMsg(pos)});
@@ -11642,15 +11700,16 @@ function sosOpen(){
     cancelled=true; clearInterval(tm);
     if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
     if (btn) btn.className='sos3d';
+    sosLiveDiscard();   /* 보내기 전에 취소했으면 실시간 공유도 만들지 않는다 */
     setTimeout(function(){ try { sosVoiceLoop(); } catch(e){} }, 1500);
   }
-  function to112(){ location.href='sms:112?body='+encodeURIComponent(sosMsg(pos)); }
+  function to112(){ sosLiveStart(); location.href='sms:112?body='+encodeURIComponent(sosMsg(pos)); }
   ov=el('div',{cls:'sos-ov', id:'sosOv'},[
     el('h2',{text:'🚨 비상 SOS'}), lamp, info, msgBox,
     el('button',{type:'button', cls:'sos-b w', id:'sosCancel', onclick:close},['✕ 취소 (잘못 눌렀어요)']),
     el('button',{type:'button', cls:'sos-b o sm', onclick:function(){ n=0; clearInterval(tm); lamp.textContent='✓'; to112(); }},['📩 지금 바로 112 문자 신고']),
     el('a',{cls:'sos-b o sm', href:'tel:112'},['📞 112 전화']),
-    nums.length ? el('button',{type:'button', cls:'sos-b o sm', onclick:function(){ location.href=sosSmsUrl(nums, sosMsg(pos, true)); }},['📩 가족('+[c.n1,c.n2].filter(function(x){ return x; }).join('·')+')에게도 위치 문자']) : null
+    nums.length ? el('button',{type:'button', cls:'sos-b o sm', onclick:function(){ sosLiveStart(); location.href=sosSmsUrl(nums, sosMsg(pos, true)); }},['📩 가족('+[c.n1,c.n2].filter(function(x){ return x; }).join('·')+')에게도 위치 문자']) : null
   ]);
   document.body.appendChild(ov);
   tm=setInterval(function(){
@@ -11659,7 +11718,7 @@ function sosOpen(){
     if (n>0){ info.textContent=n+'초 뒤 경찰 112로 보낼 신고 문자 창이 열립니다. 잘못 눌렀으면 [취소]'; return; }
     clearInterval(tm); lamp.textContent='✓';
     $('sosCancel').textContent='닫기';
-    info.textContent='112 문자 창에서 [보내기]를 눌러 주세요. 가족에게도 알리려면 아래 버튼을 누르세요';
+    info.textContent='112 문자 창에서 [보내기]를 눌러 주세요. 실시간 위치를 10초마다 보냅니다 — 운행 앱 화면을 켜 두세요';
     to112();
   }, 1000);
 }
@@ -11723,17 +11782,219 @@ function sosFromHash(){
   setTimeout(sosOpen, 500);
 }
 
+/* ═══════════ SOS 실시간 위치 공유 ═══════════
+   SOS가 112 문자 창을 여는 순간부터 10초마다 위치를 암호화해서 ntfy(bestaxi-sos-<ID>)로 보낸다.
+   링크: ?sos=<ID>#k=<키>  — # 뒤 키는 서버로 가지 않아, 링크를 받은 사람(경찰·가족)만 위치를 본다.
+   3시간 뒤 또는 [공유 끝내기]로 멈춘다. 화면이 꺼지지 않게 붙잡아 둔다 (운행 앱이 켜져 있어야 보낸다) */
+var SOSL_KEY='airportCallLog.sosLive.v1';
+var sosL={sess:null, key:null, watch:null, timer:null, last:null, sentAt:0, n:0, wake:null, link:''};
+function sosInfo(){
+  var c=sosCfg(), p=null;
+  try { p=loadProfile(); } catch(e){ p=null; }
+  return {
+    name: String(c.name || (p && p.nameKo) || '').trim(),
+    phone: String(c.phone || '').trim(),
+    plate: String(c.plate || (p && p.plate) || '').trim()
+  };
+}
+/* SOS 화면이 열릴 때 미리 만들어 둔다 (문자에 링크를 넣어야 하므로). 취소하면 버린다 */
+function sosLivePrepare(cb){
+  var o;
+  if (!BKC){ cb(''); return; }
+  if (sosL.sess && sosL.key){ cb(sosL.link); return; }
+  BKC.generateKey({name:'AES-GCM', length:256}, true, ['encrypt','decrypt'])
+    .then(function(k){ sosL.key=k; return BKC.exportKey('raw', k); })
+    .then(function(raw){
+      o={sid:bkRand(16), k:bkB64(raw), at:Date.now(), on:false};
+      sosL.sess=o; sosL.link=bkBase()+'?sos='+o.sid+'#k='+o.k;
+      cb(sosL.link);
+    }, function(){ cb(''); });
+}
+function sosLiveDiscard(){ if (sosL.sess && !sosL.sess.on){ sosL.sess=null; sosL.key=null; sosL.link=''; } }
+function sosLivePost(obj){
+  if (!sosL.sess || !sosL.key) return;
+  bkEnc(sosL.key, obj).then(function(ct){ return bkPost('bestaxi-sos-'+sosL.sess.sid, {message:'#SOS '+ct}); }).then(function(){ if (obj.t==='p'){ sosL.n++; sosLiveBar(); } }, function(){});
+}
+function sosLiveWake(){
+  try { if (navigator.wakeLock && navigator.wakeLock.request) navigator.wakeLock.request('screen').then(function(w){ sosL.wake=w; }).catch(function(){}); } catch(e){}
+}
+/* 112 문자 창을 여는 순간 시작 */
+function sosLiveStart(){
+  var s=sosL.sess, inf=sosInfo();
+  if (!s || s.on) return;
+  s.on=true; s.at=Date.now();
+  sSet(SOSL_KEY, JSON.stringify(s));
+  sosLivePost({t:'i', name:inf.name, phone:inf.phone, plate:inf.plate, at:s.at});
+  sosLiveRun();
+}
+function sosLiveRun(){
+  var s=sosL.sess;
+  if (!s) return;
+  sosLiveWake();
+  if (navigator.geolocation && sosL.watch===null){
+    try {
+      sosL.watch=navigator.geolocation.watchPosition(function(p){
+        var c=p.coords;
+        sosL.last={lat:Math.round(c.latitude*1e5)/1e5, lng:Math.round(c.longitude*1e5)/1e5, acc:Math.round(c.accuracy||0),
+          sp: isNum(c.speed) && c.speed>=0 ? Math.round(c.speed*3.6) : null, hd: isNum(c.heading) && c.heading>=0 ? Math.round(c.heading) : null, ts:Date.now()};
+      }, function(){}, {enableHighAccuracy:true, maximumAge:3000, timeout:20000});
+    } catch(e){ sosL.watch=null; }
+  }
+  clearInterval(sosL.timer);
+  function tick(){
+    if (!sosL.sess) return;
+    if (Date.now()-sosL.sess.at > 3*3600000){ sosLiveStop(true); return; }
+    var L=sosL.last;
+    if (!L && lastHere) L={lat:Math.round(lastHere.lat*1e5)/1e5, lng:Math.round(lastHere.lng*1e5)/1e5, acc:null, sp:null, hd:null, ts:Date.now()};
+    if (L && (Date.now()-sosL.sentAt >= 9000)){ sosL.sentAt=Date.now(); sosLivePost({t:'p', lat:L.lat, lng:L.lng, acc:L.acc, sp:L.sp, hd:L.hd, ts:L.ts}); }
+  }
+  sosL.timer=setInterval(tick, 10000);
+  setTimeout(tick, 1500);
+  sosLiveBar();
+}
+function sosLiveStop(auto){
+  if (!sosL.sess) return;
+  sosLivePost({t:'end', at:Date.now()});
+  clearInterval(sosL.timer); sosL.timer=null;
+  if (sosL.watch!==null){ try { navigator.geolocation.clearWatch(sosL.watch); } catch(e){} sosL.watch=null; }
+  try { if (sosL.wake) sosL.wake.release(); } catch(e){}
+  sosL.wake=null;
+  setTimeout(function(){ sosL.sess=null; sosL.key=null; sosL.link=''; sosL.n=0; sSet(SOSL_KEY, ''); sosLiveBar(); }, 1500);
+  toast(auto ? '실시간 위치 공유가 3시간이 지나 끝났습니다' : '실시간 위치 공유를 끝냈습니다');
+}
+/* 공유 중 표시줄 (비상 화면을 닫아도 맨 위에 남는다) */
+function sosLiveBar(){
+  var b=$('sosBar');
+  if (!sosL.sess || !sosL.sess.on){ if (b && b.parentNode) b.parentNode.removeChild(b); return; }
+  if (!b){
+    b=el('div',{cls:'sos-bar', id:'sosBar'});
+    document.body.appendChild(b);
+  }
+  clear(b);
+  b.appendChild(el('span',{cls:'dot'}));
+  b.appendChild(el('b',{text:'📡 실시간 위치 공유 중'}));
+  b.appendChild(el('span',{cls:'n', id:'sosBarN', text: sosL.n ? sosL.n+'회 보냄' : '보내는 중…'}));
+  b.appendChild(el('button',{type:'button', onclick:function(){
+    try { if (navigator.share){ navigator.share({title:'택시 긴급 신고 실시간 위치', url:sosL.link}).catch(function(){}); return; } } catch(e){}
+    try { navigator.clipboard.writeText(sosL.link).then(function(){ toast('실시간 위치 링크를 복사했습니다'); }); } catch(e){ window.prompt('링크', sosL.link); }
+  }},['링크 보내기']));
+  b.appendChild(el('button',{type:'button', cls:'end', onclick:function(){ if (window.confirm('실시간 위치 공유를 끝낼까요?\n경찰·가족 화면에 "공유가 끝났습니다"가 표시됩니다.')) sosLiveStop(false); }},['끝내기']));
+}
+/* 앱을 다시 열어도 3시간 안이면 이어서 보낸다 */
+function sosLiveResume(){
+  var o=null;
+  try { o=JSON.parse(sGet(SOSL_KEY)||'null'); } catch(e){ o=null; }
+  if (!o || !o.on || !o.sid || !o.k || Date.now()-o.at > 3*3600000 || !BKC) return;
+  bkAesImport(o.k).then(function(k){ sosL.key=k; sosL.sess=o; sosL.link=bkBase()+'?sos='+o.sid+'#k='+o.k; sosLiveRun(); }, function(){});
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && sosL.sess) sosLiveWake(); });
+}
+
+/* ── 링크를 연 사람(경찰·가족) 화면: ?sos=<ID>#k=<키> ── */
+var SOS_DIR=['북','북동','동','남동','남','남서','서','북서'];
+/* 네이버 지도: 안드로이드에 앱이 있으면 앱에서 핀(마커)으로, 없거나 PC면 네이버 지도 웹(좌표를 EPSG:3857로 바꿔 가운데 표시) */
+function naverWebUrl(lat, lng){
+  var x=lng*20037508.34/180, y=Math.log(Math.tan((90+lat)*Math.PI/360))/(Math.PI/180)*20037508.34/180;
+  return 'https://map.naver.com/v5/?c='+x.toFixed(4)+','+y.toFixed(4)+',17,0,0,0,dh';
+}
+function naverMapUrl(lat, lng, name){
+  var web=naverWebUrl(lat, lng), app='place?lat='+lat+'&lng='+lng+'&name='+encodeURIComponent(name||'위치')+'&appname='+encodeURIComponent(location.origin || 'taxi.lovech.co.kr');
+  if (/Android/i.test(navigator.userAgent)) return 'intent://'+app+'#Intent;scheme=nmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap;S.browser_fallback_url='+encodeURIComponent(web)+';end';
+  return web;
+}
+function sosViewBoot(){
+  var m=/[?&]sos=([a-z0-9]{16})\b/.exec(location.search), km=/[#&]k=([A-Za-z0-9_-]{40,60})/.exec(location.hash), root, map=null, mk=null, line=null, pts=[], info={}, last=null, ended=false, key=null, seen={}, es=null;
+  if (!m) return false;
+  root=el('div',{cls:'sosv'});
+  document.body.appendChild(root);
+  document.body.className+=' solo';
+  document.title='🚨 택시 긴급 신고 · 실시간 위치(GPS)';
+  var hd=el('div',{cls:'sosv-h'},[el('b',{text:'🚨 택시 긴급 신고 · 실시간 위치(GPS)'}), el('span',{id:'sosvSt', text:'위치를 받는 중…'})]);
+  var card=el('div',{cls:'sosv-card', id:'sosvCard'});
+  var mapBox=el('div',{cls:'sosv-map', id:'sosvMap'});
+  var btns=el('div',{cls:'sosv-btns', id:'sosvBtns'});
+  root.appendChild(hd); root.appendChild(card); root.appendChild(mapBox); root.appendChild(btns);
+  if (!km || !BKC){ card.textContent = !km ? '링크가 완전하지 않습니다. 문자에 있는 주소 전체를 열어 주세요.' : '이 브라우저에서는 열 수 없습니다. 크롬이나 사파리로 열어 주세요.'; return true; }
+  function paint(){
+    var ago, t;
+    clear(card); clear(btns);
+    card.appendChild(el('div',{cls:'r'},[el('span',{text:'개인택시 기사'}), el('b',{text:(info.name||'–')})]));
+    card.appendChild(el('div',{cls:'r'},[el('span',{text:'연락처'}), info.phone ? el('a',{href:'tel:'+info.phone.replace(/[^\d+]/g,''), text:info.phone}) : el('b',{text:'–'})]));
+    card.appendChild(el('div',{cls:'r'},[el('span',{text:'차량번호'}), el('b',{text:(info.plate||'–')})]));
+    card.appendChild(el('div',{cls:'r'},[el('span',{text:'신고 시각'}), el('b',{text: info.at ? new Date(info.at).toLocaleString('ko-KR') : '–'})]));
+    if (last){
+      t=[];
+      if (isNum(last.sp)) t.push('시속 약 '+last.sp+'km');
+      if (isNum(last.hd) && isNum(last.sp) && last.sp>=3) t.push(SOS_DIR[Math.round(last.hd/45)%8]+'쪽으로 이동');
+      if (isNum(last.sp) && last.sp<3) t.push('멈춰 있음');
+      card.appendChild(el('div',{cls:'r'},[el('span',{text:'이동'}), el('b',{text:t.length ? t.join(' · ') : '–'})]));
+      btns.appendChild(el('a',{cls:'sosv-b', href:naverMapUrl(last.lat, last.lng, '택시 긴급 신고 위치'), target:'_blank', rel:'noopener'},['📍 네이버 지도에서 열기']));
+    }
+    if (info.phone) btns.appendChild(el('a',{cls:'sosv-b call', href:'tel:'+info.phone.replace(/[^\d+]/g,'')},['📞 기사에게 전화']));
+  }
+  function status(){
+    var st=$('sosvSt'), s;
+    if (!st) return;
+    if (ended){ st.textContent='공유가 끝났습니다 · 마지막 위치를 보여 드립니다'; st.className='end'; return; }
+    if (!last){ st.textContent='위치를 받는 중…'; return; }
+    s=Math.round((Date.now()-last.ts)/1000);
+    st.textContent='마지막 위치 '+(s<60 ? s+'초 전' : Math.round(s/60)+'분 전')+' · 10초마다 새로 받습니다';
+    st.className = s>90 ? 'late' : '';
+  }
+  function draw(){
+    if (!last || !window.L) return;
+    var ll=[last.lat, last.lng];
+    if (!map){
+      map=L.map(mapBox, {zoomControl:true}).setView(ll, 16);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; OpenStreetMap'}).addTo(map);
+      line=L.polyline([], {color:'#E53935', weight:5, opacity:.8}).addTo(map);
+      mk=L.circleMarker(ll, {radius:11, color:'#fff', weight:3, fillColor:'#E53935', fillOpacity:1}).addTo(map);
+    }
+    line.setLatLngs(pts.map(function(p){ return [p.lat, p.lng]; }));
+    mk.setLatLng(ll);
+    map.panTo(ll);
+  }
+  function onMsg(txt){
+    if (String(txt).indexOf('#SOS ')!==0 || seen[txt]) return;
+    seen[txt]=1;
+    bkDec(key, String(txt).slice(5)).then(function(d){
+      if (!d) return;
+      if (d.t==='i'){ info=d; paint(); }
+      else if (d.t==='p' && isNum(d.lat) && isNum(d.lng)){
+        pts.push(d); pts.sort(function(a,b){ return a.ts-b.ts; });
+        if (!last || d.ts>=last.ts) last=d;
+        paint(); draw(); status();
+      }
+      else if (d.t==='end'){ ended=true; status(); }
+    }, function(){});
+  }
+  bkAesImport(km[1]).then(function(k){
+    key=k;
+    try {
+      es=new EventSource(TB_RELAY+'bestaxi-sos-'+m[1]+'/sse?since=all');
+      es.onmessage=function(e){ var d; try { d=JSON.parse(e.data); } catch(x){ return; } if (d && d.event==='message' && d.message) onMsg(d.message); };
+    } catch(e){}
+  }, function(){ card.textContent='링크의 키가 올바르지 않습니다.'; });
+  paint();
+  setInterval(status, 5000);
+  return true;
+}
+
 function sosBind(){
   var b=$('sosBtn'), c, save;
   if (b) b.addEventListener('click', sosOpen);
   save=$('sosSave');
   if (!save) return;
   c=sosCfg();
+  (function(){ var pf=null; try { pf=loadProfile(); } catch(e){}
+    $('sosName').value = c.name!==undefined ? c.name : ((pf && pf.nameKo) || '');
+    $('sosPlate').value = c.plate!==undefined ? c.plate : ((pf && pf.plate) || '');
+    $('sosPhone').value = c.phone || ''; })();
   $('sosN1').value=c.n1||''; $('sosP1').value=c.p1||''; $('sosN2').value=c.n2||''; $('sosP2').value=c.p2||'';
   save.addEventListener('click', function(){
-    var o={n1:$('sosN1').value.trim().slice(0,12), p1:$('sosP1').value.trim().slice(0,20), n2:$('sosN2').value.trim().slice(0,12), p2:$('sosP2').value.trim().slice(0,20)};
+    var o={name:$('sosName').value.trim().slice(0,12), phone:$('sosPhone').value.trim().slice(0,20), plate:$('sosPlate').value.trim().slice(0,16),
+      n1:$('sosN1').value.trim().slice(0,12), p1:$('sosP1').value.trim().slice(0,20), n2:$('sosN2').value.trim().slice(0,12), p2:$('sosP2').value.trim().slice(0,20)};
     sSet(SOS_KEY, JSON.stringify(o));
-    toast(sosNums(o).length ? '비상 연락처를 저장했습니다' : '번호가 없어서 SOS 때 가족 문자는 열리지 않습니다');
+    toast('비상 연락처를 저장했습니다'+(o.phone ? '' : ' (기사 휴대폰 번호를 넣으면 경찰이 바로 연락할 수 있습니다)'));
   });
   $('sosTest').addEventListener('click', function(){
     var o=sosCfg(), n=sosNums(o);
@@ -11993,6 +12254,105 @@ function lostBind(){
   b=$('lostAdd');
   if (b) b.addEventListener('click', function(){ lostOpen(''); });
   lostRender();
+}
+
+/* ═══════════ 설정 탭: 분류 버튼 → 세부 화면 ═══════════
+   기존 칸(버튼·입력·저장값)은 그대로 두고 화면에서만 분류별로 묶는다.
+   설명 글(.empty)은 [ⓘ 도움말]을 눌러야 보인다 */
+var SET_GROUPS=[
+  {g:'safe',  ic:'🚨', t:'SOS',          d:'112 · 가족연락처\n휴식알림',       c:'c0'},
+  {g:'prof',  ic:'🪪', t:'기사 프로필',    d:'사진 · 이름 · 차량\n태블릿 화면',   c:'c1'},
+  {g:'tab',   ic:'📱', t:'태블릿PC',      d:'QR연결 · 새 버전\n갤러리 · 통역키', c:'c2'},
+  {g:'map',   ic:'🗺', t:'지도 · 길찾기',  d:'내비 · 지도 · 경로\n길안내',        c:'c3'},
+  {g:'voice', ic:'🔊', t:'음성 안내',      d:'한국어 · 영어\n일본어 · 중국어',     c:'c4'},
+  {g:'app',   ic:'⚙️', t:'앱 설정',        d:'새 버전 · 서버주소',               c:'c5'},
+  {g:'data',  ic:'💾', t:'기록·백업',      d:'백업 · 내보내기 · 불러오기 · 삭제',   c:'c1'}
+];
+var setCur='';
+function setSecByH3(root, txt){
+  var hs=root.querySelectorAll('.sec h3'), i;
+  for (i=0;i<hs.length;i++) if ((hs[i].textContent||'').replace(/\s+/g,' ').trim().indexOf(txt)===0){ var p=hs[i]; while (p && !(p.classList && p.classList.contains('sec'))) p=p.parentNode; return p; }
+  return null;
+}
+/* 설명 글 접기: 칸 제목 옆 [ⓘ] */
+function setFoldHelp(sec){
+  var notes=Array.prototype.filter.call(sec.querySelectorAll('.empty, .note'), function(n){ return !n.id && !n.getAttribute('data-keep'); }), h3, btn;
+  if (!notes.length) return;
+  notes.forEach(function(n){ n.classList.add('sethelp'); });
+  h3=sec.querySelector('h3');
+  if (!h3 || h3.querySelector('.helpbtn')) return;
+  btn=el('button',{type:'button', cls:'helpbtn', 'aria-label':'도움말', onclick:function(e){ e.stopPropagation(); var on=!sec.classList.contains('helpon'); sec.classList.toggle('helpon', on); btn.textContent = on ? 'ⓘ 닫기' : 'ⓘ 도움말'; }},['ⓘ 도움말']);
+  h3.appendChild(btn);
+}
+/* 버튼 아래 작은 상태 줄: 값이 있을 때만 (없음·연결 안 됨 같은 글은 쓰지 않는다) */
+function setSummary(g){
+  var t='', p;
+  try {
+    if (g==='prof'){ p=loadProfile(); t=[(p && p.nameKo)||'', (p && p.plate)||''].filter(function(x){ return x; }).join(' · '); }
+    else if (g==='tab'){ t = tbPairCode() ? '연결됨' : ''; }
+    else if (g==='app'){ t='('+(['자정','새벽 1시','새벽 2시','새벽 3시','새벽 4시','새벽 5시'][dayBaseH()]||'새벽 4시')+' 기준)'; }
+    else if (g==='data'){ t='운행 기록 '+records.length+'건'; }
+  } catch(e){ t=''; }
+  return t;
+}
+function setShow(g){
+  var v=$('v-data'), menu=$('setMenu');
+  if (!v || !menu) return;
+  setCur=g||'';
+  menu.style.display = setCur ? 'none' : '';
+  Array.prototype.forEach.call(v.querySelectorAll('.setgrp'), function(x){ x.style.display = x.getAttribute('data-g')===setCur ? '' : 'none'; });
+  if (!setCur) setPaintMenu();
+  window.scrollTo(0, v.getBoundingClientRect().top+window.scrollY-60);
+}
+function setPaintMenu(){
+  var menu=$('setMenu'); if (!menu) return;
+  clear(menu);
+  SET_GROUPS.forEach(function(G){
+    if (!$('setg-'+G.g)) return;
+    var k=SET_GROUPS.indexOf(G), sm=setSummary(G.g);
+    menu.appendChild(el('button',{type:'button', cls:'settile '+(G.c||'c0')+(k===SET_GROUPS.length-1 && SET_GROUPS.length%3===1 ? ' wide' : ''), onclick:function(){ setShow(G.g); }},[
+      el('span',{cls:'ic', text:G.ic}),
+      el('span',{cls:'tx'},[el('b',{text:G.t}), el('i',{text:G.d}), el('em',{cls:(sm ? '' : 'none')+(G.d.indexOf('\n')<0 && !(k===SET_GROUPS.length-1 && SET_GROUPS.length%3===1) ? ' up' : ''), text: sm || '-'})]),
+      el('span',{cls:'ar', text:'›'})
+    ]));
+  });
+}
+function setOrganize(){
+  var v=$('v-data'), menu, groups={}, place, i, csv, note;
+  if (!v || $('setMenu')) return;
+  menu=el('div',{cls:'setmenu', id:'setMenu'});
+  SET_GROUPS.forEach(function(G){
+    groups[G.g]=el('div',{cls:'setgrp', id:'setg-'+G.g, 'data-g':G.g, style:'display:none'},[
+      el('div',{cls:'setgh'},[el('button',{type:'button', cls:'setback', onclick:function(){ setShow(''); }},['‹ 설정']), el('b',{text:G.ic+' '+G.t})])
+    ]);
+  });
+  function put(g, node){ if (node && node.parentNode){ groups[g].appendChild(node); if (node.classList && node.classList.contains('sec')) setFoldHelp(node); } }
+  place=v.firstElementChild;
+  v.insertBefore(menu, place);
+  SET_GROUPS.forEach(function(G){ v.insertBefore(groups[G.g], place); });
+  put('safe', $('sosSec')); put('safe', $('drvSetSec'));
+  put('prof', $('pfSec'));
+  put('tab', $('tbSec'));
+  put('map', setSecByH3(v, '지도 종류'));
+  put('voice', setSecByH3(v, '음성 안내 목소리'));
+  put('app', $('dayBaseSec')); put('app', setSecByH3(v, '앱 버전')); put('app', $('airSrvSec'));
+  put('data', setSecByH3(v, '저장 상태'));
+  csv=$('btnCsv');
+  if (csv && csv.parentNode){
+    var box=el('div',{cls:'sec'},[el('h3',{text:'내보내기·백업'})]);
+    note=csv.parentNode.nextElementSibling;
+    box.appendChild(csv.parentNode);
+    if (note && note.classList && note.classList.contains('note')){
+      /* 우버 설명은 지금 쓰지 않는 내용이라 뺀다 */
+      Array.prototype.forEach.call(note.querySelectorAll('p'), function(p){ if (/우버/.test(p.textContent)) p.parentNode.removeChild(p); });
+      box.appendChild(note);
+    }
+    groups.data.appendChild(box); setFoldHelp(box);
+  }
+  /* 남은 칸이 있으면 앱 기본 설정으로 (빠뜨리지 않게) */
+  Array.prototype.slice.call(v.children).forEach(function(n){ if (n!==menu && !(n.classList && n.classList.contains('setgrp'))) groups.app.appendChild(n); });
+  /* 삭제 버튼은 눈에 띄게 따로 */
+  setPaintMenu();
 }
 
 /* ── 태블릿 쪽 ── */
@@ -14304,7 +14664,7 @@ function showTab(id){
   if (id==='v-log') renderLog();
   if (id==='v-road'){ setTimeout(fitRoadTop, 0); fillRoadSelects(); if ($('roadListWrap') && $('roadListWrap').style.display!=='none') renderRoadList(); if (!$('roadResult').firstChild) renderRoad(); roadLedTick(); }
   if (id==='v-air'){ renderAir(); loadPax(); }
-  if (id==='v-data') renderStore();
+  if (id==='v-data'){ renderStore(); try { setShow(''); } catch(e){} }
   if (id==='v-mnt') mntRender();
   window.scrollTo(0,0);
 }
@@ -14373,11 +14733,14 @@ function init(){
   bindAir();
   function bootShow(){ document.documentElement.className=document.documentElement.className.replace(/\s*\bbootx\b/g,''); }
   if (shareBoot()){ bootShow(); return; }   /* 가족이 도착 예정 공유 주소로 들어왔으면 그 화면만 */
+  if (sosViewBoot()){ bootShow(); return; }   /* 경찰·가족이 실시간 위치 링크를 열었으면 그 화면만 */
   if (bookBoot()){ bootShow(); return; }   /* 손님이 예약 QR을 찍었으면 예약 화면만 */
   if (guideLandBoot()){ bootShow(); return; }   /* 손님이 여행 가이드 QR을 찍었으면 그 안내 화면만 */
   if (tabletBoot()){ bootShow(); primeVoices(); return; }   /* 뒷좌석 태블릿이면 태블릿 안내 화면만 쓴다 */
   try { bkBind(); } catch(e){}   /* 직접 예약: 버튼·알림 받기 */
   try { mntInit(); } catch(e){}   /* 정비: 교체 시기 빨간 점 */
+  try { sosLiveResume(); } catch(e){}
+  try { setOrganize(); } catch(e){}   /* 설정 탭: 분류 버튼 메뉴 */
   try { sosBind(); sosVoiceBind(); sosFromHash(); window.addEventListener('hashchange', sosFromHash); drvInit(); lostBind(); } catch(e){}   /* SOS(누르기·말로) · 연속 운전 휴식 · 분실물 */
   openFromQr();   /* QR을 찍고 들어왔으면 곧장 승객 화면 */
   bootShow();
