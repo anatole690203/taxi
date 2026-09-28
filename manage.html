@@ -171,6 +171,19 @@ button{cursor:pointer}
 .sec.red h3{color:#FF8A80}
 .mrow{display:flex;justify-content:space-between;gap:8px;padding:6px 0;font-size:14px;border-bottom:1px solid #23272e}
 .mrow span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.sec.tax{border-left-color:#FFC81E}
+.sec.tax h3{color:#FFC81E}
+.taxw{overflow-x:auto;margin-top:8px}
+.taxt{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
+.taxt th,.taxt td{padding:6px 5px;border-bottom:1px solid #23272e;text-align:right}
+.taxt th:first-child,.taxt td:first-child{text-align:left}
+.taxt th{color:#A8AEB6;font-weight:700}
+.taxt tr.tot td{font-weight:900;color:#FFC81E}
+.taxdl{display:block;width:100%;margin-top:10px;border:0;border-radius:10px;background:#1F7A3A;color:#fff;font-weight:900;font-size:16px;padding:14px;font-family:inherit}
+
+.tabbar button.sosbtn{flex:0 0 64px;background:#C62828!important;color:#fff!important;font-weight:900}
+.tabbar button.sosbtn svg{stroke:#fff}
 </style>
 </head>
 <body>
@@ -522,6 +535,100 @@ function vbars(list){
   }
   return box;
 }
+
+/* ═════════ 세금 신고용 연간 요약 (연 화면) ═════════
+   월별 운행·매출·경비·순수익·운행 거리(정비 탭 계기판 기록으로 추정), 경비 분류별, 모든 거래 → 엑셀(시트 3개) */
+function taxOdo(){
+  var o=null; try { o=JSON.parse(localStorage.getItem('airportCallLog.maint.v1')||'null'); } catch(e){ o=null; }
+  return (o && Array.isArray(o.odo)) ? o.odo.filter(function(x){ return x && isNum(x.ts) && isNum(x.km); }).sort(function(a,b){ return a.ts-b.ts; }) : [];
+}
+function taxOdoAt(od, ts){
+  var i, a, b;
+  if (!od.length || ts<od[0].ts || ts>od[od.length-1].ts+86400000) return null;
+  for (i=0;i<od.length-1;i++){ a=od[i]; b=od[i+1]; if (ts>=a.ts && ts<=b.ts) return a.km+(b.km-a.km)*(ts-a.ts)/Math.max(1,b.ts-a.ts); }
+  return od[od.length-1].km;
+}
+function taxData(y, M){
+  var rows=[], od=taxOdo(), mo, keys, s, t0, t1, k0, k1, cats={}, tot={n:0, rev:0, exp:0, km:0, kmOk:true}, i, e, tx=[];
+  for (mo=0;mo<12;mo++){
+    keys=periodOf('m', y+'-'+pad2(mo+1)+'-15').keys;
+    s=sumDays(M, keys);
+    t0=new Date(y, mo, 1).getTime(); t1=Math.min(Date.now(), new Date(y, mo+1, 1).getTime());
+    k0=taxOdoAt(od, t0); k1=taxOdoAt(od, t1);
+    var km = (k0!==null && k1!==null && t1>t0) ? Math.max(0, Math.round(k1-k0)) : null;
+    rows.push({m:mo+1, n:s.n, rev:s.rev, exp:s.exp, net:s.rev-s.exp, km:km, has:keys.length>0});
+    tot.n+=s.n; tot.rev+=s.rev; tot.exp+=s.exp; if (km!==null) tot.km+=km; else if (keys.length && s.n) tot.kmOk=false;
+  }
+  for (i=0;i<L.length;i++){
+    e=L[i]; if (new Date(e.ts).getFullYear()!==y) continue;
+    if (e.kind==='expense') cats[e.cat||'기타지출']=(cats[e.cat||'기타지출']||0)+e.amount;
+    tx.push({ts:e.ts, kind: e.kind==='expense' ? '지출' : '수입', cat:e.cat||'', amt:e.amount, memo:e.memo||''});
+  }
+  for (i=0;i<R.length;i++){
+    var r=R[i]; if (new Date(r.ts).getFullYear()!==y || !isNum(r.fare) || !(r.fare>0)) continue;
+    tx.push({ts:r.ts, kind:'운행', cat:r.type||'', amt:r.fare, memo:[r.dong||r.zone||'', r.dn ? '→ '+r.dn : '', r.pay||''].filter(function(x){ return x; }).join(' ')});
+  }
+  tx.sort(function(a,b){ return a.ts-b.ts; });
+  return {y:y, rows:rows, tot:tot, cats:cats, tx:tx};
+}
+function taxDateTxt(ts){ var d=new Date(ts); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+function taxSheets(D){
+  var a=[['월','운행(건)','매출(원)','경비(원)','순수익(원)','운행 거리(km)']];
+  D.rows.forEach(function(r){ a.push([r.m+'월', r.n, Math.round(r.rev), Math.round(r.exp), Math.round(r.net), r.km===null ? '' : r.km]); });
+  a.push(['합계', D.tot.n, Math.round(D.tot.rev), Math.round(D.tot.exp), Math.round(D.tot.rev-D.tot.exp), D.tot.km||'']);
+  var b=[['경비 분류','금액(원)']], ks=Object.keys(D.cats).sort(function(x,z){ return D.cats[z]-D.cats[x]; }), sum=0;
+  ks.forEach(function(k){ b.push([k, Math.round(D.cats[k])]); sum+=D.cats[k]; }); b.push(['합계', Math.round(sum)]);
+  var c=[['날짜','구분','분류','금액(원)','메모']];
+  D.tx.forEach(function(t){ c.push([taxDateTxt(t.ts), t.kind, t.cat, Math.round(t.amt), t.memo]); });
+  return [['월별 요약', a], ['경비 분류별', b], ['모든 거래 내역', c]];
+}
+function taxCsv(D){
+  var sh=taxSheets(D), out='\ufeff';
+  sh.forEach(function(s){ out+='['+s[0]+']\n'; s[1].forEach(function(row){ out+=row.map(function(v){ v=String(v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }).join(',')+'\n'; }); out+='\n'; });
+  return out;
+}
+function taxSave(blob, name){
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.parentNode && a.parentNode.removeChild(a); }, 3000);
+}
+function taxDownload(D){
+  function csv(){ taxSave(new Blob([taxCsv(D)], {type:'text/csv;charset=utf-8'}), '택시_연간요약_'+D.y+'.csv'); toast('CSV 파일로 저장했습니다 (엑셀에서 열립니다)'); }
+  function xlsx(){
+    try {
+      var wb=XLSX.utils.book_new();
+      taxSheets(D).forEach(function(s){ var ws=XLSX.utils.aoa_to_sheet(s[1]); ws['!cols']=s[1][0].map(function(h, i){ return {wch: i===4 && s[0]==='모든 거래 내역' ? 36 : Math.max(10, String(h).length*2)}; }); XLSX.utils.book_append_sheet(wb, ws, s[0]); });
+      XLSX.writeFile(wb, '택시_연간요약_'+D.y+'.xlsx'); toast('엑셀 파일을 저장했습니다');
+    } catch(e){ csv(); }
+  }
+  if (window.XLSX){ xlsx(); return; }
+  var sc=document.createElement('script');
+  sc.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  sc.onload=xlsx; sc.onerror=csv;
+  document.head.appendChild(sc);
+  toast('엑셀 도구를 불러오는 중…');
+}
+function taxSec(y, M){
+  var D=taxData(y, M), s=sec('tax','🧾 세금 신고용 연간 요약', y+'년'), tb, cats, ks;
+  s.appendChild(cells('', [
+    {v:num(D.tot.rev), l:'총매출(원)'},
+    {v:num(D.tot.exp), l:'경비(원)', c:'var(--red)'},
+    {v:num(D.tot.rev-D.tot.exp), l:'순수익(원)', c:'var(--ok)'}
+  ]));
+  tb=el('table',{cls:'taxt'});
+  tb.appendChild(el('tr',null,['월','운행','매출','경비','순수익','km'].map(function(h){ return el('th',{text:h}); })));
+  D.rows.forEach(function(r){
+    if (!r.has) return;
+    tb.appendChild(el('tr',null,[r.m+'월', num(r.n), num(r.rev), num(r.exp), num(r.net), r.km===null ? '–' : num(r.km)].map(function(v){ return el('td',{text:String(v)}); })));
+  });
+  tb.appendChild(el('tr',{cls:'tot'},['합계', num(D.tot.n), num(D.tot.rev), num(D.tot.exp), num(D.tot.rev-D.tot.exp), D.tot.km ? num(D.tot.km)+(D.tot.kmOk ? '' : '+') : '–'].map(function(v){ return el('td',{text:String(v)}); })));
+  s.appendChild(el('div',{cls:'taxw'},[tb]));
+  ks=Object.keys(D.cats).sort(function(a,b){ return D.cats[b]-D.cats[a]; });
+  if (ks.length) s.appendChild(el('div',{cls:'hint', style:'margin-top:8px;line-height:1.7', text:'경비 분류별 · '+ks.map(function(k){ return k+' '+num(D.cats[k]); }).join(' · ')}));
+  s.appendChild(el('button',{type:'button', cls:'taxdl', onclick:function(){ taxDownload(D); }},['⬇ 엑셀 파일 내려받기 ('+y+'년)']));
+  s.appendChild(el('div',{cls:'hint', text:'시트 3개: 월별 요약 · 경비 분류별 · 모든 거래 내역(날짜·구분·분류·금액·메모). 운행 거리는 운행 앱 [정비] 탭의 계기판 기록으로 추정합니다.'}));
+  return s;
+}
+
 function sec(cls, title, small){ var s=el('div',{cls:'sec'+(cls?' '+cls:'')}); s.appendChild(el('h3',null,[title, small ? el('small',{text:small}) : null])); return s; }
 
 /* ═════════ 화면: 수익 ═════════ */
@@ -581,6 +688,7 @@ function renderStat(){
     }
     box.appendChild(s);
   })();
+  if (P.mode==='y') box.appendChild(taxSec(kd(pc.start).getFullYear(), M));
   var s1=sec('blue','호출 유형별 비중'), d1=donut(mapItems(cur.type),'건');
   s1.appendChild(d1 || el('div',{cls:'empty', text:'기록이 쌓이면 나옵니다.'}));
   box.appendChild(s1);
@@ -1195,6 +1303,15 @@ function initTabs(){
     svg=document.createElementNS(ns,'svg'); svg.setAttribute('viewBox','0 0 24 24'); svg.setAttribute('aria-hidden','true'); svg.innerHTML=ICONS[VIEWS[i][0]];
     b.appendChild(svg); b.appendChild(el('span',{text:VIEWS[i][1]}));
     b.addEventListener('click', function(){ go(this.getAttribute('data-v')); });
+    t.appendChild(b);
+  }
+  /* 운행 앱 안에서 열렸을 때: 운행 앱과 같은 비상 버튼 (누르면 운행 앱의 SOS 화면이 열린다) */
+  if (IN_FRAME){
+    b=el('button',{type:'button', cls:'sosbtn', 'aria-label':'비상 SOS'});
+    svg=document.createElementNS(ns,'svg'); svg.setAttribute('viewBox','0 0 24 24'); svg.setAttribute('aria-hidden','true');
+    svg.innerHTML='<path d="M12 3l9.5 17h-19z"/><path d="M12 10v4M12 17.5v.01"/>';
+    b.appendChild(svg); b.appendChild(el('span',{text:'SOS'}));
+    b.addEventListener('click', function(){ msgParent({mg:'sos'}); });
     t.appendChild(b);
   }
 }

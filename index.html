@@ -1911,6 +1911,62 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .bc-item .bk-mt b{font-size:16px}
 .bc-legend{font-size:12px;color:#8E959E;margin:8px 2px 0;line-height:1.5}
 
+
+/* ───── 비상 버튼 (SOS) ───── */
+.tabbar button.sosbtn{flex:0 0 72px;background:#C62828;color:#fff;font-weight:900;letter-spacing:.5px}
+.tabbar button.sosbtn svg{stroke:#fff}
+#appHead.noplate .envbar{display:grid}   /* SOS는 모든 탭에서 */
+/* 빨간 3D SOS 버튼 (나침반 자리) */
+.envbar>button.sos3d{position:relative;justify-content:center;border:0;border-radius:14px;padding:0;min-height:62px;color:#fff;
+  background:radial-gradient(120% 90% at 50% 18%,#ff6b62 0%,#e53935 38%,#b71c1c 78%,#7f0f0f 100%);
+  box-shadow:0 6px 0 #6d0b0b,0 9px 16px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.35),inset 0 -5px 10px rgba(0,0,0,.28);
+  transform:translateY(0);transition:transform .08s,box-shadow .08s,filter .2s;overflow:hidden}
+.envbar>button.sos3d::before{content:'';position:absolute;left:10%;right:10%;top:5px;height:42%;border-radius:12px 12px 40px 40px;background:linear-gradient(rgba(255,255,255,.42),rgba(255,255,255,0));pointer-events:none}
+.envbar>button.sos3d:active{transform:translateY(5px);box-shadow:0 1px 0 #6d0b0b,0 3px 8px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.25),inset 0 -3px 8px rgba(0,0,0,.3)}
+.sos3d-cap{position:relative;display:flex;flex-direction:column;align-items:center;line-height:1.05;text-shadow:0 2px 2px rgba(0,0,0,.45)}
+.sos3d-cap b{font-size:25px;font-weight:900;letter-spacing:2px}
+.sos3d-cap i{font-style:normal;font-size:12px;font-weight:800;opacity:.95;margin-top:2px}
+.envbar>button.sos3d.on{filter:brightness(1.35) saturate(1.2);animation:sosLit .7s ease-in-out infinite alternate;box-shadow:0 0 0 4px rgba(255,80,70,.55),0 0 28px 8px rgba(255,40,30,.75),inset 0 2px 0 rgba(255,255,255,.4)}
+@keyframes sosLit{from{filter:brightness(1.15)}to{filter:brightness(1.6)}}
+.sos-ov .sos-lamp{width:120px;height:120px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:52px;font-weight:900;color:#fff;
+  background:radial-gradient(circle at 50% 35%,#ff8a80,#ff1744 45%,#b71c1c 80%);box-shadow:0 0 0 6px rgba(255,255,255,.9),0 0 40px 14px rgba(255,60,50,.9);animation:sosLit .6s ease-in-out infinite alternate}
+.sos-ov{position:fixed;inset:0;z-index:6000;background:#B71C1C;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:max(20px,env(safe-area-inset-top)) 22px max(20px,env(safe-area-inset-bottom));text-align:center;overflow-y:auto}
+.sos-ov h2{font-size:30px;margin:0}
+.sos-cd{width:112px;height:112px;border-radius:50%;border:6px solid #fff;display:flex;align-items:center;justify-content:center;font-size:54px;font-weight:900;flex:none}
+.sos-info{font-size:15.5px;line-height:1.5;max-width:360px}
+.sos-msg{background:rgba(0,0,0,.25);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5;text-align:left;white-space:pre-line;word-break:break-all;width:100%;max-width:380px}
+.sos-b{display:block;width:100%;max-width:380px;box-sizing:border-box;border-radius:14px;padding:15px;font-size:19px;font-weight:900;text-decoration:none;text-align:center;font-family:inherit}
+.sos-b.w{background:#fff;color:#B71C1C;border:0}
+.sos-b.o{background:transparent;border:2px solid #fff;color:#fff}
+.sos-b.sm{font-size:16px;padding:12px}
+/* ───── 연속 운전 ───── */
+.drvsec{border-left:5px solid #FFC81E}
+.drv-big{font-size:28px;font-weight:900;margin:2px 0}
+.drv-big small{font-size:13px;color:var(--muted,#A8AEB6);font-weight:600}
+.drv-bar{height:10px;border-radius:5px;background:#343941;overflow:hidden;margin:6px 0 5px}
+.drv-bar i{display:block;height:100%}
+.drv-bar i.g{background:#2FA553}.drv-bar i.y{background:#FFC81E}.drv-bar i.r{background:#E53935}
+.drv-sub{font-size:13.5px;color:#C9CED4}
+.drv-warn{margin-top:8px;background:#3a2226;border:1px solid #E53935;color:#FFB4B4;border-radius:10px;padding:10px 12px;font-weight:800;font-size:15px;line-height:1.4}
+.drv-warn small{display:block;font-weight:500;font-size:12.5px;color:#E7B0B0;margin-top:3px}
+/* ───── 분실물 ───── */
+.lost-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:inherit;background:#1E2227;border:0;border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.lost-row .tx{flex:1;min-width:0}.lost-row .tx b{display:block;font-size:15.5px}.lost-row .tx span{display:block;font-size:12.5px;color:var(--muted,#A8AEB6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lost-tag{font-style:normal;font-size:12px;font-weight:800;border-radius:6px;padding:3px 7px;white-space:nowrap}
+.lost-tag.keep{background:#3a3218;color:#FFD65A}.lost-tag.back{background:#18321f;color:#6FE08F}.lost-tag.police{background:#1d2a3a;color:#8AB6F9}
+.lost-th{position:relative;width:78px;height:78px;border-radius:8px;background:#e6e8eb center/cover no-repeat;flex:none}
+.lost-th.sm{width:48px;height:48px;background-color:#343941}
+.lost-th button{position:absolute;top:2px;right:2px;width:22px;height:22px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:0}
+.lost-ph{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.lost-add{width:78px;height:78px;border:2px dashed #cfd3d8;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12.5px;font-weight:800;color:#5B626B;cursor:pointer}
+.lost-auto{background:#F3F6F9;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6;color:#1b1d21}
+.lost-auto b{display:block;font-size:12px;color:#138A8A}
+.lost-call{display:inline-block;background:#2FA553;color:#fff;border-radius:7px;padding:3px 9px;font-weight:800;font-size:13px;text-decoration:none;margin-left:4px}
+.lost-st{display:flex;gap:6px;margin:8px 0 4px}
+.lost-st button{flex:1;border:1px solid #cfd3d8;border-radius:18px;background:#fff;padding:8px 0;font-size:13.5px;font-family:inherit}
+.lost-st button.on{background:#FFC81E;border-color:#FFC81E;font-weight:800}
+.sosrow{display:flex;gap:6px;margin-bottom:6px}.sosrow input{flex:1;min-width:0}.sosrow input:first-child{flex:0 0 32%}
+
 /* ───── 손님 통역 (폰·태블릿) ───── */
 #tbModeRow{flex-wrap:wrap}
 .tbmode .tbtalkbtn{flex:1 1 100%;min-height:48px;padding:0 8px;border:1px solid #138A8A;border-radius:4px;background:#138A8A;color:#fff;font-size:15px;font-weight:700;white-space:nowrap}
@@ -1985,23 +2041,8 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
       <div class="slot" id="slot"></div>
     </div>
     <div class="envbar" id="envBar">
-      <button type="button" class="cmp" id="envCompass" aria-label="나침반">
-        <svg viewBox="0 0 56 56" aria-hidden="true">
-          <circle cx="28" cy="28" r="23" fill="#101215" stroke="#3A3F46" stroke-width="1.5"/>
-          <g id="envDial">
-            <line x1="28" y1="7"  x2="28" y2="13" stroke="#E8EAED" stroke-width="2"/>
-            <line x1="49" y1="28" x2="43" y2="28" stroke="#5B626B" stroke-width="2"/>
-            <line x1="28" y1="49" x2="28" y2="43" stroke="#5B626B" stroke-width="2"/>
-            <line x1="7"  y1="28" x2="13" y2="28" stroke="#5B626B" stroke-width="2"/>
-            <text x="28" y="21" class="cn n">N</text>
-            <text x="39" y="31.5" class="cn">E</text>
-            <text x="28" y="42" class="cn">S</text>
-            <text x="17" y="31.5" class="cn">W</text>
-          </g>
-          <path d="M28 2.5 L32 9 L24 9 Z" fill="#FFC81E"/>
-          <circle cx="28" cy="28" r="2.4" fill="#5B626B"/>
-        </svg>
-        <span class="cd"><b id="envDir">–</b><i id="envDeg">눌러서 켜기</i></span>
+      <button type="button" class="sos3d" id="sosBtn" aria-label="비상 SOS · 112 긴급 신고">
+        <span class="sos3d-cap"><b>SOS</b><i>112 긴급 신고</i></span>
       </button>
       <button type="button" class="wx" id="envWx">
         <span class="ic" id="envWxIc">·</span>
@@ -2494,6 +2535,21 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
         <div class="empty">태블릿 대기 화면 [💗 소아암·결손아동 후원] → [후원 안내]에 계좌와 QR로 나옵니다. 손님이 QR을 찍으면 계좌번호를 복사할 수 있습니다. 개인 계좌는 넣지 마세요. [프로필 저장]을 누르면 태블릿에 반영됩니다.</div></div>
       <label class="pftog"><span>승객 화면에 기사 프로필 표시<small>끄면 안내 화면에 기사 카드가 나오지 않습니다</small></span><input type="checkbox" class="pfsw" id="pfShow"></label>
       <button class="btn primary" type="button" id="pfSave" style="margin-top:12px;width:100%">프로필 저장</button>
+    </div>
+    <div class="sec" id="sosSec"><h3>🚨 비상 연락처 (SOS)</h3>
+      <div class="empty">맨 위 빨간 SOS를 누르면 3초 뒤 <b>경찰 112로 보낼 신고 문자</b> 창이 열립니다(긴급 문구·신고 시각·차량번호·현재 위치 지도). 여기 넣은 가족 번호로는 비상 화면의 [가족에게도 위치 문자]로 보낼 수 있습니다. 차량번호·이름은 기사 프로필에서 가져옵니다.</div>
+      <div class="sosrow"><input id="sosN1" maxlength="12" placeholder="이름 (예: 아내)"><input id="sosP1" inputmode="tel" maxlength="20" placeholder="010-0000-0000"></div>
+      <div class="sosrow"><input id="sosN2" maxlength="12" placeholder="이름 (예: 아들)"><input id="sosP2" inputmode="tel" maxlength="20" placeholder="010-0000-0000"></div>
+      <div class="btns"><button class="btn primary" type="button" id="sosSave">저장</button><button class="btn" type="button" id="sosTest">가족 시험 문자 열어 보기</button></div>
+      <label class="tbvoice" style="display:flex;align-items:center;gap:8px;margin-top:10px"><input type="checkbox" id="sosVoice"> 🎙 말로 SOS</label>
+      <div class="empty">알아듣는 말: <b>경찰, 경찰 신고, 112, 112 신고, 살려 주세요, SOS(에스오에스), 비상 신고, 폭행, 영업방해, 출동</b>. 손님이 목적지로 말하는 경찰서·경찰청·경찰병원·경찰대에는 반응하지 않습니다.</div>
+      <div class="empty">운행 앱이 화면에 켜져 있을 때 듣습니다. 손님 말 듣기·한국어로 말하기를 쓰는 동안에는 잠시 쉽니다. 앱이 꺼져 있을 때는 빅스비·구글 어시스턴트 루틴에 이 앱 주소 끝에 <b>#sos</b>를 붙인 주소 열기를 등록하면 말로 부를 수 있습니다.</div>
+    </div>
+    <div class="sec" id="drvSetSec"><h3>☕ 연속 운전 휴식 알림</h3>
+      <div class="field"><label for="drvIv">알림 간격</label>
+        <select id="drvIv"><option value="90">1시간 30분</option><option value="120">2시간</option><option value="150">2시간 30분</option><option value="180">3시간</option></select></div>
+      <label class="tbvoice" style="display:flex;align-items:center;gap:8px;margin-top:6px"><input type="checkbox" id="drvVoice"> 음성으로 알려 주기</label>
+      <div class="empty">쉰 것으로 보는 것: ☕ 휴게 10분 이상, 또는 앱이 켜져 있는 동안 차를 15분 이상 세워 둔 것.</div>
     </div>
     <div class="sec" id="dayBaseSec"><h3>하루 기준 시각</h3>
       <div class="seg" id="dayBaseSeg">
@@ -4759,6 +4815,7 @@ function startHereWatch(){
     hereAcc=c.accuracy;
     moved = !wxAt || km(c.latitude, c.longitude, wxAt.lat, wxAt.lng) > 3;
     lastHere={lat:c.latitude, lng:c.longitude}; lastHereAt=Date.now();
+    try { drvGps(c.latitude, c.longitude); } catch(e){}
     try { if (typeof roadLedTick==='function') roadLedTick(); } catch(e){}
     /* 달리는 중이면 위성이 주는 진행 방향이 자력계보다 정확하다 */
     if (c.speed!==null && c.speed!==undefined && c.speed>2.5 && c.heading!==null && c.heading!==undefined && !isNaN(c.heading)){
@@ -11551,6 +11608,393 @@ function mntOpen(id){
 }
 function mntInit(){ mntLoad(); mntBadge(); }
 
+/* ═══════════ 비상 버튼 (SOS) ═══════════
+   아래 탭 줄의 빨간 SOS: 누르면 3초 뒤 가족에게 보낼 위치 문자 창이 열린다 (웹앱은 문자를 저절로 보낼 수 없어 [보내기]는 직접).
+   같은 화면에 112 전화·112 문자 신고 */
+var SOS_KEY='airportCallLog.sos.v1';
+function sosCfg(){ var o=null; try { o=JSON.parse(sGet(SOS_KEY)||'null'); } catch(e){ o=null; } return (o && typeof o==='object') ? o : {}; }
+function sosNums(c){ return [c.p1, c.p2].map(function(x){ return String(x||'').replace(/[^\d+]/g,''); }).filter(function(x){ return x.length>=8; }); }
+function sosMsg(pos, forFamily){
+  var p=null, name='', plate='', d=new Date(), t;
+  try { p=loadProfile(); } catch(e){ p=null; }
+  if (p){ name=String(p.nameKo||'').trim(); plate=String(p.plate||'').trim(); }
+  t=d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
+  return (forFamily ? '[긴급] ' : '[112 긴급 신고] ')+'택시 기사'+(name ? ' '+name : '')+'입니다. 위험한 상황입니다. 도와주세요.'+
+    '\n신고 시각: '+t+
+    (plate ? '\n차량번호: '+plate : '')+
+    '\n현재 위치: '+(pos ? 'https://maps.google.com/?q='+pos.lat.toFixed(5)+','+pos.lng.toFixed(5) : '(위치 확인 중)');
+}
+function sosSmsUrl(nums, body){ return 'sms:'+nums.join(',')+'?body='+encodeURIComponent(body); }
+/* 누르면: 버튼이 빨갛게 점등 · 화면이 비상 화면으로 → 3초 안에 [취소]하지 않으면 경찰 112로 보낼 문자 창 */
+function sosOpen(){
+  var c=sosCfg(), nums=sosNums(c), pos=null, n=3, tm=null, ov, lamp, info, msgBox, cancelled=false, btn=$('sosBtn');
+  if ($('sosOv')) return;
+  if (btn) btn.className='sos3d on';
+  if (lastHere && lastHereAt && Date.now()-lastHereAt < 120000) pos={lat:lastHere.lat, lng:lastHere.lng};
+  if (navigator.geolocation){
+    try { navigator.geolocation.getCurrentPosition(function(p){ pos={lat:p.coords.latitude, lng:p.coords.longitude}; if (msgBox) msgBox.textContent=sosMsg(pos); }, function(){}, {enableHighAccuracy:true, timeout:2500, maximumAge:15000}); } catch(e){}
+  }
+  try { if (navigator.vibrate) navigator.vibrate([300,100,300,100,300]); } catch(e){}
+  lamp=el('div',{cls:'sos-lamp', text:String(n)});
+  info=el('div',{cls:'sos-info', text:n+'초 뒤 경찰 112로 보낼 신고 문자 창이 열립니다. 잘못 눌렀으면 [취소]'});
+  msgBox=el('div',{cls:'sos-msg', text:sosMsg(pos)});
+  function close(){
+    cancelled=true; clearInterval(tm);
+    if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+    if (btn) btn.className='sos3d';
+    setTimeout(function(){ try { sosVoiceLoop(); } catch(e){} }, 1500);
+  }
+  function to112(){ location.href='sms:112?body='+encodeURIComponent(sosMsg(pos)); }
+  ov=el('div',{cls:'sos-ov', id:'sosOv'},[
+    el('h2',{text:'🚨 비상 SOS'}), lamp, info, msgBox,
+    el('button',{type:'button', cls:'sos-b w', id:'sosCancel', onclick:close},['✕ 취소 (잘못 눌렀어요)']),
+    el('button',{type:'button', cls:'sos-b o sm', onclick:function(){ n=0; clearInterval(tm); lamp.textContent='✓'; to112(); }},['📩 지금 바로 112 문자 신고']),
+    el('a',{cls:'sos-b o sm', href:'tel:112'},['📞 112 전화']),
+    nums.length ? el('button',{type:'button', cls:'sos-b o sm', onclick:function(){ location.href=sosSmsUrl(nums, sosMsg(pos, true)); }},['📩 가족('+[c.n1,c.n2].filter(function(x){ return x; }).join('·')+')에게도 위치 문자']) : null
+  ]);
+  document.body.appendChild(ov);
+  tm=setInterval(function(){
+    if (cancelled) return;
+    n--; lamp.textContent=String(Math.max(0,n));
+    if (n>0){ info.textContent=n+'초 뒤 경찰 112로 보낼 신고 문자 창이 열립니다. 잘못 눌렀으면 [취소]'; return; }
+    clearInterval(tm); lamp.textContent='✓';
+    $('sosCancel').textContent='닫기';
+    info.textContent='112 문자 창에서 [보내기]를 눌러 주세요. 가족에게도 알리려면 아래 버튼을 누르세요';
+    to112();
+  }, 1000);
+}
+
+/* ── 말로 SOS ──
+   설정에서 켜면, 운행 앱이 화면에 켜져 있는 동안 비상 말을 듣는다.
+   손님 말 듣기·한국어로 말하기가 마이크를 쓰는 동안은 쉰다 (마이크는 하나) */
+var SOSV_KEY='airportCallLog.sosVoice.v1';
+/* 알아듣는 말: 경찰, 경찰 신고, 112, 112 신고, 살려 주세요, SOS(에스오에스), 비상 신고, 폭행, 영업방해, 출동
+   단, 목적지로 흔히 나오는 경찰서·경찰청·경찰병원·경찰대는 빼고 "경찰"에 반응한다 */
+var SOS_WORDS=/(경찰(?!\s*(서|청|병원|대학|대\b|대학교|학교|박물관))|112|백\s*십\s*이|일\s*일\s*이|살려\s*주세요|살려\s*줘|살려줘|에스\s*오\s*에스|\bs\s*\.?\s*o\s*\.?\s*s\b|비상\s*신고|폭행|영업\s*방해|출동)/i;
+var sosV={on:false, rec:null, t:null};
+function sosVoiceOn(){ return sGet(SOSV_KEY)==='1'; }
+function sosVoiceBusy(){
+  try { if (typeof talk!=='undefined' && talk.rec) return true; } catch(e){}
+  try { if (typeof ear!=='undefined' && ear.on) return true; } catch(e){}
+  try { if (typeof tb!=='undefined' && tb.on) return true; } catch(e){}
+  return !!$('sosOv') || document.hidden;
+}
+function sosVoiceStop(){ clearTimeout(sosV.t); if (sosV.rec){ var r=sosV.rec; sosV.rec=null; try { r.onend=null; r.abort(); } catch(e){} } }
+function sosVoiceLoop(){
+  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, r;
+  clearTimeout(sosV.t);
+  if (!sosVoiceOn() || !SR){ sosVoiceStop(); sosVoicePaint(); return; }
+  if (sosVoiceBusy()){ sosVoiceStop(); sosV.t=setTimeout(sosVoiceLoop, 3000); return; }
+  if (sosV.rec) return;
+  r=new SR(); sosV.rec=r;
+  r.lang='ko-KR'; r.continuous=true; r.interimResults=true; r.maxAlternatives=3;
+  r.onresult=function(e){
+    var i, j, t;
+    for (i=e.resultIndex;i<e.results.length;i++) for (j=0;j<e.results[i].length;j++){
+      t=String(e.results[i][j].transcript||'');
+      if (SOS_WORDS.test(t)){ sosVoiceStop(); toast('🎙 "'+t.trim()+'" — 비상 SOS'); sosOpen(); return; }
+    }
+  };
+  r.onerror=function(ev){ if (ev && (ev.error==='not-allowed' || ev.error==='service-not-allowed')){ sSet(SOSV_KEY,'0'); sosVoicePaint(); toast('마이크 권한이 없어 말로 SOS를 껐습니다'); } };
+  r.onend=function(){ if (sosV.rec===r) sosV.rec=null; sosV.t=setTimeout(sosVoiceLoop, 600); };
+  try { r.start(); } catch(e){ sosV.rec=null; sosV.t=setTimeout(sosVoiceLoop, 3000); }
+  sosVoicePaint();
+}
+function sosVoicePaint(){
+  var i=document.querySelector('#sosBtn .sos3d-cap i'), cb=$('sosVoice');
+  if (i) i.textContent = sosVoiceOn() ? '🎙 누르거나 말로 신고' : '112 긴급 신고';
+  if (cb) cb.checked=sosVoiceOn();
+}
+function sosVoiceBind(){
+  var cb=$('sosVoice');
+  if (cb) cb.addEventListener('change', function(){
+    sSet(SOSV_KEY, cb.checked ? '1' : '0');
+    toast(cb.checked ? '🎙 앱이 켜져 있는 동안 "경찰·112·살려 주세요·SOS·비상 신고·폭행·영업방해·출동"을 들으면 SOS가 열립니다' : '말로 SOS를 껐습니다');
+    sosVoiceLoop();
+  });
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) sosVoiceStop(); else setTimeout(sosVoiceLoop, 800); });
+  sosVoicePaint();
+  setTimeout(sosVoiceLoop, 2500);
+}
+/* 주소 끝이 #sos 이면 곧바로 SOS (빅스비·구글 어시스턴트 루틴, 홈 화면 바로가기용) */
+function sosFromHash(){
+  if (!/[#&]sos\b/i.test(location.hash)) return;
+  try { history.replaceState(null, '', location.href.split('#')[0]); } catch(e){}
+  setTimeout(sosOpen, 500);
+}
+
+function sosBind(){
+  var b=$('sosBtn'), c, save;
+  if (b) b.addEventListener('click', sosOpen);
+  save=$('sosSave');
+  if (!save) return;
+  c=sosCfg();
+  $('sosN1').value=c.n1||''; $('sosP1').value=c.p1||''; $('sosN2').value=c.n2||''; $('sosP2').value=c.p2||'';
+  save.addEventListener('click', function(){
+    var o={n1:$('sosN1').value.trim().slice(0,12), p1:$('sosP1').value.trim().slice(0,20), n2:$('sosN2').value.trim().slice(0,12), p2:$('sosP2').value.trim().slice(0,20)};
+    sSet(SOS_KEY, JSON.stringify(o));
+    toast(sosNums(o).length ? '비상 연락처를 저장했습니다' : '번호가 없어서 SOS 때 가족 문자는 열리지 않습니다');
+  });
+  $('sosTest').addEventListener('click', function(){
+    var o=sosCfg(), n=sosNums(o);
+    if (!n.length){ toast('먼저 번호를 넣고 저장하세요'); return; }
+    location.href=sosSmsUrl(n, '[시험] 택시 앱 비상 버튼 시험 문자입니다. 실제 상황이 아닙니다.');
+  });
+}
+
+/* ═══════════ 연속 운전 휴식 알림 ═══════════
+   출근 중 마지막 휴식 뒤 계속 운전한 시간을 잰다.
+   쉰 것으로 보는 것: ☕ 휴게 10분 이상, 또는 앱이 켜져 있는 동안 GPS로 본 15분 이상 정차.
+   알림 간격(기본 2시간)이 넘으면 음성·진동·안내, 쉴 때까지 30분마다 다시 */
+var DRV_KEY='airportCallLog.drive.v1';
+var drv={still:null, lastWarn:0, st:null, timer:null};
+function drvLoad(){
+  var o=null; try { o=JSON.parse(sGet(DRV_KEY)||'null'); } catch(e){ o=null; }
+  if (!o || typeof o!=='object') o={};
+  if (!Array.isArray(o.rests)) o.rests=[];
+  o.rests=o.rests.filter(function(r){ return r && isNum(r.s) && isNum(r.e) && Date.now()-r.e < 3*86400000; });
+  if (!isNum(o.iv)) o.iv=120;
+  if (o.voice===undefined) o.voice=true;
+  drv.st=o; return o;
+}
+function drvSave(){ sSet(DRV_KEY, JSON.stringify(drv.st)); }
+function drvGps(lat, lng){
+  var now=Date.now(), a=drv.still;
+  if (!drv.st) drvLoad();
+  if (!a || km(lat, lng, a.lat, a.lng)*1000 > 60){
+    if (a && now-a.ts >= 15*60000 && now-a.seen < 10*60000){ drv.st.rests.push({s:a.ts, e:now}); drvSave(); }
+    drv.still={lat:lat, lng:lng, ts:now, seen:now};
+  } else a.seen=now;
+}
+/* 지금 근무의 연속 운전 계산 */
+function drvCalc(now){
+  var x, R=[], i, b, lastEnd, ob, resting=false, net, rest=0, tRest=0, day, list=[], s, t;
+  now=now||Date.now(); x=openShift(); day=dayKey(now);
+  if (!drv.st) drvLoad();
+  for (i=0;i<shifts.length;i++) if (dayKey(shifts[i].start)===day || (shifts[i]===x && !staleShift(x, now))) list.push(shifts[i]);
+  /* 오늘 운전·휴식 (휴게 + 자동 정차 휴식) */
+  net=0;
+  list.forEach(function(sh){
+    var tt=shiftTimes(sh, now), e=isNum(sh.end) ? sh.end : now;
+    net+=tt.net; tRest+=tt.brk;
+    drv.st.rests.forEach(function(r){ var a1=Math.max(r.s, sh.start), b1=Math.min(r.e, e); if (b1>a1){ tRest+=b1-a1; net-=b1-a1; } });
+  });
+  if (!x || staleShift(x, now)) return {on:false, net:Math.max(0,net), rest:tRest};
+  ob=openBreak(x);
+  lastEnd=x.start;
+  for (i=0;i<x.breaks.length;i++){ b=x.breaks[i]; if (isNum(b.e) && b.e-b.s >= 10*60000 && b.e>lastEnd) lastEnd=b.e; }
+  drv.st.rests.forEach(function(r){ if (r.e>lastEnd && r.e<=now && r.s>=x.start-60000) lastEnd=r.e; });
+  if (ob) resting=true;
+  if (drv.still && now-drv.still.ts >= 15*60000 && now-drv.still.seen < 5*60000) resting=true;
+  return {on:true, resting:resting, since:lastEnd, cont: resting ? 0 : Math.max(0, now-lastEnd), net:Math.max(0,net), rest:tRest, iv:drv.st.iv*60000};
+}
+function drvSpeak(txt){
+  try {
+    if (!window.speechSynthesis || document.hidden) return;
+    var u=new window.SpeechSynthesisUtterance(txt); u.lang='ko-KR'; u.rate=1;
+    try { var v=pickVoice('ko-KR', false); if (v && v.v) u.voice=v.v; } catch(e){}
+    window.speechSynthesis.speak(u);
+  } catch(e){}
+}
+function drvTick(){
+  var c=drvCalc(Date.now());
+  if (currentTab==='v-today') drvRender();
+  if (!c.on || c.resting || c.cont < c.iv) return;
+  if (Date.now()-drv.lastWarn < 30*60000) return;
+  drv.lastWarn=Date.now();
+  try { if (navigator.vibrate) navigator.vibrate([400,200,400]); } catch(e){}
+  if (drv.st.voice) drvSpeak(durTxt(c.cont).replace(/분$/,'분')+' 동안 쉬지 않고 운전하셨습니다. 잠깐 쉬어 가세요.');
+  toast('☕ '+durTxt(c.cont)+' 쉬지 않고 운전했습니다 — 잠깐 쉬어 가세요', '휴게 시작', function(){ try { wkBrk(); } catch(e){} });
+}
+function drvRender(){
+  var box=$('drvSec'), c, w, pct, cls;
+  if (!box){
+    var wk=$('wkSec'); if (!wk) return;
+    var anchor=wk.classList && wk.classList.contains('sec') ? wk : (wk.closest ? wk.closest('.sec') : null);
+    if (!anchor || !anchor.parentNode) return;
+    box=el('div',{cls:'sec drvsec', id:'drvSec'});
+    anchor.parentNode.insertBefore(box, anchor.nextSibling);
+  }
+  c=drvCalc(Date.now());
+  clear(box);
+  box.appendChild(el('h3',{text:'🛣 연속 운전'}));
+  if (!c.on){
+    box.appendChild(el('div',{cls:'drv-big', text:'–'}));
+    box.appendChild(el('div',{cls:'drv-sub', text:'출근을 누르면 쉬지 않고 운전한 시간을 재서 '+durTxt(drvLoad().iv*60000)+'마다 휴식을 알려 드립니다'+(c.net ? ' · 오늘 운전 '+durTxt(c.net) : '')}));
+    return;
+  }
+  pct=Math.min(100, Math.round(c.cont/c.iv*100));
+  cls = c.cont>=c.iv ? 'r' : c.cont>=c.iv*0.8 ? 'y' : 'g';
+  box.appendChild(el('div',{cls:'drv-big'},[c.resting ? '쉬는 중 ☕' : durTxt(c.cont), el('small',{text:' / '+durTxt(c.iv)+'마다 휴식'})]));
+  box.appendChild(el('div',{cls:'drv-bar'},[el('i',{cls:cls, style:'width:'+(c.resting ? 0 : pct)+'%'})]));
+  box.appendChild(el('div',{cls:'drv-sub', text:'오늘 운전 '+durTxt(c.net)+' · 쉰 시간 '+durTxt(c.rest)+' · 마지막 휴식 '+(c.since ? hhmm(c.since) : '–')}));
+  if (!c.resting && c.cont>=c.iv) box.appendChild(el('div',{cls:'drv-warn'},['🔊 '+durTxt(c.cont)+' 동안 쉬지 않았습니다 — 잠깐 쉬어 가세요',
+    el('small',{text:'☕ 휴게를 누르거나, 차를 15분 이상 세워 두면 쉰 것으로 봅니다 (앱이 켜져 있을 때)'})]));
+}
+function drvInit(){
+  drvLoad();
+  if (drv.timer) clearInterval(drv.timer);
+  drv.timer=setInterval(drvTick, 30000);
+  setTimeout(drvTick, 3000);
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) setTimeout(drvTick, 800); });
+  var iv=$('drvIv'), vo=$('drvVoice');
+  if (iv){ iv.value=String(drv.st.iv); iv.addEventListener('change', function(){ drv.st.iv=parseInt(iv.value,10)||120; drvSave(); drvRender(); toast('휴식 알림: '+durTxt(drv.st.iv*60000)+'마다'); }); }
+  if (vo){ vo.checked=drv.st.voice!==false; vo.addEventListener('change', function(){ drv.st.voice=vo.checked; drvSave(); }); }
+}
+
+/* ═══════════ 분실물 기록 ═══════════
+   [📦 분실물 기록]을 누르면 시각·위치·방금 운행(탑승·하차·요금·손님 언어)·예약 손님 연락처가 자동으로 채워진다. 사진만 찍으면 된다.
+   사진은 줄여서 IndexedDB에 둔다 (localStorage는 작아서) */
+var LOST_KEY='airportCallLog.lost.v1';
+function lostList(){ var a=[]; try { a=JSON.parse(sGet(LOST_KEY)||'[]'); } catch(e){ a=[]; } return Array.isArray(a) ? a : []; }
+function lostSave(a){ sSet(LOST_KEY, JSON.stringify(a.slice(-300))); }
+function lostDb(cb){
+  try {
+    var rq=indexedDB.open('airportCallLogLost', 1);
+    rq.onupgradeneeded=function(){ rq.result.createObjectStore('ph'); };
+    rq.onsuccess=function(){ cb(rq.result); }; rq.onerror=function(){ cb(null); };
+  } catch(e){ cb(null); }
+}
+function lostPutPh(id, arr, cb){ lostDb(function(db){ if (!db){ cb && cb(false); return; } try { var tx=db.transaction('ph','readwrite'); tx.objectStore('ph').put(arr, id); tx.oncomplete=function(){ cb && cb(true); }; tx.onerror=function(){ cb && cb(false); }; } catch(e){ cb && cb(false); } }); }
+function lostGetPh(id, cb){ lostDb(function(db){ if (!db){ cb([]); return; } try { var q=db.transaction('ph','readonly').objectStore('ph').get(id); q.onsuccess=function(){ cb(q.result||[]); }; q.onerror=function(){ cb([]); }; } catch(e){ cb([]); } }); }
+function lostDelPh(id){ lostDb(function(db){ if (!db) return; try { db.transaction('ph','readwrite').objectStore('ph').delete(id); } catch(e){} }); }
+function lostShrink(file, cb){
+  var fr=new FileReader();
+  fr.onload=function(){
+    var im=new Image();
+    im.onload=function(){
+      var mx=1000, w=im.naturalWidth, h=im.naturalHeight, k=Math.min(1, mx/Math.max(w,h)), c=document.createElement('canvas');
+      c.width=Math.round(w*k); c.height=Math.round(h*k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      try { cb(c.toDataURL('image/jpeg', 0.7)); } catch(e){ cb(null); }
+    };
+    im.onerror=function(){ cb(null); };
+    im.src=fr.result;
+  };
+  fr.onerror=function(){ cb(null); };
+  fr.readAsDataURL(file);
+}
+var LOST_LANG={en:'🇺🇸 영어', ja:'🇯🇵 일본어', zh:'🇨🇳 중국어', ko:'🇰🇷 한국어'};
+/* 방금 운행과 예약 손님 찾기 */
+function lostAuto(){
+  var now=Date.now(), i, r=null, b=null, L=[], lang='';
+  for (i=records.length-1;i>=0;i--){ if (records[i].ts<=now && now-records[i].ts <= 6*3600000){ r=records[i]; break; } }
+  try { lang=tbRideLang() || ''; } catch(e){ lang=''; }
+  if (!lang && r && r.fgn) lang='en';
+  try { L=bkList(); } catch(e){ L=[]; }
+  if (r) L.forEach(function(x){
+    var ms=bkWhenMs(x.ndate||x.date, x.ntime||x.time);
+    if ((x.st==='ok' || x.st==='adj') && isNum(ms) && Math.abs(ms-r.ts) < 2*3600000 && (!b || Math.abs(ms-r.ts) < Math.abs(bkWhenMs(b.ndate||b.date, b.ntime||b.time)-r.ts))) b=x;
+  });
+  if (b && !lang) lang=b.lang;
+  return {
+    ride: r ? {id:r.id, ts:r.ts, off:isNum(r.offTs) ? r.offTs : null, from:r.dong || r.zone || '', to:r.dn || '', fare:isNum(r.fare) ? r.fare : null, pay:r.pay||''} : null,
+    bk: b ? {rid:b.rid, name:b.name, cm:b.cm, ct:b.ct, lang:b.lang} : null,
+    lang: lang
+  };
+}
+function lostContact(bk){
+  var d=String(bk.ct||'').replace(/[^\d+]/g,'');
+  if (bk.cm==='wa' && d.length>=8) return {href:'https://wa.me/'+d.replace(/^\+/,''), t:'WhatsApp으로 연락'};
+  if (bk.cm==='ph' && d.length>=8) return {href:'tel:'+d, t:'전화하기'};
+  if (bk.cm==='em' && /@/.test(bk.ct)) return {href:'mailto:'+bk.ct+'?subject='+encodeURIComponent('Lost item in taxi / 택시 분실물'), t:'이메일 보내기'};
+  return null;
+}
+function lostRideTxt(o){
+  var r=o.ride, a=[];
+  if (!r) return '최근 6시간 안의 운행 기록이 없습니다';
+  a.push(hhmm(r.ts)+' '+(r.from||'탑승')+(r.to ? ' → '+r.to : '')+(r.off ? ' · '+hhmm(r.off)+' 하차' : ''));
+  if (r.fare) a.push(won(r.fare)+(r.pay ? ' · '+r.pay : ''));
+  return a.join('\n');
+}
+function lostOpen(id){
+  var A=lostList(), it=null, o, ph=[], i, place='', pos=null, phBox, what, memo, stSel, st='keep', fin;
+  for (i=0;i<A.length;i++) if (A[i].id===id) it=A[i];
+  o = it ? it : lostAuto();
+  if (it) st=it.st||'keep';
+  if (!it && lastHere){ pos={lat:lastHere.lat, lng:lastHere.lng}; place='지금 위치'; try { reverseDong(pos.lat, pos.lng, function(d){ if (d){ place=d; if ($('lostPlace')) $('lostPlace').textContent='발견 '+hhmm(Date.now())+' · '+d; } }); } catch(e){} }
+  phBox=el('div',{cls:'lost-ph'});
+  function paintPh(){
+    clear(phBox);
+    ph.forEach(function(src, k){ phBox.appendChild(el('div',{cls:'lost-th', style:'background-image:url('+src+')'},[el('button',{type:'button', onclick:function(){ ph.splice(k,1); paintPh(); }},['✕'])])); });
+    var inp=el('input',{type:'file', accept:'image/*', multiple:'multiple', capture:'environment', style:'display:none'});
+    inp.addEventListener('change', function(){
+      var fs=Array.prototype.slice.call(inp.files||[]).slice(0, 6-ph.length), left=fs.length;
+      fs.forEach(function(f){ lostShrink(f, function(u){ if (u) ph.push(u); left--; if (!left) paintPh(); }); });
+    });
+    if (ph.length<6) phBox.appendChild(el('label',{cls:'lost-add'},['📷 사진 찍기', inp]));
+  }
+  if (it) lostGetPh(it.id, function(a){ ph=a||[]; paintPh(); }); else paintPh();
+  what=el('input',{type:'text', cls:'mn-in', maxlength:'40', placeholder:'무엇인가요? 예: 검은 지갑, 아이폰', value: it ? (it.what||'') : ''});
+  memo=el('input',{type:'text', cls:'mn-in', maxlength:'60', placeholder:'메모 (보관 장소 등)', value: it ? (it.memo||'') : ''});
+  stSel=el('div',{cls:'lost-st'});
+  [['keep','보관 중'],['back','돌려줌'],['police','경찰서 인계']].forEach(function(a){
+    stSel.appendChild(el('button',{type:'button', cls: st===a[0] ? 'on' : '', onclick:function(){ st=a[0]; Array.prototype.forEach.call(stSel.children, function(c){ c.className=''; }); this.className='on'; }},[a[1]]));
+  });
+  var ct=o.bk ? lostContact(o.bk) : null;
+  fin=function(){
+    var now=Date.now(), rec, B=lostList(), k;
+    if (!String(what.value||'').trim() && !ph.length){ toast('사진을 찍거나 무엇인지 적어 주세요'); return; }
+    if (it){ rec=it; } else rec={id:'L'+now.toString(36), ts:now, place:place, lat:pos ? Math.round(pos.lat*1e5)/1e5 : null, lng:pos ? Math.round(pos.lng*1e5)/1e5 : null, ride:o.ride, bk:o.bk, lang:o.lang};
+    rec.what=String(what.value||'').trim(); rec.memo=String(memo.value||'').trim(); rec.st=st; rec.n=ph.length; rec.up=now;
+    for (k=0;k<B.length;k++) if (B[k].id===rec.id){ B[k]=rec; break; }
+    if (k===B.length) B.push(rec);
+    lostSave(B); lostPutPh(rec.id, ph);
+    closeSheet(); lostRender(); toast('📦 분실물 기록을 저장했습니다');
+  };
+  openSheet([
+    el('h3',{style:'margin:0 0 8px;font-size:18px', text:'📦 분실물 기록'}),
+    el('div',{cls:'lost-auto'},[
+      el('b',{text: it ? '기록한 내용' : '자동으로 채움'}),
+      el('div',{id:'lostPlace', text: it ? '발견 '+mdDay(it.ts)+' '+hhmm(it.ts)+(it.place ? ' · '+it.place : '') : '발견 '+hhmm(Date.now())+(place ? ' · '+place : '')}),
+      el('div',{style:'white-space:pre-line', text:'방금 운행: '+lostRideTxt(o)}),
+      o.lang ? el('div',{text:'손님: '+(LOST_LANG[o.lang]||o.lang)}) : null,
+      o.bk ? el('div',{},['예약 손님: '+o.bk.name+' · '+bkCmName(o.bk.cm)+' '+o.bk.ct+' ', ct ? el('a',{cls:'lost-call', href:ct.href, target:'_blank', rel:'noopener'},[ct.t]) : null]) : null
+    ]),
+    phBox, what, memo, stSel,
+    el('button',{cls:'btn primary', type:'button', style:'width:100%;margin-top:6px', onclick:fin},['저장']),
+    it ? el('button',{cls:'btn', type:'button', style:'width:100%;margin-top:6px;color:#C62828', onclick:function(){
+      if (!window.confirm('이 분실물 기록을 지울까요?')) return;
+      lostSave(lostList().filter(function(x){ return x.id!==it.id; })); lostDelPh(it.id); closeSheet(); lostRender(); toast('지웠습니다');
+    }},['기록 지우기']) : null,
+    el('button',{cls:'btn', type:'button', style:'width:100%;margin-top:6px', onclick:closeSheet},['닫기'])
+  ]);
+}
+function lostRender(){
+  var box=$('lostList'), A=lostList().slice().sort(function(a,b){ return b.ts-a.ts; }), keep=0;
+  if (!box) return;
+  clear(box);
+  A.forEach(function(x){ if (x.st==='keep') keep++; });
+  if ($('lostCount')) $('lostCount').textContent = A.length ? A.length+'건 · 보관 중 '+keep+'건' : '';
+  if (!A.length){ box.appendChild(el('div',{cls:'empty', text:'손님이 두고 내린 물건을 찾으면 [분실물 기록]을 누르세요. 시각·위치·방금 운행·예약 손님 연락처가 자동으로 채워집니다.'})); return; }
+  A.slice(0,20).forEach(function(x){
+    var th=el('div',{cls:'lost-th sm'});
+    if (x.n) lostGetPh(x.id, function(a){ if (a && a[0]) th.style.backgroundImage='url('+a[0]+')'; });
+    box.appendChild(el('button',{type:'button', cls:'lost-row', onclick:function(){ lostOpen(x.id); }},[
+      th,
+      el('div',{cls:'tx'},[el('b',{text:(x.what||'(사진)')}), el('span',{text:mdDay(x.ts)+' '+hhmm(x.ts)+(x.ride && x.ride.to ? ' · '+x.ride.to : x.place ? ' · '+x.place : '')+(x.bk ? ' · '+x.bk.name : '')})]),
+      el('i',{cls:'lost-tag '+(x.st||'keep'), text:{keep:'보관 중', back:'돌려줌', police:'경찰서 인계'}[x.st||'keep']})
+    ]));
+  });
+}
+function lostBind(){
+  var b, anchor=$('drvSec');
+  if (!$('lostSec')){
+    if (!anchor){ drvRender(); anchor=$('drvSec'); }
+    if (anchor && anchor.parentNode){
+      var sec=el('div',{cls:'sec', id:'lostSec'},[
+        el('h3',null,['📦 분실물 ', el('small',{id:'lostCount'})]),
+        el('button',{cls:'btn primary', type:'button', id:'lostAdd', style:'width:100%;margin:0 0 10px;min-height:48px;font-size:16px'},['📦 분실물 기록 (자동으로 채움)']),
+        el('div',{id:'lostList'})
+      ]);
+      anchor.parentNode.insertBefore(sec, anchor.nextSibling);
+    }
+  }
+  b=$('lostAdd');
+  if (b) b.addEventListener('click', function(){ lostOpen(''); });
+  lostRender();
+}
+
 /* ── 태블릿 쪽 ── */
 var tb={on:false, code:'', name:'', es:null, esWatch:null, lastEv:0, wake:null, watch:null, pos:null,
         ride:null, alightAt:0, backTimer:null, clockTimer:null, seen:{}, speakQ:[],
@@ -12379,11 +12823,15 @@ function tbAlight(lang){
 /* 태블릿이 목적지 가까이 왔는지 본다.
    출발지가 목적지 바로 옆이면 곧장 울리지 않도록, 한 번은 300m 밖에 있었어야 한다 */
 function tbCheckArrive(){
-  var r=tb.ride, p=tb.pos, d;
+  var r=tb.ride, p=tb.pos, d, stopMs;
   if (!r || !p || r.fired) return;
   d=km(p.lat, p.lng, r.lat, r.lng)*1000;
   if (d > 300) r.far=true;
-  if (r.far && d <= TB_ARRIVE_M && Date.now()-r.at > 60000){
+  /* 목적지 점에서 조금 떨어진 곳(호텔 다른 입구, 공항 길가)에 내려 드려도 알 수 있게:
+     목적지 300m 안에서 40초 넘게 서 있으면 도착으로 본다 */
+  if (!tb.stop || km(p.lat, p.lng, tb.stop.lat, tb.stop.lng)*1000 > 25) tb.stop={lat:p.lat, lng:p.lng, at:Date.now()};
+  stopMs=Date.now()-tb.stop.at;
+  if (r.far && (d <= TB_ARRIVE_M || (d <= 300 && stopMs >= 40000)) && Date.now()-r.at > 60000){
     r.fired=true;
     setTimeout(function(){ tbAlight(tb.rideLang||''); }, TB_ARRIVE_DELAY);
   }
@@ -12545,6 +12993,7 @@ function talkMic(){
   if (talk.rec){ try { talk.rec.stop(); } catch(e){} return; }
   try { window.speechSynthesis.cancel(); } catch(e){}
   earPause();
+  try { sosVoiceStop(); } catch(e){}
   r=new SR(); talk.rec=r;
   r.lang='ko-KR'; r.interimResults=true; r.continuous=false; r.maxAlternatives=3;
   $('tpMic').className='tp-mic on'; $('tpMic').textContent='듣는 중… (다시 누르면 멈춤)';
@@ -12689,6 +13138,7 @@ function earStart(){
   if (!SR){ talkStatus('이 브라우저는 음성 인식을 지원하지 않습니다.'); return; }
   if (ear.on) return;
   if (!tbPairCode()){ toast('태블릿을 먼저 연결하세요'); return; }
+  try { sosVoiceStop(); } catch(e){}
   ear.on=true; ear.paused=false; ear.lastHit=Date.now(); ear.probe=null;
   earBtn();
   talkStatus('👂 손님 말을 기다리는 중… (폰을 손님 쪽으로 향하게 두세요)');
@@ -13633,6 +14083,7 @@ function wkBtn(id, cls, label, sub){
 }
 function renderWork(inc){
   var box=$('wkSec'); if (!box) return;
+  setTimeout(function(){ try { drvRender(); } catch(e){} }, 0);
   var now=Date.now(), today=dayKey(now), x=openShift(), stale=staleShift(x, now), list=[], i, j, t, net=0, brk=0, first=null, lastEnd=null, ob, st, hr, br, led, fn=0, fs=0, e;
   if (!isNum(inc)) inc=dayIncome(today);
   for (i=0;i<shifts.length;i++) if (dayKey(shifts[i].start)===today) list.push(shifts[i]);
@@ -13782,6 +14233,7 @@ window.addEventListener('message', function(e){
   var d=e.data;
   if (e.origin!==location.origin || !d || typeof d!=='object') return;
   if (d.mg==='close') closeManage();
+  else if (d.mg==='sos'){ try { sosOpen(); } catch(x){} }
   else if (d.mg==='old'){ closeManage(); showTab(d.tab==='v-log' ? 'v-log' : 'v-stat'); }
 });
 /* 관리 앱에서 고친 기록·장부·근무를 다시 읽는다 (같은 폰 저장 공간) */
@@ -13840,7 +14292,7 @@ try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(func
 /* ───────── 탭·렌더 ───────── */
 var currentTab='v-road';
 function showTab(id){
-  var views=document.querySelectorAll('.view'), tabs=document.querySelectorAll('.tabbar button, .toptabs button'), i;
+  var views=document.querySelectorAll('.view'), tabs=document.querySelectorAll('.tabbar button[data-tab], .toptabs button'), i;
   for (i=0;i<views.length;i++) views[i].className = views[i].id===id ? 'view on' : 'view';
   for (i=0;i<tabs.length;i++) tabs[i].setAttribute('aria-selected', tabs[i].getAttribute('data-tab')===id ? 'true':'false');
   if ($('appHead')) $('appHead').className = 'apphead' + ((id==='v-today' || id==='v-stat' || id==='v-log') ? ' noplate' : '');
@@ -13884,7 +14336,7 @@ function init(){
   $('recBtn').addEventListener('click', onRecord);
   $('manualBtn').addEventListener('click', function(){ openZonePicker(null); });
   $('scrim').addEventListener('click', function(e){ if (e.target===this) closeSheet(); });
-  var tabs=document.querySelectorAll('.tabbar button, .toptabs button'), i;
+  var tabs=document.querySelectorAll('.tabbar button[data-tab], .toptabs button'), i;
   for (i=0;i<tabs.length;i++) tabs[i].addEventListener('click', function(){
     var d=this.querySelector('.dice');
     if (d){ d.classList.remove('roll'); void d.offsetWidth; d.classList.add('roll'); setTimeout(function(){ d.classList.remove('roll'); }, 750); }
@@ -13926,6 +14378,7 @@ function init(){
   if (tabletBoot()){ bootShow(); primeVoices(); return; }   /* 뒷좌석 태블릿이면 태블릿 안내 화면만 쓴다 */
   try { bkBind(); } catch(e){}   /* 직접 예약: 버튼·알림 받기 */
   try { mntInit(); } catch(e){}   /* 정비: 교체 시기 빨간 점 */
+  try { sosBind(); sosVoiceBind(); sosFromHash(); window.addEventListener('hashchange', sosFromHash); drvInit(); lostBind(); } catch(e){}   /* SOS(누르기·말로) · 연속 운전 휴식 · 분실물 */
   openFromQr();   /* QR을 찍고 들어왔으면 곧장 승객 화면 */
   bootShow();
   primeVoices();
