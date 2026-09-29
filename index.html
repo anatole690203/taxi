@@ -11548,17 +11548,17 @@ function mntRender(){
     ]),
     el('div',{cls:'t', text: o.last ? '마지막 입력 '+mdTxt(o.last.ts)+' · '+kmTxt(o.last.km)+(o.avg ? '' : ' — 두 번 이상 넣으면 하루 평균으로 자동 추정합니다') : '계기판의 누적 주행거리를 넣어 주세요. 새 차면 지금 계기판 숫자 그대로 넣으면 됩니다.'})
   ]));
-  /* 지남 · 곧 교체: 개수 + 정비할 이름 3개까지 (누르면 그 항목) */
+  /* 정비 필요 · 교체 임박: 개수 + 정비할 이름 3개까지 (누르면 그 항목) */
   function sumBox(cls, n, label, list){
     var names=el('div',{cls:'nm'});
     list.slice(0,3).forEach(function(x){ names.appendChild(el('button',{type:'button', onclick:function(){ mntOpen(x.d.id); }},[x.d.n])); });
     if (list.length>3) names.appendChild(el('span',{cls:'more', text:'외 '+(list.length-3)+'개'}));
-    return el('div',{cls:'mn-sb '+cls},[el('div',{cls:'hd'},[el('b',{text:String(n)}), label]), list.length ? names : el('div',{cls:'nm none', text: cls==='grn' ? '' : '없음'})]);
+    return el('div',{cls:'mn-sb '+cls},[el('div',{cls:'hd'},[el('b',{text:String(n)}), label]), list.length ? names : el('div',{cls:'nm none', text: cls==='grn' ? '' : '이상 없음'})]);
   }
   box.appendChild(el('div',{cls:'mn-sum2'},[
-    sumBox('red', red.length, '지남', red),
-    sumBox('yel', yel.length, '곧 교체', yel),
-    el('div',{cls:'mn-sb grn'},[el('div',{cls:'hd'},[el('b',{text:String(grn.length)}), '여유'])])
+    sumBox('red', red.length, '정비 필요', red),
+    sumBox('yel', yel.length, '교체 임박', yel),
+    el('div',{cls:'mn-sb grn'},[el('div',{cls:'hd'},[el('b',{text:String(grn.length)}), '양호'])])
   ]));
   /* 3D 큐빅 분류 버튼 */
   menu=el('div',{cls:'setmenu mnmenu'});
@@ -11566,9 +11566,9 @@ function mntRender(){
     var st='', hot='';
     if (typeof T.g==='number'){
       var gr=all.filter(function(x){ return x.d.g===T.g; }), r=gr.filter(function(x){ return x.s.lv==='r'; }).sort(function(a,b){ return b.s.ratio-a.s.ratio; }), y=gr.filter(function(x){ return x.s.lv==='y'; }).sort(function(a,b){ return b.s.ratio-a.s.ratio; });
-      if (r.length){ st='지남 '+r.length+' · '+r[0].d.n; hot=' hot'; }
-      else if (y.length){ st='곧 교체 '+y.length+' · '+y[0].d.n; hot=' warm'; }
-      else st='모두 여유';
+      if (r.length){ st='정비 필요 '+r.length+' · '+r[0].d.n; hot=' hot'; }
+      else if (y.length){ st='교체 임박 '+y.length+' · '+y[0].d.n; hot=' warm'; }
+      else st='모두 양호';
     } else if (T.g==='chk') st=MNT_CHECK.length+'가지 점검';
     else { var n=mnt.etc.length; st = n ? n+'건 기록' : ''; }
     menu.appendChild(el('button',{type:'button', cls:'settile '+T.c, onclick:function(){ mntView=String(T.g); mntRender(); window.scrollTo(0, $('v-mnt').getBoundingClientRect().top+window.scrollY-60); }},[
