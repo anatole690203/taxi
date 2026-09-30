@@ -1,0 +1,43 @@
+{
+  "name": "Best Seoul Taxi 손님 화면",
+  "short_name": "택시 손님화면",
+  "description": "개인택시 태블릿 손님 안내 화면",
+  "id": "./?app=tablet",
+  "start_url": "./?app=tablet",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "orientation": "any",
+  "background_color": "#15171b",
+  "theme_color": "#15171b",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "tablet-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "tablet-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "tablet-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "tablet-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
