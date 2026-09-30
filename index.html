@@ -2042,6 +2042,13 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 #airQ{outline:3px solid var(--sign,#FFC81E);outline-offset:2px;border-radius:8px}
 
 
+
+/* 태블릿: 전체 화면이 풀렸을 때 덮개 */
+.tb-refull{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:rgba(10,12,15,.82)}
+.tb-refull .box{background:rgba(21,23,27,.96);border:3px solid #FFC81E;border-radius:22px;padding:30px 44px;text-align:center;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.tb-refull .box b{display:block;font-size:36px;color:#FFD65A}
+.tb-refull .box span{display:block;font-size:20px;color:#D5D9DE;margin-top:8px}
+
 /* 태블릿: 앱으로 설치 버튼 */
 .tb-ver{margin-top:14px;font-size:13px;color:#7E858E;text-align:center}
 .tb-inst{display:block;margin:14px auto 0;min-width:320px;border:2px solid #FFC81E;background:rgba(255,200,30,.12);color:#FFD65A;border-radius:14px;padding:14px 20px;font:inherit;font-size:20px;font-weight:800}
@@ -2879,7 +2886,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
     <button class="tb-phone" type="button" id="tbGalMgr">🖼 갤러리 사진·영상 넣기</button>
     <button class="tb-phone" type="button" id="tbNotTablet">이 기기는 기사용 휴대폰입니다 · 일반 앱으로</button>
     <button class="tb-phone" type="button" id="tbSelfUpdate" style="margin-top:0">태블릿 새 버전 받기</button>
-    <div class="tb-ver" id="tbVer">앱 버전 2026-09-30 · 태블릿 판별 수정</div>
+    <div class="tb-ver" id="tbVer">앱 버전 2026-09-30 · 전체 화면 복귀</div>
   </div>
   <div class="tbpane idle2" id="tbIdle">
     <div class="ti-bg" id="tiBgA" aria-hidden="true"></div>
@@ -6736,6 +6743,7 @@ function setHereDest(pt){
   opt.textContent='출발: '+pt.n;
   sel.value=HERE_VAL;
   paintFromLabel();
+  setTimeout(function(){ try { navSave(); } catch(e){} }, 0);
 }
 function paintFromLabel(){
   var lb=$('rdFromLabel');
@@ -6769,6 +6777,7 @@ function setVoiceDest(pt){
   if (!opt){ opt=el('option',{value:VOICE_VAL},['']); sel.insertBefore(opt, sel.firstChild); }
   opt.textContent='도착: '+pt.n;
   sel.value=VOICE_VAL;
+  setTimeout(function(){ try { navSave(); } catch(e){} }, 0);
 }
 /* 권역이 마흔 개 가까이 되면 그냥 늘어놓을 수 없다.
    구별로 묶되, 구 안에서는 지금 있는 곳에서 가까운 순으로 세운다.
@@ -6952,6 +6961,14 @@ var aiBusy=false;
    TMAP이 헌릉로·강남순환로로 간다는데 화면은 올림픽대로라고 적혀 있으면 기사가 헷갈린다 */
 var realRoute=null;
 var lastBest=null;   /* 방금 받은 최적 경로. 승객용 화면에 쓴다 */
+/* 기사님이 누른 경로 카드를 그대로 태블릿·손님 화면 값으로 (예전에는 늘 가장 빠른 경로 값이 갔다) */
+var navPick=-1;
+function navChoose(r, i, sp, ep){
+  lastBest={key:routeKey(sp, ep), dest:ep.n, time:r.sum.time, fare:r.sum.taxi, toll:r.sum.toll, dist:r.sum.dist,
+            sv:r.opt && r.opt.v, pv:getRouteProvider(), from: sp ? {lat:sp.lat, lng:sp.lng} : null};
+  navPick=i;
+  try { navSave(); } catch(e){}
+}
 function routeKey(sp, ep){
   if (!sp || !ep) return '';
   return sp.lat.toFixed(3)+','+sp.lng.toFixed(3)+'>'+ep.lat.toFixed(3)+','+ep.lng.toFixed(3);
@@ -6962,6 +6979,61 @@ function realRoadsNow(){
   if (realRoute && realRoute.key===k && realRoute.roads.length) return realRoute.roads;
   return null;
 }
+
+/* ── 네비 탭 상태 보관 ──
+   카메라·멜론처럼 다른 앱을 쓰는 동안 폰이 메모리를 비우려고 이 페이지를 지우면, 돌아올 때 새로 열리며 경로가 사라졌다.
+   출발·도착·경로 카드·고른 카드·진행 중인 운행을 바뀔 때마다 적어 두고, 새로 열리면 3시간 안이면 그대로 되살린다 */
+var NAV_KEY='airportCallLog.navState.v1', NAVRIDE_KEY='airportCallLog.navRide.v1';
+var navAi=null;
+function navStore(key, obj){
+  var j=JSON.stringify(obj);
+  try { sessionStorage.setItem(key, j); } catch(e){}
+  try { sSet(key, j.length < 400000 ? j : JSON.stringify(Object.assign({}, obj, {ai:null}))); } catch(e){}
+}
+function navLoad(key){
+  var j=null;
+  try { j=sessionStorage.getItem(key); } catch(e){}
+  if (!j) j=sGet(key);
+  try { return j ? JSON.parse(j) : null; } catch(e){ return null; }
+}
+function navSave(){
+  if (!$('rdFrom') || !$('rdTo')) return;
+  navStore(NAV_KEY, {at:Date.now(), from:$('rdFrom').value, here:hereDest, to:$('rdTo').value, voice:voiceDest,
+    ai:navAi, pick:navPick, best:lastBest, tab:currentTab, scroll: currentTab==='v-road' ? Math.round(window.scrollY) : 0});
+}
+function navRideSave(d){ navStore(NAVRIDE_KEY, {at:Date.now(), d:d}); }
+function navRideClear(){ try { sessionStorage.removeItem(NAVRIDE_KEY); } catch(e){} sSet(NAVRIDE_KEY, ''); }
+function navRestore(){
+  var o=navLoad(NAV_KEY), rd=navLoad(NAVRIDE_KEY), sp, ep, i, ok=false;
+  if (o && isNum(o.at) && Date.now()-o.at < 3*3600000){
+    try {
+      if (o.tab && o.tab!==currentTab && document.querySelector('[data-tab="'+o.tab+'"]')) showTab(o.tab);
+      if (o.here && isNum(o.here.lat)) setHereDest(o.here);
+      else if (o.from){ for (i=0;i<$('rdFrom').options.length;i++) if ($('rdFrom').options[i].value===o.from){ $('rdFrom').value=o.from; break; } }
+      if (o.voice && isNum(o.voice.lat)) setVoiceDest(o.voice);
+      else if (o.to){ for (i=0;i<$('rdTo').options.length;i++) if ($('rdTo').options[i].value===o.to){ $('rdTo').value=o.to; break; } }
+      try { paintFromLabel(); } catch(e){}
+      renderRoad();
+      sp=fromPoint(); ep=destPoint();
+      if (o.ai && o.ai.results && o.ai.results.length && o.ai.key===routeKey(sp, ep)){
+        renderAi(o.ai.results, sp, ep);
+        if (o.best) lastBest=o.best;   /* 기사님이 고른 카드 */
+        navPick = isNum(o.pick) ? o.pick : -1;
+        ok=true;
+      }
+      if (o.scroll && currentTab==='v-road') setTimeout(function(){ window.scrollTo(0, o.scroll); }, 300);
+    } catch(e){}
+  }
+  /* 진행 중이던 운행: 같은 승차 안내가 다시 가지 않게, 도착 감시는 이어서 */
+  if (rd && rd.d && isNum(rd.at) && Date.now()-rd.at < 3*3600000){
+    try {
+      tbLastRide={key:Math.round(rd.d.lat*1e4)+','+Math.round(rd.d.lng*1e4), at:rd.at, sig:''};
+      if (typeof tbRunStart==='function' && tbPairCode()) tbRunStart(rd.d.lat, rd.d.lng, rd.d.n);
+    } catch(e){}
+  }
+  if (ok) toast('앱이 다시 열려 네비 경로를 되살렸습니다');
+}
+
 function runAiRoute(){
   var box=$('aiResult'), btn=$('btnAi'), sp=fromPoint(), ep=destPoint(), results=[], idx=0;
   var prov=getRouteProvider(), opts=(prov==='kakao' ? KAKAO_OPTS : TMAP_OPTS);
@@ -6981,7 +7053,7 @@ function runAiRoute(){
   clear(box);
   box.appendChild(el('div',{cls:'ai-note'}, ptNodes(sp,'출발').concat([' → '+(ep.n||'도착')+' 경로를 비교하는 중입니다.'])));
   function next(){
-    if (idx>=opts.length){ aiBusy=false; btn.disabled=false; btn.textContent='T맵(실시간 교통)'; renderAi(results, sp, ep); return; }
+    if (idx>=opts.length){ aiBusy=false; btn.disabled=false; btn.textContent='T맵(실시간 교통)'; renderAi(results, sp, ep); try { navSave(); } catch(e){} return; }
     var o=opts[idx++];
     (prov==='kakao' ? kakaoDirections : tmapRoute)(sp, ep, o.v, function(sum, err){
       if (sum) results.push({opt:o, sum:sum});
@@ -7027,6 +7099,8 @@ function renderAi(results, sp, ep){
   /* 화면 순서는 교통최적 경로 → 최소 시간 → 무료도로 (요청한 순서 그대로). 실제 안내·태블릿에 쓰는 '최적'은 가장 빠른 것 */
   best=results[0];
   for (i=1;i<results.length;i++) if (results[i].sum.time < best.sum.time) best=results[i];
+  navAi={key:routeKey(sp, ep), results:results.map(function(x){ return {opt:x.opt, sum:x.sum}; })};
+  navPick=-1;
   (function(){
     var mj=best.sum.major||[], names=[], i;
     for (i=0;i<mj.length;i++) if (names.indexOf(mj[i].n)<0) names.push(mj[i].n);
@@ -7042,7 +7116,7 @@ function renderAi(results, sp, ep){
   for (i=0;i<results.length;i++){
     r=results[i];
     card=el('div',{cls: 'ai-card '+optClass(r.opt.n)+' tap', title:'누르면 T맵 길안내가 시작됩니다',
-      onclick:(function(p){ return function(){ startTmapNavi(p.lat, p.lng, p.n); }; })(ep)},[
+      onclick:(function(p, rr, ii){ return function(){ navChoose(rr, ii, sp, ep); startTmapNavi(p.lat, p.lng, p.n); }; })(ep, r, i)},[
       el('div',{cls:'hd'},[
         el('span',{cls:'hl'},[el('span',{cls:'opt', text: (i===0?BEST_ROUTE_TAG:'')+r.opt.n}), aiSum(r.sum)]),
         el('span',{cls: fmtMin(r.sum.time).indexOf('시간')>=0 ? 'tm num long' : 'tm num', 'data-min':String(Math.round((r.sum.time||0)/60)), text: fmtMin(r.sum.time)})
@@ -8831,7 +8905,8 @@ function tbTripPayload(lat, lng, name){
   function near(a, b){ return isNum(a) && isNum(b) && isNum(lat) && isNum(lng) && km(a, b, lat, lng) < 0.5; }
   /* 1) 방금 받은 경로(시간·요금)가 이 목적지면 그 값 */
   if (lastBest && lastBest.dest && dp && near(dp.lat, dp.lng) && lastBest.dest===dp.n)
-    tr={dest:lastBest.dest, time:lastBest.time, fare:lastBest.fare, toll:lastBest.toll, lat:dp.lat, lng:dp.lng};
+    tr={dest:lastBest.dest, time:lastBest.time, fare:lastBest.fare, toll:lastBest.toll, lat:dp.lat, lng:dp.lng,
+        dist:lastBest.dist, sv:lastBest.sv, pv:lastBest.pv, from:lastBest.from};
   /* 2) 승객 안내 화면에 띄웠던 값이 이 목적지면 그 값 */
   else if (lastTrip && lastTrip.dest && (near(lastTrip.lat, lastTrip.lng) || lastTrip.dest===name))
     tr=lastTrip;
@@ -8843,7 +8918,13 @@ function tbTripPayload(lat, lng, name){
   if (isNum(tr.lat) && isNum(tr.lng)){ o.y=Math.round(tr.lat*1e5)/1e5; o.x=Math.round(tr.lng*1e5)/1e5; }
   try { if (guideProfile()) o.p=profileToQr(guideProfile()); } catch(e){}
   g=b64u(JSON.stringify(o));
-  return {g:g, d:String(tr.dest).slice(0,60), t:tr.time||0, f:tr.fare||0, o:tr.toll?1:0, ap:airHall(tr.dest)};
+  var out={g:g, d:String(tr.dest).slice(0,60), t:tr.time||0, f:tr.fare||0, o:tr.toll?1:0, ap:airHall(tr.dest)};
+  /* 태블릿이 남은 거리·도착 예정을 같은 경로 종류로 계산하도록 */
+  if (isNum(tr.dist) && tr.dist>0) out.dm=Math.round(tr.dist);
+  if (tr.sv) out.sv=String(tr.sv);
+  if (tr.pv) out.pv=tr.pv;
+  if (tr.from && isNum(tr.from.lat)){ out.fy=Math.round(tr.from.lat*1e5)/1e5; out.fx=Math.round(tr.from.lng*1e5)/1e5; }
+  return out;
 }
 /* 태블릿 갤러리 QR: [외국인 손님]이 켜져 있으면 손님 폰 화면을 영어로 열고, 음성은 저절로 나오지 않게 한다 */
 function tbGuestG(g){
@@ -8893,6 +8974,7 @@ function tbRunStart(lat, lng, name){
 }
 function tbRunStop(){
   tbRun=null;
+  try { navRideClear(); } catch(e){}
   if (tbRunTimer){ clearInterval(tbRunTimer); tbRunTimer=null; }
 }
 function tbRunRefresh(force){
@@ -8908,11 +8990,14 @@ function tbRunRefresh(force){
   if (!sp) return;
   tbRun.last=Date.now();
   call = prov==='kakao' ? kakaoDirections : tmapRoute;
-  opt  = prov==='kakao' ? 'RECOMMEND' : '0';
+  /* 기사님이 고른 경로 카드와 같은 경로 종류로 다시 계산한다 (예전에는 늘 기본 경로라 태블릿 값이 카드와 달라졌다) */
+  opt  = (lastBest && lastBest.sv && lastBest.pv===prov) ? lastBest.sv : (prov==='kakao' ? 'RECOMMEND' : '0');
   call(sp, ep, opt, function(sum){
     var t, old=lastBest;
     if (!sum || !sum.time) return;
-    lastBest={key:routeKey(sp, ep), dest:ep.n, time:sum.time, fare:sum.taxi, toll:sum.toll};
+    lastBest={key:routeKey(sp, ep), dest:ep.n, time:sum.time, fare:sum.taxi, toll:sum.toll, dist:sum.dist,
+              sv:opt, pv:prov, from:{lat:sp.lat, lng:sp.lng}};
+    try { navSave(); } catch(e){}
     /* 1분 넘게 달라졌거나 요금이 500원 넘게 달라졌을 때만 다시 보낸다 */
     if (old && old.dest===ep.n && Math.abs((old.time||0)-sum.time)<60 && Math.abs((old.fare||0)-(sum.taxi||0))<500) return;
     t=tbTripPayload(tbRun.lat, tbRun.lng, tbRun.n);
@@ -8932,8 +9017,14 @@ function navStarted(lat, lng, name){
   if (!tbPairCode() || !isNum(lat) || !isNum(lng)) return;
   key=Math.round(lat*1e4)+','+Math.round(lng*1e4);
   /* 같은 목적지로 내비를 다시 열 때마다 승차 안내가 반복되지 않게 3분은 한 번만 */
-  if (tbLastRide.key===key && Date.now()-tbLastRide.at < 3*60000) return;
+  if (tbLastRide.key===key && Date.now()-tbLastRide.at < 3*60000){
+    var tp=tbTripPayload(lat, lng, name), sig=tp ? [tp.t, tp.f, tp.dm, tp.sv].join('|') : '';
+    if (tp && sig!==tbLastRide.sig){ tbLastRide.sig=sig; tbSend('trip', {n:name, lat:lat, lng:lng}, tbRideLang(), tp); }
+    return;
+  }
   tbLastRide={key:key, at:Date.now()};
+  (function(){ var tp=tbTripPayload(lat, lng, name); tbLastRide.sig = tp ? [tp.t, tp.f, tp.dm, tp.sv].join('|') : ''; })();
+  try { navRideSave({lat:lat, lng:lng, n:name}); } catch(e){}
   tbFlagsFresh();
   try { attachDestToRecord(lat, lng, name); } catch(e){}
   tbSend('ride', {n:name, lat:lat, lng:lng}, tbRideLang(), tbTripPayload(lat, lng, name));
@@ -9482,12 +9573,12 @@ function tbKakaoLine(d){
   }
   return {dist:r.summary.distance||0, time:r.summary.duration||0, line:tbThin(pts)};
 }
-function tbRouteLine(prov, sp, ep, cb){
+function tbRouteLine(prov, sp, ep, cb, opt){
   var key = prov==='kakao' ? getKakaoRestKey() : getTmapKey(), xhr;
   if (!key){ cb(null); return; }
   xhr=new XMLHttpRequest();
   if (prov==='kakao'){
-    xhr.open('GET','https://apis-navi.kakaomobility.com/v1/directions?origin='+sp.lng+','+sp.lat+'&destination='+ep.lng+','+ep.lat+'&priority=RECOMMEND&car_type=1&summary=false', true);
+    xhr.open('GET','https://apis-navi.kakaomobility.com/v1/directions?origin='+sp.lng+','+sp.lat+'&destination='+ep.lng+','+ep.lat+'&priority='+(/^(RECOMMEND|TIME|DISTANCE)$/.test(opt||'') ? opt : 'RECOMMEND')+'&car_type=1&summary=false', true);
     xhr.setRequestHeader('Authorization','KakaoAK '+key);
   } else {
     xhr.open('POST','https://apis.openapi.sk.com/tmap/routes?version=1', true);
@@ -9507,7 +9598,7 @@ function tbRouteLine(prov, sp, ep, cb){
   if (prov==='kakao') xhr.send();
   else xhr.send(JSON.stringify({startX:String(sp.lng), startY:String(sp.lat), endX:String(ep.lng), endY:String(ep.lat),
     startName:encodeURIComponent('출발'), endName:encodeURIComponent('도착'), reqCoordType:'WGS84GEO', resCoordType:'WGS84GEO',
-    searchOption:'0', trafficInfo:'N', carType:0}));
+    searchOption:(/^\d+$/.test(opt||'') ? opt : '0'), trafficInfo:'N', carType:0}));
 }
 function tbEtaStart(){
   tbEtaStop();
@@ -9517,6 +9608,17 @@ function tbEtaStart(){
   setTimeout(tbEtaTick, 1500);
 }
 function tbEtaStop(){ if (tb.etaTimer){ clearInterval(tb.etaTimer); tb.etaTimer=null; } tb.eta=null; }
+/* 기사님이 고른 카드의 거리·시간으로 남은 거리·도착 예정을 시작한다 → 운행 화면의 예상 시간과 처음부터 같다 */
+function tbEtaFromTrip(){
+  var tr=tb.trip, from;
+  if (!tr || !tb.ride || !(tr.dm>0) || !(tr.t>0)) return;
+  from = isNum(tr.fy) ? {lat:tr.fy, lng:tr.fx} : (tb.pos ? {lat:tb.pos.lat, lng:tb.pos.lng} : null);
+  if (!from) return;
+  tb.eta={dist:tr.dm, sec:tr.t, at:Date.now(), from:from, line: tb.eta && tb.eta.line || null};
+  tb.etaStart=tr.dm;
+  tb.etaLast=Date.now();   /* 자체 경로 계산은 조금 뒤에 (같은 경로 종류로) */
+  try { tbEtaPaint(); } catch(e){}
+}
 function tbEtaFetch(){
   var d=tb.ride, p=tb.pos, prov=tbEtaProv();
   if (!d || !p || Date.now()-p.at > 120000) return;
@@ -9529,7 +9631,8 @@ function tbEtaFetch(){
     tbEtaPaint();
   }
   /* 카카오가 안 되면(권한·키 없음) T맵으로 한 번 더 */
-  tbRouteLine(prov, p, d, function(r){ if (!r && prov==='kakao') tbRouteLine('tmap', p, d, done); else done(r); });
+  var sv = tb.trip && tb.trip.sv && tb.trip.pv===prov ? tb.trip.sv : null;   /* 기사님이 고른 경로 종류로 */
+  tbRouteLine(prov, p, d, function(r){ if (!r && prov==='kakao') tbRouteLine('tmap', p, d, done); else done(r); }, sv);
 }
 function tbEtaNow(){
   var d=tb.ride, p=tb.pos, e=tb.eta, st, s0, ratio, dist, sec, approx=false;
@@ -12579,6 +12682,7 @@ function tbStart(){
   try { var u=new window.SpeechSynthesisUtterance(' '); u.volume=0; window.speechSynthesis.speak(u); } catch(e){}
   try { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){}); } catch(e){}
   tbWake();
+  tb.started=true;
   tbTrapBind();   /* 뒤로 버튼으로 손님 화면 밖으로 나가지 않게 */
   tbGps();
   tbConnect();
@@ -12627,6 +12731,42 @@ function tbTrapBind(){
   document.addEventListener('pointerdown', tbTrapArm, true);
   tbTrapArm();
 }
+
+
+/* ── 태블릿: 전체 화면이 풀렸을 때 ──
+   크롬은 전체 화면에서 뒤로 버튼을 누르면 전체 화면부터 끝내 버리고(웹에서 막을 수 없음),
+   다시 전체 화면은 화면을 누른 순간에만 허락한다. 그래서 풀리면 곧바로 얇은 덮개를 띄워,
+   아무 곳이나 한 번 누르면 전체 화면으로 돌아가게 한다. 그 누름은 아래 버튼으로 가지 않는다 */
+function tbRefullShow(){
+  var o=$('tbRefull');
+  if (!o){
+    o=el('div',{cls:'tb-refull', id:'tbRefull'},[el('div',{cls:'box'},[el('b',{text:'👆 화면을 눌러 주세요'}), el('span',{text:'Tap to continue · 画面をタップ · 请点击屏幕'})])]);
+    function back(e){
+      e.preventDefault(); e.stopPropagation(); tbFull();
+      setTimeout(function(){
+        var full=!!(document.fullscreenElement || document.webkitFullscreenElement);
+        if (!full){ tb.refullRest=Date.now()+120000; if ($('tbRefull')) $('tbRefull').style.display='none'; }   /* 전체 화면이 거절되면 2분 쉰다 */
+        else tbRefullPaint();
+      }, 700);
+    }
+    o.addEventListener('click', back, true);
+    o.addEventListener('touchend', back, {capture:true, passive:false});
+    document.body.appendChild(o);
+  }
+  o.style.display='flex';
+}
+function tbRefullPaint(){
+  var o=$('tbRefull'), full=!!(document.fullscreenElement || document.webkitFullscreenElement);
+  if (!tb.on || !tb.started || Date.now() < (tb.refullRest||0)){ if (o) o.style.display='none'; return; }
+  if (!document.documentElement.requestFullscreen){ if (o) o.style.display='none'; return; }
+  if (full){ if (o) o.style.display='none'; }
+  else tbRefullShow();
+}
+document.addEventListener('fullscreenchange', function(){ setTimeout(tbRefullPaint, 150); });
+/* 신호를 놓쳐도 되도록: 주소창이 나타나 화면 크기가 바뀔 때와 1.5초마다 한 번 더 확인 */
+window.addEventListener('resize', function(){ setTimeout(tbRefullPaint, 200); });
+setInterval(function(){ try { if (tb.on && tb.started) tbRefullPaint(); } catch(e){} }, 1500);
+document.addEventListener('webkitfullscreenchange', function(){ setTimeout(tbRefullPaint, 150); });
 
 function tbWake(){
   try {
@@ -12778,6 +12918,7 @@ function tbRide(m){
   tb.trip = m.trip && m.trip.d ? m.trip : null;
   tb.tripLang = lang;
   tbTripBegin();
+  tbEtaFromTrip();
   tbPlanStart();
   if (m._restore){ if (tb.backTimer) clearTimeout(tb.backTimer); try { if (tb.trip) tbShowTrip(); } catch(e){} }
 }
@@ -12929,6 +13070,7 @@ function tbTripMsg(m){
   if (!m.trip || !m.trip.d) return;
   tb.trip=m.trip; if (m.lang) tb.tripLang=m.lang;
   tbLiveSave(null, m.trip);
+  tbEtaFromTrip();   /* 기사님이 다른 경로 카드를 골랐으면 남은 거리·도착 예정도 그 값으로 */
   if ($('tbTrip').className.indexOf(' on')>=0){ tbShowTrip(); return; }
   if ($('tbGal').className.indexOf(' on')>=0){ tbShowGal(); return; }
   if (!tb.plan) tbPlanStart();
@@ -14166,16 +14308,29 @@ function tbTalkSend(t, L){
   tbTalkKeep();
 }
 /* 한국어로 먼저 말하고, 손님 언어(모르면 영어)로 한 번 더 말한다 */
+/* 태블릿 음성: 안드로이드 크롬은
+   ① 말하던 것을 멈추자마자(cancel) 바로 말하게 하면 새 말을 삼키고,
+   ② 말하는 객체를 붙잡아 두지 않으면 중간에 사라지며,
+   ③ 페이지가 새로 열린 뒤 화면을 한 번도 누르지 않았으면 소리를 거절한다(not-allowed).
+   그래서 멈춘 뒤 잠깐 두고 말하고, 객체를 붙잡아 두고, 거절되면 "화면을 눌러 소리 켜기" 안내를 띄운다 */
 function tbSpeak(koText, lang, fx){
-  var items=[{lc:(GUIDE_TEXT.ko||{}).lc||'ko-KR', l:'ko', text:koText}], second, i=0;
+  var items=[{lc:(GUIDE_TEXT.ko||{}).lc||'ko-KR', l:'ko', text:koText}], second, i=0, ss, busy, started=false, tries=0;
   tb.lastLang=lang; tb.rideLang=lang;
   second = lang==='ko' ? '' : (lang && TB_TEXT[lang] ? lang : 'en');
   if (second) items.push({lc:(GUIDE_TEXT[second]||{}).lc||'en-US', l:second, text:fx(TB_TEXT[second])});
   if (!ttsOk()) return;
-  try { window.speechSynthesis.cancel(); } catch(e){}
+  ss=window.speechSynthesis;
+  tb.sayTok=(tb.sayTok||0)+1;
+  var tok=tb.sayTok;
+  tb.pendingSay=[koText, lang, fx];
+  busy = ss.speaking || ss.pending;
+  try { ss.cancel(); } catch(e){}
+  try { ss.resume(); } catch(e){}
+  tb.utts=[];
   function next(){
     var it=items[i++], u, v, gt;
-    if (!it) return;
+    if (tok!==tb.sayTok) return;
+    if (!it){ tb.pendingSay=null; return; }
     try {
       gt=GUIDE_TEXT[it.l]||{};
       u=new window.SpeechSynthesisUtterance(it.text);
@@ -14183,12 +14338,36 @@ function tbSpeak(koText, lang, fx){
       v=pickVoice(it.lc, gt.sex==='m');
       if (v.v) u.voice=v.v;
       u.pitch=(gt.sex==='m' && !v.male) ? 0.7 : 1;
+      u.onstart=function(){ started=true; tbSndHide(); };
       u.onend=function(){ setTimeout(next, 350); };
-      u.onerror=function(){ setTimeout(next, 350); };
+      u.onerror=function(ev){
+        var er=ev && ev.error;
+        if (er==='not-allowed'){ tbSndBlocked(); return; }   /* 화면을 한 번 누르면 다시 말한다 */
+        if (er==='interrupted' || er==='canceled') return;
+        setTimeout(next, 350);
+      };
+      tb.utts.push(u);   /* 붙잡아 두어야 중간에 사라지지 않는다 */
       window.speechSynthesis.speak(u);
     } catch(e){ next(); }
   }
-  next();
+  setTimeout(next, busy ? 300 : 80);
+  /* 3초 안에 말이 시작되지 않으면 한 번 더 (멈춘 상태로 굳은 경우) */
+  setTimeout(function(){
+    if (tok!==tb.sayTok || started || tries) return;
+    tries=1; i=0;
+    try { ss.cancel(); ss.resume(); } catch(e){}
+    setTimeout(next, 250);
+  }, 3000);
+}
+/* 소리를 거절당했을 때: 화면을 한 번 누르면 곧바로 다시 말한다 */
+function tbSndHide(){ var o=$('tbSndOv'); if (o && o.parentNode) o.parentNode.removeChild(o); }
+function tbSndBlocked(){
+  if ($('tbSndOv') || !tb.pendingSay) return;
+  var ov=el('div',{cls:'tb-refull', id:'tbSndOv', style:'display:flex'},[el('div',{cls:'box'},[el('b',{text:'🔊 화면을 눌러 소리 켜기'}), el('span',{text:'Tap to turn on the sound · 画面をタップ · 请点击屏幕'})])]);
+  function go(e){ e.preventDefault(); e.stopPropagation(); tbSndHide(); try { tbFull(); } catch(x){} var p=tb.pendingSay; if (p) tbSpeak(p[0], p[1], p[2]); }
+  ov.addEventListener('click', go, true);
+  ov.addEventListener('touchend', go, {capture:true, passive:false});
+  document.body.appendChild(ov);
 }
 /* 왼쪽 위 모서리를 3초 누르고 있으면 태블릿 화면을 끈다 (손님이 실수로 끄지 않게) */
 
@@ -14215,8 +14394,9 @@ function tbPinSteps(){
       el('div',{style:'margin-bottom:6px;color:#5B626B', text:'이 태블릿(안드로이드 7)은 앱 설치가 동작하지 않아, 크롬을 그대로 전체 화면으로 쓰고 화면 고정을 합니다. 효과는 같습니다.'}),
       el('div',null,['1. 이미 설치한 ', el('b',{text:'택시 손님화면'}), ' 앱이 있으면 아이콘을 길게 눌러 ', el('b',{text:'삭제'}), '합니다.']),
       el('div',null,['2. 크롬으로 이 화면을 열고 ', el('b',{text:'[화면을 눌러 시작]'}), '을 누르면 주소창 없이 ', el('b',{text:'전체 화면'}), '이 됩니다. 풀려도 화면 아무 곳이나 누르면 다시 전체 화면이 됩니다.']),
-      el('div',null,['3. 태블릿 ', el('b',{text:'설정 → 잠금화면 및 보안 → 기타 보안 설정 → 화면 고정'}), '을 켭니다.']),
-      el('div',null,['4. 최근 앱 버튼(□) → 크롬 카드 오른쪽 아래 ', el('b',{text:'📌 핀'}), ' → 시작. 풀 때는 최근 앱(□)과 뒤로 버튼을 함께 길게 누릅니다.']),
+      el('div',null,['3. 태블릿 ', el('b',{text:'설정 → 잠금화면 및 보안 → 기타 보안 설정 → 애플리케이션 고정'}), '을 켜고, ', el('b',{text:'고정 해제 전에 패턴 입력 요청'}), '도 켭니다. (못 찾으면 설정의 🔍에서 "고정" 검색)']),
+      el('div',null,['4. 최근 앱 버튼(□) → 크롬 카드를 ', el('b',{text:'위로 살짝 민 뒤'}), ' 오른쪽 아래 ', el('b',{text:'핀 아이콘'}), ' → 시작. 풀 때는 최근 앱(□)과 뒤로 버튼을 함께 길게 누르고 패턴을 그립니다.']),
+      el('div',null,['· 뒤로 버튼을 누르면 크롬이 전체 화면을 풀고 주소창이 보입니다(크롬이 정한 동작이라 막을 수 없음). 이때 화면 가운데에 "화면을 눌러 주세요"가 크게 뜨고, 누르면 곧바로 다시 전체 화면이 됩니다.']),
       el('div',null,['5. 손님이 뒤로 버튼을 눌러도 손님 화면에서 벗어나지 않습니다 (앱이 막아 둠).'])
     ]),
     el('button',{cls:'btn primary', type:'button', style:'width:100%;margin-top:12px', onclick:closeSheet},['확인'])
@@ -15026,6 +15206,10 @@ function init(){
   if (tabletBoot()){ bootShow(); primeVoices(); return; }   /* 뒷좌석 태블릿이면 태블릿 안내 화면만 쓴다 */
   try { bkBind(); } catch(e){}   /* 직접 예약: 버튼·알림 받기 */
   try { mntInit(); } catch(e){}   /* 정비: 교체 시기 빨간 점 */
+  /* 다른 앱을 쓰는 동안 폰이 이 페이지를 지웠다가 새로 열었으면 네비 경로를 되살린다 */
+  setTimeout(function(){ try { if (!roadFilled) fillRoadSelects(); navRestore(); } catch(e){} }, 700);
+  document.addEventListener('visibilitychange', function(){ if (document.hidden){ try { navSave(); } catch(e){} } });
+  window.addEventListener('pagehide', function(){ try { navSave(); } catch(e){} });
   try { sosLiveResume(); } catch(e){}
   try { setOrganize(); } catch(e){}   /* 설정 탭: 분류 버튼 메뉴 */
   try { sosBind(); sosVoiceBind(); sosFromHash(); window.addEventListener('hashchange', sosFromHash); drvInit(); lostBind(); } catch(e){}   /* SOS(누르기·말로) · 연속 운전 휴식 · 분실물 */
@@ -15042,11 +15226,13 @@ function init(){
   $('destText').addEventListener('keydown', function(e){ if (e.keyCode===13){ e.preventDefault(); findTypedDest(); } });
   $('rdFrom').addEventListener('change', function(){
     if ($('rdFrom').value!==HERE_VAL) hereDest=null;
+    setTimeout(navSave, 0);
     paintFromLabel();
     renderRoad(); loadRouteWeather();
   });
   $('rdTo').addEventListener('change', function(){
     if ($('rdTo').value!==VOICE_VAL) voiceDest=null;
+    setTimeout(navSave, 0);
     renderRoad(); loadRouteWeather();   /* 목적지가 바뀌면 그 길의 날씨를 다시 받는다 */
   });
   $('roadAxis').addEventListener('change', renderRoadList);
