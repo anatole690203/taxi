@@ -2043,6 +2043,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 
 
 /* 태블릿: 앱으로 설치 버튼 */
+.tb-ver{margin-top:14px;font-size:13px;color:#7E858E;text-align:center}
 .tb-inst{display:block;margin:14px auto 0;min-width:320px;border:2px solid #FFC81E;background:rgba(255,200,30,.12);color:#FFD65A;border-radius:14px;padding:14px 20px;font:inherit;font-size:20px;font-weight:800}
 .tb-inst:disabled{border-color:#2FA553;background:rgba(47,165,83,.14);color:#6FE08F}
 .tbinst-steps{font-size:16px;line-height:1.7;color:#1b1d21}
@@ -2878,6 +2879,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
     <button class="tb-phone" type="button" id="tbGalMgr">🖼 갤러리 사진·영상 넣기</button>
     <button class="tb-phone" type="button" id="tbNotTablet">이 기기는 기사용 휴대폰입니다 · 일반 앱으로</button>
     <button class="tb-phone" type="button" id="tbSelfUpdate" style="margin-top:0">태블릿 새 버전 받기</button>
+    <div class="tb-ver" id="tbVer">앱 버전 2026-09-30 · 태블릿 판별 수정</div>
   </div>
   <div class="tbpane idle2" id="tbIdle">
     <div class="ti-bg" id="tiBgA" aria-hidden="true"></div>
@@ -12617,6 +12619,9 @@ function tbBackPressed(){
 }
 function tbTrapBind(){
   if (tbTrapBind.done) return; tbTrapBind.done=true;
+  /* 크롬은 화면을 누른 순간에만 전체 화면을 허락한다: 어디를 누르든 전체 화면으로 되돌린다 */
+  document.addEventListener('touchend', function(){ if (tb.on) tbFull(); }, true);
+  document.addEventListener('click', function(){ if (tb.on) tbFull(); }, true);
   window.addEventListener('popstate', function(){ if (tb.on) tbBackPressed(); });
   /* 화면을 누를 때마다 막는 자리를 챙긴다 (누름이 있어야 크롬이 자리를 인정한다) */
   document.addEventListener('pointerdown', tbTrapArm, true);
@@ -14194,8 +14199,32 @@ var tbInstEvt=null;
 function tbStandalone(){
   try { return window.matchMedia('(display-mode: fullscreen)').matches || window.matchMedia('(display-mode: standalone)').matches; } catch(e){ return false; }
 }
+/* 안드로이드 7 이하(갤럭시 탭 S2 등)는 크롬이 119에서 멈춰 있어, 구글이 만들어 주는 설치 앱이 열리자마자 멈춘다 → 설치 대신 크롬 전체 화면 + 화면 고정 */
+/* 크롬 110부터는 사이트에 안드로이드 버전을 "Android 10"으로 고정해 알려 준다 (실제는 7이어도).
+   그래서 크롬 버전으로 가린다: 안드로이드 7의 크롬은 119에서 멈춰 있고, 8 이상은 크롬이 계속 새로워진다 */
+function tbOldAndroid(){
+  var ua=navigator.userAgent||'', a=/Android (\d+)/.exec(ua), c=/Chrome\/(\d+)/.exec(ua);
+  if (!a) return false;
+  if (+a[1] < 8) return true;
+  return !!(c && +c[1] <= 119);
+}
+function tbPinSteps(){
+  openSheet([
+    el('h3',{style:'margin:0 0 8px;font-size:19px', text:'🔒 손님 화면 고정 방법 (이 태블릿)'}),
+    el('div',{cls:'tbinst-steps'},[
+      el('div',{style:'margin-bottom:6px;color:#5B626B', text:'이 태블릿(안드로이드 7)은 앱 설치가 동작하지 않아, 크롬을 그대로 전체 화면으로 쓰고 화면 고정을 합니다. 효과는 같습니다.'}),
+      el('div',null,['1. 이미 설치한 ', el('b',{text:'택시 손님화면'}), ' 앱이 있으면 아이콘을 길게 눌러 ', el('b',{text:'삭제'}), '합니다.']),
+      el('div',null,['2. 크롬으로 이 화면을 열고 ', el('b',{text:'[화면을 눌러 시작]'}), '을 누르면 주소창 없이 ', el('b',{text:'전체 화면'}), '이 됩니다. 풀려도 화면 아무 곳이나 누르면 다시 전체 화면이 됩니다.']),
+      el('div',null,['3. 태블릿 ', el('b',{text:'설정 → 잠금화면 및 보안 → 기타 보안 설정 → 화면 고정'}), '을 켭니다.']),
+      el('div',null,['4. 최근 앱 버튼(□) → 크롬 카드 오른쪽 아래 ', el('b',{text:'📌 핀'}), ' → 시작. 풀 때는 최근 앱(□)과 뒤로 버튼을 함께 길게 누릅니다.']),
+      el('div',null,['5. 손님이 뒤로 버튼을 눌러도 손님 화면에서 벗어나지 않습니다 (앱이 막아 둠).'])
+    ]),
+    el('button',{cls:'btn primary', type:'button', style:'width:100%;margin-top:12px', onclick:closeSheet},['확인'])
+  ]);
+}
 function tbInstPaint(){
   var b=$('tbInstall'); if (!b) return;
+  if (tbOldAndroid() && !tbStandalone()){ b.textContent='🔒 손님 화면 고정 방법'; b.disabled=false; return; }
   if (tbStandalone()){ b.textContent='✓ 앱으로 실행 중 (설치 완료)'; b.disabled=true; }
   else { b.textContent='📲 이 태블릿에 앱으로 설치'; b.disabled=false; }
 }
@@ -14217,6 +14246,7 @@ function tbInstBind(){
   b.addEventListener('click', function(e){
     e.stopPropagation();
     if (tbStandalone()) return;
+    if (tbOldAndroid()){ tbPinSteps(); return; }
     if (tbInstEvt){
       var ev=tbInstEvt; tbInstEvt=null;
       try { ev.prompt(); ev.userChoice.then(function(r){ if (!r || r.outcome!=='accepted') tbInstEvt=null; tbInstPaint(); }).catch(function(){}); } catch(x){ tbInstSteps(); }
@@ -14230,7 +14260,9 @@ window.addEventListener('beforeinstallprompt', function(e){
   /* 태블릿 모드에서만 크롬 기본 설치 알림 대신 우리 버튼으로 (기사 폰은 크롬 기본 동작 그대로) */
   var isTb=false; try { isTb=!!localStorage.getItem('airportCallLog.tabletMode.v1'); } catch(x){}
   if (!isTb) return;
-  e.preventDefault(); tbInstEvt=e; tbInstPaint();
+  e.preventDefault();
+  if (tbOldAndroid()) return;
+  tbInstEvt=e; tbInstPaint();
 });
 window.addEventListener('appinstalled', function(){ tbInstEvt=null; try { toast('📲 설치했습니다. 홈 화면의 "택시 손님화면" 아이콘으로 실행하세요'); } catch(e){} tbInstPaint(); });
 
