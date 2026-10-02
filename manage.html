@@ -185,6 +185,26 @@ button{cursor:pointer}
 .tabbar button.sosbtn{flex:0 0 64px;background:#C62828!important;color:#fff!important;font-weight:900}
 .tabbar button.sosbtn svg{stroke:#fff}
 
+
+.tl-row.one{grid-template-columns:1fr}
+.tl-pl{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.tl-pl>div{background:#F4F7FB;border-radius:8px;padding:6px 8px}
+.tl-pl span,.tl-two span{display:block;font-size:11px;font-weight:900;color:#141A28}
+.tl-pl b{font-size:15px;font-weight:900}
+.tl-pl b.red{color:#E53935}.tl-pl b.grn{color:#2E7D32}
+.tl-hb{display:grid;grid-template-columns:52px 1fr auto;gap:6px;align-items:center;font-size:11px;margin-top:4px}
+.tl-hb .nm{font-weight:700;color:#2A3244;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-row.one .tl-hb{grid-template-columns:76px 1fr auto}
+.tl-hb .t{height:8px;background:#EEF2F8;border-radius:4px;overflow:hidden}
+.tl-hb .t i{display:block;height:100%;border-radius:4px}
+.tl-hb b{font-weight:800;color:#1D2433}
+.tl-two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tl-two>div{background:#F4F7FB;border-radius:8px;padding:7px 8px;min-width:0}
+.tl-two b{display:block;font-size:15px;font-weight:900;color:#1D2433}
+.tl-two small{display:block;font-size:10px;color:#6B7486;line-height:1.45;white-space:nowrap;letter-spacing:-.2px}
+.tl-two>div{padding:7px 6px}
+.tl-note{font-size:11px;font-weight:700;color:#3A4356;margin-top:6px}
+.tl-mrow{display:flex;justify-content:space-between;font-size:10.5px;color:#4A5468;margin-top:2px}
 /* ───── 운행일지 (TAXI LOG) ───── */
 .tlog-wrap{margin:10px 0 16px}
 .tlog{background:#EEF3FA;border-radius:16px;overflow:hidden;color:#1D2433;box-shadow:0 6px 22px rgba(0,0,0,.35)}
@@ -835,7 +855,7 @@ function tlCalc(pc, M, now){
   for (i=0;i<S.length;i++){ x=S[i]; if (keys[dk(x.start)] && !staleShift(x, now)) shifts.push(x); }
   var cur=sumDays(M, pc.keys);
   o.rev=cur.rev; o.n=cur.n; o.net=cur.net; o.brk=cur.brk; o.offMs=cur.offMs; o.rideRate=cur.rideRate; o.avg=cur.avg; o.perMin=cur.perMin; o.hourly=cur.hourly;
-  o.type=cur.type; o.pay=cur.pay;
+  o.type=cur.type; o.pay=cur.pay; o.cur=cur;
   /* 비교: 하루면 앞선 7일 중 일한 날 평균, 기간이면 바로 앞 기간 */
   if (pc.keys.length===1){
     for (j=1;j<=7;j++) prev7.push(addDays(pc.start, -j));
@@ -923,6 +943,58 @@ function tlEditTitle(key, cur, auto, after){
   document.body.appendChild(ov);
   setTimeout(function(){ try { t1.focus(); } catch(e){} }, 50);
 }
+
+/* 운행일지 아래쪽 칸: 경비·순수익 / 공항·시내 / 요일별 / 날씨별 (예전 수익 화면에 따로 있던 것) */
+function tlHbar(name, v, mx, col, lab){
+  return el('div',{cls:'tl-hb'},[el('span',{cls:'nm', text:name}), el('span',{cls:'t'},[el('i',{style:'width:'+Math.max(3, Math.round(v/Math.max(1,mx)*100))+'%;background:'+col})]), el('b',{text:lab})]);
+}
+function tlExtra(pc, o){
+  var cur=o.cur, keys={}, ex={}, tot=0, mlist=[], i, e, k, mx=0, out=[], cols={'LPG':'#FFC81E','정비':'#EF5350','통행료':'#42A5F5','세차':'#26A69A','식대':'#AB47BC'};
+  for (i=0;i<pc.keys.length;i++) keys[pc.keys[i]]=1;
+  for (i=0;i<L.length;i++){ e=L[i]; if (e.kind!=='expense' || !keys[dk(e.ts)]) continue; ex[e.cat||'기타지출']=(ex[e.cat||'기타지출']||0)+e.amount; tot+=e.amount; if (e.cat==='정비') mlist.push(e); }
+  /* 경비·순수익 */
+  var bx=el('div',{cls:'tl-box'},[el('h4',{text:'순수익·경비'}),
+    el('div',{cls:'tl-pl'},[
+      el('div',null,[el('span',{text:'순수익'}), el('b',{cls:'grn', text:num(cur.profit)+'원'})]),
+      el('div',null,[el('span',{text:'경비'}), el('b',{cls:'red', text:num(cur.exp)+'원'})])
+    ])]);
+  for (k in ex) if (Object.prototype.hasOwnProperty.call(ex,k)) mx=Math.max(mx, ex[k]);
+  /* 순서: LPG → 통행료 → 정비, 그 밖의 항목은 금액 큰 순서로 그 아래 */
+  var ORD=[fuelCatName(),'통행료','정비'];
+  Object.keys(ex).sort(function(a,b){ var ia=ORD.indexOf(a), ib=ORD.indexOf(b); if (ia<0) ia=99; if (ib<0) ib=99; return ia!==ib ? ia-ib : ex[b]-ex[a]; })
+    .forEach(function(c){ bx.appendChild(tlHbar(c, ex[c], mx, cols[c]||'#F4A259', num(ex[c]))); });
+  if (!tot) bx.appendChild(el('div',{cls:'tl-none', style:'padding:6px 0', text:'이 기간 경비 기록이 없습니다'}));
+  if (mlist.length){
+    mlist.sort(function(a,b){ return b.ts-a.ts; });
+    bx.appendChild(el('div',{cls:'tl-note', text:'🔧 정비 '+mlist.length+'건 · '+num(ex['정비']||0)+'원'}));
+    mlist.slice(0,3).forEach(function(x){ var d=new Date(x.ts); bx.appendChild(el('div',{cls:'tl-mrow'},[el('span',{text:(d.getMonth()+1)+'/'+d.getDate()+' '+(x.memo||'정비')}), el('b',{text:num(x.amount)})])); });
+  }
+  /* 공항·시내 */
+  var ap=el('div',{cls:'tl-box'},[el('h4',{text:'공항·시내운행'}),
+    el('div',{cls:'tl-two'},[
+      el('div',null,[el('span',{text:'✈ 공항'}), el('b',{text:num(cur.air.f)+'원'}), el('small',{text:cur.air.n+'건 운행'}), el('small',{text:(cur.air.n ? num(Math.round(cur.air.f/cur.air.n))+'원' : '–')+' / 건당'})]),
+      el('div',null,[el('span',{text:'🏙 시내·시외'}), el('b',{text:num(cur.city.f)+'원'}), el('small',{text:cur.city.n+'건 운행'}), el('small',{text:(cur.city.n ? num(Math.round(cur.city.f/cur.city.n))+'원' : '–')+' / 건당'})])
+    ])]);
+  if (cur.fgn) ap.appendChild(el('div',{cls:'tl-note', text:'🌏 외국인 손님 '+cur.fgn+'건 ('+Math.round(cur.fgn/Math.max(1,cur.n)*100)+'%)'}));
+  out.push(el('div',{cls:'tl-row'},[bx, ap]));
+  /* 요일별 시간당매출 (하루 보기에서는 뜻이 없어 뺀다) */
+  var wdBox=null, wxBox=null, hv, w, wl=[], mw=0;
+  if (pc.keys.length>1){
+    for (i=0;i<7;i++){ w=cur.wd[i]; hv = w.h>=600000 ? w.r/(w.h/3600000) : 0; wl.push({k:DAYS[i], v:Math.round(hv)}); }
+    if (wl.some(function(x){ return x.v>0; })) wdBox=el('div',{cls:'tl-box'},[el('h4',{text:'요일별 시간당매출'}), tlBars(wl)]);
+  }
+  /* 날씨별 시간당매출 */
+  var wk=['맑음','흐림','비','눈'], ic={'맑음':'☀ ','흐림':'☁ ','비':'☔ ','눈':'❄ '}, rows=[];
+  for (i=0;i<wk.length;i++){ k=cur.wxDay[wk[i]]; if (k && k.h>=600000){ hv=k.r/(k.h/3600000); mw=Math.max(mw, hv); rows.push([wk[i], hv, k.d]); } }
+  if (rows.length){
+    wxBox=el('div',{cls:'tl-box'},[el('h4',{text:'날씨별 시간당매출'})]);
+    rows.forEach(function(r){ wxBox.appendChild(tlHbar(ic[r[0]]+r[0]+' '+r[2]+'일', r[1], mw, '#64B5F6', num(Math.round(r[1])))); });
+  }
+  if (wdBox && wxBox) out.push(el('div',{cls:'tl-row'},[wdBox, wxBox]));
+  else if (wdBox || wxBox) out.push(el('div',{cls:'tl-row one'},[wdBox || wxBox]));
+  return out;
+}
+
 function tlPct(a, b){ if (!a || !b) return null; return Math.round((a/b-1)*100); }
 function tlCmp(v, base, name){
   var p=tlPct(v, base);
@@ -970,6 +1042,7 @@ function taxiLog(pc, M, now){
     el('div',{cls:'tl-box'},[el('h4',{text:'시간대별 매출'}), tlBars(o.hourBars)]),
     el('div',{cls:'tl-box'},[el('h4',{text:'시간당매출'}), tlLine(o.elapsed)])
   ]));
+  tlExtra(pc, o).forEach(function(n){ card.appendChild(n); });
   /* 연료 · 연비 · 다음 승차까지 */
   var fuelV, fuelS;
   if (o.fuelCost){ fuelV='연료비 '+num(o.fuelCost)+'원'; fuelS='매출의 '+(o.rev ? (Math.round(o.fuelCost/o.rev*1000)/10) : 0)+'% · '+Math.round(o.km)+'km'; }
@@ -1020,78 +1093,9 @@ function renderStat(){
   ]));
   /* 운행일지 (TAXI LOG): 한눈에 보는 한 장 */
   try { box.appendChild(taxiLog(pc, M, now)); } catch(e){ try { console.error(e); } catch(x){} }
-  var vs=el('div',{cls:'sec verdict'});
-  vs.appendChild(el('p',{text:verdict(cur, prv, pname)}));
-  if (prv.rev>0 && pv.length) vs.appendChild(el('div',{cls:'sub', text:pname+'('+rangeTxt(pv)+') '+won(prv.rev)+' → 이번 '+won(cur.rev)}));
-  box.appendChild(vs);
-  var fb=el('div',{cls:'flapbox'},[el('span',{cls:'fk', text:'시간당 매출 (휴게 뺀 순영업시간 기준)'}), flap(cur.hourly)]);
-  if (cur.hourly && prv.hourly) fb.appendChild(el('div',{cls:'cmp'},[pname+' '+won(prv.hourly)+' → ', chg(cur.hourly, prv.hourly)]));
-  else if (!cur.shiftDays) fb.appendChild(el('div',{cls:'cmp', text: EMBED ? '운행 앱 오늘 탭에서 출근·휴게·퇴근을 누르면 시간당 매출이 나옵니다.' : '오늘 탭에서 출근·휴게·퇴근을 누르면 시간당 매출이 나옵니다.'}));
-  if (cur.shiftDays && cur.shiftDays < cur.days) fb.appendChild(el('div',{cls:'cmp', text:'근무 기록이 있는 '+cur.shiftDays+'일만 계산했습니다 (전체 '+cur.days+'일).'}));
-  box.appendChild(fb);
-  box.appendChild(cells('', [
-    {v:num(cur.rev), l:'총매출(원)'},
-    {v:num(cur.exp), l:'경비(원)', c:'var(--red)'},
-    {v:num(cur.profit), l:'순수익(원)', c:'var(--ok)'}
-  ]));
-  box.appendChild(cells('two big', [
-    {v:num(cur.n)+'건', l:'운행 건수', s: cur.days ? '하루 평균 '+(Math.round(cur.n/cur.days*10)/10)+'건' : ''},
-    {v: cur.net ? durTxt(cur.net) : '–', l:'순영업시간', s: cur.net ? '휴게 '+durTxt(cur.brk)+' 뺌' : '출근·퇴근 기록 없음'},
-    {v: cur.rideRate!==null ? Math.round(cur.rideRate*100)+'%' : '–', l:'승차율', c:'var(--ok)', s: cur.offMs ? '손님 태운 시간 '+durTxt(cur.offMs) : '하차 시각이 쌓이면 나옵니다'},
-    {v: cur.avg ? won(cur.avg) : '–', l:'건당 평균', s: cur.perMin ? '탑승 1분당 '+won(cur.perMin) : ''}
-  ]));
-  /* 경비 내역 — 운행 앱 [정비] 탭에서 넣은 정비 비용도 여기에 합산된다 */
-  (function(){
-    var keys={}, ex={}, tot=0, list=[], mx=0, k, s, i, e, cols={'LPG':'#FFC81E','정비':'#FF8A80','통행료':'#8AB6F9','세차':'#3DDC84','식대':'#C792EA'};
-    for (i=0;i<pc.keys.length;i++) keys[pc.keys[i]]=1;
-    for (i=0;i<L.length;i++){ e=L[i]; if (e.kind!=='expense' || !keys[dk(e.ts)]) continue; ex[e.cat||'기타지출']=(ex[e.cat||'기타지출']||0)+e.amount; tot+=e.amount; if (e.cat==='정비') list.push(e); }
-    if (!tot) return;
-    s=sec('red','경비 내역', won(tot));
-    for (k in ex) if (Object.prototype.hasOwnProperty.call(ex,k)) mx=Math.max(mx, ex[k]);
-    Object.keys(ex).sort(function(a,b){ return ex[b]-ex[a]; }).forEach(function(c){
-      s.appendChild(el('div',{cls:'hbar'},[el('span',{cls:'nm', text:c}),
-        el('span',{cls:'t'},[el('i',{style:'width:'+Math.max(3,Math.round(ex[c]/mx*100))+'%;background:'+(cols[c]||'#F4A259')})]), el('b',{cls:'num', text:won(ex[c])})]));
-    });
-    if (list.length){
-      list.sort(function(a,b){ return b.ts-a.ts; });
-      s.appendChild(el('div',{cls:'hint', style:'margin-top:10px;font-weight:700', text:'🔧 정비 지출 '+list.length+'건 · '+won(ex['정비']||0)}));
-      list.slice(0,12).forEach(function(x){ var d=new Date(x.ts);
-        s.appendChild(el('div',{cls:'mrow'},[el('span',{text:(d.getMonth()+1)+'/'+d.getDate()+' '+(x.memo||'정비')}), el('b',{cls:'num', text:won(x.amount)})])); });
-    }
-    box.appendChild(s);
-  })();
+  /* 예전 요약·시간당 매출·운행 건수·승차율·건당 평균·경비 내역은 운행일지에 함께 들어간다 */
   if (P.mode==='y') box.appendChild(taxSec(kd(pc.start).getFullYear(), M));
-  var s1=sec('blue','호출 유형별 비중'), d1=donut(mapItems(cur.type),'건');
-  s1.appendChild(d1 || el('div',{cls:'empty', text:'기록이 쌓이면 나옵니다.'}));
-  box.appendChild(s1);
-  var s2=sec('blue','결제 방식별 비중'), d2=donut(mapItems(cur.pay),'건');
-  s2.appendChild(d2 || el('div',{cls:'empty', text: EMBED ? '운행 앱 입력 탭에서 결제 방식을 고르면 쌓입니다.' : '손님 탭에서 결제 방식을 고르면 쌓입니다.'}));
-  box.appendChild(s2);
-  var s3=sec('green','요일별 시간당 매출'), wl=[], hasW=false;
-  for (i=0;i<7;i++){ w=cur.wd[i]; hv = w.h>=600000 ? w.r/(w.h/3600000) : 0; if (hv) hasW=true; wl.push({k:DAYS[i], v:hv, lab:man(hv), t:DAYS[i]+'요일 '+w.d+'일'}); }
-  s3.appendChild(hasW ? vbars(wl) : el('div',{cls:'empty', text:'출근·퇴근 기록이 쌓이면 요일마다 시간당 매출이 나옵니다.'}));
-  if (hasW) s3.appendChild(el('div',{cls:'hint', text:'노란 막대가 이 기간 가장 효율이 좋았던 요일입니다.'}));
-  box.appendChild(s3);
-  var s4=sec('green','시간대별 매출', '손님을 태운 시각 기준'), bl=[], hasB=false;
-  for (i=0;i<8;i++){ if (cur.bF[i]) hasB=true; bl.push({k:BUCKET_SHORT[i], v:cur.bF[i], lab:man(cur.bF[i]), t:BUCKET_NAME[i]+' '+cur.bN[i]+'건'}); }
-  s4.appendChild(hasB ? vbars(bl) : el('div',{cls:'empty', text:'요금이 들어간 기록이 쌓이면 나옵니다.'}));
-  box.appendChild(s4);
-  var s5=sec('purple','공항운행과 시내운행'), tw=el('div',{cls:'two'});
-  tw.appendChild(el('div',{cls:'card'},[el('div',{cls:'h', text:'✈ 공항운행'}), el('b',{cls:'num', text:won(cur.air.f)}), el('small',{text:cur.air.n+'건 · 건당 '+(cur.air.n ? won(cur.air.f/cur.air.n) : '–')})]));
-  tw.appendChild(el('div',{cls:'card'},[el('div',{cls:'h', text:'🏙 시내·시외'}), el('b',{cls:'num', text:won(cur.city.f)}), el('small',{text:cur.city.n+'건 · 건당 '+(cur.city.n ? won(cur.city.f/cur.city.n) : '–')})]));
-  s5.appendChild(tw);
-  if (cur.fgn) s5.appendChild(el('div',{cls:'hint', text:'외국인 손님 '+cur.fgn+'건 ('+Math.round(cur.fgn/Math.max(1,cur.n)*100)+'%)'}));
-  box.appendChild(s5);
-  var s6=sec('gray','날씨별 시간당 매출'), wk=['맑음','흐림','비','눈'], any=false, mxw=0, ic={'맑음':'☀ ','흐림':'☁ ','비':'☔ ','눈':'❄ '};
-  for (i=0;i<wk.length;i++){ k=cur.wxDay[wk[i]]; if (k && k.h>=600000){ any=true; mxw=Math.max(mxw, k.r/(k.h/3600000)); } }
-  if (!any) s6.appendChild(el('div',{cls:'empty', text:'운행을 기록할 때 날씨가 함께 저장됩니다. 근무 기록이 있는 날부터 나옵니다.'}));
-  for (i=0;i<wk.length;i++){
-    k=cur.wxDay[wk[i]]; if (!k || k.h<600000) continue;
-    hv=k.r/(k.h/3600000);
-    s6.appendChild(el('div',{cls:'hbar'},[el('span',{cls:'nm', text:ic[wk[i]]+wk[i]+' '+k.d+'일'}),
-      el('span',{cls:'t'},[el('i',{style:'width:'+Math.max(3,Math.round(hv/mxw*100))+'%;background:var(--sky)'})]), el('b',{cls:'num', text:won(hv)})]));
-  }
-  box.appendChild(s6);
+  /* 호출·결제 비중, 요일별·시간대별 매출, 공항·시내, 날씨별은 운행일지 안에 있다 */
   if (EMBED){
     var s7=el('div',{cls:'sec gray', style:'padding:0'});
     s7.appendChild(el('button',{cls:'fold', type:'button', onclick:function(){ openOld('v-stat'); }},[
