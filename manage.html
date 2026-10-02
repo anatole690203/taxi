@@ -184,6 +184,80 @@ button{cursor:pointer}
 
 .tabbar button.sosbtn{flex:0 0 64px;background:#C62828!important;color:#fff!important;font-weight:900}
 .tabbar button.sosbtn svg{stroke:#fff}
+
+/* ───── 운행일지 (TAXI LOG) ───── */
+.tlog-wrap{margin:10px 0 16px}
+.tlog{background:#EEF3FA;border-radius:16px;overflow:hidden;color:#1D2433;box-shadow:0 6px 22px rgba(0,0,0,.35)}
+.tl-ban{position:relative;line-height:0}
+.tl-ban svg{display:block;width:100%;height:110px}
+.tl-ban.big svg{height:244px}
+.tl-headtx{position:absolute;inset:0;padding:46px 16px 12px;line-height:1.25;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.tl-brand{font-weight:900;font-size:22px;letter-spacing:.5px;color:#FFE8B0}
+.tl-kind{font-size:11.5px;opacity:.92}
+.tl-date{font-size:24px;font-weight:900;margin-top:6px}
+.tl-title{font-size:17px;font-weight:800;margin-top:6px}
+.tl-sub{font-size:12px;opacity:.9}
+.tl-bantx{position:absolute;left:16px;top:22px;line-height:1.3;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.tl-bantx b{display:block;font-size:20px;font-weight:800}
+.tl-bantx span{font-size:12px;color:#FFE8B0;font-weight:700}
+.tl-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 10px;margin-top:8px}
+.tl-box{background:#fff;border-radius:12px;padding:10px 11px;box-shadow:0 1px 3px rgba(30,40,70,.08);min-width:0}
+.tl-top{margin-top:-14px;position:relative}
+.tl-top .tl-box{display:flex;align-items:center;gap:8px}
+.tl-coin{font-size:30px}
+.tl-k{display:block;font-size:12.5px;font-weight:900;color:#141A28}
+.tl-big{font-size:25px;font-weight:900;letter-spacing:-.5px;color:#1D2433}
+.tl-mid{font-size:22px;font-weight:900;color:#5B3FD6;letter-spacing:-.5px}
+.tl-won{font-style:normal;font-size:14px;font-weight:800;margin-left:1px}
+.tl-hr .tl-won{color:#5B3FD6}
+.tl-cmp{display:block;font-size:10.5px;color:#7A8394;margin-top:1px}
+.tl-cmp.up{color:#E53935}.tl-cmp.dn{color:#1E88E5}
+.tl-ring{width:46px;height:46px;flex:none;transform:rotate(0deg)}
+.tl-quad{display:grid;grid-template-columns:repeat(4,1fr);margin:8px 10px 0;padding:10px 4px}
+.tl-q{text-align:center;border-right:1px solid #E7ECF4;padding:0 3px}
+.tl-q:last-child{border-right:0}
+.tl-ic{font-size:19px;line-height:1.2}
+.tl-qv b{font-size:19px;font-weight:900;letter-spacing:-.5px}
+.tl-qv em{font-style:normal;font-size:12px;font-weight:800;margin-left:1px}
+.tl-q small{display:block;font-size:10px;color:#6B7486;line-height:1.3}
+.tl-box h4{margin:0 0 6px;font-size:14px;font-weight:900;color:#0F1420}
+.tl-dn{display:flex;align-items:center;gap:8px}
+.tl-dn svg{width:62px;height:62px;flex:none}
+.tl-dn ul{list-style:none;margin:0;padding:0;flex:1;min-width:0;font-size:11px}
+.tl-dn{gap:6px}
+.tl-dn li{display:flex;align-items:center;gap:5px;line-height:1.75}
+.tl-dn li i{width:8px;height:8px;border-radius:50%;flex:none}
+.tl-dn li span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-dn li b{font-weight:800}
+.tl-bars{display:flex;align-items:flex-end;gap:6px;height:132px;border-bottom:1.5px solid #CFD6E2;padding:0 2px}
+.tl-bars .c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0}
+.tl-bars em{font-style:normal;color:#FFB300;font-size:13px;line-height:1}
+.tl-bars b{font-size:10px;font-weight:700;color:#3A4356;white-space:nowrap}
+.tl-bars .bar{width:100%;max-width:34px;background:#C9BEF3;border-radius:3px 3px 0 0}
+.tl-bars .hi .bar{background:#6A4BDB}
+.tl-bars small{font-size:10px;color:#5B6474;margin-bottom:-18px;height:16px}
+.tl-box:has(.tl-bars){padding-bottom:24px}
+.tl-line{width:100%;height:auto;display:block}
+.tl-none{font-size:12px;color:#8A93A3;padding:18px 0;text-align:center}
+.tl-foot3{display:grid;grid-template-columns:1fr 1fr 1fr;margin:8px 10px 10px;padding:9px 6px}
+.tl-foot3>div{display:flex;gap:5px;align-items:center;border-right:1px solid #E7ECF4;padding:0 5px;min-width:0}
+.tl-foot3>div:last-child{border-right:0}
+.tl-foot3 i{font-style:normal;font-size:20px;flex:none}
+.tl-foot3 b{display:block;font-size:12px;font-weight:800;line-height:1.25}
+.tl-foot3 small{display:block;font-size:10px;color:#6B7486;line-height:1.3}
+.tl-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tl-title{cursor:pointer}
+.tl-ed{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.tl-edbox{background:var(--panel);color:var(--ink);border-radius:14px;padding:16px;width:100%;max-width:420px}
+.tl-edbox h3{margin:0 0 10px;font-size:18px}
+.tl-edbox label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
+.tl-edbox input{width:100%;min-height:44px;border-radius:9px;border:1px solid var(--line);background:var(--board);color:var(--ink);font:inherit;font-size:16px;padding:0 10px}
+.tl-edbox p{font-size:12.5px;color:var(--muted);margin:8px 0 12px}
+.tl-edbt{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.tl-edbt button{min-height:44px;border-radius:9px;border:1px solid var(--line);background:var(--board);color:var(--ink);font:inherit;font-weight:700}
+.tl-edbt button.ok{background:var(--sign);color:#1B1E22;border-color:var(--sign)}
+.tl-save{display:block;width:100%;min-height:46px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);font:inherit;font-size:15px;font-weight:700}
+@media (max-width:380px){ .tl-big{font-size:21px} .tl-mid{font-size:18px} .tl-qv b{font-size:16px} .tl-foot3 b{font-size:11px} }
 </style>
 </head>
 <body>
@@ -632,6 +706,302 @@ function taxSec(y, M){
 function sec(cls, title, small){ var s=el('div',{cls:'sec'+(cls?' '+cls:'')}); s.appendChild(el('h3',null,[title, small ? el('small',{text:small}) : null])); return s; }
 
 /* ═════════ 화면: 수익 ═════════ */
+/* ═════════ 운행일지 (TAXI LOG) — 수익 관리 맨 위 ═════════
+   하루(또는 고른 기간)의 운행 기록·근무 기록·장부·계기판으로 한 장짜리 일지를 만든다 */
+var TL_TYPE_COL={'우버':'#1E88E5','우버XL':'#1565C0','카카오':'#F9C80E','티머니GO':'#5C6BC0','길손':'#90A4AE','길손님':'#90A4AE','예약':'#26A69A'};
+var TL_PAY_COL={'앱결제':'#1E88E5','카드':'#9575CD','현금':'#43A047'};
+var TL_FALLBACK=['#1E88E5','#546E7A','#9575CD','#B0BEC5','#26A69A','#F4A259','#EF5350'];
+function tlSvg(tag, at){ var n=document.createElementNS('http://www.w3.org/2000/svg', tag), k; for (k in at) if (Object.prototype.hasOwnProperty.call(at,k)) n.setAttribute(k, at[k]); return n; }
+/* 직접 그린 서울 밤 풍경 (강·빌딩·남산타워·택시 불빛) */
+function tlSkyline(h, txt, sub, big){
+  var W=420, svg=tlSvg('svg',{viewBox:'0 0 '+W+' '+h, preserveAspectRatio:'xMidYMax slice', 'class':'tl-sky'}), g, i, x, bw, bh, y, rnd=7, wy;
+  function R(){ rnd=(rnd*9301+49297)%233280; return rnd/233280; }
+  var df=tlSvg('defs',{}), lg=tlSvg('linearGradient',{id:'tlg'+h, x1:'0', y1:'0', x2:'0', y2:'1'});
+  lg.appendChild(tlSvg('stop',{offset:'0', 'stop-color': big ? '#2B2F6B' : '#141B3A'}));
+  lg.appendChild(tlSvg('stop',{offset:'.55', 'stop-color': big ? '#C77DA5' : '#2C3768'}));
+  lg.appendChild(tlSvg('stop',{offset:'1', 'stop-color': big ? '#F2B880' : '#1B2348'}));
+  df.appendChild(lg); svg.appendChild(df);
+  svg.appendChild(tlSvg('rect',{x:0, y:0, width:W, height:h, fill:'url(#tlg'+h+')'}));
+  wy=Math.round(h*(big ? 0.86 : 0.78));
+  /* 남산과 타워 */
+  svg.appendChild(tlSvg('path',{d:'M250 '+wy+' Q320 '+(wy-60)+' 400 '+wy+' Z', fill:'#232A52', opacity:'.85'}));
+  svg.appendChild(tlSvg('rect',{x:323, y:wy-104, width:3, height:56, fill:'#3A4378'}));
+  svg.appendChild(tlSvg('rect',{x:317, y:wy-84, width:15, height:7, rx:2, fill:'#4A548E'}));
+  svg.appendChild(tlSvg('circle',{cx:324.5, cy:wy-106, r:2.2, fill:'#FF6B6B'}));
+  /* 빌딩 숲 */
+  g=tlSvg('g',{});
+  for (x=0; x<W;){
+    bw=12+Math.floor(R()*20); bh=14+Math.floor(R()*(big ? h*0.42 : h*0.42)); if (big && x<230) bh=Math.round(bh*0.55); y=wy-bh;
+    g.appendChild(tlSvg('rect',{x:x, y:y, width:bw, height:bh, fill: R()<.5 ? '#1A2045' : '#232B57'}));
+    for (i=y+5; i<wy-4; i+=7) if (R()<.42) g.appendChild(tlSvg('rect',{x:x+3+Math.floor(R()*(bw-7)), y:i, width:3, height:3, fill: R()<.7 ? '#FFD98A' : '#FFF3C4', opacity:'.9'}));
+    x+=bw+2+Math.floor(R()*4);
+  }
+  svg.appendChild(g);
+  /* 강과 반사 불빛 */
+  svg.appendChild(tlSvg('rect',{x:0, y:wy, width:W, height:h-wy, fill:'#121838'}));
+  for (i=0;i<70;i++) svg.appendChild(tlSvg('rect',{x:Math.floor(R()*W), y:wy+3+Math.floor(R()*(h-wy-6)), width:4+Math.floor(R()*12), height:1.6, fill: R()<.6 ? '#FFD98A' : '#9FB4FF', opacity:(.25+R()*.5).toFixed(2)}));
+  /* 다리 */
+  svg.appendChild(tlSvg('rect',{x:0, y:wy-3, width:W, height:4, fill:'#0E1330'}));
+  for (x=10; x<W; x+=26) svg.appendChild(tlSvg('circle',{cx:x, cy:wy-4, r:1.6, fill:'#FFE7A3'}));
+  /* 택시 지붕등 */
+  var tx=W-104, ty=big ? h-62 : h-36;
+  svg.appendChild(tlSvg('rect',{x:tx, y:ty, width:90, height:26, rx:7, fill:'#FFC81E'}));
+  var tt=tlSvg('text',{x:tx+45, y:ty+19, 'text-anchor':'middle', 'font-size':'17', 'font-weight':'900', fill:'#1B1E22', 'font-family':'Arial, sans-serif'}); tt.textContent='TAXI'; svg.appendChild(tt);
+  var shade=tlSvg('linearGradient',{id:'tls'+h, x1:'0', y1:'0', x2:'1', y2:'0'});
+  shade.appendChild(tlSvg('stop',{offset:'0', 'stop-color':'#0B1030', 'stop-opacity':'.78'}));
+  shade.appendChild(tlSvg('stop',{offset:'.62', 'stop-color':'#0B1030', 'stop-opacity':'.25'}));
+  shade.appendChild(tlSvg('stop',{offset:'1', 'stop-color':'#0B1030', 'stop-opacity':'0'}));
+  df.appendChild(shade);
+  svg.appendChild(tlSvg('rect',{x:0, y:0, width:W, height:h, fill:'url(#tls'+h+')'}));
+  var wrap=el('div',{cls:'tl-ban'+(big ? ' big' : '')}); wrap.appendChild(svg);
+  if (txt) wrap.appendChild(el('div',{cls:'tl-bantx'},[el('b',{text:txt}), sub ? el('span',{text:sub}) : null]));
+  return wrap;
+}
+function tlDonut(items, colors){
+  var tot=0, i, off=0, svg=tlSvg('svg',{viewBox:'0 0 42 42', 'aria-hidden':'true'}), ul=el('ul'), pct, col;
+  for (i=0;i<items.length;i++) tot+=items[i].v;
+  if (!tot) return el('div',{cls:'tl-none', text:'기록이 없습니다'});
+  svg.appendChild(tlSvg('circle',{cx:21, cy:21, r:15.915, fill:'none', stroke:'#E7ECF4', 'stroke-width':8}));
+  for (i=0;i<items.length;i++){
+    pct=items[i].v/tot*100; col=colors[items[i].k] || TL_FALLBACK[i%TL_FALLBACK.length];
+    svg.appendChild(tlSvg('circle',{cx:21, cy:21, r:15.915, fill:'none', stroke:col, 'stroke-width':8, 'stroke-dasharray':pct.toFixed(3)+' '+(100-pct).toFixed(3), 'stroke-dashoffset':(-off+25).toFixed(3)}));
+    off+=pct;
+    ul.appendChild(el('li',null,[el('i',{style:'background:'+col}), el('span',{text:items[i].k}), el('b',{text:Math.round(pct)+'%'})]));
+  }
+  return el('div',{cls:'tl-dn'},[svg, ul]);
+}
+function tlLine(pts){
+  var W=300, H=200, pl=40, pr=14, pt=26, pb=28, mx=0, i, x, y, d='', svg=tlSvg('svg',{viewBox:'0 0 '+W+' '+H, 'class':'tl-line'}), hi=0, step, t;
+  if (!pts.length) return el('div',{cls:'tl-none', text:'출근·퇴근 기록이 쌓이면 나옵니다'});
+  for (i=0;i<pts.length;i++){ if (pts[i].v>mx){ mx=pts[i].v; hi=i; } }
+  step = mx<=20000 ? 10000 : mx<=60000 ? 20000 : mx<=120000 ? 40000 : 50000;
+  var top=Math.max(step, Math.ceil(mx/step)*step);
+  for (t=0; t<=top; t+=step){
+    y=pt+(H-pt-pb)*(1-t/top);
+    svg.appendChild(tlSvg('line',{x1:pl, x2:W-pr, y1:y, y2:y, stroke:'#E7ECF4', 'stroke-width':1}));
+    var lb=tlSvg('text',{x:pl-5, y:y+3.5, 'text-anchor':'end', 'font-size':'9', fill:'#8A93A3'}); lb.textContent=num(t); svg.appendChild(lb);
+  }
+  for (i=0;i<pts.length;i++){
+    x = pts.length===1 ? (pl+W-pr)/2 : pl+12+(W-pr-pl-24)*i/(pts.length-1);
+    y = pt+(H-pt-pb)*(1-pts[i].v/top);
+    pts[i].x=x; pts[i].y=y; d+=(i ? 'L' : 'M')+x.toFixed(1)+' '+y.toFixed(1);
+  }
+  svg.appendChild(tlSvg('path',{d:d, fill:'none', stroke:'#2D3A55', 'stroke-width':2}));
+  for (i=0;i<pts.length;i++){
+    svg.appendChild(tlSvg('circle',{cx:pts[i].x, cy:pts[i].y, r: i===hi ? 5 : 4, fill: i===hi ? '#6A4BDB' : '#fff', stroke: i===hi ? '#6A4BDB' : '#2D3A55', 'stroke-width':2}));
+    var v=tlSvg('text',{x:pts[i].x, y:pts[i].y-9, 'text-anchor':'middle', 'font-size':'10', 'font-weight':'700', fill:'#2D3A55'}); v.textContent=num(pts[i].v); svg.appendChild(v);
+    var k=tlSvg('text',{x:pts[i].x, y:H-8, 'text-anchor':'middle', 'font-size':'9.5', fill:'#5B6474'}); k.textContent=pts[i].k; svg.appendChild(k);
+  }
+  return svg;
+}
+function tlBars(list){
+  var box=el('div',{cls:'tl-bars'}), mx=0, hi=-1, i, h;
+  if (!list.length) return el('div',{cls:'tl-none', text:'운행 기록이 없습니다'});
+  for (i=0;i<list.length;i++) if (list[i].v>mx){ mx=list[i].v; hi=i; }
+  for (i=0;i<list.length;i++){
+    h = mx>0 ? Math.max(3, Math.round(list[i].v/mx*92)) : 3;
+    box.appendChild(el('div',{cls:'c'+(i===hi ? ' hi' : '')},[
+      el('em',{text: i===hi ? '★' : ''}),
+      el('b',{text: list[i].v>0 ? num(list[i].v) : ''}),
+      el('div',{cls:'bar', style:'height:'+h+'px'}),
+      el('small',{text:list[i].k})
+    ]));
+  }
+  return box;
+}
+/* 연비(km/L): 최근 30일 충전량과 계기판 주행거리로 */
+function tlFuelEff(endTs){
+  var od=taxOdo(), t0=endTs-30*86400000, L0=0, i, e, m, k0, k1;
+  if (!od.length) return null;
+  if (t0 < od[0].ts) t0=od[0].ts;   /* 계기판 기록이 30일보다 짧으면 첫 기록부터 */
+  for (i=0;i<L.length;i++){ e=L[i]; if (e.kind!=='expense' || e.cat!==fuelCatName() || e.ts<t0 || e.ts>endTs) continue; m=/(\d+(?:\.\d+)?)\s*L\b/i.exec(e.memo||''); if (m) L0+=parseFloat(m[1]); }
+  k0=taxOdoAt(od, t0); k1=taxOdoAt(od, endTs);
+  if (!(L0>5) || !isNum(k0) || !isNum(k1) || k1-k0 < 50) return null;
+  return (k1-k0)/L0;
+}
+function tlTitle(o){
+  if (!o.n) return ['아직 운행 기록이 없는 날', '출근하고 첫 손님을 태우면 일지가 채워집니다'];
+  if (o.gapAvg!==null && o.gapAvg<=5) return ['손님이 내리면 다음 손님이 탔다', '짧은 공백이 하루를 만든 날'];
+  if (o.avgRev && o.rev > o.avgRev*1.15) return ['평소보다 잘 달린 날', (o.cmpName||'평소')+'보다 '+Math.round((o.rev/o.avgRev-1)*100)+'% 높았다'];
+  if (o.rideRate!==null && o.rideRate>=0.6) return ['쉴 틈 없이 달린 날', '손님을 태운 시간이 '+Math.round(o.rideRate*100)+'%'];
+  if (o.avgRev && o.rev < o.avgRev*0.85) return ['조금 한산했던 날', '내일은 더 좋은 길이 열리길'];
+  return ['오늘도 성실하게 달린 날', '운행 '+o.n+'건, 한 분 한 분 감사한 하루'];
+}
+function tlCalc(pc, M, now){
+  var keys={}, i, r, x, recs=[], shifts=[], o={}, hb={}, eb={}, ec={}, fn, j, prev7=[], p7, gaps=[], k;
+  for (i=0;i<pc.keys.length;i++) keys[pc.keys[i]]=1;
+  for (i=0;i<R.length;i++) if (keys[dk(R[i].ts)]) recs.push(R[i]);
+  recs.sort(function(a,b){ return a.ts-b.ts; });
+  for (i=0;i<S.length;i++){ x=S[i]; if (keys[dk(x.start)] && !staleShift(x, now)) shifts.push(x); }
+  var cur=sumDays(M, pc.keys);
+  o.rev=cur.rev; o.n=cur.n; o.net=cur.net; o.brk=cur.brk; o.offMs=cur.offMs; o.rideRate=cur.rideRate; o.avg=cur.avg; o.perMin=cur.perMin; o.hourly=cur.hourly;
+  o.type=cur.type; o.pay=cur.pay;
+  /* 비교: 하루면 앞선 7일 중 일한 날 평균, 기간이면 바로 앞 기간 */
+  if (pc.keys.length===1){
+    for (j=1;j<=7;j++) prev7.push(addDays(pc.start, -j));
+    p7=sumDays(M, prev7);
+    o.avgRev = p7.days ? p7.rev/p7.days : null; o.avgHourly=p7.hourly; o.cmpName='최근 7일 평균';
+  } else {
+    p7=sumDays(M, prevOf(P.mode, pc)); o.avgRev = p7.rev || null; o.avgHourly=p7.hourly; o.cmpName='지난 기간';
+  }
+  /* 시간대별 매출 (승차 시각 기준, 기록이 있는 시간만 이어서) */
+  for (i=0;i<recs.length;i++){ fn=isNum(recs[i].fare) && recs[i].fare>0 ? recs[i].fare : 0; k=new Date(recs[i].ts).getHours(); hb[k]=(hb[k]||0)+fn; }
+  var hs=Object.keys(hb).map(Number), hours=[];
+  if (hs.length){
+    /* 자정을 넘긴 근무(21시→0시)를 이어서 보이게: 첫 운행 시각부터 순서대로 */
+    var first=new Date(recs[0].ts).getHours(), seen={};
+    for (i=0;i<recs.length;i++){ k=new Date(recs[i].ts).getHours(); if (!seen[k]){ seen[k]=1; hours.push(k); } }
+    if (hours.length>12) hours=hours.slice(0,12);
+    o.hourBars=hours.map(function(hh){ return {k:hh+'시', v:hb[hh]||0}; });
+  } else o.hourBars=[];
+  /* 근무 경과별 시간당 매출: 출근 뒤 1시간째, 2시간째… (휴게 시간은 빼고 셈) */
+  for (i=0;i<recs.length;i++){
+    r=recs[i]; fn=isNum(r.fare) && r.fare>0 ? r.fare : 0;
+    for (j=0;j<shifts.length;j++){
+      x=shifts[j];
+      if (r.ts>=x.start && r.ts<=(isNum(x.end) ? x.end : now)){
+        var el2=r.ts-x.start, b;
+        for (b=0;b<x.breaks.length;b++){ var bs=x.breaks[b].s, be=isNum(x.breaks[b].e) ? x.breaks[b].e : r.ts; if (bs<r.ts) el2-=Math.max(0, Math.min(be, r.ts)-bs); }
+        k=Math.floor(Math.max(0, el2)/3600000);
+        eb[k]=(eb[k]||0)+fn;
+        break;
+      }
+    }
+  }
+  var nsh=Math.max(1, shifts.length), ek=Object.keys(eb).map(Number).sort(function(a,b){ return a-b; });
+  o.elapsed=[];
+  if (ek.length){ for (k=0;k<=Math.min(ek[ek.length-1], 11);k++) o.elapsed.push({k:(k+1)+'시간째', v:Math.round((eb[k]||0)/nsh)}); }
+  /* 하차 뒤 다음 승차까지 (같은 근무 안, 90분 넘는 빈 시간은 휴게로 보고 뺌) */
+  for (i=0;i<recs.length-1;i++){
+    if (!isNum(recs[i].offTs)) continue;
+    var gp=recs[i+1].ts-recs[i].offTs;
+    if (gp>=0 && gp<90*60000) gaps.push(gp/60000);
+  }
+  o.gapAvg = gaps.length ? gaps.reduce(function(a,b){ return a+b; },0)/gaps.length : null;
+  o.gap10 = gaps.length ? gaps.filter(function(g){ return g<=10; }).length/gaps.length : null;
+  /* 운행 거리·연료비 */
+  var od=taxOdo(), t0=null, t1=null;
+  for (j=0;j<shifts.length;j++){ x=shifts[j]; var e1=isNum(x.end) ? x.end : now; if (t0===null || x.start<t0) t0=x.start; if (t1===null || e1>t1) t1=e1; }
+  if (t0===null && recs.length){ t0=recs[0].ts; t1=recs[recs.length-1].offTs || recs[recs.length-1].ts; }
+  var k0 = t0!==null ? taxOdoAt(od, t0) : null, k1 = t1!==null ? taxOdoAt(od, t1) : null;
+  o.km = isNum(k0) && isNum(k1) && k1>k0 ? k1-k0 : null;
+  o.eff = tlFuelEff(t1 || now);
+  o.unitP = (CFG && CFG.fuelP) || (FUELS[fuelCatName()] ? FUELS[fuelCatName()].p : 1100);
+  try { var rs=JSON.parse(localStorage.getItem('airportCallLog.retSettings.v1')||'null'); if (rs && rs.fuel>0) o.unitP=rs.fuel; } catch(e){}
+  o.fuelCost = (o.km && o.eff) ? Math.round(o.km/o.eff*o.unitP) : null;
+  o.fuelCharged=0;
+  for (i=0;i<L.length;i++) if (L[i].kind==='expense' && L[i].cat===fuelCatName() && keys[dk(L[i].ts)]) o.fuelCharged+=L[i].amount;
+  o.title=tlTitle(o);
+  o.titleKey=tlTitleKey(pc);
+  (function(){ var t=(CFG.tlTitle||{})[o.titleKey]; if (t && (t[0] || t[1])){ o.title=[t[0]||o.title[0], t[1]||'']; o.titleSet=true; } })();
+  return o;
+}
+function tlTitleKey(pc){ return pc.keys.length<=1 ? 'd'+pc.start : P.mode+P.anchor; }
+/* 제목 바꾸기: 두 칸(제목·부제)에 적고 저장. 비우고 저장하면 그날 기록으로 정하는 자동 문구로 */
+function tlEditTitle(key, cur, auto, after){
+  var ov, t1, t2;
+  function close(){ if (ov && ov.parentNode) ov.parentNode.removeChild(ov); }
+  function save(clear){
+    var m=JSON.parse(JSON.stringify(CFG.tlTitle||{})), a=clear ? '' : t1.value.trim().slice(0,40), b=clear ? '' : t2.value.trim().slice(0,50);
+    if (a || b) m[key]=[a, b]; else delete m[key];
+    saveCfg({tlTitle:m}); close(); toast(a || b ? '운행일지 제목을 저장했습니다' : '자동 제목으로 되돌렸습니다'); if (after) after();
+  }
+  t1=el('input',{type:'text', maxlength:'40', placeholder:auto[0]}); t1.value=cur && cur[0] || '';
+  t2=el('input',{type:'text', maxlength:'50', placeholder:auto[1]}); t2.value=cur && cur[1] || '';
+  ov=el('div',{cls:'tl-ed'},[el('div',{cls:'tl-edbox'},[
+    el('h3',{text:'✏️ 운행일지 제목'}),
+    el('label',{text:'제목'}), t1,
+    el('label',{text:'부제'}), t2,
+    el('p',{text:'비워 두면 그날 기록으로 정하는 자동 문구가 나옵니다.'}),
+    el('div',{cls:'tl-edbt'},[
+      el('button',{type:'button', onclick:function(){ save(true); }},['자동으로']),
+      el('button',{type:'button', onclick:close},['취소']),
+      el('button',{type:'button', cls:'ok', onclick:function(){ save(false); }},['저장'])
+    ])
+  ])]);
+  ov.addEventListener('click', function(e){ if (e.target===ov) close(); });
+  document.body.appendChild(ov);
+  setTimeout(function(){ try { t1.focus(); } catch(e){} }, 50);
+}
+function tlPct(a, b){ if (!a || !b) return null; return Math.round((a/b-1)*100); }
+function tlCmp(v, base, name){
+  var p=tlPct(v, base);
+  name=String(name).replace('최근 ','');
+  if (p===null) return el('small',{cls:'tl-cmp', text:name+' 대비 —'});
+  return el('small',{cls:'tl-cmp '+(p>0 ? 'up' : p<0 ? 'dn' : ''), text:name+' 대비 '+(p>0 ? '▲'+p : p<0 ? '▼'+(-p) : '0')+'%'});
+}
+function taxiLog(pc, M, now){
+  var o=tlCalc(pc, M, now), d=kd(pc.start), wk=['일','월','화','수','목','금','토'], card=el('div',{cls:'tlog', id:'tlog'}), dt, i;
+  dt = pc.keys.length<=1 ? d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일 ('+wk[d.getDay()]+')' : periodTitle(P.mode, P.anchor);
+  /* 머리 */
+  var head=tlSkyline(244, '', '', true);
+  head.appendChild(el('div',{cls:'tl-headtx'},[
+    el('div',{cls:'tl-brand', text:'TAXI LOG'}),
+    el('div',{cls:'tl-kind', text:'개인택시 운행일지'}),
+    el('div',{cls:'tl-date', text:dt}),
+    el('div',{cls:'tl-title', text:o.title[0], onclick:function(){ tlEditTitle(o.titleKey, (CFG.tlTitle||{})[o.titleKey], tlTitle(o), renderStat); }}),
+    el('div',{cls:'tl-sub', text:o.title[1]})
+  ]));
+  card.appendChild(head);
+  /* 총 매출 · 시간당 매출 */
+  var ring=tlSvg('svg',{viewBox:'0 0 42 42', 'class':'tl-ring'}), rr=o.hourly && o.avgHourly ? Math.max(4, Math.min(100, o.hourly/o.avgHourly*60)) : (o.hourly ? 60 : 0);
+  ring.appendChild(tlSvg('circle',{cx:21, cy:21, r:15.915, fill:'none', stroke:'#E3E7EF', 'stroke-width':5}));
+  ring.appendChild(tlSvg('circle',{cx:21, cy:21, r:15.915, fill:'none', stroke:'#6A4BDB', 'stroke-width':5, 'stroke-linecap':'round', 'stroke-dasharray':rr.toFixed(2)+' '+(100-rr).toFixed(2), 'stroke-dashoffset':'25'}));
+  card.appendChild(el('div',{cls:'tl-row tl-top'},[
+    el('div',{cls:'tl-box tl-rev'},[el('div',{cls:'tl-coin', text:'🪙'}), el('div',null,[el('span',{cls:'tl-k', text:'총매출'}), el('b',{cls:'tl-big', text:num(o.rev)}), el('em',{cls:'tl-won', text:'원'}), tlCmp(o.rev, o.avgRev, o.cmpName)])]),
+    el('div',{cls:'tl-box tl-hr'},[ring, el('div',null,[el('span',{cls:'tl-k', text:'시간당 매출'}), el('b',{cls:'tl-mid', text: o.hourly ? num(Math.round(o.hourly)) : '–'}), el('em',{cls:'tl-won', text: o.hourly ? '원' : ''}), tlCmp(o.hourly, o.avgHourly, o.cmpName)])])
+  ]));
+  /* 네 칸 */
+  var hrs=o.net ? o.net/3600000 : 0;
+  function q(ic, k, v, u, s){ return el('div',{cls:'tl-q'},[el('div',{cls:'tl-ic', text:ic}), el('span',{cls:'tl-k', text:k}), el('div',{cls:'tl-qv'},[el('b',{text:v}), el('em',{text:u})]), el('small',{text:s})]); }
+  card.appendChild(el('div',{cls:'tl-box tl-quad'},[
+    q('🚕','운행 건수', String(o.n), '건', hrs ? '시간당 '+(Math.round(o.n/hrs*10)/10)+'건' : '근무 기록 없음'),
+    q('⏱','총 운행시간', hrs ? String(Math.round(hrs*10)/10) : '–', hrs ? '시간' : '', o.brk>60000 ? '휴게 '+durTxt(o.brk) : '휴게 없음'),
+    q('👤','탑승시간', o.offMs ? String(Math.round(o.offMs/360000)/10) : '–', o.offMs ? '시간' : '', o.rideRate!==null ? '승차율 '+Math.round(o.rideRate*100)+'%' : '하차 기록이 쌓이면'),
+    q('₩','평균요금/건당', o.avg ? num(Math.round(o.avg)) : '–', o.avg ? '원' : '', o.perMin ? '탑승 1분당 '+num(Math.round(o.perMin))+'원' : '')
+  ]));
+  /* 호출 방식 · 결제 방식 */
+  card.appendChild(el('div',{cls:'tl-row'},[
+    el('div',{cls:'tl-box'},[el('h4',{text:'호출방식'}), tlDonut(mapItems(o.type).sort(function(a,b){ return b.v-a.v; }), TL_TYPE_COL)]),
+    el('div',{cls:'tl-box'},[el('h4',{text:'결제방식'}), tlDonut(mapItems(o.pay).sort(function(a,b){ return b.v-a.v; }), TL_PAY_COL)])
+  ]));
+  /* 시간대별 매출 · 근무 경과별 시간당 매출 */
+  card.appendChild(el('div',{cls:'tl-row'},[
+    el('div',{cls:'tl-box'},[el('h4',{text:'시간대별 매출'}), tlBars(o.hourBars)]),
+    el('div',{cls:'tl-box'},[el('h4',{text:'시간당매출'}), tlLine(o.elapsed)])
+  ]));
+  /* 연료 · 연비 · 다음 승차까지 */
+  var fuelV, fuelS;
+  if (o.fuelCost){ fuelV='연료비 '+num(o.fuelCost)+'원'; fuelS='매출의 '+(o.rev ? (Math.round(o.fuelCost/o.rev*1000)/10) : 0)+'% · '+Math.round(o.km)+'km'; }
+  else if (o.fuelCharged){ fuelV='충전 '+num(o.fuelCharged)+'원'; fuelS='이날 넣은 '+fuelCatName(); }
+  else { fuelV='연료비 –'; fuelS='계기판 km·충전량을 넣으면 계산'; }
+  card.appendChild(el('div',{cls:'tl-box tl-foot3'},[
+    el('div',null,[el('i',{text:'⛽'}), el('div',null,[el('b',{text:fuelV}), el('small',{text:fuelS})])]),
+    el('div',null,[el('i',{text:'🍃'}), el('div',null,[el('b',{text: o.eff ? '연비 '+(Math.round(o.eff*100)/100)+'km/L' : '연비 –'}), el('small',{text: o.eff ? '100km당 '+fuelCatName()+' '+num(Math.round(100/o.eff*o.unitP))+'원' : '최근 30일 충전량으로 계산'})])]),
+    el('div',null,[el('i',{text:'📍'}), el('div',null,[el('b',{text: o.gapAvg!==null ? '다음 승차까지 평균 '+(Math.round(o.gapAvg*10)/10)+'분' : '다음 승차까지 –'}), el('small',{text: o.gap10!==null ? '10분 이내 연결 '+Math.round(o.gap10*100)+'%' : '하차 시각이 쌓이면 나옵니다'})])])
+  ]));
+  card.appendChild(tlSkyline(110, '오늘도 서울을 달립니다.', 'Best Seoul Taxi', false));
+  var autoT=tlTitle(o);
+  var wrap=el('div',{cls:'tlog-wrap'},[card, el('div',{cls:'tl-btns'},[
+    el('button',{type:'button', cls:'tl-save', onclick:function(){ tlEditTitle(o.titleKey, (CFG.tlTitle||{})[o.titleKey], autoT, renderStat); }},['✏️ 제목 바꾸기']),
+    el('button',{type:'button', cls:'tl-save', onclick:function(){ tlSaveImage(card, dt); }},['📷 이미지로 저장'])
+  ])]);
+  return wrap;
+}
+/* 운행일지를 사진(PNG)으로 저장 — 블로그·SNS에 올리기 좋게 */
+function tlSaveImage(card, dt){
+  function go(){
+    window.html2canvas(card, {backgroundColor:'#EEF3FA', scale:2, useCORS:true}).then(function(cv){
+      var a=document.createElement('a'); a.download='운행일지_'+String(dt).replace(/[^\d가-힣]+/g,'_')+'.png'; a.href=cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
+      toast('운행일지 이미지를 저장했습니다');
+    }).catch(function(){ toast('이미지를 만들지 못했습니다. 화면을 캡처해 주세요'); });
+  }
+  if (window.html2canvas){ go(); return; }
+  var s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  s.onload=go; s.onerror=function(){ toast('인터넷이 연결되어야 저장할 수 있습니다. 화면을 캡처해 주세요'); };
+  document.head.appendChild(s); toast('이미지를 만드는 중…');
+}
+
 function renderStat(){
   var box=$('vw-stat'), now=Date.now(), M=buildDays(now), cur, prv, pc, pv, pname, seg, i, w, hv, k, modes=[['d','일'],['w','주'],['m','월'],['y','연']];
   if (!P.anchor) P.anchor=todayKey();
@@ -648,6 +1018,8 @@ function renderStat(){
     el('div',{cls:'m'},[el('b',{text:periodTitle(P.mode, P.anchor)}), el('small',{text:(pc.keys.length ? rangeTxt(pc.keys)+', 근무 '+cur.days+'일' : '아직 오지 않은 기간')+' · 하루 기준 '+baseTxt()})]),
     el('button',{type:'button','aria-label':'다음 기간', text:'›', disabled: pc.end>=todayKey(), onclick:function(){ P.anchor=shiftAnchor(P.mode, P.anchor, 1); renderStat(); }})
   ]));
+  /* 운행일지 (TAXI LOG): 한눈에 보는 한 장 */
+  try { box.appendChild(taxiLog(pc, M, now)); } catch(e){ try { console.error(e); } catch(x){} }
   var vs=el('div',{cls:'sec verdict'});
   vs.appendChild(el('p',{text:verdict(cur, prv, pname)}));
   if (prv.rev>0 && pv.length) vs.appendChild(el('div',{cls:'sub', text:pname+'('+rangeTxt(pv)+') '+won(prv.rev)+' → 이번 '+won(cur.rev)}));
