@@ -4008,9 +4008,11 @@ function goNavUrl(u){ window.__lastNav=u; window.location.href=u; }
 function startTmapNavi(lat, lng, name){ navStarted(lat, lng, name); goNavUrl(tmapNaviUrl(lat, lng, name)); }
 /* 네이버 지도 길안내 (출발지를 아는 경우 함께 넘긴다) */
 function naverNaviUrl(sp, ep, android){
+  /* 네이버 지도 바로 길안내(navigation): T맵·카카오내비처럼 누르면 곧바로 음성 길안내가 시작된다.
+     바로 길안내는 '지금 위치에서 출발'이 원칙이라 출발지는 넘기지 않는다
+     (예전에는 출발 권역 좌표까지 넘겨 바로 안내 대신 경로 확인 화면이 열렸다) */
   if (!ep) return '';
   var q='dlat='+ep.lat+'&dlng='+ep.lng+'&dname='+encodeURIComponent(ep.n||'목적지');
-  if (sp && isNum(sp.lat)) q='slat='+sp.lat+'&slng='+sp.lng+'&sname='+encodeURIComponent(sp.n||'출발')+'&'+q;
   (function(){ var w=typeof wpPts==='function' ? wpPts() : []; w.slice(0,5).forEach(function(p, k){ q+='&v'+(k+1)+'lat='+p.lat+'&v'+(k+1)+'lng='+p.lng+'&v'+(k+1)+'name='+encodeURIComponent(p.n||'경유지'); }); })();
   q+='&appname='+encodeURIComponent(naverAppName());
   if (android===undefined) android=isAndroid();
@@ -4019,7 +4021,7 @@ function naverNaviUrl(sp, ep, android){
            'category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap'+
            ';S.browser_fallback_url='+encodeURIComponent('https://play.google.com/store/apps/details?id=com.nhn.android.nmap')+';end';
   }
-  return 'nmap://route/car?'+q;
+  return 'nmap://navigation?'+q;
 }
 function startNaverNavi(sp, ep){ var u=naverNaviUrl(sp, ep); if (u){ if (ep) navStarted(ep.lat, ep.lng, ep.n); goNavUrl(u); } }
 function startKakaoNavi(lat, lng, name){
