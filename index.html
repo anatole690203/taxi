@@ -2090,6 +2090,7 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .wprow .wpx{color:#FF8A80}
 .wpst{font-size:13px;color:var(--muted);margin:3px 0 0 54px;min-height:16px}
 .wpst.ok{color:#6FE08F;font-weight:700}
+.wpst.warn{color:#FFB74D;font-weight:700}
 .btn.wpadd{width:100%;margin-top:8px;min-height:44px;border:1px dashed #FFD65A;background:transparent;color:#FFD65A;font-weight:800}
 .navrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .btn.navk{background:#FEE500;border-color:#FEE500;color:#191919;font-weight:900}
@@ -7101,6 +7102,7 @@ function destZoneName(){
   return v;
 }
 function setVoiceDest(pt){
+  setTimeout(function(){ try { wpRender(); } catch(e){} }, 0);
   voiceDest=pt;
   var sel=$('rdTo'), opt=null, i;
   for (i=0;i<sel.options.length;i++) if (sel.options[i].value===VOICE_VAL) opt=sel.options[i];
@@ -7579,7 +7581,22 @@ function shareHandle(){
    경유지마다 🎤 말하기·글자 입력·찾기. T맵 경로 카드 계산과 세 내비(T맵·카카오내비·네이버 지도) 길안내에 함께 넘긴다.
    네이버 지도는 경유지 5곳까지라 4곳 모두, 카카오내비는 3곳까지, T맵 바로안내는 경유지를 받지 못할 수 있다 */
 var WPS=[], wpRec=null;
-function wpPts(){ return WPS.filter(function(w){ return w && w.pt && isNum(w.pt.lat); }).map(function(w){ return w.pt; }); }
+/* 경유지가 도착지(1m 안)나 바로 앞 경유지와 같은 곳이면 뺀다.
+   (네이버 지도는 '경유지 = 도착지'면 "출발지와 도착지가 동일합니다"로 거부한다) */
+function wpSame(a, b){ return a && b && isNum(a.lat) && isNum(b.lat) && km(a.lat, a.lng, b.lat, b.lng) < 0.001; }   /* 1m 안 */
+function wpSkipWhy(i){
+  var w=WPS[i], ep=null, k;
+  if (!w || !w.pt) return '';
+  try { ep=destPoint(); } catch(e){}
+  if (wpSame(w.pt, ep)) return '도착지와 같아 길안내에서 뺍니다';
+  for (k=0;k<i;k++) if (WPS[k] && WPS[k].pt && wpSame(WPS[k].pt, w.pt)) return '경유'+(k+1)+'과 같아 길안내에서 뺍니다';
+  return '';
+}
+function wpPts(){
+  var out=[];
+  WPS.forEach(function(w, i){ if (w && w.pt && isNum(w.pt.lat) && !wpSkipWhy(i)) out.push(w.pt); });
+  return out;
+}
 function wpKey(){ return wpPts().map(function(p){ return p.lat.toFixed(3)+','+p.lng.toFixed(3); }).join('|'); }
 function wpRender(){
   var box=$('wpBox'), add=$('btnWpAdd'), note=$('wpNote'), n;
@@ -7596,7 +7613,8 @@ function wpRender(){
       el('button',{type:'button', cls:'mini gps', onclick:function(){ wpFind(i); }},['찾기']),
       el('button',{type:'button', cls:'mini wpx', title:'지우기', onclick:function(){ wpDel(i); }},['✕'])
     ]));
-    box.appendChild(el('div',{cls:'wpst'+(w.pt ? ' ok' : ''), text: w.pt ? '✓ '+w.pt.n : (w.msg||'')}));
+    var why=wpSkipWhy(i);
+    box.appendChild(el('div',{cls:'wpst'+(w.pt ? (why ? ' warn' : ' ok') : ''), text: w.pt ? (why ? '⚠ '+w.pt.n+' — '+why : '✓ '+w.pt.n) : (w.msg||'')}));
   });
   if (add){ add.style.display = WPS.length>=4 ? 'none' : ''; add.textContent = WPS.length ? '＋ 경유지 추가 ('+WPS.length+'/4)' : '＋ 경유지 추가 (최대 4곳)'; }
   n=wpPts().length;
@@ -7641,7 +7659,8 @@ function wpFind(i){
 }
 /* 경유지 말하기: 네비 [말하기]와 같은 마이크 차례(마이크 관리자)를 쓴다 */
 function wpVoice(i){
-  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, r, w=WPS[i], got='';
+  /* 목적지 [말하기]와 똑같이: 들은 말 전체를 붙이고 → 검색 → 못 찾으면 음성 인식이 함께 들은 다른 말 → 권역 이름 */
+  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, r, w=WPS[i], done=false;
   if (!SR){ toast('이 브라우저는 음성 인식을 지원하지 않습니다. 글자로 적어 주세요.'); return; }
   if (wpRec){ try { wpRec.r.stop(); } catch(e){} return; }
   if (wpVoice.wait) return;
@@ -7649,18 +7668,46 @@ function wpVoice(i){
     wpVoice.wait=true; setTimeout(function(){ wpVoice.wait=false; }, 1500); return;
   }
   r=new SR(); r.lang='ko-KR'; r.interimResults=true; r.maxAlternatives=3;
-  wpRec={r:r, i:i}; w.msg='듣는 중… 경유지를 말하세요'; wpRender();
+  wpRec={r:r, i:i}; w.msg='듣는 중… 경유지를 말하세요 (예: 신림동 230-4, 강남역)'; wpRender();
   r.onresult=function(e){
-    var k, t='';
-    for (k=e.resultIndex;k<e.results.length;k++) t+=e.results[k][0].transcript;
-    got=t.trim(); w.text=got; w.msg='듣는 중… "'+got+'"';
-    if (e.results[e.results.length-1].isFinal){ try { r.stop(); } catch(x){} }
-    wpRender();
+    var k, txt='', last;
+    for (k=0;k<e.results.length;k++) txt+=e.results[k][0].transcript;   /* 처음부터 들은 말 전체 */
+    txt=txt.trim(); w.text=txt; w.msg='"'+txt+'"';
+    last=e.results[e.results.length-1];
+    if (last.isFinal && !done){
+      done=true;
+      try { r.stop(); } catch(x){}
+      wpVoiceFind(i, txt, last);
+    } else wpRender();
   };
-  r.onerror=function(ev){ if (ev && ev.error!=='aborted'){ w.msg='음성을 알아듣지 못했습니다. 다시 시도하세요.'; } };
-  r.onend=function(){ wpRec=null; micFree('voice'); if (got){ w.text=got; wpFind(i); } else wpRender(); };
+  r.onerror=function(ev){
+    if (ev && ev.error==='not-allowed') w.msg='마이크 권한이 필요합니다. 브라우저 설정에서 허용하세요.';
+    else if (ev && ev.error!=='aborted' && !done) w.msg='음성을 알아듣지 못했습니다. 다시 시도하세요.';
+  };
+  r.onend=function(){ wpRec=null; micFree('voice'); if (!done) wpRender(); };
   try { r.start(); } catch(e){ wpRec=null; micFree('voice'); w.msg='마이크를 열지 못했습니다'; wpRender(); }
 }
+function wpVoiceFind(i, txt, alts){
+  var w=WPS[i], ai=0;
+  if (!w) return;
+  w.pt=null; w.msg='"'+txt+'" 찾는 중…'; wpRender();
+  (function tryAlt(q){
+    searchPlace(q, function(pt, err){
+      if (!WPS[i] || WPS[i]!==w) return;
+      if (pt){ w.pt=pt; w.text=q; w.msg=''; toast('경유'+(i+1)+'을 '+pt.n+josaRo(pt.n)+' 잡았습니다'); wpChanged(); return; }
+      /* 잘못 알아들었을 수 있으니 함께 들은 다른 말로도 (예: 울림동 → 신림동) */
+      while (alts && ++ai<alts.length){ var aq=String(alts[ai].transcript||'').trim(); if (aq && aq!==q){ w.msg='"'+aq+'" 로도 찾는 중…'; wpRender(); tryAlt(aq); return; } }
+      /* 그래도 없으면 권역 이름으로 */
+      var z=matchZoneByText(txt), k, zp;
+      for (k=0; alts && k<alts.length && !z; k++) z=matchZoneByText(alts[k].transcript);
+      zp=z ? zonePoint(z) : null;
+      if (zp){ w.pt={lat:zp.lat, lng:zp.lng, n:z}; w.msg=''; toast('경유'+(i+1)+'을 '+z+josaRo(z)+' 잡았습니다'); }
+      else w.msg=(err||'찾지 못했습니다')+'. 조금 더 짧게 말하거나 적어 보세요.';
+      wpChanged();
+    });
+  })(txt);
+}
+
 /* 카카오내비·네이버 지도 길안내 (출발 → 경유지 → 목적지) */
 function navKakao(){
   var ep=destPoint(), u;
@@ -7680,6 +7727,7 @@ function wpBind(){
   if ($('btnWpAdd')) $('btnWpAdd').addEventListener('click', wpAdd);
   if ($('btnKNavi')) $('btnKNavi').addEventListener('click', navKakao);
   if ($('btnNNavi')) $('btnNNavi').addEventListener('click', navNaver);
+  if ($('rdTo')) $('rdTo').addEventListener('change', function(){ setTimeout(wpRender, 0); });   /* 도착지가 바뀌면 ⚠ 표시도 다시 */
   wpRender();
 }
 
