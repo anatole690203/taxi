@@ -5483,6 +5483,22 @@ function placeRef(){
   try { var f=fromPoint(); if (f && isNum(f.lat)) return {lat:f.lat, lng:f.lng}; } catch(e){}
   return null;
 }
+/* 말한 동네 이름(봉천동·상도동…)이 이 장소의 주소나 이름에 있는가.
+   '봉천동' → 주소의 '봉천동' 또는 이름의 '봉천'(봉천현대아파트)도 맞는 것으로 본다 */
+function areaHit(c, areas){
+  if (!areas || !areas.length) return true;
+  var t=String((c.addr||'')+' '+(c.jibun||'')+' '+(c.n||'')).replace(/\s+/g,'');
+  return areas.some(function(a){
+    var k=String(a).replace(/\s+/g,''), stem=k.replace(/(동|구|시|군|읍|면|리|가|역)$/,'');
+    return t.indexOf(k)>=0 || (stem.length>=2 && t.indexOf(stem)>=0);
+  });
+}
+function josaRo(w){
+  var c=String(w||'').trim().replace(/[)\]\s]+$/,''), ch=c.charCodeAt(c.length-1), jong;
+  if (!(ch>=0xAC00 && ch<=0xD7A3)) return /[0-9]$/.test(c) ? (/[0136789]$/.test(c) ? '으로' : '로') : '(으)로';
+  jong=(ch-0xAC00)%28;
+  return (jong===0 || jong===8) ? '로' : '으로';
+}
 function nameKey(s){ return String(s||'').replace(/\s+/g,'').replace(/[()·.\-]/g,'').toLowerCase(); }
 /* 점수: 이름이 말한 것과 얼마나 같은가 + 가까운가 + 정문·후문을 말했으면 그 글자가 있는가 */
 /* "대학동 스타벅스"처럼 동네 이름 + 가게 이름이면, 동네 이름은 "어디 근처"라는 힌트로만 쓴다
@@ -5533,7 +5549,7 @@ function kakaoNear(q, ref, radius, cb){
     ps.keywordSearch(q, function(data, status){
       var out=[];
       if (status===kakao.maps.services.Status.OK && data) data.forEach(function(d){
-        out.push({n:d.place_name, lat:parseFloat(d.y), lng:parseFloat(d.x), addr:d.road_address_name||d.address_name||'', phone:d.phone||'', kurl:d.place_url||'', cat:String(d.category_name||'').split(' > ').pop(), src:'kakao-place'});
+        out.push({n:d.place_name, lat:parseFloat(d.y), lng:parseFloat(d.x), addr:d.road_address_name||d.address_name||'', jibun:d.address_name||'', phone:d.phone||'', kurl:d.place_url||'', cat:String(d.category_name||'').split(' > ').pop(), src:'kakao-place'});
       });
       cb(out);
     }, opt);
@@ -5557,7 +5573,7 @@ function tmapPoi(q, ref, cb){
         var ad=[p.upperAddrName, p.middleAddrName, p.lowerAddrName].filter(Boolean).join(' ');
         if (p.roadName) ad=[p.upperAddrName, p.middleAddrName, p.roadName, p.firstBuildNo].filter(Boolean).join(' ');
         else if (p.firstNo) ad+=' '+p.firstNo+(p.secondNo && p.secondNo!=='0' ? '-'+p.secondNo : '');
-        out.push({n:p.name, lat:la, lng:ln, addr:ad.trim(), phone:p.telNo||'', cat:p.middleBizName||p.lowerBizName||'', src:'tmap-poi'});
+        out.push({n:p.name, lat:la, lng:ln, addr:ad.trim(), jibun:[p.upperAddrName, p.middleAddrName, p.lowerAddrName].filter(Boolean).join(' '), phone:p.telNo||'', cat:p.middleBizName||p.lowerBizName||'', src:'tmap-poi'});
       });
       cb(out);
     };
@@ -5579,7 +5595,7 @@ function naverPlaceSearch(q, ref, cb){
       var out=[];
       if (j && j.list) j.list.forEach(function(it){
         var la=parseFloat(it.lat), ln=parseFloat(it.lng);
-        if (isNum(la) && isNum(ln) && la) out.push({n:it.n, lat:la, lng:ln, addr:it.road||it.addr||'', cat:it.cat||'', phone:it.tel||'', src:'naver-place'});
+        if (isNum(la) && isNum(ln) && la) out.push({n:it.n, lat:la, lng:ln, addr:it.road||it.addr||'', jibun:it.addr||'', cat:it.cat||'', phone:it.tel||'', src:'naver-place'});
       });
       fin(out);
     }).catch(function(){ fin([]); });
@@ -5591,9 +5607,12 @@ function smartPlaceSearch(query, cb){
   /* 점수는 말한 그대로와 풀어 쓴 이름(예: 주민센터→행정복지센터) 중 더 잘 맞는 쪽으로 */
   function addAll(list, v){ list.forEach(function(c, ri){ var k=c.n+'@'+c.lat.toFixed(4)+','+c.lng.toFixed(4), vb, s2; if (!isNum(c.rank)) c.rank=ri; if (!seen[k]){ seen[k]=1; c.score=placeScore(c, n, ref); c.nameSc=c._ns; if (v && v!==n.q){ vb=v.replace(GATE_RE,'').trim(); s2=placeScore(c, {q:v, base:vb, gate:n.gate}, ref); if (s2>c.score) c.score=s2; if (c._ns>c.nameSc) c.nameSc=c._ns; } all.push(c); } }); }
   function good(){ return all.filter(function(c){ return (c.nameSc||0)>=35; }); }
-  /* 정문·후문, 아파트 동 번호(105동)를 말했으면 그 글자가 든 곳을 찾을 때까지 다음 자료(네이버·T맵)도 본다 */
+  /* 정문·후문, 아파트 동 번호(105동)를 말했으면 그 글자가 든 곳을 찾을 때까지 다음 자료(네이버·T맵)도 본다.
+     동네 이름(봉천동)을 말했으면 그 동네에서 찾을 때까지 본다 */
   var wtk=placeTokens(n.base);
+  function inArea(g){ return g.filter(function(c){ return areaHit(c, wtk.area); }); }
   function wantOk(g){
+    if (wtk.area.length){ var ga=inArea(g); if (!ga.length) return false; g=ga; }
     return g.some(function(c){
       var k=nameKey(c.n);
       if (n.gate && k.indexOf(nameKey(n.gate))<0) return false;
@@ -5601,7 +5620,10 @@ function smartPlaceSearch(query, cb){
     });
   }
   function finish(){
-    var g=good().sort(function(a,b){ return b.score-a.score; }), best, cands, gateMiss;
+    var g=good(), best, cands, gateMiss, ga;
+    /* 동네 이름을 말했으면 그 동네에 있는 곳만 고른다 (없으면 — 예: 행정동 이름이라 주소에 안 나올 때 — 검색 엔진 순서를 따른다) */
+    if (wtk.area.length){ ga=inArea(g); if (ga.length) g=ga; }
+    g=g.sort(function(a,b){ return b.score-a.score; });
     if (!g.length){ cb(null, n); return; }
     best=g[0];
     gateMiss = n.gate && nameKey(best.n).indexOf(nameKey(n.gate))<0 ? n.gate : '';
@@ -5674,7 +5696,7 @@ function searchPlace(query, cb){
     if (looksLikeAddress(n.q)){ searchPlaceBasic(n.q, cb); return; }
     smartPlaceSearch(query, function(best){
       if (best){
-        if (best.gateMiss) setTimeout(function(){ toast(best.gateMiss+' 위치는 찾지 못해 '+best.n+'(으)로 잡았습니다. 다른 후보를 확인하세요'); }, 1200);
+        if (best.gateMiss) setTimeout(function(){ toast(best.gateMiss+' 위치는 찾지 못해 '+best.n+josaRo(best.n)+' 잡았습니다. 다른 후보를 확인하세요'); }, 1200);
         cb(best, null); return;
       }
       searchPlaceBasic(n.q || query, cb);
@@ -7608,10 +7630,10 @@ function wpFind(i){
   if (!q){ toast('경유지를 말하거나 입력하세요'); return; }
   w.pt=null; w.msg='"'+q+'" 찾는 중…'; wpRender();
   searchPlace(q, function(pt, err){
-    if (pt){ w.pt=pt; w.msg=''; toast('경유'+(i+1)+'을 '+pt.n+'(으)로 잡았습니다'); }
+    if (pt){ w.pt=pt; w.msg=''; toast('경유'+(i+1)+'을 '+pt.n+josaRo(pt.n)+' 잡았습니다'); }
     else {
       var z=matchZoneByText(q), zp=z ? zonePoint(z) : null;
-      if (zp){ w.pt={lat:zp.lat, lng:zp.lng, n:z}; w.msg=''; toast('경유'+(i+1)+'을 '+z+'(으)로 잡았습니다'); }
+      if (zp){ w.pt={lat:zp.lat, lng:zp.lng, n:z}; w.msg=''; toast('경유'+(i+1)+'을 '+z+josaRo(z)+' 잡았습니다'); }
       else w.msg=(err||'찾지 못했습니다')+'. 조금 더 짧게 말하거나 적어 보세요.';
     }
     wpChanged();
@@ -7729,10 +7751,12 @@ function renderAi(results, sp, ep){
   navAi={key:routeKey(sp, ep), results:results.map(function(x){ return {opt:x.opt, sum:x.sum}; })};
   navPick=-1;
   (function(){
-    var mj=best.sum.major||[], names=[], i;
-    for (i=0;i<mj.length;i++) if (names.indexOf(mj[i].n)<0) names.push(mj[i].n);
+    var mj=best.sum.major||[], names=[], i, canon={}, k, rd;
+    /* T맵이 같은 길을 '제2경인 고속도로'·'제2경인고속도로'처럼 띄어쓰기만 다르게 줄 때가 있어 한 이름으로 합친다 */
+    for (i=0;i<mj.length;i++){ k=String(mj[i].n||'').replace(/\s+/g,''); if (!canon[k]) canon[k]=mj[i].n; mj[i].n=canon[k]; if (names.indexOf(canon[k])<0) names.push(canon[k]); }
     /* 경유지에는 국도·시내도로가 아닌 간선도로·고속도로만 적는다. 하나도 없으면 거리순 주요 도로 */
-    realRoute={key:routeKey(sp, ep), roads: names.length ? names : best.sum.roads.map(function(x){ return x.n; }), major:mj, majorOnly:names.length>0,
+    rd=[]; (best.sum.roads||[]).forEach(function(x){ var kk=String(x.n||'').replace(/\s+/g,''); if (!canon[kk]) canon[kk]=x.n; if (rd.indexOf(canon[kk])<0) rd.push(canon[kk]); });
+    realRoute={key:routeKey(sp, ep), roads: names.length ? names : rd, major:mj, majorOnly:names.length>0,
                segs:best.sum.segs||[], front:best.sum.front||null, entry:best.sum.entry||null};
   })();
   roadLedTick();
@@ -8093,14 +8117,14 @@ function findTypedDest(){
       setVoiceDest(pt); renderRoad();
       msg.className='voicemsg hear';
       paintDestMsg(msg, pt);
-      toast('도착지를 '+pt.n+'로 잡았습니다');
+      toast('도착지를 '+pt.n+josaRo(pt.n)+' 잡았습니다');
       return;
     }
     var z=matchZoneByText(q);
     if (z){
       voiceDest=null; $('rdTo').value=z; renderRoad();
       msg.className='voicemsg hear'; msg.textContent='도착 권역: '+z;
-      toast('도착지를 '+z+'로 잡았습니다');
+      toast('도착지를 '+z+josaRo(z)+' 잡았습니다');
     } else {
       msg.className='voicemsg'; msg.textContent=(err||'찾지 못했습니다')+'. 조금 더 짧게 적어 보세요.';
     }
@@ -8260,7 +8284,7 @@ function startVoice(){
           setVoiceDest(pt); renderRoad();
           msg.className='voicemsg hear';
           paintDestMsg(msg, pt);
-          toast('도착지를 '+pt.n+'로 잡았습니다');
+          toast('도착지를 '+pt.n+josaRo(pt.n)+' 잡았습니다');
           return;
         }
         /* 잘못 알아들었을 수 있으니 음성 인식이 함께 들은 다른 말로도 찾아본다 (예: 울림동 → 신림동) */
@@ -8271,7 +8295,7 @@ function startVoice(){
         if (zz){
           voiceDest=null; $('rdTo').value=zz; renderRoad();
           msg.className='voicemsg hear'; msg.textContent='도착 권역: '+zz;
-          toast('도착지를 '+zz+'로 잡았습니다');
+          toast('도착지를 '+zz+josaRo(zz)+' 잡았습니다');
         } else {
           msg.className='voicemsg'; msg.textContent=(err||'찾지 못했습니다')+'. 목록에서 골라 주세요.';
         }
