@@ -5500,6 +5500,26 @@ function josaRo(w){
   jong=(ch-0xAC00)%28;
   return (jong===0 || jong===8) ? '로' : '으로';
 }
+/* 동네 이름(태평동·대학동…)의 가운데 좌표. 같은 이름이 여러 곳이면(성남·대전 태평동) 기사님과 가까운 곳 */
+var AREA_CTR={};
+function areaCenter(name, ref, cb){
+  var k=name+'@'+(ref ? ref.lat.toFixed(1)+','+ref.lng.toFixed(1) : ''), done=false;
+  if (AREA_CTR[k]!==undefined){ cb(AREA_CTR[k]); return; }
+  function fin(v){ if (done) return; done=true; AREA_CTR[k]=v; cb(v); }
+  setTimeout(function(){ fin(null); }, 3000);
+  try {
+    new kakao.maps.services.Geocoder().addressSearch(name, function(data, st){
+      var best=null, bd=1e9;
+      if (st===kakao.maps.services.Status.OK && data) data.forEach(function(d){
+        var la=parseFloat(d.y), ln=parseFloat(d.x), dd;
+        if (!isNum(la) || !isNum(ln)) return;
+        dd = ref ? km(ref.lat, ref.lng, la, ln) : 0;
+        if (dd<bd){ bd=dd; best={lat:la, lng:ln}; }
+      });
+      fin(best);
+    });
+  } catch(e){ fin(null); }
+}
 function nameKey(s){ return String(s||'').replace(/\s+/g,'').replace(/[()·.\-]/g,'').toLowerCase(); }
 /* 점수: 이름이 말한 것과 얼마나 같은가 + 가까운가 + 정문·후문을 말했으면 그 글자가 있는가 */
 /* "대학동 스타벅스"처럼 동네 이름 + 가게 이름이면, 동네 이름은 "어디 근처"라는 힌트로만 쓴다
@@ -5517,6 +5537,23 @@ function placeTokens(q){
   if (!core.length){ core=area; area=[]; }
   return {area:area, core:core, bno:bno};
 }
+/* 이름이 비슷한 다른 가게인가: '이마트'라고 했는데 '이마트24'(편의점)·'이마트에브리데이'(슈퍼)…
+   말한 이름 바로 뒤에 숫자가 붙거나(이마트24), 다른 가게를 뜻하는 말이 붙으면(에브리데이·익스프레스) 다른 가게 */
+var SUBBRAND=/^(24|25|에브리데이|everyday|익스프레스|express|슈퍼|수퍼|프레시|fresh|편의점|스토어|마켓)/i;
+function brandMismatch(c, words){
+  var nm=String(c.n||'').replace(/\s+/g,'').toLowerCase(), cat=String(c.cat||''), bad=false;
+  (words||[]).forEach(function(w){
+    var k=String(w||'').replace(/\s+/g,'').toLowerCase(), at, rest;
+    if (k.length<2) return;
+    at=nm.indexOf(k); if (at<0) return;
+    rest=nm.slice(at+k.length);
+    if (/^\d/.test(rest) && !/\d$/.test(k) && !/^\d{1,4}(동|호|단지|차|블록|블럭|층|번)/.test(rest)) bad=true;   /* 이마트 → 이마트24 (101동·3단지·2차는 아파트 번호라 같은 곳) */
+    else if (SUBBRAND.test(rest)) bad=true;                            /* 이마트 → 이마트에브리데이, 홈플러스 → 홈플러스익스프레스 */
+    if (/(마트|트레이더스|홈플러스|코스트코|백화점|아울렛)$/.test(k) && /편의점|슈퍼마켓|슈퍼/.test(cat) && !/편의점|슈퍼/.test(k)) bad=true;   /* 마트라고 했는데 편의점 */
+  });
+  if (/노브랜드|롯데슈퍼/.test(nm) && !(words||[]).some(function(w){ return /노브랜드|롯데슈퍼/.test(w); })) bad=true;
+  return bad;
+}
 function placeScore(c, n, ref){
   var nm=nameKey(c.n), q=nameKey(n.q), b=nameKey(n.base), sc=0, d, tk, ok;
   if (nm===q) sc+=100; else if (nm===b) sc+=80; else if (nm.indexOf(q)>=0) sc+=60; else if (nm.indexOf(b)>=0) sc+=45; else if (q.indexOf(nm)>=0 && nm.length>=3) sc+=35;
@@ -5532,6 +5569,8 @@ function placeScore(c, n, ref){
     }
   }
   if (n.gate){ sc += nm.indexOf(nameKey(n.gate))>=0 ? 40 : 0; }
+  /* 이름이 비슷한 다른 가게(이마트 ↔ 이마트24)는 크게 깎는다 */
+  if (sc>0 && brandMismatch(c, placeTokens(n.base).core)) sc-=60;
   c._ns=sc;   /* 이름만으로 본 점수 (거리·순서 빼고) */
   /* 아파트 동 번호(105동)를 말했으면 그 번호가 이름에 든 곳을 크게 우대 */
   tk=tk || placeTokens(n.base);
@@ -5611,7 +5650,8 @@ function smartPlaceSearch(query, cb){
   /* 정문·후문, 아파트 동 번호(105동)를 말했으면 그 글자가 든 곳을 찾을 때까지 다음 자료(네이버·T맵)도 본다.
      동네 이름(봉천동)을 말했으면 그 동네에서 찾을 때까지 본다 */
   var wtk=placeTokens(n.base);
-  function inArea(g){ return g.filter(function(c){ return areaHit(c, wtk.area); }); }
+  /* 동네 글자가 주소·이름에 있고, (동네 가운데를 알면) 그 가운데에서 5km 안이어야 그 동네 — 대전 태평동 ≠ 성남 태평동 */
+  function inArea(g){ return g.filter(function(c){ return areaHit(c, wtk.area) && (!finish.ctr || km(finish.ctr.lat, finish.ctr.lng, c.lat, c.lng)<=5); }); }
   function wantOk(g){
     if (wtk.area.length){ var ga=inArea(g); if (!ga.length) return false; g=ga; }
     return g.some(function(c){
@@ -5621,8 +5661,24 @@ function smartPlaceSearch(query, cb){
     });
   }
   function finish(){
+    var g0=good(), ga0;
+    if (wtk.area.length && g0.length && !finish.ctrDone){
+      /* 동네 가운데 좌표(기사님과 가까운 같은 이름 동네)를 먼저 알아 둔다 */
+      finish.ctrDone=true;
+      areaCenter(wtk.area[0], ref, function(ctr){
+        if (ctr){
+          finish.ctr=ctr;
+          g0.forEach(function(c){ c.ctrKm=km(ctr.lat, ctr.lng, c.lat, c.lng); });
+          /* 동네 안에서 못 찾았으면 동네 가운데에서 가까운 곳 순으로 (행정동 이름이라 주소에 글자가 없을 때) */
+          if (!inArea(g0).length) g0.forEach(function(c){ c.score = (c.nameSc||0) - Math.min(60, c.ctrKm*4) + (isNum(c.rank) ? Math.max(0, 6-c.rank) : 0); });
+        }
+        finish();
+      });
+      return;
+    }
     var g=good(), best, cands, gateMiss, ga;
     /* 동네 이름을 말했으면 그 동네에 있는 곳만 고른다 (없으면 — 예: 행정동 이름이라 주소에 안 나올 때 — 검색 엔진 순서를 따른다) */
+    var areaMiss='';
     if (wtk.area.length){ ga=inArea(g); if (ga.length) g=ga; }
     g=g.sort(function(a,b){ return b.score-a.score; });
     if (!g.length){ cb(null, n); return; }
@@ -5632,7 +5688,9 @@ function smartPlaceSearch(query, cb){
       var miss=tk.bno.filter(function(b){ return bk.indexOf(nameKey(b))<0 && bk.indexOf(nameKey(b).replace(/동$/,''))<0; });
       if (miss.length) gateMiss=(gateMiss ? gateMiss+'·' : '')+miss.join('·'); })();
     cands=[best].concat(g.slice(1).filter(function(c){ return km(c.lat, c.lng, best.lat, best.lng) > 0.03; }).sort(function(a,b){ return (a.dist||0)-(b.dist||0); })).slice(0,6);
-    best.cands=cands; best.gateMiss=gateMiss; best.asked=n.q;
+    /* 동네 글자도 없고 동네 가운데에서 3km 넘게 떨어졌으면 알려 준다 */
+    if (wtk.area.length && !inArea([best]).length && isNum(best.ctrKm) && best.ctrKm>3) areaMiss=wtk.area.join(' ');
+    best.cands=cands; best.gateMiss=gateMiss; best.asked=n.q; best.areaMiss=areaMiss;
     cb(best, n);
   }
   /* 1단계: 가까운 곳(20km) 카카오 — 이름 여러 가지로 */
@@ -5698,6 +5756,7 @@ function searchPlace(query, cb){
     smartPlaceSearch(query, function(best){
       if (best){
         if (best.gateMiss) setTimeout(function(){ toast(best.gateMiss+' 위치는 찾지 못해 '+best.n+josaRo(best.n)+' 잡았습니다. 다른 후보를 확인하세요'); }, 1200);
+        else if (best.areaMiss) setTimeout(function(){ toast(best.areaMiss+'에서는 찾지 못해 가장 가까운 '+best.n+josaRo(best.n)+' 잡았습니다'); }, 1200);
         cb(best, null); return;
       }
       searchPlaceBasic(n.q || query, cb);
