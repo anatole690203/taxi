@@ -13,7 +13,7 @@
 /* 안심도착(?s)·여행가이드(?pl)·손님 안내(?g, ?p=1)·태블릿(?tablet) 주소로 열면
    그 화면이 준비될 때까지 기사용 입력 화면을 보여 주지 않는다 */
 (function(){
-  if (/[?&](s|pl|g|tablet|bk|sos)=|[?&]p=1\b/.test(location.search)){
+  if (/[?&](s|pl|g|tablet|bk|sos|aux)=|[?&]p=1\b/.test(location.search)){
     document.documentElement.className+=' bootx';
     setTimeout(function(){ document.documentElement.className=document.documentElement.className.replace(/\s*\bbootx\b/g,''); }, 5000);
   }
@@ -1111,7 +1111,7 @@ svg.cmp .ndl{transform-box:view-box;transform-origin:16px 16px;animation:cmpNdl 
 .tbguidebtn{background:#5B2A9B!important;color:#fff!important;border-color:#5B2A9B!important}
 .tbguidebtn .lb i{opacity:.9}
 /* QR로 연 손님 폰 화면: 뒤의 기사 화면 숨김 */
-body.solo>*:not(.shv):not(.gland):not(.pgend):not(.bkg):not(.sosv){display:none!important}
+body.solo>*:not(.shv):not(.gland):not(.pgend):not(.bkg):not(.sosv):not(.auxv){display:none!important}
 .pgend{position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;background:#101215;color:#fff;text-align:center}
 .pgend .pe-ic{font-size:56px}
 .pgend b{font-size:26px;color:#FFC61E}
@@ -2059,6 +2059,43 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .tbinst-steps{font-size:16px;line-height:1.7;color:#1b1d21}
 .tbinst-steps b{color:#B26A00}
 
+
+/* ───── 보조폰 보내기 ───── */
+.auxst{font-size:14px;color:var(--muted);margin:6px 0 10px}
+.auxst.ok{color:#6FE08F}
+.auxgot{font-size:20px;font-weight:800;line-height:1.4;background:#F4F7FB;color:#1b1d21;border-radius:10px;padding:12px}
+.auxv{position:fixed;inset:0;overflow:auto;background:#15171b;color:#EDEFF2;font-size:16px}
+.aux-h{background:#2B2F6B;padding:max(14px,env(safe-area-inset-top)) 16px 12px}
+.aux-h b{display:block;font-size:21px}.aux-h span{font-size:13px;opacity:.85}
+.aux-body{padding:14px 16px 30px;max-width:640px;margin:0 auto}
+.aux-tip{font-size:13.5px;line-height:1.5;color:#A8AEB6;margin-bottom:10px}
+.aux-ta{width:100%;box-sizing:border-box;min-height:96px;border-radius:12px;border:2px solid #FFC81E;background:#fff;color:#1b1d21;font:inherit;font-size:19px;font-weight:700;padding:12px;resize:vertical}
+.aux-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.aux-b{min-height:50px;border-radius:10px;border:1px solid #454B54;background:#262A30;color:#EDEFF2;font:inherit;font-size:16px;font-weight:700}
+.aux-send{display:block;width:100%;min-height:62px;margin-top:10px;border:0;border-radius:12px;background:#FFC81E;color:#1b1d21;font:inherit;font-size:21px;font-weight:900}
+.aux-send:disabled{opacity:.6}
+.aux-st{min-height:22px;margin-top:10px;font-size:15px;font-weight:700;color:#A8AEB6}
+.aux-st.sent{color:#FFD65A}.aux-st.ok{color:#6FE08F}.aux-st.warn{color:#FF8A80}
+.aux-lb{margin-top:18px;font-size:13px;color:#A8AEB6;font-weight:700}
+.aux-hi{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;margin-top:6px;min-height:46px;border-radius:10px;border:1px solid #3A3F46;background:#1E2227;color:#EDEFF2;font:inherit;font-size:15px;padding:8px 12px;align-items:center}
+.aux-hi span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.aux-hi small{color:#A8AEB6}
+.aux-none{font-size:13px;color:#7E858E;margin-top:6px}
+
+
+/* ───── 경유지 · 카카오내비 · 네이버 지도 ───── */
+.wprow{display:grid;grid-template-columns:48px 1fr 46px 52px 40px;gap:6px;align-items:center;margin-top:8px}
+.wprow .wpl{font-size:14px;font-weight:900;color:#FFD65A;text-align:center}
+.wprow input{min-width:0;min-height:46px;border-radius:4px;border:1px solid var(--line);background:var(--board);color:var(--ink);font:inherit;font-size:16px;padding:0 10px}
+.wprow .mini{padding:0 6px}
+.wprow .wpx{color:#FF8A80}
+.wpst{font-size:13px;color:var(--muted);margin:3px 0 0 54px;min-height:16px}
+.wpst.ok{color:#6FE08F;font-weight:700}
+.btn.wpadd{width:100%;margin-top:8px;min-height:44px;border:1px dashed #FFD65A;background:transparent;color:#FFD65A;font-weight:800}
+.navrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.btn.navk{background:#FEE500;border-color:#FEE500;color:#191919;font-weight:900}
+.btn.navn{background:#03C75A;border-color:#03C75A;color:#fff;font-weight:900}
+.wpnote{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.45}
+
 /* ───── 손님 통역 (폰·태블릿) ───── */
 #tbModeRow{flex-wrap:wrap}
 .tbmode .tbtalkbtn{flex:1 1 100%;min-height:48px;padding:0 8px;border:1px solid #138A8A;border-radius:4px;background:#138A8A;color:#fff;font-size:15px;font-weight:700;white-space:nowrap}
@@ -2555,7 +2592,14 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
           <button type="button" id="btnFind" class="mini mic" title="목적지로 지정">찾기</button>
         </div>
       </div>
+      <div id="wpBox"></div>
+      <button class="btn wpadd" type="button" id="btnWpAdd">＋ 경유지 추가 (최대 4곳)</button>
       <button class="btn ai" type="button" id="btnAi">T맵(실시간 교통)</button>
+      <div class="navrow">
+        <button class="btn navk" type="button" id="btnKNavi">카카오내비 길안내</button>
+        <button class="btn navn" type="button" id="btnNNavi">네이버 지도 길안내</button>
+      </div>
+      <div class="wpnote" id="wpNote" style="display:none"></div>
       <div id="aiResult"></div>
       <div id="roadResult"></div>
     </div>
@@ -2664,6 +2708,11 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
       <div class="empty">공항 탭의 입국 예상 인원과 항공사 터미널 업데이트에 씁니다. Cloudflare Workers로 만든 주소를 넣으세요.</div>
       <div class="field"><label for="airSrv">공항 정보 서버 주소</label><input class="keyin" id="airSrv" type="url" inputmode="url" placeholder="https://taxi-airportrt.caous98.workers.dev"></div>
       <button class="btn" type="button" id="airSrvSave" style="width:100%">저장</button>
+    </div>
+    <div class="sec" id="auxSec"><h3>📲 보조폰 연결 (다른 기사 앱 목적지 받기)</h3>
+      <div class="auxst" id="auxSt">연결 안 됨</div>
+      <div class="btns"><button class="btn primary" type="button" id="auxQr">📲 보조폰 연결하기 (QR)</button><button class="btn" type="button" id="auxOff" style="display:none">연결 끊기</button></div>
+      <div class="empty">카카오·우버·티머니 기사 앱이 있는 다른 폰(또는 태블릿)으로 QR을 찍어 연결하면, 그 폰에서 손님 목적지를 붙여 넣고 [목적지 보내기]를 누를 때 이 앱에 "이 주소로 안내할까요?"가 뜹니다. 누르면 목적지를 찾고 T맵 경로 카드까지 나옵니다. 이 앱이 화면에 켜져 있을 때 받습니다.</div>
     </div>
     <div class="sec" id="tbSec"><div class="sechd"><h3>태블릿 안내 화면</h3><button class="btn tbupd" type="button" id="tbUpdate">태블릿 새 버전 받기</button></div>
       <div class="empty">뒷좌석 태블릿에 승차·하차 안내를 글자와 소리로 띄웁니다. 목적지를 정하고 내비(카카오내비·T맵·네이버)로 출발하면 곧바로 승차 안내, 3분 뒤 요금·시간, 5분 뒤 갤러리 사진과 손님용 QR이 저절로 나옵니다. 태블릿이 목적지 가까이 오면 하차 안내가 나옵니다. 태블릿 크롬에서 ⋮ → 홈 화면에 추가로 설치해 열면 주소창 없이 전체 화면으로 나옵니다.</div>
@@ -3876,6 +3925,7 @@ function kakaoNaviUrl(lat, lng, name, android){
   var key=getKakaoKey();
   if (!key) return '';
   var param={destination:{name:name, x:lng, y:lat}, option:{coord_type:'wgs84'}};
+  (function(){ var w=typeof wpPts==='function' ? wpPts() : []; if (w.length) param.via_list=w.slice(0,3).map(function(p){ return {name:p.n||'경유지', x:p.lng, y:p.lat}; }); })();
   var extras={KA:'sdk/1.0 os/javascript origin/'+naverAppName()};
   var q='appkey='+encodeURIComponent(key)+'&apiver=1.0'+
         '&extras='+encodeURIComponent(JSON.stringify(extras))+
@@ -3943,6 +3993,8 @@ function tmapNaviUrl(lat, lng, name, android){
      navigate = 추천 경로로 곧바로 음성 길안내를 시작한다 (예비로 goalname 계열도 함께 붙인다) */
   var q='referrer=com.skt.Tmap&name='+nm+'&lon='+lng+'&lat='+lat+
         '&goalname='+nm+'&goalx='+lng+'&goaly='+lat;
+  /* 경유지 (T맵이 받지 못하면 무시된다) */
+  (function(){ var w=typeof wpPts==='function' ? wpPts() : []; w.slice(0,4).forEach(function(p, k){ q+='&rV'+(k+1)+'Name='+encodeURIComponent(p.n||'경유지')+'&rV'+(k+1)+'X='+p.lng+'&rV'+(k+1)+'Y='+p.lat; }); })();
   if (android===undefined) android=isAndroid();
   if (android){
     return 'intent://navigate?'+q+'#Intent;scheme=tmap;action=android.intent.action.VIEW;'+
@@ -3951,12 +4003,15 @@ function tmapNaviUrl(lat, lng, name, android){
   }
   return 'tmap://navigate?'+q;
 }
-function startTmapNavi(lat, lng, name){ navStarted(lat, lng, name); window.location.href=tmapNaviUrl(lat, lng, name); }
+/* 내비 앱 열기 (점검용으로 마지막 주소를 남겨 둔다) */
+function goNavUrl(u){ window.__lastNav=u; window.location.href=u; }
+function startTmapNavi(lat, lng, name){ navStarted(lat, lng, name); goNavUrl(tmapNaviUrl(lat, lng, name)); }
 /* 네이버 지도 길안내 (출발지를 아는 경우 함께 넘긴다) */
 function naverNaviUrl(sp, ep, android){
   if (!ep) return '';
   var q='dlat='+ep.lat+'&dlng='+ep.lng+'&dname='+encodeURIComponent(ep.n||'목적지');
   if (sp && isNum(sp.lat)) q='slat='+sp.lat+'&slng='+sp.lng+'&sname='+encodeURIComponent(sp.n||'출발')+'&'+q;
+  (function(){ var w=typeof wpPts==='function' ? wpPts() : []; w.slice(0,5).forEach(function(p, k){ q+='&v'+(k+1)+'lat='+p.lat+'&v'+(k+1)+'lng='+p.lng+'&v'+(k+1)+'name='+encodeURIComponent(p.n||'경유지'); }); })();
   q+='&appname='+encodeURIComponent(naverAppName());
   if (android===undefined) android=isAndroid();
   if (android){
@@ -3966,7 +4021,7 @@ function naverNaviUrl(sp, ep, android){
   }
   return 'nmap://route/car?'+q;
 }
-function startNaverNavi(sp, ep){ var u=naverNaviUrl(sp, ep); if (u){ if (ep) navStarted(ep.lat, ep.lng, ep.n); window.location.href=u; } }
+function startNaverNavi(sp, ep){ var u=naverNaviUrl(sp, ep); if (u){ if (ep) navStarted(ep.lat, ep.lng, ep.n); goNavUrl(u); } }
 function startKakaoNavi(lat, lng, name){
   var u=kakaoNaviUrl(lat, lng, name);
   if (!u){ toast('설정 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
@@ -5383,7 +5438,186 @@ function looksLikeAddress(q){
 }
 /* 주소에서 번지(115, 115-3)나 건물번호를 뽑는다 — 검색 결과가 그 번지인지 맞춰 보는 데 쓴다 */
 function addrNum(s){ var m=/(\d+(?:-\d+)?)\s*$/.exec(String(s||'').trim()); return m ? m[1] : ''; }
+/* ═══════════ 목적지 똑똑하게 찾기 ═══════════
+   말하기·입력·경유지·보조폰·공유 모두 이 검색을 쓴다.
+   ① 말버릇 정리("~으로 가 주세요", "~앞", "~까지")  ② 줄임말 풀기(신림초→신림초등학교, 서울대→서울대학교 …)
+   ③ 지금 위치에서 가까운 곳 먼저(20km) → 없으면 전국  ④ 정문·후문·입구·육교는 T맵 장소 자료도 찾는다(출입구 좌표)
+   ⑤ 같은 이름의 가까운 곳은 "다른 후보"로 보여 준다 */
+var GATE_RE=/(정문|후문|남문|북문|동문|서문|쪽문|입구|출입구|주출입구|정류장)$/;
+function placeNorm(q){
+  var s=String(q||'').replace(/[.?!,~]+$/g,'').replace(/\s+/g,' ').trim(), gate='', m;
+  /* 말끝 정리 */
+  s=s.replace(/\s*(으로|로|에|까지|쪽으로|방향으로)?\s*(좀\s*)?(가\s*주세요|가주세요|가\s*주십시오|가\s*줘요?|가자|갑시다|가요|가\s*주실래요|모셔\s*주세요|데려다\s*주세요|부탁(드립니다|합니다|해요|드려요)?|내려\s*주세요|세워\s*주세요)\s*$/,'');
+  s=s.replace(/\s*(으로|로|까지)\s*$/,'');
+  s=s.replace(/\s*(바로\s*)?(앞|건너편|맞은편|근처|부근|쪽|옆)\s*$/,'');
+  s=s.replace(/^(기사님\s*)?(저\s*)?/,'').replace(/\s+/g,' ').trim();
+  m=GATE_RE.exec(s); if (m) gate=m[1];
+  return {q:s, gate:gate, base: gate ? s.replace(GATE_RE,'').trim() : s};
+}
+function placeVariants(n){
+  var out=[], add=function(x){ x=String(x||'').trim(); if (x && out.indexOf(x)<0) out.push(x); }, b=n.base, g=n.gate;
+  add(n.q);
+  function exp(s){
+    return s.replace(/(\S{1,8})여고$/,'$1여자고등학교').replace(/(\S{1,8})여중$/,'$1여자중학교')
+            .replace(/(\S{1,8})초$/,'$1초등학교').replace(/(\S{1,8})중$/,'$1중학교').replace(/(\S{1,8})고$/,'$1고등학교')
+            .replace(/(\S{2,8})대$/,'$1대학교').replace(/주민센터$/,'행정복지센터');
+  }
+  var eb=exp(b);
+  if (eb!==b){ add(g ? eb+' '+g : eb); add(eb); }
+  if (/행정복지센터$/.test(b)) add(b.replace(/행정복지센터$/,'주민센터'));
+  if (g) add(b);
+  return out;
+}
+function placeRef(){
+  try { if (lastHere && isNum(lastHere.lat)) return {lat:lastHere.lat, lng:lastHere.lng}; } catch(e){}
+  try { var f=fromPoint(); if (f && isNum(f.lat)) return {lat:f.lat, lng:f.lng}; } catch(e){}
+  return null;
+}
+function nameKey(s){ return String(s||'').replace(/\s+/g,'').replace(/[()·.\-]/g,'').toLowerCase(); }
+/* 점수: 이름이 말한 것과 얼마나 같은가 + 가까운가 + 정문·후문을 말했으면 그 글자가 있는가 */
+function placeScore(c, n, ref){
+  var nm=nameKey(c.n), q=nameKey(n.q), b=nameKey(n.base), sc=0, d;
+  if (nm===q) sc+=100; else if (nm===b) sc+=80; else if (nm.indexOf(q)>=0) sc+=60; else if (nm.indexOf(b)>=0) sc+=45; else if (q.indexOf(nm)>=0 && nm.length>=3) sc+=35;
+  if (n.gate){ sc += nm.indexOf(nameKey(n.gate))>=0 ? 40 : 0; }
+  if (ref){ d=km(ref.lat, ref.lng, c.lat, c.lng); c.dist=d; sc -= Math.min(40, d*1.5); }
+  return sc;
+}
+/* 카카오 장소 검색 (가까운 곳 위주) */
+function kakaoNear(q, ref, radius, cb){
+  try {
+    var ps=new kakao.maps.services.Places(), opt={size:15};
+    if (ref && radius){ opt.location=new kakao.maps.LatLng(ref.lat, ref.lng); opt.radius=radius; }
+    ps.keywordSearch(q, function(data, status){
+      var out=[];
+      if (status===kakao.maps.services.Status.OK && data) data.forEach(function(d){
+        out.push({n:d.place_name, lat:parseFloat(d.y), lng:parseFloat(d.x), addr:d.road_address_name||d.address_name||'', phone:d.phone||'', kurl:d.place_url||'', cat:String(d.category_name||'').split(' > ').pop(), src:'kakao-place'});
+      });
+      cb(out);
+    }, opt);
+  } catch(e){ cb([]); }
+}
+/* T맵 장소 검색: 정문·후문·입구·육교 같은 곳이 많고, 차가 서는 입구 좌표(front)를 준다 */
+function tmapPoi(q, ref, cb){
+  var key=getTmapKey(), xhr, url;
+  if (!key){ cb([]); return; }
+  url='https://apis.openapi.sk.com/tmap/pois?version=1&searchKeyword='+encodeURIComponent(q)+'&searchType=all&count=15&reqCoordType=WGS84GEO&resCoordType=WGS84GEO'+
+      (ref ? '&centerLat='+ref.lat+'&centerLon='+ref.lng+'&radius=20&searchtypCd=A' : '');
+  try {
+    xhr=new XMLHttpRequest(); xhr.open('GET', url, true);
+    xhr.setRequestHeader('appKey', key); xhr.setRequestHeader('Accept','application/json'); xhr.timeout=8000;
+    xhr.onload=function(){
+      var out=[], d, pois;
+      try { d=JSON.parse(xhr.responseText||'{}'); pois=(d.searchPoiInfo && d.searchPoiInfo.pois && d.searchPoiInfo.pois.poi) || []; } catch(e){ pois=[]; }
+      pois.forEach(function(p){
+        var la=parseFloat(p.frontLat||p.noorLat), ln=parseFloat(p.frontLon||p.noorLon);
+        if (!isNum(la) || !isNum(ln) || !la) return;
+        var ad=[p.upperAddrName, p.middleAddrName, p.lowerAddrName].filter(Boolean).join(' ');
+        if (p.roadName) ad=[p.upperAddrName, p.middleAddrName, p.roadName, p.firstBuildNo].filter(Boolean).join(' ');
+        else if (p.firstNo) ad+=' '+p.firstNo+(p.secondNo && p.secondNo!=='0' ? '-'+p.secondNo : '');
+        out.push({n:p.name, lat:la, lng:ln, addr:ad.trim(), phone:p.telNo||'', cat:p.middleBizName||p.lowerBizName||'', src:'tmap-poi'});
+      });
+      cb(out);
+    };
+    xhr.onerror=xhr.ontimeout=function(){ cb([]); };
+    xhr.send();
+  } catch(e){ cb([]); }
+}
+/* 네이버 지역검색 (관광·맛집 서버의 /search, 서버 v2.8부터). 없으면 빈 목록 */
+function naverPlaceSearch(q, ref, cb){
+  var srv=tourServer(), url, done=false;
+  if (!srv){ cb([]); return; }
+  url=srv+'/search?q='+encodeURIComponent(q)+(ref ? '&lat='+ref.lat.toFixed(6)+'&lng='+ref.lng.toFixed(6) : '')+'&o='+encodeURIComponent(location.origin);
+  function fin(list){ if (!done){ done=true; cb(list); } }
+  setTimeout(function(){ fin([]); }, 7000);
+  try {
+    fetch(url, {mode:'cors'}).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+      var out=[];
+      if (j && j.list) j.list.forEach(function(it){
+        var la=parseFloat(it.lat), ln=parseFloat(it.lng);
+        if (isNum(la) && isNum(ln) && la) out.push({n:it.n, lat:la, lng:ln, addr:it.road||it.addr||'', cat:it.cat||'', phone:it.tel||'', src:'naver-place'});
+      });
+      fin(out);
+    }).catch(function(){ fin([]); });
+  } catch(e){ fin([]); }
+}
+/* 여러 이름(줄임말 풀기 등)과 여러 자료(카카오·네이버·T맵)로 찾아 가장 알맞은 곳 + 가까운 다른 후보 */
+function smartPlaceSearch(query, cb){
+  var n=placeNorm(query), vars=placeVariants(n), ref=placeRef(), all=[], seen={}, i=0;
+  /* 점수는 말한 그대로와 풀어 쓴 이름(예: 주민센터→행정복지센터) 중 더 잘 맞는 쪽으로 */
+  function addAll(list, v){ list.forEach(function(c){ var k=c.n+'@'+c.lat.toFixed(4)+','+c.lng.toFixed(4), vb, s2; if (!seen[k]){ seen[k]=1; c.score=placeScore(c, n, ref); if (v && v!==n.q){ vb=v.replace(GATE_RE,'').trim(); s2=placeScore(c, {q:v, base:vb, gate:n.gate}, ref); if (s2>c.score) c.score=s2; } all.push(c); } }); }
+  function good(){ return all.filter(function(c){ return c.score>=35; }); }
+  function finish(){
+    var g=good().sort(function(a,b){ return b.score-a.score; }), best, cands, gateMiss;
+    if (!g.length){ cb(null, n); return; }
+    best=g[0];
+    gateMiss = n.gate && nameKey(best.n).indexOf(nameKey(n.gate))<0 ? n.gate : '';
+    cands=[best].concat(g.slice(1).filter(function(c){ return km(c.lat, c.lng, best.lat, best.lng) > 0.03; }).sort(function(a,b){ return (a.dist||0)-(b.dist||0); })).slice(0,6);
+    best.cands=cands; best.gateMiss=gateMiss; best.asked=n.q;
+    cb(best, n);
+  }
+  /* 1단계: 가까운 곳(20km) 카카오 — 이름 여러 가지로 */
+  function stepKakao(){
+    if (i>=vars.length){ stepNaver(); return; }
+    var v=vars[i++];
+    kakaoNear(v, ref, ref ? 20000 : 0, function(list){
+      addAll(list, v);
+      var g=good();
+      /* 정문·후문을 말했는데 그 글자가 든 곳이 아직 없으면 T맵에서 더 찾는다 */
+      if (g.length && (!n.gate || g.some(function(c){ return nameKey(c.n).indexOf(nameKey(n.gate))>=0; }))){ finish(); return; }
+      stepKakao();
+    });
+  }
+  /* 1-2단계: 카카오가 못 찾으면 네이버에 한 번 더 (작은 가게가 네이버에만 있는 경우) */
+  var nv=0;
+  function stepNaver(){
+    if (nv>=Math.min(vars.length,2)){ stepTmap(); return; }
+    var v=vars[nv++];
+    naverPlaceSearch(v, ref, function(list){
+      addAll(list, v);
+      var g=good();
+      if (g.length && (!n.gate || g.some(function(c){ return nameKey(c.n).indexOf(nameKey(n.gate))>=0; }))){ finish(); return; }
+      stepNaver();
+    });
+  }
+  /* 2단계: T맵 장소 (정문·후문·입구·육교) */
+  var j=0;
+  function stepTmap(){
+    if (j>=Math.min(vars.length,3)){ stepNation(); return; }
+    var tv=vars[j++];
+    tmapPoi(tv, ref, function(list){
+      addAll(list, tv);
+      var g=good();
+      if (g.length && (!n.gate || g.some(function(c){ return nameKey(c.n).indexOf(nameKey(n.gate))>=0; }))){ finish(); return; }
+      stepTmap();
+    });
+  }
+  /* 3단계: 전국 카카오 (가까운 곳에 없을 때) */
+  function stepNation(){
+    if (!ref || good().length){ finish(); return; }
+    kakaoNear(vars[0], null, 0, function(list){ addAll(list, vars[0]); finish(); });
+  }
+  stepKakao();
+}
+
+/* 목적지 찾기: 주소처럼 보이면 예전 방식(주소 → 장소), 아니면 똑똑하게 찾기 → 안 되면 예전 방식 */
 function searchPlace(query, cb){
+  var key=getKakaoKey(), n=placeNorm(query);
+  if (!query){ cb(null, '검색어가 없습니다'); return; }
+  if (!key){ cb(null, '설정 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
+  function go(){
+    if (looksLikeAddress(n.q)){ searchPlaceBasic(n.q, cb); return; }
+    smartPlaceSearch(query, function(best){
+      if (best){
+        if (best.gateMiss) setTimeout(function(){ toast(best.gateMiss+' 위치는 찾지 못해 '+best.n+'(으)로 잡았습니다. 다른 후보를 확인하세요'); }, 1200);
+        cb(best, null); return;
+      }
+      searchPlaceBasic(n.q || query, cb);
+    });
+  }
+  if (kakaoServicesReady()){ go(); return; }
+  loadKakaoSdk(key, function(ok){ if (!ok){ cb(null, '카카오 장소 검색에 연결하지 못했습니다'); return; } go(); });
+}
+function searchPlaceBasic(query, cb){
   var key=getKakaoKey();
   if (!query){ cb(null, '검색어가 없습니다'); return; }
   if (!key){ cb(null, '설정 탭에서 카카오 JavaScript 키를 먼저 저장하세요'); return; }
@@ -5486,6 +5720,7 @@ function searchPlace(query, cb){
   });
 }
 function getTmapKey(){ var v=sGet(TKEY_KEY); return v ? String(v).trim() : ''; }
+var option2NoWp=false;   /* 운행 중 다시 계산(현재 위치→목적지)할 때는 지나온 경유지를 넣지 않는다 */
 function tmapRoute(sp, ep, option, cb){
   var key=getTmapKey(), xhr, body;
   if (!key){ cb(null, 'TMAP 키가 없습니다'); return; }
@@ -5497,6 +5732,7 @@ function tmapRoute(sp, ep, option, cb){
     reqCoordType:'WGS84GEO', resCoordType:'WGS84GEO', searchOption:option||'0',
     trafficInfo:'Y', carType:0, tollgateCarType:'car', sort:'index'
   };
+  (function(){ var w=(typeof wpPts==='function' && !option2NoWp) ? wpPts() : []; if (w.length) body.passList=w.slice(0,5).map(function(p){ return p.lng+','+p.lat; }).join('_'); })();
   xhr=new XMLHttpRequest();
   xhr.open('POST','https://apis.openapi.sk.com/tmap/routes?version=1',true);
   xhr.setRequestHeader('Content-Type','application/json');
@@ -5524,6 +5760,7 @@ function kakaoDirections(sp, ep, priority, cb){
       '?origin='+sp.lng+','+sp.lat+
       '&destination='+ep.lng+','+ep.lat+
       '&priority='+(priority||'RECOMMEND')+
+      (function(){ var w=(typeof wpPts==='function' && !option2NoWp) ? wpPts() : []; return w.length ? '&waypoints='+w.slice(0,5).map(function(p){ return p.lng+','+p.lat; }).join('|') : ''; })()+
       '&car_type=1&car_fuel=GASOLINE&road_details=true&summary=false';
   xhr=new XMLHttpRequest();
   xhr.open('GET', url, true);
@@ -6976,7 +7213,9 @@ function navChoose(r, i, sp, ep){
 }
 function routeKey(sp, ep){
   if (!sp || !ep) return '';
-  return sp.lat.toFixed(3)+','+sp.lng.toFixed(3)+'>'+ep.lat.toFixed(3)+','+ep.lng.toFixed(3);
+  var k=sp.lat.toFixed(3)+','+sp.lng.toFixed(3)+'>'+ep.lat.toFixed(3)+','+ep.lng.toFixed(3);
+  try { var w=wpKey(); if (w) k+='~'+w; } catch(e){}
+  return k;
 }
 /* 지금 출발·도착에 맞는 실제 경로가 있으면 도로 이름 목록을 준다 */
 function realRoadsNow(){
@@ -7003,7 +7242,7 @@ function navLoad(key){
 }
 function navSave(){
   if (!$('rdFrom') || !$('rdTo')) return;
-  navStore(NAV_KEY, {at:Date.now(), from:$('rdFrom').value, here:hereDest, to:$('rdTo').value, voice:voiceDest,
+  navStore(NAV_KEY, {at:Date.now(), from:$('rdFrom').value, here:hereDest, to:$('rdTo').value, voice:voiceDest, wps:WPS.map(function(w){ return {text:w.text||'', pt:w.pt||null, msg:''}; }),
     ai:navAi, pick:navPick, best:lastBest, tab:currentTab, scroll: currentTab==='v-road' ? Math.round(window.scrollY) : 0});
 }
 function navRideSave(d){ navStore(NAVRIDE_KEY, {at:Date.now(), d:d}); }
@@ -7018,6 +7257,7 @@ function navRestore(){
       if (o.voice && isNum(o.voice.lat)) setVoiceDest(o.voice);
       else if (o.to){ for (i=0;i<$('rdTo').options.length;i++) if ($('rdTo').options[i].value===o.to){ $('rdTo').value=o.to; break; } }
       try { paintFromLabel(); } catch(e){}
+      if (o.wps && o.wps.length){ WPS=o.wps.slice(0,4); wpRender(); }
       renderRoad();
       sp=fromPoint(); ep=destPoint();
       if (o.ai && o.ai.results && o.ai.results.length && o.ai.key===routeKey(sp, ep)){
@@ -7037,6 +7277,322 @@ function navRestore(){
     } catch(e){}
   }
   if (ok) toast('앱이 다시 열려 네비 경로를 되살렸습니다');
+}
+
+function auxHm(ts){ var d=new Date(ts); return pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+/* ═══════════ 보조폰 보내기 ═══════════
+   카카오·우버·티머니 기사 앱이 있는 다른 폰(보조폰)에서 손님 목적지를 붙여 넣어 보내면
+   이 기사 앱(네비 탭)이 받아 "이 주소로 안내할까요?" → 목적지 찾기 → T맵 경로 카드까지.
+   연결: 기사 앱 설정의 QR(?aux=<ID>#k=<키>)을 보조폰으로 찍는다. 주고받는 글은 암호화(링크의 키를 가진 두 폰만 읽음) */
+var AUX_KEY='airportCallLog.aux.v1', AUXS_KEY='airportCallLog.auxSend.v1';
+var aux={es:null, key:null, seen:{}, rt:null};
+function auxTopic(id){ return 'bestaxi-aux-'+id; }
+function auxCfg(){ try { var o=JSON.parse(sGet(AUX_KEY)||'null'); return o && /^[a-z0-9]{16}$/.test(o.id||'') && o.k ? o : null; } catch(e){ return null; } }
+function auxUrl(o){ return bkBase()+'?aux='+o.id+'#k='+o.k; }
+/* 기사 앱: 연결 만들기 */
+function auxNew(cb){
+  if (!BKC){ toast('이 브라우저에서는 보조폰 연결을 만들 수 없습니다'); return; }
+  BKC.generateKey({name:'AES-GCM', length:256}, true, ['encrypt','decrypt'])
+    .then(function(k){ return BKC.exportKey('raw', k); })
+    .then(function(raw){ var o={id:bkRand(16), k:bkB64(raw), at:Date.now()}; sSet(AUX_KEY, JSON.stringify(o)); auxListen(); auxPaint(); if (cb) cb(o); });
+}
+function auxShowQr(){
+  var o=auxCfg();
+  if (!o){ auxNew(auxShowQr); return; }
+  var url=auxUrl(o), box=el('div',{cls:'tbqr'});
+  openSheet([
+    el('h3',{style:'margin:0 0 6px;font-size:18px', text:'📲 보조폰 연결'}),
+    el('div',{cls:'empty', text:'카카오·우버·티머니 기사 앱이 있는 폰(또는 태블릿)의 카메라로 이 QR을 찍어 크롬에서 여세요. 그 화면을 홈 화면에 추가해 두면 다음부터 바로 열립니다.'}),
+    box,
+    el('div',{cls:'empty', style:'word-break:break-all;font-size:12px', text:url}),
+    el('button',{cls:'btn', type:'button', style:'width:100%', onclick:closeSheet},['닫기'])
+  ]);
+  loadQrLib(function(ok){
+    if (!ok){ box.appendChild(el('div',{style:'color:#5B626B;font-size:13px', text:'QR 도구를 받지 못했습니다. 위 주소를 보조폰에 직접 입력하세요.'})); return; }
+    try { new QRCode(box, {text:url, width:260, height:260, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
+  });
+}
+function auxUnpair(){
+  if (!window.confirm('보조폰 연결을 끊을까요?\n다시 쓰려면 새 QR을 보조폰으로 찍어야 합니다.')) return;
+  sSet(AUX_KEY, ''); if (aux.es){ try { aux.es.close(); } catch(e){} aux.es=null; } aux.key=null; auxPaint(); toast('보조폰 연결을 끊었습니다');
+}
+function auxPaint(){
+  var o=auxCfg(), st=$('auxSt'), b1=$('auxQr'), b2=$('auxOff');
+  if (!st) return;
+  var last=null; try { last=JSON.parse(sGet('airportCallLog.auxLast.v1')||'null'); } catch(e){}
+  st.textContent = o ? '연결됨 · '+(last && last.t ? '마지막으로 받은 목적지: '+last.t+' ('+mdTxt(last.at)+' '+auxHm(last.at)+')' : '아직 받은 목적지 없음') : '연결 안 됨';
+  st.className='auxst '+(o ? 'ok' : '');
+  if (b1) b1.textContent = o ? '📲 연결 QR 다시 보기' : '📲 보조폰 연결하기 (QR)';
+  if (b2) b2.style.display = o ? '' : 'none';
+}
+/* 기사 앱: 받기 (앱이 켜져 있는 동안) */
+function auxListen(){
+  var o=auxCfg();
+  if (aux.es){ try { aux.es.close(); } catch(e){} aux.es=null; }
+  if (!o || !BKC || typeof EventSource==='undefined') return;
+  bkAesImport(o.k).then(function(k){
+    aux.key=k;
+    aux.es=new EventSource(TB_RELAY+auxTopic(o.id)+'/sse');
+    aux.es.onmessage=function(e){
+      var d; try { d=JSON.parse(e.data); } catch(x){ return; }
+      if (!d || d.event!=='message' || !d.message || String(d.message).indexOf('#AUX ')!==0) return;
+      if (d.id){ if (aux.seen[d.id]) return; aux.seen[d.id]=1; }
+      bkDec(aux.key, String(d.message).slice(5)).then(function(m){
+        if (!m || m.t!=='dest' || !m.text || Date.now()-(m.ts||0) > 10*60000) return;
+        auxGot(m);
+      }, function(){});
+    };
+  }, function(){});
+}
+function auxGot(m){
+  var text=String(m.text).replace(/\s+/g,' ').trim().slice(0,120);
+  try { sSet('airportCallLog.auxLast.v1', JSON.stringify({t:text, at:Date.now()})); } catch(e){}
+  auxPaint();
+  try { if (navigator.vibrate) navigator.vibrate([200,80,200]); } catch(e){}
+  auxAck(m.ts);
+  openSheet([
+    el('h3',{style:'margin:0 0 6px;font-size:18px', text:'📲 보조폰에서 목적지가 왔습니다'}),
+    el('div',{cls:'auxgot', text:text}),
+    el('div',{cls:'btns', style:'margin-top:12px'},[
+      el('button',{cls:'btn primary', type:'button', style:'flex:2', onclick:function(){ closeSheet(); auxGo(text); }},['🚕 이 주소로 안내']),
+      el('button',{cls:'btn', type:'button', style:'flex:1', onclick:closeSheet},['취소'])
+    ])
+  ]);
+}
+/* 목적지 찾기 → 잡히면 T맵 경로 카드까지 */
+function auxGo(text){
+  var before=voiceDest ? voiceDest.n : null, t0=Date.now();
+  if (currentTab!=='v-road') showTab('v-road');
+  $('destText').value=text;
+  findTypedDest();
+  (function wait(){
+    var ok=(voiceDest && voiceDest.n!==before) || ($('voiceMsg').className.indexOf('hear')>=0 && $('voiceMsg').textContent.indexOf('찾는 중')<0);
+    if (ok){ setTimeout(function(){ try { if (!aiBusy) $('btnAi').click(); } catch(e){} try { $('aiResult').scrollIntoView({behavior:'smooth', block:'start'}); } catch(e){} }, 300); return; }
+    if (Date.now()-t0 < 9000) setTimeout(wait, 400);
+  })();
+}
+function auxAck(ts){
+  var o=auxCfg(); if (!o || !aux.key) return;
+  bkEnc(aux.key, {t:'ok', ts:ts||0, at:Date.now()}).then(function(ct){ return bkPost(auxTopic(o.id), {message:'#AUX '+ct}); }).catch(function(){});
+}
+function auxBind(){
+  if ($('auxQr')) $('auxQr').addEventListener('click', auxShowQr);
+  if ($('auxOff')) $('auxOff').addEventListener('click', auxUnpair);
+  auxPaint();
+  auxListen();
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && auxCfg() && (!aux.es || aux.es.readyState===2)) auxListen(); });
+  window.addEventListener('online', function(){ if (auxCfg()) auxListen(); });
+}
+
+/* ── 보조폰 화면: ?aux=<ID>#k=<키> ── */
+function auxBoot(){
+  var m=/[?&]aux=([a-z0-9]{16})\b/.exec(location.search), km=/[#&]k=([A-Za-z0-9_-]{40,60})/.exec(location.hash);
+  if (!m) return false;
+  var id=m[1], root=el('div',{cls:'auxv'}), ta, st, list, key=null, es=null, hist=[], sendBtn;
+  document.body.appendChild(root);
+  document.body.className+=' solo';
+  document.title='📲 목적지 보내기 · 보조폰';
+  try { hist=JSON.parse(sGet(AUXS_KEY+'.'+id)||'[]'); } catch(e){ hist=[]; }
+  ta=el('textarea',{cls:'aux-ta', rows:'3', placeholder:'손님 목적지를 붙여 넣으세요 (예: 롯데호텔 서울, 강남구 테헤란로 152)'});
+  st=el('div',{cls:'aux-st', text:''});
+  list=el('div',{cls:'aux-hist'});
+  sendBtn=el('button',{cls:'aux-send', type:'button', onclick:send},['🚕 목적지 보내기']);
+  root.appendChild(el('div',{cls:'aux-h'},[el('b',{text:'📲 목적지 보내기'}), el('span',{text:'보조폰 → 기사 앱 네비'})]));
+  root.appendChild(el('div',{cls:'aux-body'},[
+    el('div',{cls:'aux-tip', text:'카카오·우버·티머니 기사 앱에서 목적지를 복사한 뒤 아래 [붙여넣기]를 누르세요. 글자가 복사되지 않으면 최근 앱 버튼(|||)에서 글자를 길게 눌러 선택해 복사하세요.'}),
+    ta,
+    el('div',{cls:'aux-row'},[
+      el('button',{cls:'aux-b', type:'button', onclick:paste},['📋 붙여넣기']),
+      el('button',{cls:'aux-b', type:'button', onclick:function(){ ta.value=''; st.textContent=''; ta.focus(); }},['✕ 지우기'])
+    ]),
+    sendBtn, st,
+    el('div',{cls:'aux-lb', text:'최근 보낸 목적지 (누르면 다시 보내기)'}),
+    list
+  ]));
+  function paintHist(){
+    clear(list);
+    if (!hist.length){ list.appendChild(el('div',{cls:'aux-none', text:'아직 보낸 목적지가 없습니다'})); return; }
+    hist.slice(0,6).forEach(function(h){ list.appendChild(el('button',{cls:'aux-hi', type:'button', onclick:function(){ ta.value=h.t; send(); }},[el('span',{text:h.t}), el('small',{text:auxHm(h.at)})])); });
+  }
+  function paste(){
+    if (navigator.clipboard && navigator.clipboard.readText){
+      navigator.clipboard.readText().then(function(t){ if (!t){ st.textContent='복사된 내용이 없습니다'; return; } ta.value=String(t).trim(); st.textContent=''; })
+        ['catch'](function(){ st.textContent='붙여넣기 권한이 막혔습니다. 입력칸을 길게 눌러 직접 붙여 넣으세요.'; ta.focus(); });
+    } else { st.textContent='입력칸을 길게 눌러 붙여 넣으세요.'; ta.focus(); }
+  }
+  function send(){
+    var t=String(ta.value||'').replace(/\s+/g,' ').trim(), ts=Date.now();
+    if (!t){ st.textContent='보낼 목적지를 넣어 주세요'; return; }
+    if (!key){ st.textContent='연결 정보가 올바르지 않습니다. 기사 앱의 QR을 다시 찍어 주세요.'; return; }
+    sendBtn.disabled=true; st.className='aux-st'; st.textContent='보내는 중…';
+    bkEnc(key, {t:'dest', text:t.slice(0,200), ts:ts}).then(function(ct){ return bkPost(auxTopic(id), {message:'#AUX '+ct}); }).then(function(){
+      sendBtn.disabled=false; st.className='aux-st sent'; st.textContent='보냈습니다 · 기사 앱이 받으면 ✓ 표시가 나옵니다';
+      hist=[{t:t, at:ts}].concat(hist.filter(function(h){ return h.t!==t; })).slice(0,10);
+      sSet(AUXS_KEY+'.'+id, JSON.stringify(hist)); paintHist();
+      aux.waitTs=ts;
+      setTimeout(function(){ if (aux.waitTs===ts) { st.className='aux-st warn'; st.textContent='기사 앱에서 아직 확인이 없습니다. 기사 앱이 화면에 켜져 있는지 확인해 주세요.'; } }, 15000);
+    }, function(){ sendBtn.disabled=false; st.className='aux-st warn'; st.textContent='보내지 못했습니다. 인터넷 연결을 확인해 주세요.'; });
+  }
+  paintHist();
+  if (!km || !BKC){ st.textContent = !km ? '연결 주소가 완전하지 않습니다. 기사 앱 설정의 QR을 다시 찍어 주세요.' : '이 브라우저에서는 쓸 수 없습니다. 크롬으로 열어 주세요.'; return true; }
+  bkAesImport(km[1]).then(function(k){
+    key=k;
+    try {
+      es=new EventSource(TB_RELAY+auxTopic(id)+'/sse');
+      es.onmessage=function(e){
+        var d; try { d=JSON.parse(e.data); } catch(x){ return; }
+        if (!d || d.event!=='message' || !d.message || String(d.message).indexOf('#AUX ')!==0) return;
+        bkDec(key, String(d.message).slice(5)).then(function(mm){
+          if (mm && mm.t==='ok' && mm.ts===aux.waitTs){ aux.waitTs=null; st.className='aux-st ok'; st.textContent='✓ 기사 앱이 받았습니다'; }
+        }, function(){});
+      };
+    } catch(e){}
+  }, function(){ st.textContent='연결 정보가 올바르지 않습니다. 기사 앱의 QR을 다시 찍어 주세요.'; });
+  return true;
+}
+
+
+/* ═══════════ 공유하기로 목적지 받기 ═══════════
+   설치된 공항콜 앱이 안드로이드 [공유] 목록에 나온다(manifest.json share_target).
+   카카오T·우버 기사 앱이나 글자 선택 메뉴의 [공유] → 공항콜 을 고르면
+   ?share_title=…&share_text=…&share_url=… 로 열린다 → 주소·장소 이름만 골라 목적지 찾기 → T맵 경로 카드 */
+function shareParams(){
+  var q=new URLSearchParams(location.search);
+  if (!q.has('share_text') && !q.has('share_title') && !q.has('share_url')) return null;
+  return {title:q.get('share_title')||'', text:q.get('share_text')||'', url:q.get('share_url')||''};
+}
+function shareDestText(o){
+  var all=[o.text, o.title].join('\n'), lines, i, t, best='';
+  all=all.replace(/https?:\/\/\S+/g,' ');   /* 링크는 뺀다 */
+  lines=all.split(/[\n\r]+/).map(function(x){
+    return x.replace(/\[(카카오맵|네이버\s*지도|네이버지도|Kakao\s*Map|NAVER\s*Map|T\s*map|티맵)\]/gi,' ')
+            .replace(/^(목적지|도착지|도착|하차지|하차|Destination|Drop[-\s]?off)\s*[:：]?\s*/i,'')
+            .replace(/(카카오맵|네이버\s*지도|네이버지도|길찾기|지도에서\s*보기|에서\s*확인하세요)\s*$/,'')
+            .replace(/\s+/g,' ').trim();
+  }).filter(function(x){ return x && x.length>=2 && !/^(공유|share)$/i.test(x); });
+  /* 주소처럼 보이는 줄(구·동·로·길·번지·역·호텔 등)을 먼저 고른다 */
+  for (i=0;i<lines.length;i++){ t=lines[i]; if (/(시|구|동|읍|면|로|길|번지|역|호텔|공항|터미널|병원|대학교|아파트|빌딩|타워)(\s|\d|$)/.test(t)){ best=t; break; } }
+  if (!best && lines.length) best=lines[0];
+  return String(best||'').slice(0,120);
+}
+function shareHandle(){
+  var o=shareParams(), t;
+  if (!o) return false;
+  try { history.replaceState(null, '', location.pathname); } catch(e){}
+  t=shareDestText(o);
+  if (!t){ toast('공유받은 글에서 목적지를 찾지 못했습니다'); return true; }
+  toast('📤 공유받은 목적지: '+t);
+  setTimeout(function(){ try { auxGo(t); } catch(e){} }, 400);
+  return true;
+}
+
+
+/* ═══════════ 경유지 (최대 4곳) ═══════════
+   경유지마다 🎤 말하기·글자 입력·찾기. T맵 경로 카드 계산과 세 내비(T맵·카카오내비·네이버 지도) 길안내에 함께 넘긴다.
+   네이버 지도는 경유지 5곳까지라 4곳 모두, 카카오내비는 3곳까지, T맵 바로안내는 경유지를 받지 못할 수 있다 */
+var WPS=[], wpRec=null;
+function wpPts(){ return WPS.filter(function(w){ return w && w.pt && isNum(w.pt.lat); }).map(function(w){ return w.pt; }); }
+function wpKey(){ return wpPts().map(function(p){ return p.lat.toFixed(3)+','+p.lng.toFixed(3); }).join('|'); }
+function wpRender(){
+  var box=$('wpBox'), add=$('btnWpAdd'), note=$('wpNote'), n;
+  if (!box) return;
+  clear(box);
+  WPS.forEach(function(w, i){
+    var inp=el('input',{type:'text', placeholder:'경유지 '+(i+1)+' — 🎤로 말하거나 입력'});
+    inp.value=w.text||'';
+    inp.addEventListener('input', function(){ w.text=inp.value; });
+    inp.addEventListener('keydown', function(e){ if (e.key==='Enter'){ e.preventDefault(); wpFind(i); } });
+    box.appendChild(el('div',{cls:'wprow'},[
+      el('b',{cls:'wpl', text:'경유'+(i+1)}), inp,
+      el('button',{type:'button', cls:'mini mic'+(wpRec && wpRec.i===i ? ' on' : ''), title:'말하기', onclick:function(){ wpVoice(i); }},['🎤']),
+      el('button',{type:'button', cls:'mini gps', onclick:function(){ wpFind(i); }},['찾기']),
+      el('button',{type:'button', cls:'mini wpx', title:'지우기', onclick:function(){ wpDel(i); }},['✕'])
+    ]));
+    box.appendChild(el('div',{cls:'wpst'+(w.pt ? ' ok' : ''), text: w.pt ? '✓ '+w.pt.n : (w.msg||'')}));
+  });
+  if (add){ add.style.display = WPS.length>=4 ? 'none' : ''; add.textContent = WPS.length ? '＋ 경유지 추가 ('+WPS.length+'/4)' : '＋ 경유지 추가 (최대 4곳)'; }
+  n=wpPts().length;
+  if (note){
+    note.style.display = n ? '' : 'none';
+    note.textContent = n ? '경유지 '+n+'곳: 네이버 지도는 모두 넘깁니다'+(n>3 ? ' · 카카오내비는 3곳까지만' : ' · 카카오내비도 모두')+' · T맵 바로안내는 경유지가 빠질 수 있어요' : '';
+  }
+}
+function wpAdd(){
+  if (WPS.length>=4) return;
+  WPS.push({text:'', pt:null, msg:''});
+  wpRender();
+  try { var ins=$('wpBox').querySelectorAll('input'); ins[ins.length-1].focus(); } catch(e){}
+}
+function wpDel(i){ WPS.splice(i,1); wpChanged(); }
+/* 경유지가 바뀌면 전에 계산한 경로 카드는 맞지 않으니 비우고 다시 누르게 */
+function wpChanged(){
+  wpRender();
+  var box=$('aiResult');
+  if (box && box.querySelector('.ai-card')){
+    clear(box);
+    box.appendChild(el('div',{cls:'ai-note', text:'경유지가 바뀌었습니다. [T맵(실시간 교통)]을 다시 누르면 경유지를 넣은 경로가 나옵니다.'}));
+    lastBest=null;
+  }
+  try { navSave(); } catch(e){}
+}
+function wpFind(i){
+  var w=WPS[i], q;
+  if (!w) return;
+  q=String(w.text||'').trim();
+  if (!q){ toast('경유지를 말하거나 입력하세요'); return; }
+  w.pt=null; w.msg='"'+q+'" 찾는 중…'; wpRender();
+  searchPlace(q, function(pt, err){
+    if (pt){ w.pt=pt; w.msg=''; toast('경유'+(i+1)+'을 '+pt.n+'(으)로 잡았습니다'); }
+    else {
+      var z=matchZoneByText(q), zp=z ? zonePoint(z) : null;
+      if (zp){ w.pt={lat:zp.lat, lng:zp.lng, n:z}; w.msg=''; toast('경유'+(i+1)+'을 '+z+'(으)로 잡았습니다'); }
+      else w.msg=(err||'찾지 못했습니다')+'. 조금 더 짧게 말하거나 적어 보세요.';
+    }
+    wpChanged();
+  });
+}
+/* 경유지 말하기: 네비 [말하기]와 같은 마이크 차례(마이크 관리자)를 쓴다 */
+function wpVoice(i){
+  var SR=window.SpeechRecognition || window.webkitSpeechRecognition, r, w=WPS[i], got='';
+  if (!SR){ toast('이 브라우저는 음성 인식을 지원하지 않습니다. 글자로 적어 주세요.'); return; }
+  if (wpRec){ try { wpRec.r.stop(); } catch(e){} return; }
+  if (wpVoice.wait) return;
+  if (!micGate('voice', function(){ if (wpRec){ var r0=wpRec.r; wpRec=null; try { r0.abort(); } catch(e){} wpRender(); } }, function(){ wpVoice.wait=false; wpVoice(i); })){
+    wpVoice.wait=true; setTimeout(function(){ wpVoice.wait=false; }, 1500); return;
+  }
+  r=new SR(); r.lang='ko-KR'; r.interimResults=true; r.maxAlternatives=3;
+  wpRec={r:r, i:i}; w.msg='듣는 중… 경유지를 말하세요'; wpRender();
+  r.onresult=function(e){
+    var k, t='';
+    for (k=e.resultIndex;k<e.results.length;k++) t+=e.results[k][0].transcript;
+    got=t.trim(); w.text=got; w.msg='듣는 중… "'+got+'"';
+    if (e.results[e.results.length-1].isFinal){ try { r.stop(); } catch(x){} }
+    wpRender();
+  };
+  r.onerror=function(ev){ if (ev && ev.error!=='aborted'){ w.msg='음성을 알아듣지 못했습니다. 다시 시도하세요.'; } };
+  r.onend=function(){ wpRec=null; micFree('voice'); if (got){ w.text=got; wpFind(i); } else wpRender(); };
+  try { r.start(); } catch(e){ wpRec=null; micFree('voice'); w.msg='마이크를 열지 못했습니다'; wpRender(); }
+}
+/* 카카오내비·네이버 지도 길안내 (출발 → 경유지 → 목적지) */
+function navKakao(){
+  var ep=destPoint(), u;
+  if (!ep){ toast('목적지를 먼저 정하세요'); return; }
+  if (wpPts().length>3) toast('카카오내비는 경유지 3곳까지라 경유4는 빠집니다');
+  u=kakaoNaviUrl(ep.lat, ep.lng, ep.n||'목적지');
+  if (!u){ toast('카카오 JavaScript 키가 없어 카카오맵 길찾기로 엽니다'); u=kakaoMapRouteScheme(fromPoint(), ep); }
+  navStarted(ep.lat, ep.lng, ep.n);
+  goNavUrl(u);
+}
+function navNaver(){
+  var ep=destPoint();
+  if (!ep){ toast('목적지를 먼저 정하세요'); return; }
+  startNaverNavi(fromPoint(), ep);
+}
+function wpBind(){
+  if ($('btnWpAdd')) $('btnWpAdd').addEventListener('click', wpAdd);
+  if ($('btnKNavi')) $('btnKNavi').addEventListener('click', navKakao);
+  if ($('btnNNavi')) $('btnNNavi').addEventListener('click', navNaver);
+  wpRender();
 }
 
 function runAiRoute(){
@@ -7165,16 +7721,19 @@ function renderAi(results, sp, ep){
    건물 이름은 좌표→주소 변환의 building_name, 가게·기관은 그 좌표 45m 안의 장소 검색(음식점·카페·편의점·약국·은행·병원·공공기관·관광명소)으로 모은다.
    네이버 지역 검색은 서버(비밀 키)가 있어야 해서 여기서는 쓰지 않는다 */
 var destDetCache={};
-function placesNear(lat, lng, radius, cb){
+function placesNear(lat, lng, radius, cb, extra){
   var key=getKakaoKey();
   if (!key){ cb([]); return; }
   function run(){
-    var ps, codes=['FD6','CE7','CS2','PM9','BK9','HP8','PO3','AT4','MT1','AC5'], out=[], seen={}, i=0, loc;
+    /* 음식점·카페·편의점·약국·은행·병원·관공서·관광명소·대형마트·학원 + 학교·숙박(호텔) */
+    var ps, codes=['FD6','CE7','CS2','PM9','BK9','HP8','PO3','AT4','MT1','AC5','SC4','AD5'], out=[], seen={}, i=0, loc;
+    /* 분류가 없는 곳: 백화점·쇼핑몰·아울렛, 그리고 같은 도로명 주소에 등록된 가게(판매점·상가 등) */
+    var kws=['백화점','쇼핑몰','아울렛'].concat((extra||[placesNear.road]).filter(Boolean)), ki=0;
     if (!kakaoServicesReady() || !kakao.maps.services.Places){ cb([]); return; }
     try { ps=new kakao.maps.services.Places(); loc=new kakao.maps.LatLng(lat, lng); } catch(e){ cb([]); return; }
     function next(){
       var c;
-      if (i>=codes.length){ out.sort(function(a,b){ return a.d-b.d; }); cb(out); return; }
+      if (i>=codes.length){ nextKw(); return; }
       c=codes[i++];
       try {
         ps.categorySearch(c, function(data, st){
@@ -7190,6 +7749,25 @@ function placesNear(lat, lng, radius, cb){
           next();
         }, {location:loc, radius:radius, sort:kakao.maps.services.SortBy.DISTANCE, size:15});
       } catch(e){ next(); }
+    }
+    function nextKw(){
+      var w;
+      if (ki>=kws.length){ out.sort(function(a,b){ return a.d-b.d; }); cb(out); return; }
+      w=kws[ki++];
+      try {
+        ps.keywordSearch(w, function(data, st){
+          var j, p, d;
+          if (st===kakao.maps.services.Status.OK && data){
+            for (j=0;j<data.length;j++){
+              p=data[j]; d=parseFloat(p.distance);
+              if (isNaN(d) || d>radius || seen[p.id]) continue;
+              seen[p.id]=1;
+              out.push({n:p.place_name, cat:String(p.category_name||'').split(' > ').pop(), d:d, phone:p.phone||'', kurl:p.place_url||'', road:p.road_address_name||'', jibun:p.address_name||''});
+            }
+          }
+          nextKw();
+        }, {location:loc, radius:Math.max(radius, 20), sort:kakao.maps.services.SortBy.DISTANCE, size:15});
+      } catch(e){ nextKw(); }
     }
     next();
   }
@@ -7242,6 +7820,7 @@ function loadDestDetail(pt, box){
   box.appendChild(el('span',{cls:'dd-k', text:'건물·가게 확인 중…'}));
   lookupBoth(pt.lat, pt.lng, function(ad){
     ad=ad||{road:'', jibun:'', bld:''};
+    placesNear.road=ad.road||'';   /* 같은 도로명 주소에 등록된 가게(판매점·상가 등)도 찾는다 */
     placesNear(pt.lat, pt.lng, 80, function(list){
       /* 같은 건물 = 도로명 주소(건물번호까지) 또는 지번이 목적지와 같은 가게 */
       (function(){
@@ -7345,6 +7924,23 @@ function ddRow(label, valueNodes, cls){
   (Array.isArray(valueNodes) ? valueNodes : [valueNodes]).forEach(function(x){ if (x!==null && x!==undefined) v.appendChild(typeof x==='string' ? document.createTextNode(x) : x); });
   return el('div',{cls:'dd-row'+(cls ? ' '+cls : '')},[el('div',{cls:'k', text:label}), v]);
 }
+/* 1층상가 칩 앞 작은 그림: 가게 종류를 한눈에 */
+function shopIcon(cat, name){
+  var t=String(cat||'')+' '+String(name||'');
+  if (/스타벅스|카페|커피|디저트|베이커리|제과/.test(t)) return '☕';
+  if (/편의점|GS25|CU|세븐일레븐|이마트24/.test(t)) return '🏪';
+  if (/은행|ATM|금융|증권|보험/.test(t)) return '🏦';
+  if (/병원|의원|치과|한의원|의료|약국|내과|외과|소아과|소아청소년과|이비인후과|피부과|안과|산부인과|비뇨|정신건강|재활|가정의학|영상의학|검진/.test(t)) return '🏥';
+  if (/초등학교|중학교|고등학교|대학교|학교|유치원|어린이집/.test(t)) return '🏫';
+  if (/학원|교습/.test(t)) return '📚';
+  if (/주민센터|행정복지|구청|시청|경찰|소방|우체국|공공기관|관공서|법원|세무서|공단/.test(t)) return '🏛';
+  if (/호텔|모텔|숙박|게스트하우스|레지던스|리조트/.test(t)) return '🏨';
+  if (/백화점|쇼핑몰|아울렛|대형마트|마트|면세점/.test(t)) return '🛍';
+  if (/음식|식당|한식|중식|일식|양식|분식|치킨|피자|고기|술집|주점|호프|국밥|냉면|족발/.test(t)) return '🍽';
+  if (/아파트|오피스텔|빌라/.test(t)) return '🏢';
+  if (/관광|명소|박물관|미술관|공원/.test(t)) return '📍';
+  return '🛒';
+}
 function paintDestDetail(box, det){
   var row, i, s, rw, hName, bName, shops;
   clear(box);
@@ -7376,7 +7972,7 @@ function paintDestDetail(box, det){
     shops=el('div',{cls:'dd-shops'});
     for (i=0;i<same.length;i++){
       s=same[i];
-      shops.appendChild(el('span',{cls:'chip'+((s.src==='both'||s.src==='self') ? ' both' : ''), text:s.n, title:s.cat||''}));
+      shops.appendChild(el('span',{cls:'chip'+((s.src==='both'||s.src==='self') ? ' both' : ''), text:shopIcon(s.cat, s.n)+' '+s.n, title:s.cat||''}));
     }
     box.appendChild(ddRow('1층상가', shops));
   } else {
@@ -7591,7 +8187,9 @@ function startVoice(){
     if (e.results[e.results.length-1].isFinal){
       /* 말한 장소를 그대로 찾는 것이 가장 정확하므로 검색을 먼저 한다 */
       msg.textContent='"'+txt+'" 찾는 중…';
-      searchPlace(txt, function(pt, err){
+      var altsAll=e.results[e.results.length-1], ai=0;
+      (function tryAlt(q){
+      searchPlace(q, function(pt, err){
         if (pt){
           setVoiceDest(pt); renderRoad();
           msg.className='voicemsg hear';
@@ -7599,6 +8197,8 @@ function startVoice(){
           toast('도착지를 '+pt.n+'로 잡았습니다');
           return;
         }
+        /* 잘못 알아들었을 수 있으니 음성 인식이 함께 들은 다른 말로도 찾아본다 (예: 울림동 → 신림동) */
+        while (++ai<altsAll.length){ var aq=String(altsAll[ai].transcript||'').trim(); if (aq && aq!==q){ msg.textContent='"'+aq+'" 로도 찾는 중…'; tryAlt(aq); return; } }
         /* 검색이 안 되면 권역 이름으로 맞춰 본다 */
         var zz=matchZoneByText(txt), alts=e.results[e.results.length-1], k;
         for (k=0;k<alts.length && !zz;k++) zz=matchZoneByText(alts[k].transcript);
@@ -7610,6 +8210,7 @@ function startVoice(){
           msg.className='voicemsg'; msg.textContent=(err||'찾지 못했습니다')+'. 목록에서 골라 주세요.';
         }
       });
+      })(txt);
     }
   };
   voiceRec.onerror=function(ev){
@@ -8997,7 +9598,8 @@ function tbRunRefresh(force){
   call = prov==='kakao' ? kakaoDirections : tmapRoute;
   /* 기사님이 고른 경로 카드와 같은 경로 종류로 다시 계산한다 (예전에는 늘 기본 경로라 태블릿 값이 카드와 달라졌다) */
   opt  = (lastBest && lastBest.sv && lastBest.pv===prov) ? lastBest.sv : (prov==='kakao' ? 'RECOMMEND' : '0');
-  call(sp, ep, opt, function(sum){
+  option2NoWp=true;   /* 지금 위치→목적지 다시 계산: 지나온 경유지는 넣지 않는다 */
+  try { call(sp, ep, opt, function(sum){
     var t, old=lastBest;
     if (!sum || !sum.time) return;
     lastBest={key:routeKey(sp, ep), dest:ep.n, time:sum.time, fare:sum.taxi, toll:sum.toll, dist:sum.dist,
@@ -9007,7 +9609,7 @@ function tbRunRefresh(force){
     if (old && old.dest===ep.n && Math.abs((old.time||0)-sum.time)<60 && Math.abs((old.fare||0)-(sum.taxi||0))<500) return;
     t=tbTripPayload(tbRun.lat, tbRun.lng, tbRun.n);
     if (t) tbSend('trip', null, tbRideLang(), t);
-  });
+  }); } finally { option2NoWp=false; }
 }
 function tbRideSent(lat, lng, name){
   if (tbTripTimer) clearTimeout(tbTripTimer);
@@ -12584,6 +13186,7 @@ function setOrganize(){
   put('prof', $('pfSec'));
   put('tab', $('tbSec'));
   put('map', setSecByH3(v, '지도 종류'));
+  put('map', $('auxSec'));
   put('voice', setSecByH3(v, '음성 안내 목소리'));
   put('app', $('dayBaseSec')); put('app', setSecByH3(v, '앱 버전')); put('app', $('airSrvSec'));
   put('data', setSecByH3(v, '저장 상태'));
@@ -15239,14 +15842,17 @@ function init(){
   bindAir();
   function bootShow(){ document.documentElement.className=document.documentElement.className.replace(/\s*\bbootx\b/g,''); }
   if (shareBoot()){ bootShow(); return; }   /* 가족이 도착 예정 공유 주소로 들어왔으면 그 화면만 */
+  if (auxBoot()){ bootShow(); return; }   /* 보조폰: 목적지 보내기 화면만 */
   if (sosViewBoot()){ bootShow(); return; }   /* 경찰·가족이 실시간 위치 링크를 열었으면 그 화면만 */
   if (bookBoot()){ bootShow(); return; }   /* 손님이 예약 QR을 찍었으면 예약 화면만 */
   if (guideLandBoot()){ bootShow(); return; }   /* 손님이 여행 가이드 QR을 찍었으면 그 안내 화면만 */
   if (tabletBoot()){ bootShow(); primeVoices(); return; }   /* 뒷좌석 태블릿이면 태블릿 안내 화면만 쓴다 */
   try { bkBind(); } catch(e){}   /* 직접 예약: 버튼·알림 받기 */
   try { mntInit(); } catch(e){}   /* 정비: 교체 시기 빨간 점 */
+  try { auxBind(); } catch(e){}   /* 보조폰에서 오는 목적지 받기 */
+  try { wpBind(); } catch(e){}   /* 경유지 · 카카오내비 · 네이버 지도 */
   /* 다른 앱을 쓰는 동안 폰이 이 페이지를 지웠다가 새로 열었으면 네비 경로를 되살린다 */
-  setTimeout(function(){ try { if (!roadFilled) fillRoadSelects(); navRestore(); } catch(e){} }, 700);
+  setTimeout(function(){ try { if (!roadFilled) fillRoadSelects(); if (!shareHandle()) navRestore(); } catch(e){} }, 700);
   document.addEventListener('visibilitychange', function(){ if (document.hidden){ try { navSave(); } catch(e){} } });
   window.addEventListener('pagehide', function(){ try { navSave(); } catch(e){} });
   try { sosLiveResume(); } catch(e){}
