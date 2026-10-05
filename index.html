@@ -3925,8 +3925,9 @@ var KNAVI_STORE = 'https://play.google.com/store/apps/details?id='+KNAVI_PKG;
 function kakaoNaviUrl(lat, lng, name, android){
   var key=getKakaoKey();
   if (!key) return '';
-  var param={destination:{name:name, x:lng, y:lat}, option:{coord_type:'wgs84'}};
-  (function(){ var w=typeof wpPts==='function' ? wpPts() : []; if (w.length) param.via_list=w.slice(0,3).map(function(p){ return {name:p.n||'경유지', x:p.lng, y:p.lat}; }); })();
+  var st=routeStops({lat:lat, lng:lng, n:name});
+  var param={destination:{name:st.end.n||name, x:st.end.lng, y:st.end.lat}, option:{coord_type:'wgs84'}};
+  if (st.via.length) param.via_list=st.via.slice(0,3).map(function(p){ return {name:p.n||'경유지', x:p.lng, y:p.lat}; });
   var extras={KA:'sdk/1.0 os/javascript origin/'+naverAppName()};
   var q='appkey='+encodeURIComponent(key)+'&apiver=1.0'+
         '&extras='+encodeURIComponent(JSON.stringify(extras))+
@@ -3989,13 +3990,14 @@ var TMAP_PKG = 'com.skt.tmap.ku';
 var TMAP_STORE = 'https://play.google.com/store/apps/details?id='+TMAP_PKG;
 /* T맵 앱으로 곧바로 길안내 시작 (출발지는 현재 위치를 T맵이 잡는다) */
 function tmapNaviUrl(lat, lng, name, android){
+  var st0=routeStops({lat:lat, lng:lng, n:name}); lat=st0.end.lat; lng=st0.end.lng; name=st0.end.n||name;
   var nm=encodeURIComponent(name||'목적지');
   /* route = 경로 선택 화면만 열고 기사가 [안내 시작]을 눌러야 했다.
      navigate = 추천 경로로 곧바로 음성 길안내를 시작한다 (예비로 goalname 계열도 함께 붙인다) */
   var q='referrer=com.skt.Tmap&name='+nm+'&lon='+lng+'&lat='+lat+
         '&goalname='+nm+'&goalx='+lng+'&goaly='+lat;
   /* 경유지 (T맵이 받지 못하면 무시된다) */
-  (function(){ var w=typeof wpPts==='function' ? wpPts() : []; w.slice(0,4).forEach(function(p, k){ q+='&rV'+(k+1)+'Name='+encodeURIComponent(p.n||'경유지')+'&rV'+(k+1)+'X='+p.lng+'&rV'+(k+1)+'Y='+p.lat; }); })();
+  st0.via.slice(0,5).forEach(function(p, k){ q+='&rV'+(k+1)+'Name='+encodeURIComponent(p.n||'경유지')+'&rV'+(k+1)+'X='+p.lng+'&rV'+(k+1)+'Y='+p.lat; });
   if (android===undefined) android=isAndroid();
   if (android){
     return 'intent://navigate?'+q+'#Intent;scheme=tmap;action=android.intent.action.VIEW;'+
@@ -4013,8 +4015,8 @@ function naverNaviUrl(sp, ep, android){
      바로 길안내는 '지금 위치에서 출발'이 원칙이라 출발지는 넘기지 않는다
      (예전에는 출발 권역 좌표까지 넘겨 바로 안내 대신 경로 확인 화면이 열렸다) */
   if (!ep) return '';
-  var q='dlat='+ep.lat+'&dlng='+ep.lng+'&dname='+encodeURIComponent(ep.n||'목적지');
-  (function(){ var w=typeof wpPts==='function' ? wpPts() : []; w.slice(0,5).forEach(function(p, k){ q+='&v'+(k+1)+'lat='+p.lat+'&v'+(k+1)+'lng='+p.lng+'&v'+(k+1)+'name='+encodeURIComponent(p.n||'경유지'); }); })();
+  var st=routeStops(ep), q='dlat='+st.end.lat+'&dlng='+st.end.lng+'&dname='+encodeURIComponent(st.end.n||'목적지');
+  st.via.slice(0,5).forEach(function(p, k){ q+='&v'+(k+1)+'lat='+p.lat+'&v'+(k+1)+'lng='+p.lng+'&v'+(k+1)+'name='+encodeURIComponent(p.n||'경유지'); });
   q+='&appname='+encodeURIComponent(naverAppName());
   if (android===undefined) android=isAndroid();
   if (android){
@@ -5880,7 +5882,13 @@ function tmapRoute(sp, ep, option, cb){
     reqCoordType:'WGS84GEO', resCoordType:'WGS84GEO', searchOption:option||'0',
     trafficInfo:'Y', carType:0, tollgateCarType:'car', sort:'index'
   };
-  (function(){ var w=(typeof wpPts==='function' && !option2NoWp) ? wpPts() : []; if (w.length) body.passList=w.slice(0,5).map(function(p){ return p.lng+','+p.lat; }).join('_'); })();
+  (function(){
+    if (typeof routeStops!=='function' || option2NoWp) return;
+    var st=routeStops(ep);
+    if (!st.via.length) return;
+    body.endX=String(st.end.lng); body.endY=String(st.end.lat); body.endName=encodeURIComponent(st.end.n||'도착');
+    body.passList=st.via.slice(0,5).map(function(p){ return p.lng+','+p.lat; }).join('_');
+  })();
   xhr=new XMLHttpRequest();
   xhr.open('POST','https://apis.openapi.sk.com/tmap/routes?version=1',true);
   xhr.setRequestHeader('Content-Type','application/json');
@@ -5906,9 +5914,11 @@ function kakaoDirections(sp, ep, priority, cb){
   if (!sp || !ep){ cb(null, '출발지와 도착지를 확인하세요'); return; }
   url='https://apis-navi.kakaomobility.com/v1/directions'+
       '?origin='+sp.lng+','+sp.lat+
-      '&destination='+ep.lng+','+ep.lat+
-      '&priority='+(priority||'RECOMMEND')+
-      (function(){ var w=(typeof wpPts==='function' && !option2NoWp) ? wpPts() : []; return w.length ? '&waypoints='+w.slice(0,5).map(function(p){ return p.lng+','+p.lat; }).join('|') : ''; })()+
+      (function(){
+        var st=(typeof routeStops==='function' && !option2NoWp) ? routeStops(ep) : {via:[], end:ep};
+        return '&destination='+st.end.lng+','+st.end.lat+'&priority='+(priority||'RECOMMEND')+
+               (st.via.length ? '&waypoints='+st.via.slice(0,5).map(function(p){ return p.lng+','+p.lat; }).join('|') : '');
+      })()+
       '&car_type=1&car_fuel=GASOLINE&road_details=true&summary=false';
   xhr=new XMLHttpRequest();
   xhr.open('GET', url, true);
@@ -7651,6 +7661,17 @@ function wpSkipWhy(i){
   for (k=0;k<i;k++) if (WPS[k] && WPS[k].pt && wpSame(WPS[k].pt, w.pt)) return '경유'+(k+1)+'과 같아 길안내에서 뺍니다';
   return '';
 }
+/* 가는 순서: 출발 → 도착(첫 번째로 들를 곳) → 경유1 → 경유2 … → 마지막 경유지(최종 목적지).
+   길안내하려는 곳이 네비 탭의 도착지가 아니면(지도 탭에서 다른 곳을 눌렀을 때) 경유지를 섞지 않는다 */
+function routeStops(ep){
+  var w=[], dp=null;
+  if (!ep) return {via:[], end:ep};
+  try { dp=destPoint(); } catch(e){}
+  if (!dp || km(dp.lat, dp.lng, ep.lat, ep.lng) > 0.03) return {via:[], end:ep};
+  w=wpPts();
+  if (!w.length) return {via:[], end:ep};
+  return {via:[{lat:ep.lat, lng:ep.lng, n:ep.n||'도착'}].concat(w.slice(0, -1)), end:w[w.length-1]};
+}
 function wpPts(){
   var out=[];
   WPS.forEach(function(w, i){ if (w && w.pt && isNum(w.pt.lat) && !wpSkipWhy(i)) out.push(w.pt); });
@@ -7679,7 +7700,9 @@ function wpRender(){
   n=wpPts().length;
   if (note){
     note.style.display = n ? '' : 'none';
-    note.textContent = n ? '경유지 '+n+'곳: 네이버 지도는 모두 넘깁니다'+(n>3 ? ' · 카카오내비는 3곳까지만' : ' · 카카오내비도 모두')+' · T맵 바로안내는 경유지가 빠질 수 있어요' : '';
+    var dp=null; try { dp=destPoint(); } catch(e){}
+    var order=['출발', (dp && dp.n) ? dp.n : '도착'].concat(wpPts().map(function(p){ return p.n; }));
+    note.textContent = n ? '가는 순서: '+order.join(' → ')+' (마지막이 최종 목적지) · 네이버 지도는 모두 넘깁니다'+(n>3 ? ' · 카카오내비는 경유3이 빠집니다' : '')+' · T맵 바로안내는 거치는 곳이 빠질 수 있어요' : '';
   }
 }
 function wpAdd(){
@@ -7771,7 +7794,7 @@ function wpVoiceFind(i, txt, alts){
 function navKakao(){
   var ep=destPoint(), u;
   if (!ep){ toast('목적지를 먼저 정하세요'); return; }
-  if (wpPts().length>3) toast('카카오내비는 경유지 3곳까지라 경유4는 빠집니다');
+  if (wpPts().length>3) toast('카카오내비는 거치는 곳이 3곳까지라 경유3은 빠지고 경유4로 갑니다');
   u=kakaoNaviUrl(ep.lat, ep.lng, ep.n||'목적지');
   if (!u){ toast('카카오 JavaScript 키가 없어 카카오맵 길찾기로 엽니다'); u=kakaoMapRouteScheme(fromPoint(), ep); }
   navStarted(ep.lat, ep.lng, ep.n);
