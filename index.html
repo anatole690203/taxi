@@ -5443,7 +5443,8 @@ function addrNum(s){ var m=/(\d+(?:-\d+)?)\s*$/.exec(String(s||'').trim()); retu
    ① 말버릇 정리("~으로 가 주세요", "~앞", "~까지")  ② 줄임말 풀기(신림초→신림초등학교, 서울대→서울대학교 …)
    ③ 지금 위치에서 가까운 곳 먼저(20km) → 없으면 전국  ④ 정문·후문·입구·육교는 T맵 장소 자료도 찾는다(출입구 좌표)
    ⑤ 같은 이름의 가까운 곳은 "다른 후보"로 보여 준다 */
-var GATE_RE=/(정문|후문|남문|북문|동문|서문|쪽문|입구|출입구|주출입구|정류장)$/;
+/* 큰 건물의 내릴 곳: 정문·후문·주차장·응급실·로비·택시 승강장… (여러 낱말로 된 것을 먼저 본다) */
+var GATE_RE=/(지하\s?주차장\s?입구|주차장\s?입구|주차장\s?출입구|지하\s?주차장|주차장|정문|후문|남문|북문|동문|서문|쪽문|주출입구|출입구|입구|택시\s?승강장|승강장|승하차장|하차장|정류장|응급실|응급센터|본관|별관|신관|로비)$/;
 function placeNorm(q){
   var s=String(q||'').replace(/[.?!,~]+$/g,'').replace(/\s+/g,' ').trim(), gate='', m;
   /* 말끝 정리 */
@@ -5462,10 +5463,17 @@ function placeVariants(n){
             .replace(/(\S{1,8})초$/,'$1초등학교').replace(/(\S{1,8})중$/,'$1중학교').replace(/(\S{1,8})고$/,'$1고등학교')
             .replace(/(\S{2,8})대$/,'$1대학교').replace(/주민센터$/,'행정복지센터');
   }
+  /* 잘못 말하기 쉬운 이름 */
+  var fix=function(x){ return x.replace(/아드벤처/g,'어드벤처').replace(/어드밴처|어드벤쳐/g,'어드벤처').replace(/아웃렛/g,'아울렛').replace(/(\S+)대병원/g,'$1대학교병원'); };
+  if (fix(b)!==b){ add(g ? fix(b)+' '+g : fix(b)); b=fix(b); }
+  /* 할인마트라고 말하면 아울렛·할인점으로도 */
+  if (/할인\s?마트/.test(b)){ ['아울렛','프리미엄아울렛','할인점','마트'].forEach(function(w){ var x=b.replace(/할인\s?마트/,w); add(g ? x+' '+g : x); }); }
   var eb=exp(b);
   if (eb!==b){ add(g ? eb+' '+g : eb); add(eb); }
   if (/행정복지센터$/.test(b)) add(b.replace(/행정복지센터$/,'주민센터'));
   if (g) add(b);
+  /* 동네 이름을 빼고도 한 번 (검색 엔진이 '상도동 현대아파트'를 못 알아들을 때 '현대아파트'로) — 동네 이름은 점수에만 쓴다 */
+  (function(){ var tk=placeTokens(eb), na; if (!tk.area.length) return; na=tk.core.concat(tk.bno).join(' '); if (na){ if (g) add(na+' '+g); add(na); } })();
   return out;
 }
 function placeRef(){
@@ -5475,11 +5483,44 @@ function placeRef(){
 }
 function nameKey(s){ return String(s||'').replace(/\s+/g,'').replace(/[()·.\-]/g,'').toLowerCase(); }
 /* 점수: 이름이 말한 것과 얼마나 같은가 + 가까운가 + 정문·후문을 말했으면 그 글자가 있는가 */
+/* "대학동 스타벅스"처럼 동네 이름 + 가게 이름이면, 동네 이름은 "어디 근처"라는 힌트로만 쓴다
+   (매장 이름은 "스타벅스 신림녹두거리점"이라 '대학동' 글자가 없다) */
+var AREA_TOKEN=/^\S+(동|구|시|군|읍|면|리|가|역|사거리|삼거리|오거리|로터리|입구|시장|터미널)$/;
+/* 아파트 동·단지 번호: 105동, 3단지, 101호, 2차 */
+var BLDNO_TOKEN=/^(제?\d{1,4}(동|단지|호|차|블록|블럭)|[A-Za-z가-힣]?\d{1,4}동)$/;
+function placeTokens(q){
+  var t=String(q||'').trim().split(/\s+/), area=[], core=[], bno=[];
+  t.forEach(function(w){
+    if (BLDNO_TOKEN.test(w)) bno.push(w);                                   /* 105동 → 건물 번호 */
+    else if (t.length>1 && AREA_TOKEN.test(w) && w.length>=2) area.push(w);  /* 상도동 → 동네 힌트 */
+    else core.push(w);
+  });
+  if (!core.length){ core=area; area=[]; }
+  return {area:area, core:core, bno:bno};
+}
 function placeScore(c, n, ref){
-  var nm=nameKey(c.n), q=nameKey(n.q), b=nameKey(n.base), sc=0, d;
+  var nm=nameKey(c.n), q=nameKey(n.q), b=nameKey(n.base), sc=0, d, tk, ok;
   if (nm===q) sc+=100; else if (nm===b) sc+=80; else if (nm.indexOf(q)>=0) sc+=60; else if (nm.indexOf(b)>=0) sc+=45; else if (q.indexOf(nm)>=0 && nm.length>=3) sc+=35;
+  else {
+    /* 동네 이름을 뺀 가게 이름이 모두 매장 이름에 들어 있으면 맞는 곳 (예: 대학동 + 스타벅스) */
+    tk=placeTokens(n.base);
+    /* 말한 낱말이 순서와 상관없이 모두 이름에 들어 있으면 맞는 곳 (여주 아울렛 → 여주프리미엄아울렛, 파주 이마트 → 이마트 파주점) */
+    ok=(tk.area.length || tk.bno.length || tk.core.length>1) && tk.core.length && tk.core.every(function(w){ return nm.indexOf(nameKey(w))>=0; });
+    if (ok){
+      sc+=50;
+      /* 주소에 그 동네 이름이 있으면 조금 더 (행정동 이름은 주소에 없을 수 있어 필수는 아님) */
+      if (tk.area.some(function(a){ return String(c.addr||'').replace(/\s+/g,'').indexOf(nameKey(a))>=0 || nm.indexOf(nameKey(a).replace(/(동|역)$/,''))>=0; })) sc+=10;
+    }
+  }
   if (n.gate){ sc += nm.indexOf(nameKey(n.gate))>=0 ? 40 : 0; }
-  if (ref){ d=km(ref.lat, ref.lng, c.lat, c.lng); c.dist=d; sc -= Math.min(40, d*1.5); }
+  c._ns=sc;   /* 이름만으로 본 점수 (거리·순서 빼고) */
+  /* 아파트 동 번호(105동)를 말했으면 그 번호가 이름에 든 곳을 크게 우대 */
+  tk=tk || placeTokens(n.base);
+  if (tk.bno.length && sc>0){ if (tk.bno.every(function(b){ return nm.indexOf(nameKey(b))>=0 || nm.indexOf(nameKey(b).replace(/동$/,''))>=0; })){ sc+=35; c._ns=sc; } }
+  /* 검색 엔진이 앞에 준 결과일수록 조금 더 (동네 이름을 말했으면 엔진 순서가 그 동네 기준이라 더 믿는다) */
+  tk=tk || placeTokens(n.base);
+  if (isNum(c.rank)) sc += Math.max(0, (tk.area.length ? 16 : 6) - c.rank*(tk.area.length ? 3 : 1.5));
+  if (ref){ d=km(ref.lat, ref.lng, c.lat, c.lng); c.dist=d; sc -= Math.min(40, d*(tk.area.length ? 0.4 : 1.5)); }
   return sc;
 }
 /* 카카오 장소 검색 (가까운 곳 위주) */
@@ -5526,7 +5567,9 @@ function tmapPoi(q, ref, cb){
 function naverPlaceSearch(q, ref, cb){
   var srv=tourServer(), url, done=false;
   if (!srv){ cb([]); return; }
-  url=srv+'/search?q='+encodeURIComponent(q)+(ref ? '&lat='+ref.lat.toFixed(6)+'&lng='+ref.lng.toFixed(6) : '')+'&o='+encodeURIComponent(location.origin);
+  /* 네이버는 반경 검색이 없어, 서버가 '관악구 ○○'처럼 지금 있는 구 이름을 붙여 한 번 더 묻는다 */
+  var gu=''; try { var zi=zoneInfo(fromZoneName()); if (zi && zi.gu && /구$/.test(zi.gu)) gu=zi.gu; } catch(e){}
+  url=srv+'/search?q='+encodeURIComponent(q)+(ref ? '&lat='+ref.lat.toFixed(6)+'&lng='+ref.lng.toFixed(6) : '')+(gu ? '&gu='+encodeURIComponent(gu) : '')+'&o='+encodeURIComponent(location.origin);
   function fin(list){ if (!done){ done=true; cb(list); } }
   setTimeout(function(){ fin([]); }, 7000);
   try {
@@ -5544,13 +5587,25 @@ function naverPlaceSearch(q, ref, cb){
 function smartPlaceSearch(query, cb){
   var n=placeNorm(query), vars=placeVariants(n), ref=placeRef(), all=[], seen={}, i=0;
   /* 점수는 말한 그대로와 풀어 쓴 이름(예: 주민센터→행정복지센터) 중 더 잘 맞는 쪽으로 */
-  function addAll(list, v){ list.forEach(function(c){ var k=c.n+'@'+c.lat.toFixed(4)+','+c.lng.toFixed(4), vb, s2; if (!seen[k]){ seen[k]=1; c.score=placeScore(c, n, ref); if (v && v!==n.q){ vb=v.replace(GATE_RE,'').trim(); s2=placeScore(c, {q:v, base:vb, gate:n.gate}, ref); if (s2>c.score) c.score=s2; } all.push(c); } }); }
-  function good(){ return all.filter(function(c){ return c.score>=35; }); }
+  function addAll(list, v){ list.forEach(function(c, ri){ var k=c.n+'@'+c.lat.toFixed(4)+','+c.lng.toFixed(4), vb, s2; if (!isNum(c.rank)) c.rank=ri; if (!seen[k]){ seen[k]=1; c.score=placeScore(c, n, ref); c.nameSc=c._ns; if (v && v!==n.q){ vb=v.replace(GATE_RE,'').trim(); s2=placeScore(c, {q:v, base:vb, gate:n.gate}, ref); if (s2>c.score) c.score=s2; if (c._ns>c.nameSc) c.nameSc=c._ns; } all.push(c); } }); }
+  function good(){ return all.filter(function(c){ return (c.nameSc||0)>=35; }); }
+  /* 정문·후문, 아파트 동 번호(105동)를 말했으면 그 글자가 든 곳을 찾을 때까지 다음 자료(네이버·T맵)도 본다 */
+  var wtk=placeTokens(n.base);
+  function wantOk(g){
+    return g.some(function(c){
+      var k=nameKey(c.n);
+      if (n.gate && k.indexOf(nameKey(n.gate))<0) return false;
+      return wtk.bno.every(function(b){ return k.indexOf(nameKey(b))>=0 || k.indexOf(nameKey(b).replace(/동$/,''))>=0; });
+    });
+  }
   function finish(){
     var g=good().sort(function(a,b){ return b.score-a.score; }), best, cands, gateMiss;
     if (!g.length){ cb(null, n); return; }
     best=g[0];
     gateMiss = n.gate && nameKey(best.n).indexOf(nameKey(n.gate))<0 ? n.gate : '';
+    (function(){ var tk=placeTokens(n.base), bk=nameKey(best.n);
+      var miss=tk.bno.filter(function(b){ return bk.indexOf(nameKey(b))<0 && bk.indexOf(nameKey(b).replace(/동$/,''))<0; });
+      if (miss.length) gateMiss=(gateMiss ? gateMiss+'·' : '')+miss.join('·'); })();
     cands=[best].concat(g.slice(1).filter(function(c){ return km(c.lat, c.lng, best.lat, best.lng) > 0.03; }).sort(function(a,b){ return (a.dist||0)-(b.dist||0); })).slice(0,6);
     best.cands=cands; best.gateMiss=gateMiss; best.asked=n.q;
     cb(best, n);
@@ -5563,7 +5618,7 @@ function smartPlaceSearch(query, cb){
       addAll(list, v);
       var g=good();
       /* 정문·후문을 말했는데 그 글자가 든 곳이 아직 없으면 T맵에서 더 찾는다 */
-      if (g.length && (!n.gate || g.some(function(c){ return nameKey(c.n).indexOf(nameKey(n.gate))>=0; }))){ finish(); return; }
+      if (g.length && wantOk(g)){ finish(); return; }
       stepKakao();
     });
   }
@@ -5575,7 +5630,7 @@ function smartPlaceSearch(query, cb){
     naverPlaceSearch(v, ref, function(list){
       addAll(list, v);
       var g=good();
-      if (g.length && (!n.gate || g.some(function(c){ return nameKey(c.n).indexOf(nameKey(n.gate))>=0; }))){ finish(); return; }
+      if (g.length && wantOk(g)){ finish(); return; }
       stepNaver();
     });
   }
@@ -5587,14 +5642,23 @@ function smartPlaceSearch(query, cb){
     tmapPoi(tv, ref, function(list){
       addAll(list, tv);
       var g=good();
-      if (g.length && (!n.gate || g.some(function(c){ return nameKey(c.n).indexOf(nameKey(n.gate))>=0; }))){ finish(); return; }
+      if (g.length && wantOk(g)){ finish(); return; }
       stepTmap();
     });
   }
   /* 3단계: 전국 카카오 (가까운 곳에 없을 때) */
+  var nn=0;
   function stepNation(){
-    if (!ref || good().length){ finish(); return; }
-    kakaoNear(vars[0], null, 0, function(list){ addAll(list, vars[0]); finish(); });
+    if (!ref || wantOk(good())){ finish(); return; }
+    if (nn>=Math.min(vars.length,3)){ stepNationTmap(); return; }
+    var v=vars[nn++];
+    kakaoNear(v, null, 0, function(list){ addAll(list, v); if (wantOk(good())){ finish(); return; } stepNation(); });
+  }
+  var nt=0;
+  function stepNationTmap(){
+    if (nt>=Math.min(vars.length,2)){ finish(); return; }
+    var v=vars[nt++];
+    tmapPoi(v, null, function(list){ addAll(list, v); if (wantOk(good())){ finish(); return; } stepNationTmap(); });
   }
   stepKakao();
 }
