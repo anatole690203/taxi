@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#EEF0F5">
+<title>잠시 주차중입니다</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+<style>
+  :root{
+    --bg:#EEF0F5; --card:#FFFFFF; --ink:#1E2230; --sub:#7A8094;
+    --blue:#2F5BEA; --dark:#2A2E3A; --char:#A9BEF2; --char-d:#5A6FA8;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *,*::before,*::after{box-sizing:inherit}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .card{
+    width:100%; max-width:400px; background:var(--card);
+    border-radius:28px; padding:22px 24px 34px; text-align:center;
+    box-shadow:0 10px 30px rgba(40,50,90,.08);
+  }
+  .tag{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12px; font-weight:700; color:var(--blue);
+    background:#EAF0FF; border-radius:999px; padding:6px 12px; margin:6px 0 10px;
+  }
+  .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue)}
+  .robot{width:230px;height:230px;margin:0 auto;position:relative}
+  .robot canvas{width:230px!important;height:230px!important;display:block}
+  .robot.on3d .char{display:none}
+  .char{width:190px;height:auto;display:block;margin:4px auto 0;overflow:visible}
+  .upper{transform-box:view-box;transform-origin:110px 160px;animation:bow 3.4s ease-in-out infinite}
+  .head{transform-box:view-box;transform-origin:110px 100px;animation:nod 3.4s ease-in-out infinite}
+  @keyframes bow{0%,22%,78%,100%{transform:none}40%,62%{transform:translateY(16px) scaleY(.9)}}
+  @keyframes nod{0%,22%,78%,100%{transform:none}40%,62%{transform:translateY(6px) scaleY(.86)}}
+  .beacon{animation:glow 1.6s ease-in-out infinite}
+  @keyframes glow{50%{opacity:.45}}
+  @media (prefers-reduced-motion:reduce){.upper,.head,.beacon{animation:none}}
+  h1{font-size:28px; font-weight:800; margin:14px 0 10px; letter-spacing:-.02em}
+  .lead{font-size:16px; line-height:1.6; color:var(--sub); margin:0 0 30px}
+  .actions{display:flex; justify-content:center; gap:44px}
+  .act{display:flex; flex-direction:column; align-items:center; gap:10px;
+       text-decoration:none; color:var(--ink); font-size:15px; font-weight:700;
+       -webkit-tap-highlight-color:transparent}
+  .circle{width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+          box-shadow:0 6px 16px rgba(30,40,80,.22)}
+  .circle svg{width:32px;height:32px}
+  .call .circle{background:var(--blue)}
+  .sms .circle{background:var(--dark)}
+  .act:active .circle{transform:scale(.94)}
+  .act:focus-visible{outline:none}
+  .act:focus-visible .circle{outline:3px solid #FFC83D; outline-offset:4px}
+</style>
+</head>
+<body>
+<main class="card">
+  <span class="tag">차주 연락처 연결</span>
+
+  <!-- 3D 자동차 로봇 (자체 제작). 3D가 안 되는 기기에서는 아래 그림이 보입니다 -->
+  <div class="robot" id="robot">
+  <svg class="char" viewBox="0 0 220 210" role="img" aria-label="꾸벅 인사하는 자동차 로봇">
+    <defs>
+      <linearGradient id="gBody" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#8FB0FF"/><stop offset=".55" stop-color="#4D74E8"/><stop offset="1" stop-color="#2B4BB8"/>
+      </linearGradient>
+      <linearGradient id="gRoof" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#A9C2FF"/><stop offset="1" stop-color="#5A7FEA"/>
+      </linearGradient>
+      <linearGradient id="gVisor" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#3A4258"/><stop offset="1" stop-color="#151925"/>
+      </linearGradient>
+      <linearGradient id="gMetal" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#F2F4F8"/><stop offset=".5" stop-color="#C3C9D4"/><stop offset="1" stop-color="#8E96A6"/>
+      </linearGradient>
+      <radialGradient id="gTire" cx=".4" cy=".35" r=".7">
+        <stop offset="0" stop-color="#555C6E"/><stop offset="1" stop-color="#1B1F2A"/>
+      </radialGradient>
+      <radialGradient id="gLamp" cx=".4" cy=".35" r=".7">
+        <stop offset="0" stop-color="#FFFBE0"/><stop offset=".6" stop-color="#FFD84A"/><stop offset="1" stop-color="#E0A800"/>
+      </radialGradient>
+      <radialGradient id="gCore" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#E8FBFF"/><stop offset=".5" stop-color="#5FE3FF"/><stop offset="1" stop-color="#1A9FD0"/>
+      </radialGradient>
+    </defs>
+
+    <ellipse cx="110" cy="200" rx="70" ry="7" fill="#DDE2EE"/>
+
+    <!-- 바퀴 다리 -->
+    <circle cx="80" cy="184" r="16" fill="url(#gTire)"/><circle cx="80" cy="184" r="6" fill="url(#gMetal)"/>
+    <circle cx="140" cy="184" r="16" fill="url(#gTire)"/><circle cx="140" cy="184" r="6" fill="url(#gMetal)"/>
+    <rect x="72" y="150" width="76" height="26" rx="10" fill="url(#gMetal)"/>
+
+    <!-- 인사하는 윗몸 -->
+    <g class="upper">
+      <!-- 몸통 -->
+      <rect x="66" y="104" width="88" height="56" rx="18" fill="url(#gBody)"/>
+      <ellipse cx="96" cy="114" rx="22" ry="5" fill="#fff" opacity=".35"/>
+      <circle cx="110" cy="128" r="8" fill="url(#gCore)"/>
+      <!-- 팔과 모은 손 -->
+      <path d="M70 116 Q54 136 92 150" fill="none" stroke="url(#gMetal)" stroke-width="12" stroke-linecap="round"/>
+      <path d="M150 116 Q166 136 128 150" fill="none" stroke="url(#gMetal)" stroke-width="12" stroke-linecap="round"/>
+      <ellipse cx="110" cy="151" rx="20" ry="11" fill="url(#gMetal)"/>
+      <!-- 목 -->
+      <rect x="100" y="94" width="20" height="14" rx="4" fill="url(#gMetal)"/>
+
+      <!-- 머리 = 자동차 -->
+      <g class="head">
+        <!-- 귀 대신 바퀴 -->
+        <ellipse cx="36" cy="80" rx="9" ry="16" fill="url(#gTire)"/>
+        <ellipse cx="184" cy="80" rx="9" ry="16" fill="url(#gTire)"/>
+        <!-- 안테나 -->
+        <line x1="110" y1="22" x2="110" y2="8" stroke="#AEB5C2" stroke-width="4" stroke-linecap="round"/>
+        <circle class="beacon" cx="110" cy="7" r="6" fill="url(#gLamp)"/>
+        <!-- 지붕(캐빈) -->
+        <path d="M66 58 Q70 24 100 22 L120 22 Q150 24 154 58 Z" fill="url(#gRoof)"/>
+        <!-- 앞유리 = 얼굴 화면 -->
+        <path d="M76 56 Q80 32 102 31 L118 31 Q140 32 144 56 Z" fill="url(#gVisor)"/>
+        <path d="M86 40 Q92 34 104 34" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".35"/>
+        <!-- 웃는 눈 -->
+        <path d="M90 49 Q96 42 102 49" fill="none" stroke="#6FE8FF" stroke-width="4" stroke-linecap="round"/>
+        <path d="M118 49 Q124 42 130 49" fill="none" stroke="#6FE8FF" stroke-width="4" stroke-linecap="round"/>
+        <!-- 차체 -->
+        <rect x="40" y="56" width="140" height="44" rx="20" fill="url(#gBody)"/>
+        <ellipse cx="92" cy="64" rx="40" ry="5" fill="#fff" opacity=".35"/>
+        <!-- 전조등 -->
+        <ellipse cx="62" cy="80" rx="12" ry="9" fill="url(#gLamp)"/>
+        <ellipse cx="158" cy="80" rx="12" ry="9" fill="url(#gLamp)"/>
+        <!-- 볼 -->
+        <ellipse cx="84" cy="88" rx="7" ry="4" fill="#FFB3C7" opacity=".85"/>
+        <ellipse cx="136" cy="88" rx="7" ry="4" fill="#FFB3C7" opacity=".85"/>
+        <!-- 그릴 = 입 -->
+        <rect x="94" y="80" width="32" height="12" rx="6" fill="url(#gMetal)"/>
+        <path d="M102 82v8M110 82v8M118 82v8" stroke="#8E96A6" stroke-width="2"/>
+      </g>
+    </g>
+  </svg>
+  </div>
+
+  <h1>잠시 주차중입니다</h1>
+  <p class="lead">연락이 필요할 경우<br>전화 또는 문자 부탁드립니다.</p>
+
+  <div class="actions">
+    <a class="act call" id="callBtn" href="#">
+      <span class="circle"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></span>
+      전화연결
+    </a>
+    <a class="act sms" id="smsBtn" href="#">
+      <span class="circle"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.5 1.4 4.7 3.6 6.2L5 21l4-2.2c1 .2 2 .3 3 .3 5.5 0 10-3.6 10-8.1S17.5 3 12 3zM7.5 12.3a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6zm4.5 0a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6zm4.5 0a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6z"/></svg></span>
+      문자전송
+    </a>
+  </div>
+</main>
+
+<script>
+  // 번호는 화면에 표시하지 않고, 누를 때만 연결합니다.
+  var p = ['010','5493','7615'].join('');
+  var msg = '차량 이동 부탁드립니다.';
+  var ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  document.getElementById('callBtn').href = 'tel:' + p;
+  document.getElementById('smsBtn').href = 'sms:' + p + (ios ? '&' : '?') + 'body=' + encodeURIComponent(msg);
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  if(!window.THREE) return;
+  var box=document.getElementById('robot');
+  var R;
+  try{ R=new THREE.WebGLRenderer({antialias:true,alpha:true}); }catch(e){ return; }
+  var S=230;
+  R.setPixelRatio(Math.min(window.devicePixelRatio||1,3));
+  R.setSize(S,S);
+  R.outputEncoding=THREE.sRGBEncoding;
+  box.appendChild(R.domElement); box.classList.add('on3d');
+
+  var scene=new THREE.Scene();
+  var cam=new THREE.PerspectiveCamera(31,1,0.1,50);
+  cam.position.set(1.3,1.55,6.6); cam.lookAt(0,1.3,0);
+
+  scene.add(new THREE.HemisphereLight(0xffffff,0x9aa3c0,0.85));
+  var key=new THREE.DirectionalLight(0xffffff,0.9); key.position.set(3,5,4); scene.add(key);
+  var rim=new THREE.DirectionalLight(0xbcd0ff,0.55); rim.position.set(-4,3,-3); scene.add(rim);
+
+  function std(c,m,r,e){var o={color:c,metalness:m,roughness:r};if(e){o.emissive=e;o.emissiveIntensity=1;}return new THREE.MeshStandardMaterial(o);}
+  var BLUE=std(0x4d74e8,0.25,0.32), BLUE2=std(0x7d9cff,0.2,0.3),
+      METAL=std(0xd3d8e2,0.45,0.28), TIRE=std(0x22262f,0.1,0.75),
+      VISOR=std(0x161a26,0.4,0.12), EYE=std(0x6fe8ff,0,0.4,0x3fd8ff),
+      LAMP=std(0xffe27a,0,0.3,0xffc400), CHEEK=std(0xffb3c7,0,0.6), CORE=std(0x7ff0ff,0,0.3,0x22c8ff);
+
+  function mesh(g,m,x,y,z,sx,sy,sz){var o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);if(sx)o.scale.set(sx,sy,sz);return o;}
+  var SPH=new THREE.SphereGeometry(1,48,32);
+  function wheel(r,w){var g=new THREE.Group();
+    var t=new THREE.Mesh(new THREE.CylinderGeometry(r,r,w,40),TIRE);t.rotation.z=Math.PI/2;g.add(t);
+    var hub=new THREE.Mesh(new THREE.CylinderGeometry(r*.45,r*.45,w+.02,32),METAL);hub.rotation.z=Math.PI/2;g.add(hub);return g;}
+
+  var robot=new THREE.Group(); scene.add(robot);
+
+  // 바닥 그림자
+  var cv=document.createElement('canvas');cv.width=cv.height=128;var cx=cv.getContext('2d');
+  var gr=cx.createRadialGradient(64,64,4,64,64,64);gr.addColorStop(0,'rgba(60,70,110,.35)');gr.addColorStop(1,'rgba(60,70,110,0)');
+  cx.fillStyle=gr;cx.fillRect(0,0,128,128);
+  var sh=new THREE.Mesh(new THREE.PlaneGeometry(2.6,1.4),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));
+  sh.rotation.x=-Math.PI/2; sh.position.y=0.005; robot.add(sh);
+
+  // 다리 = 바퀴 두 개 + 골반
+  var wl=wheel(.33,.26); wl.position.set(-.48,.33,0); robot.add(wl);
+  var wr=wheel(.33,.26); wr.position.set(.48,.33,0); robot.add(wr);
+  robot.add(mesh(SPH,METAL,0,.72,0,.62,.2,.4));
+
+  // 윗몸 (허리에서 숙임)
+  var upper=new THREE.Group(); upper.position.y=.78; robot.add(upper);
+  upper.add(mesh(SPH,BLUE,0,.46,0,.62,.5,.46));
+  upper.add(mesh(SPH,CORE,0,.5,.44,.09,.09,.04));
+  // 팔과 모은 손 (어깨 → 앞으로 모은 손)
+  function limb(a,b,r,mat){var d=new THREE.Vector3().subVectors(b,a),L=d.length();
+    var c=new THREE.Mesh(new THREE.CylinderGeometry(r,r,L,20),mat);
+    c.position.copy(a).add(b).multiplyScalar(.5);
+    c.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());return c;}
+  [-1,1].forEach(function(s){
+    var sh=new THREE.Vector3(s*.6,.66,.02), el=new THREE.Vector3(s*.5,.32,.3), hd=new THREE.Vector3(s*.12,.26,.52);
+    upper.add(mesh(SPH,METAL,sh.x,sh.y,sh.z,.14,.14,.14));
+    upper.add(limb(sh,el,.075,METAL)); upper.add(mesh(SPH,METAL,el.x,el.y,el.z,.09,.09,.09));
+    upper.add(limb(el,hd,.07,METAL));
+  });
+  upper.add(mesh(SPH,METAL,0,.26,.53,.2,.12,.12));
+  upper.add(mesh(new THREE.CylinderGeometry(.12,.14,.22,24),METAL,0,.98,0));
+
+  // 머리 = 자동차
+  var head=new THREE.Group(); head.position.y=1.3; head.scale.setScalar(.9); upper.add(head);
+  head.add(mesh(SPH,BLUE,0,0,0,1.15,.36,.66));          // 차체
+  head.add(mesh(SPH,BLUE2,0,.24,-.02,.66,.42,.52));     // 지붕
+  head.add(mesh(SPH,VISOR,0,.26,.08,.56,.33,.47));      // 앞유리 얼굴
+  [-1,1].forEach(function(s){
+    var eye=new THREE.Mesh(new THREE.TorusGeometry(.085,.024,12,32,Math.PI),EYE);
+    eye.position.set(s*.17,.3,.55); head.add(eye);                    // 웃는 눈
+    head.add(mesh(SPH,LAMP,s*.66,.0,.5,.15,.1,.07));               // 전조등
+    head.add(mesh(SPH,CHEEK,s*.38,-.1,.6,.08,.045,.03));              // 볼
+    var ear=wheel(.22,.16); ear.position.set(s*1.16,0,0); head.add(ear); // 귀 = 바퀴
+  });
+  head.add(mesh(new THREE.BoxGeometry(.4,.13,.08),METAL,0,-.07,.64));  // 그릴 = 입
+  head.add(mesh(new THREE.CylinderGeometry(.025,.025,.3,12),METAL,0,.78,0));
+  var beacon=mesh(SPH,LAMP,0,.95,0,.08,.08,.08); head.add(beacon);   // 안테나 불빛
+
+  robot.rotation.y=-0.22;
+
+  var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t0=performance.now();
+  function ease(x){return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;}
+  function bowAmt(t){ // 3.4초 주기: 서 있기 → 숙이기 → 잠시 멈춤 → 일어서기
+    var p=(t%3400)/3400;
+    if(p<.22) return 0; if(p<.4) return ease((p-.22)/.18);
+    if(p<.62) return 1; if(p<.8) return 1-ease((p-.62)/.18); return 0;
+  }
+  function frame(now){
+    var t=now-t0, b=still?0:bowAmt(t);
+    upper.rotation.x=b*0.62; head.rotation.x=b*0.3;
+    beacon.material.emissiveIntensity=still?1:.6+.4*Math.sin(t/260);
+    R.render(scene,cam);
+    if(!still) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  window.__robotPose=function(b){upper.rotation.x=b*.62;head.rotation.x=b*.3;R.render(scene,cam);};
+})();
+</script>
+</body>
+</html>
