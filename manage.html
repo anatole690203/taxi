@@ -278,6 +278,66 @@ button{cursor:pointer}
 .tl-edbt button.ok{background:var(--sign);color:#1B1E22;border-color:var(--sign)}
 .tl-save{display:block;width:100%;min-height:46px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);font:inherit;font-size:15px;font-weight:700}
 @media (max-width:380px){ .tl-big{font-size:21px} .tl-mid{font-size:18px} .tl-qv b{font-size:16px} .tl-foot3 b{font-size:11px} }
+/* ═════ 일일 운행 리포트 ═════ */
+.rp-tools{display:flex;gap:8px;margin:0 0 12px}
+.rp-tools button{flex:1;padding:11px 6px;border-radius:12px;border:0;font-weight:800;font-size:14px;background:#2A2E37;color:#fff}
+.rp-tools button.y{background:#FFC81E;color:#17191c}
+.rp-tools button.g{background:#2E7D4F}
+.rp{background:#FBF7EC;border-radius:18px;padding:10px;color:#1F2A1E;font-family:'Jua','Apple SD Gothic Neo','Noto Sans KR',sans-serif;box-shadow:0 6px 22px rgba(0,0,0,.35);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rp *{box-sizing:border-box}
+.rp-pan{position:relative;border-radius:16px;overflow:hidden;margin-bottom:8px;line-height:1.2}
+.rp-pan svg{display:block;width:100%;height:auto}
+.rp-head .tx{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(28,74,50,.88);border-radius:14px;padding:7px 10px;text-align:center;width:86%}
+.rp-head .d{color:#fff;font-size:19px;letter-spacing:-.5px;white-space:nowrap}
+.rp-head .k{color:#FFE45C;font-size:20px;letter-spacing:-.8px;margin-top:2px;white-space:nowrap}
+.rp-sub{background:#FFE58A;border-radius:999px;padding:9px 14px;text-align:center;font-size:16px;margin-bottom:8px;border:2px solid #F5C842}
+.rp-sub i{font-style:normal;color:#E8952A;margin:0 6px}
+.rp-tag{display:inline-block;background:#6B3A1F;color:#FFF3D6;border-radius:8px 14px 14px 8px;padding:4px 12px;font-size:13px}
+.rp-ev{background:linear-gradient(135deg,#FFF6D8,#FFE9B0)}
+.rp-ev .tx{position:absolute;left:12px;top:10px;width:58%}
+.rp-ev .t{font-size:24px;line-height:1.18;margin-top:8px;color:#B3261E;text-shadow:0 1px 0 #fff;word-break:keep-all}
+.rp-ev .t b{color:#1F2A1E;font-weight:400}
+.rp-route .tag{position:absolute;left:12px;top:8px}
+.rp-route .lbs{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:space-around;align-items:center;padding:0 6px}
+.rp-route .lb{color:#fff;border-radius:999px;padding:4px 9px;font-size:13px;white-space:nowrap}
+.rp-route .ar{color:#555;font-size:14px}
+.rp-big{display:grid;grid-template-columns:1fr 1.15fr 1.1fr;gap:6px;margin-bottom:8px}
+.rp-bc{border-radius:14px;padding:6px 6px 8px;text-align:center}
+.rp-bc .hd{display:flex;align-items:center;justify-content:center;gap:3px;font-size:13.5px;min-height:34px;white-space:nowrap;letter-spacing:-.4px}
+.rp-bc .hd svg{width:28px;height:26px;flex:none}
+.rp-bc .v{background:rgba(255,255,255,.75);border-radius:10px;margin-top:4px;padding:6px 2px;font-size:25px;letter-spacing:-1px;white-space:nowrap}
+.rp-bc .v small{font-size:13px;margin-left:1px}
+.rp-sm{display:grid;grid-template-columns:1fr .8fr .8fr 1.05fr;gap:6px;margin-bottom:8px}
+.rp-sc{border-radius:12px;padding:6px 4px;display:flex;align-items:center;gap:3px;font-size:11.5px;line-height:1.25;white-space:nowrap;letter-spacing:-.3px}
+.rp-sc svg{width:26px;height:26px;flex:none}
+.rp-sc svg[viewBox='0 0 70 40']{width:34px}
+.rp-sc b{display:block;font-weight:400;font-size:13px}
+.rp-var .tx{position:absolute;right:12px;top:50%;transform:translateY(-50%);text-align:right}
+.rp-var .tag{position:absolute;left:12px;top:8px}
+.rp-var .n{font-size:24px;letter-spacing:-.5px;background:rgba(255,248,230,.85);border-radius:12px;padding:6px 10px}
+.rp-var .n big{font-size:32px}
+.rp-line{background:#FFE58A;border:2px solid #F5C842;border-radius:14px;padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rp-line span:last-child{font-size:16px;border-bottom:3px solid #F07A5A;line-height:1.3;word-break:keep-all}
+.rp-end{background:#244A33;color:#fff;border-radius:14px;padding:11px;text-align:center;font-size:18px}
+.rp-end em{font-style:normal;color:#FFE45C}
+.rp-end i{font-style:normal;color:#FFC81E;margin:0 6px}
+.rp-none{text-align:center;color:#9aa;padding:30px 0;font-size:14px}
+.rp-ed{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px}
+.rp-edbox{background:#fff;color:#17191c;border-radius:16px;padding:16px;width:100%;max-width:420px;max-height:90vh;overflow:auto}
+.rp-edbox h3{margin:0 0 10px;font-size:17px}
+.rp-edbox label{display:block;font-size:13px;color:#555;margin:10px 0 4px}
+.rp-edbox input,.rp-edbox select{width:100%;padding:10px;border:1px solid #ccc;border-radius:10px;font-size:15px}
+.rp-edbox p{font-size:12px;color:#888;margin:10px 0 0}
+.rp-edbt{display:flex;gap:8px;margin-top:14px}
+.rp-edbt button{flex:1;padding:11px;border-radius:10px;border:0;background:#eee;font-weight:700;font-size:14px}
+.rp-edbt button.ok{background:#2E7D4F;color:#fff}
+@media print{
+  html,body{background:#fff !important}
+  body *{visibility:hidden !important}
+  #rpCard,#rpCard *{visibility:visible !important}
+  #rpCard{position:absolute;left:0;right:0;top:0;margin:0 auto;width:118mm;box-shadow:none}
+  @page{size:A4 portrait;margin:10mm}
+}
 </style>
 </head>
 <body>
@@ -289,6 +349,7 @@ button{cursor:pointer}
   <section class="view" id="vw-today"></section>
   <section class="view" id="vw-trip"></section>
   <section class="view" id="vw-stat"></section>
+  <section class="view" id="vw-rpt"></section>
   <section class="view" id="vw-log"></section>
   <section class="view" id="vw-book"></section>
   <section class="view" id="vw-set"></section>
@@ -1628,15 +1689,273 @@ function importBackup(file){
   fr.readAsText(file, 'utf-8');
 }
 
+
+/* ═════════ 화면: 일일 운행 리포트 ═════════ */
+var RP={key:null};
+var RP_ZGU={"서울역": "중구", "남대문": "중구", "명동": "중구", "을지로": "중구", "동대문DDP": "중구", "광화문광장": "종로구", "종각역": "종로구", "탑골공원": "종로구", "용산역": "용산구", "남산N타워": "용산구", "여의도공원": "영등포구", "여의도 국회의사당": "영등포구"};
+var RP_PIN=['#D93838','#F08A24','#2E9E4F','#2F6FD6','#8A43C9','#E0457B'];
+function rpSvg(str, cls){ var d=document.createElement('div'); d.className=cls||''; d.innerHTML=str; return d; }
+function rpFont(){
+  if (document.getElementById('rpFont')) return;
+  var l=document.createElement('link'); l.id='rpFont'; l.rel='stylesheet';
+  l.href='https://fonts.googleapis.com/css2?family=Jua&display=swap'; document.head.appendChild(l);
+}
+function rpTaxi(x, y, s){
+  return '<g transform="translate('+x+' '+y+') scale('+s+')">'+
+    '<ellipse cx="40" cy="44" rx="38" ry="4" fill="rgba(0,0,0,.18)"/>'+
+    '<path d="M4 34 Q4 24 14 22 L24 12 Q28 8 36 8 L52 8 Q58 8 62 13 L70 22 Q78 23 78 32 L78 38 L4 38 Z" fill="#FFC81E" stroke="#C98A00" stroke-width="1.5"/>'+
+    '<path d="M27 13 Q30 11 36 11 L39 11 L39 21 L21 21 Z" fill="#BFE3FF"/><path d="M43 11 L52 11 Q57 11 60 15 L65 21 L43 21 Z" fill="#BFE3FF"/>'+
+    '<rect x="33" y="2" width="16" height="7" rx="2" fill="#fff" stroke="#C98A00"/><text x="41" y="7.6" font-size="5" text-anchor="middle" fill="#333" font-family="Arial" font-weight="700">TAXI</text>'+
+    '<rect x="72" y="28" width="6" height="4" rx="1" fill="#fff6c0"/><rect x="4" y="29" width="4" height="4" rx="1" fill="#E53935"/>'+
+    '<circle cx="20" cy="38" r="7" fill="#2b2b2b"/><circle cx="20" cy="38" r="3" fill="#bbb"/><circle cx="62" cy="38" r="7" fill="#2b2b2b"/><circle cx="62" cy="38" r="3" fill="#bbb"/></g>';
+}
+function rpCity(y, op){
+  var s='<g opacity="'+op+'">', xs=[[150,40,62],[175,26,46],[200,34,70],[236,22,40],[260,30,58],[292,24,48],[318,36,66],[10,28,38],[40,22,52],[64,30,30]], i, b, w;
+  for (i=0;i<xs.length;i++){ b=xs[i];
+    s+='<rect x="'+b[0]+'" y="'+(y-b[2])+'" width="'+b[1]+'" height="'+b[2]+'" fill="'+(i%2?'#9DB9D9':'#86A6CC')+'"/>';
+    for (w=y-b[2]+6; w<y-4; w+=8) s+='<rect x="'+(b[0]+4)+'" y="'+w+'" width="'+(b[1]-8)+'" height="3" fill="#DCEBFA" opacity=".7"/>';
+  }
+  return s+'</g>';
+}
+function rpHeadSvg(){
+  return '<svg viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="rpsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CC6F2"/><stop offset="1" stop-color="#E4F5FF"/></linearGradient></defs>'+
+    '<rect width="360" height="120" fill="url(#rpsk)"/>'+
+    '<g fill="#fff" opacity=".95"><ellipse cx="60" cy="22" rx="22" ry="8"/><ellipse cx="78" cy="18" rx="14" ry="9"/><ellipse cx="290" cy="20" rx="20" ry="7"/><ellipse cx="305" cy="16" rx="12" ry="8"/></g>'+
+    rpCity(96, 1)+
+    '<g><rect x="330" y="20" width="4" height="70" fill="#6F7F95"/><rect x="326" y="34" width="12" height="6" rx="2" fill="#E7EEF7" stroke="#6F7F95"/><rect x="331" y="8" width="2" height="12" fill="#D9534F"/></g>'+
+    '<g fill="#5BAA4A"><circle cx="18" cy="92" r="11"/><circle cx="118" cy="94" r="10"/><circle cx="140" cy="92" r="12"/><circle cx="250" cy="94" r="10"/><circle cx="350" cy="92" r="11"/></g>'+
+    '<rect y="96" width="360" height="24" fill="#8C939E"/><path d="M0 108 H360" stroke="#fff" stroke-width="2" stroke-dasharray="14 10"/>'+
+    rpTaxi(10, 70, .62)+'</svg>';
+}
+function rpPlane(cx, cy, r){
+  return '<g transform="translate('+cx+' '+cy+')"><circle r="'+r+'" fill="#fff" opacity=".92" stroke="#B9D7F0"/>'+
+    '<path transform="rotate(45) scale('+(r/12)+')" d="M0 -9 L1.6 -2 L9 1.5 L9 3.5 L1.6 1.5 L1 6.5 L3.4 8.5 L3.4 9.8 L0 8.8 L-3.4 9.8 L-3.4 8.5 L-1 6.5 L-1.6 1.5 L-9 3.5 L-9 1.5 L-1.6 -2 Z" fill="#2F6FD6"/></g>';
+}
+function rpPerson(x, y, s, shirt, hat){
+  return '<g transform="translate('+x+' '+y+') scale('+s+')">'+
+    '<rect x="16" y="34" width="14" height="22" rx="3" fill="#2A3A66"/><rect x="18" y="31" width="10" height="3" rx="1" fill="#333"/>'+
+    '<rect x="-2" y="16" width="9" height="16" rx="3" fill="#3B3B3B"/>'+
+    '<rect x="2" y="14" width="13" height="20" rx="4" fill="'+shirt+'"/>'+
+    '<rect x="3" y="34" width="5" height="18" fill="#C7A27A"/><rect x="9" y="34" width="5" height="18" fill="#B98F66"/>'+
+    '<circle cx="8.5" cy="8" r="5.5" fill="#F2C9A0"/>'+
+    (hat ? '<ellipse cx="8.5" cy="4" rx="9" ry="2.5" fill="#D7B46A"/><rect x="4.5" y="0" width="8" height="4" rx="2" fill="#D7B46A"/>' : '<path d="M3 7 Q8.5 0 14 7" fill="#5A3A22"/>')+
+    '<path d="M14 18 L18 32" stroke="#F2C9A0" stroke-width="2.5"/></g>';
+}
+function rpEvSvg(){
+  return '<svg viewBox="0 0 360 150" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="rpev" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFE9FB"/><stop offset="1" stop-color="#FFF4D6"/></linearGradient></defs>'+
+    '<rect width="360" height="150" fill="url(#rpev)"/>'+rpCity(92, .55)+
+    '<path d="M150 150 L230 92 L300 92 L360 120 L360 150 Z" fill="#9AA1AC"/><path d="M265 92 L262 150" stroke="#fff" stroke-width="2" stroke-dasharray="8 8"/>'+
+    '<g><rect x="232" y="96" width="22" height="12" rx="3" fill="#B0B6C0"/><rect x="234" y="104" width="4" height="2" fill="#E53935"/><rect x="248" y="104" width="4" height="2" fill="#E53935"/>'+
+    '<rect x="276" y="98" width="22" height="12" rx="3" fill="#C9CED6"/><rect x="278" y="106" width="4" height="2" fill="#E53935"/><rect x="292" y="106" width="4" height="2" fill="#E53935"/>'+
+    '<rect x="190" y="104" width="30" height="16" rx="4" fill="#A3AAB5"/><rect x="193" y="114" width="5" height="3" fill="#E53935"/><rect x="212" y="114" width="5" height="3" fill="#E53935"/></g>'+
+    '<g transform="translate(212 108)"><rect x="0" y="12" width="76" height="30" rx="8" fill="#FFC81E" stroke="#C98A00" stroke-width="1.5"/><path d="M10 12 L18 0 L58 0 L66 12 Z" fill="#FFD84D" stroke="#C98A00" stroke-width="1.5"/><path d="M16 11 L21 3 L55 3 L60 11 Z" fill="#7E95AE"/>'+
+    '<rect x="26" y="-8" width="24" height="8" rx="2" fill="#fff" stroke="#C98A00"/><text x="38" y="-1.6" font-size="6.5" text-anchor="middle" fill="#222" font-family="Arial" font-weight="700">TAXI</text>'+
+    '<rect x="4" y="18" width="14" height="6" rx="2" fill="#E53935"/><rect x="58" y="18" width="14" height="6" rx="2" fill="#E53935"/><rect x="28" y="24" width="20" height="8" rx="1" fill="#F4F4F4"/>'+
+    '<rect x="6" y="40" width="10" height="6" rx="2" fill="#222"/><rect x="60" y="40" width="10" height="6" rx="2" fill="#222"/></g>'+
+    rpPlane(250, 34, 18)+rpPlane(302, 26, 15)+
+    rpPerson(318, 70, 1.1, '#5B8FD8', true)+'</svg>';
+}
+function rpRouteSvg(n){
+  var s='<svg viewBox="0 0 360 112" xmlns="http://www.w3.org/2000/svg"><rect width="360" height="112" fill="#E8F4E4"/>'+rpCity(52, .5)+
+    '<rect y="50" width="360" height="12" fill="#A9D3EE"/><g fill="#7CB86A"><circle cx="30" cy="54" r="8"/><circle cx="200" cy="54" r="7"/><circle cx="330" cy="53" r="8"/></g>'+
+    '<path d="M-5 78 C60 58 100 96 170 76 S290 60 365 80" fill="none" stroke="#9AA1AC" stroke-width="18"/>'+
+    '<path d="M-5 78 C60 58 100 96 170 76 S290 60 365 80" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="7 7"/>', i, x;
+  n=Math.max(1, n);
+  for (i=0;i<n;i++){
+    x = n===1 ? 180 : 30 + i*(300/(n-1));
+    s+='<g transform="translate('+x+' 38)"><path d="M0 24 C-9 12 -11 8 -11 3 A11 11 0 0 1 11 3 C11 8 9 12 0 24 Z" fill="'+RP_PIN[i%RP_PIN.length]+'" stroke="#fff" stroke-width="1.5"/><circle cy="3" r="4.2" fill="#fff"/></g>';
+  }
+  if (n>1) s+=rpTaxi(30+300/(n-1)*0.5-14, 60, .36);
+  return s+'</svg>';
+}
+function rpIcon(k, extra){
+  if (k==='taxi') return '<svg viewBox="0 0 84 48">'+rpTaxi(2,2,.98)+'</svg>';
+  if (k==='money') return '<svg viewBox="0 0 48 40"><rect x="2" y="8" width="30" height="18" rx="2" fill="#8BC48A" stroke="#4E8A4D" transform="rotate(-10 17 17)"/><rect x="6" y="12" width="30" height="18" rx="2" fill="#A6D8A3" stroke="#4E8A4D"/><circle cx="21" cy="21" r="5" fill="#6FB06C"/><g fill="#F5C842" stroke="#B8860B"><ellipse cx="38" cy="34" rx="8" ry="3"/><ellipse cx="38" cy="30" rx="8" ry="3"/><ellipse cx="38" cy="26" rx="8" ry="3"/></g></svg>';
+  if (k==='clock') return '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#fff" stroke="#2F4A8A" stroke-width="3"/><path d="M20 9 V20 L28 24" stroke="#D93838" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="20" r="2" fill="#2F4A8A"/></svg>';
+  if (k==='clockR') return '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#fff" stroke="#D93838" stroke-width="3"/><path d="M20 10 V20 L14 25" stroke="#2F4A8A" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
+  if (k==='맑음') return '<svg viewBox="0 0 40 40"><g stroke="#F5A623" stroke-width="3" stroke-linecap="round"><path d="M20 3V8M20 32V37M3 20H8M32 20H37M8 8L11 11M29 29L32 32M8 32L11 29M29 11L32 8"/></g><circle cx="20" cy="20" r="9" fill="#FFC81E"/></svg>';
+  if (k==='흐림') return '<svg viewBox="0 0 40 40"><circle cx="14" cy="14" r="7" fill="#FFC81E"/><g fill="#C9D3DF"><ellipse cx="22" cy="25" rx="13" ry="8"/><circle cx="16" cy="22" r="7"/><circle cx="26" cy="19" r="8"/></g></svg>';
+  if (k==='비') return '<svg viewBox="0 0 40 40"><g fill="#AEBBCB"><ellipse cx="20" cy="16" rx="14" ry="8"/><circle cx="14" cy="13" r="7"/><circle cx="25" cy="10" r="8"/></g><g stroke="#2F6FD6" stroke-width="2.5" stroke-linecap="round"><path d="M12 28L10 34M20 28L18 34M28 28L26 34"/></g></svg>';
+  if (k==='눈') return '<svg viewBox="0 0 40 40"><g fill="#C9D3DF"><ellipse cx="20" cy="16" rx="14" ry="8"/><circle cx="25" cy="10" r="8"/></g><g fill="#7FB2E6"><circle cx="12" cy="31" r="2.5"/><circle cx="20" cy="34" r="2.5"/><circle cx="28" cy="31" r="2.5"/></g></svg>';
+  if (k==='traffic') return '<svg viewBox="0 0 44 40"><rect x="10" y="4" width="22" height="11" rx="3" fill="#C9CED6"/><rect x="2" y="15" width="22" height="11" rx="3" fill="#E57373"/><rect x="18" y="26" width="24" height="12" rx="3" fill="#FFFFFF" stroke="#999"/><g fill="#E53935"><rect x="12" y="11" width="3" height="2"/><rect x="27" y="11" width="3" height="2"/><rect x="20" y="34" width="3" height="2"/><rect x="37" y="34" width="3" height="2"/></g></svg>';
+  if (k==='meter') return '<svg viewBox="0 0 70 40"><rect x="12" y="2" width="46" height="7" rx="2" fill="#333"/><text x="35" y="7.6" font-size="5" text-anchor="middle" fill="#FFC81E" font-family="Arial" font-weight="700">TAXI</text><rect x="2" y="9" width="66" height="29" rx="5" fill="#1F1F1F"/><rect x="7" y="14" width="56" height="19" rx="2" fill="#3A0D0D"/><text x="35" y="28.5" font-size="13" text-anchor="middle" fill="#FF3B30" font-family="Courier New,monospace" font-weight="700">'+(extra||'0')+'</text></svg>';
+  return '<svg viewBox="0 0 40 40"></svg>';
+}
+function rpVarSvg(){
+  return '<svg viewBox="0 0 360 112" xmlns="http://www.w3.org/2000/svg"><rect width="360" height="112" fill="#E3F1FB"/>'+
+    '<g stroke="#9FC3DF" stroke-width="3"><path d="M0 10H360M90 10V90M180 10V90M270 10V90"/></g><rect y="90" width="360" height="22" fill="#E9DFC8"/>'+
+    '<path transform="translate(150 22) rotate(-12) scale(1.3)" d="M0 0 L22 0 L30 -6 L34 -6 L30 2 L40 3 L44 -1 L47 -1 L45 5 L30 8 L20 14 L16 14 L20 7 L4 5 Z" fill="#5F7FA6" opacity=".8"/>'+
+    rpPerson(20, 40, 1.15, '#E5A33A', true)+rpPerson(70, 34, 1.3, '#4F7BC0', false)+rpPerson(125, 42, 1.1, '#F2F2F2', false)+'</svg>';
+}
+
+/* 하루 자료 모으기 */
+function rpDay(key, now){
+  var recs=[], i, r, o={n:0, rev:0, maxF:0, fgn:0, air:0, first:null, last:null, wx:null, labs:[], hourly:null}, wx={}, lab, M, s, h;
+  for (i=0;i<R.length;i++) if (dk(R[i].ts)===key) recs.push(R[i]);
+  recs.sort(function(a,b){ return a.ts-b.ts; });
+  for (i=0;i<recs.length;i++){
+    r=recs[i]; o.n++;
+    if (isNum(r.fare) && r.fare>0){ o.rev+=r.fare; if (r.fare>o.maxF) o.maxF=r.fare; }
+    if (r.fgn) o.fgn++;
+    if (AIR[r.dir]) o.air++;
+    if (r.wx && r.wx.k) wx[r.wx.k]=(wx[r.wx.k]||0)+1;
+    if (o.first===null) o.first=r.ts;
+    o.last=Math.max(o.last||0, isNum(r.offTs) && r.offTs>r.ts && r.offTs-r.ts<6*3600000 ? r.offTs : r.ts);
+    lab = RP_ZGU[r.zone] || (r.dong ? String(r.dong) : '') || (r.zone ? String(r.zone) : '');
+    if (r.dir==='fromAir') lab='공항';
+    if (lab && o.labs[o.labs.length-1]!==lab) o.labs.push(lab);
+    if (r.dir==='toAir' && o.labs[o.labs.length-1]!=='공항') o.labs.push('공항');
+  }
+  if (o.labs.length>5) o.labs=o.labs.slice(0,4).concat([o.labs[o.labs.length-1]]);
+  o.wx=majority(wx);
+  M=buildDays(now||Date.now()); s=sumDays(M,[key]);
+  if (s.hourly) o.hourly=s.hourly;
+  else if (o.first!==null && o.last>o.first){ h=(o.last-o.first)/3600000; if (h>=0.5) o.hourly=o.rev/h; }
+  return o;
+}
+function rpAuto(key, o){
+  var d=kd(key), wk=['일','월','화','수','목','금','토'][d.getDay()], hr=o.first!==null ? new Date(o.first).getHours() : 12,
+      part = (o.last-o.first)>10*3600000 ? '하루' : (hr<12 ? '오전' : (hr<18 ? '오후' : '저녁')),
+      adj = {'맑음':'맑은 ','흐림':'흐린 ','비':'비 오는 ','눈':'눈 오는 '}[o.wx]||'';
+  return {
+    sub: '서울 시내를 달린 '+adj+wk+'요일 '+part,
+    ev: !o.n ? '운행 기록이/없는 날' : (o.air ? '공항 운행 '+o.air+'건이/있었던 날' : (o.fgn*2>=o.n ? '외국인 손님과/함께한 날' : o.n+'명의 손님과/함께한 날')),
+    line: o.n ? '오늘도 안전 운행, 감사한 하루' : '쉬어 가는 날도 운행의 일부',
+    end: '내일도/서울을 달립니다',
+    tr: '보통'
+  };
+}
+function rpGet(key, o){
+  var a=rpAuto(key, o), m=(CFG.rpt||{})[key]||{}, k, out={};
+  for (k in a) if (Object.prototype.hasOwnProperty.call(a,k)) out[k] = m[k] ? m[k] : a[k];
+  out.kind = CFG.rptKind || '개인택시 운행 리포트';
+  return out;
+}
+function rpSplit(t){ var p=String(t||'').split('/'); return [p[0]||'', p.slice(1).join('/')]; }
+function rpEdit(key, o){
+  var a=rpAuto(key, o), m=(CFG.rpt||{})[key]||{}, ov, f={}, tr, items=[['kind','리포트 이름 (모든 날 공통)','개인택시 운행 리포트'],['sub','한 줄 부제',a.sub],['ev','오늘의 사건 ( / 로 두 줄)',a.ev],['line','기사의 한 줄',a.line],['end','마무리 문구 ( / 뒤는 노란 글씨)',a.end]], i, box;
+  function close(){ if (ov && ov.parentNode) ov.parentNode.removeChild(ov); }
+  function save(reset){
+    var all=JSON.parse(JSON.stringify(CFG.rpt||{})), v={}, k;
+    if (!reset){ for (k in f) if (k!=='kind' && f[k].value.trim()) v[k]=f[k].value.trim().slice(0,60); if (tr.value!=='보통') v.tr=tr.value; }
+    if (Object.keys(v).length) all[key]=v; else delete all[key];
+    saveCfg({rpt:all, rptKind: reset ? (CFG.rptKind||'') : f.kind.value.trim().slice(0,24)});
+    close(); toast(reset ? '자동 문구로 되돌렸습니다' : '리포트 글을 저장했습니다'); renderRpt();
+  }
+  box=el('div',{cls:'rp-edbox'},[el('h3',{text:'✏️ '+mdK(key)+' 리포트 글 쓰기'})]);
+  for (i=0;i<items.length;i++){
+    f[items[i][0]]=el('input',{type:'text', maxlength: items[i][0]==='kind' ? '24' : '60', placeholder:items[i][2]});
+    f[items[i][0]].value = items[i][0]==='kind' ? (CFG.rptKind||'') : (m[items[i][0]]||'');
+    box.appendChild(el('label',{text:items[i][1]})); box.appendChild(f[items[i][0]]);
+    if (i===2){
+      tr=el('select');
+      ['원활','보통','정체','심한 정체'].forEach(function(t){ var op=el('option',{text:t}); op.value=t; tr.appendChild(op); });
+      tr.value=m.tr||'보통';
+      box.appendChild(el('label',{text:'교통 상황'})); box.appendChild(tr);
+    }
+  }
+  box.appendChild(el('p',{text:'비워 두면 그날 기록으로 정하는 자동 문구가 나옵니다.'}));
+  box.appendChild(el('div',{cls:'rp-edbt'},[
+    el('button',{type:'button', onclick:function(){ save(true); }},['자동으로']),
+    el('button',{type:'button', onclick:close},['취소']),
+    el('button',{type:'button', cls:'ok', onclick:function(){ save(false); }},['저장'])
+  ]));
+  ov=el('div',{cls:'rp-ed'},[box]);
+  ov.addEventListener('click', function(e){ if (e.target===ov) close(); });
+  document.body.appendChild(ov);
+}
+function rpCard(key, o, t){
+  var d=kd(key), wk=['일','월','화','수','목','금','토'][d.getDay()], card=el('div',{cls:'rp', id:'rpCard'}), ev=rpSplit(t.ev), en=rpSplit(t.end), p, i, lb, ed=function(){ rpEdit(key, o); };
+  p=rpSvg(rpHeadSvg(), 'rp-pan rp-head');
+  p.appendChild(el('div',{cls:'tx'},[el('div',{cls:'d', text:d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일 ('+wk+')'}), el('div',{cls:'k', text:t.kind})]));
+  card.appendChild(p);
+  card.appendChild(el('div',{cls:'rp-sub', onclick:ed},[el('i',{text:'>'}), document.createTextNode(t.sub), el('i',{text:'<'})]));
+  p=rpSvg(rpEvSvg(), 'rp-pan rp-ev'); p.onclick=ed;
+  p.appendChild(el('div',{cls:'tx'},[el('span',{cls:'rp-tag', text:'오늘의 사건'}), el('div',{cls:'t'},[document.createTextNode(ev[0]), ev[1] ? el('br') : null, ev[1] ? el('b',{text:ev[1]}) : null])]));
+  card.appendChild(p);
+  p=rpSvg(rpRouteSvg(o.labs.length), 'rp-pan rp-route');
+  p.appendChild(el('span',{cls:'rp-tag tag', text:'오늘의 동선'}));
+  lb=el('div',{cls:'lbs'});
+  if (!o.labs.length) lb.appendChild(el('span',{cls:'lb', style:'background:#9AA1AC', text:'동선 기록 없음'}));
+  for (i=0;i<o.labs.length;i++){
+    if (i) lb.appendChild(el('span',{cls:'ar', text:'→'}));
+    lb.appendChild(el('span',{cls:'lb', style:'background:'+RP_PIN[i%RP_PIN.length], text:o.labs[i]}));
+  }
+  p.appendChild(lb); card.appendChild(p);
+  function bc(bg, ic, name, val, unit){
+    var hd=el('div',{cls:'hd'}); hd.appendChild(rpSvg(rpIcon(ic)).firstChild); hd.appendChild(el('span',{text:name}));
+    return el('div',{cls:'rp-bc', style:'background:'+bg},[hd, el('div',{cls:'v'},[document.createTextNode(val), el('small',{text:unit})])]);
+  }
+  card.appendChild(el('div',{cls:'rp-big'},[
+    bc('#FFE58A','taxi','총 운행', String(o.n), '건'),
+    bc('#BFE3B4','money','총매출', num(o.rev), '원'),
+    bc('#BFDDF5','clock','시간당 매출', o.hourly ? num(Math.round(o.hourly)) : '–', o.hourly ? '원' : '')
+  ]));
+  function sc(bg, svgStr, a, b){
+    var c=el('div',{cls:'rp-sc', style:'background:'+bg}); c.appendChild(rpSvg(svgStr).firstChild);
+    c.appendChild(el('span',null,[document.createTextNode(a), el('b',{text:b})])); return c;
+  }
+  card.appendChild(el('div',{cls:'rp-sm'},[
+    sc('#FADADD', rpIcon('clockR'), '운행 시간', o.first!==null ? t24(o.first)+'~'+t24(o.last) : '–'),
+    sc('#FFF1B8', rpIcon(o.wx||'맑음'), '날씨', o.wx||'–'),
+    sc('#E5D9F6', rpIcon('traffic'), '교통', t.tr),
+    sc('#D7EFD3', rpIcon('meter', o.maxF ? num(o.maxF) : '0'), '최고 요금', o.maxF ? num(o.maxF)+'원' : '–')
+  ]));
+  p=rpSvg(rpVarSvg(), 'rp-pan rp-var');
+  p.appendChild(el('span',{cls:'rp-tag tag', text:'오늘의 변수'}));
+  p.appendChild(el('div',{cls:'tx'},[el('div',{cls:'n'},[document.createTextNode('외국인·관광객 '), el('big',{text:String(o.fgn)}), document.createTextNode('건')])]));
+  card.appendChild(p);
+  card.appendChild(el('div',{cls:'rp-line', onclick:ed},[el('span',{cls:'rp-tag', text:'기사의 한 줄'}), el('span',{text:t.line})]));
+  card.appendChild(el('div',{cls:'rp-end', onclick:ed},[el('i',{text:'>'}), document.createTextNode(en[0]+(en[1]?' ':'')), en[1] ? el('em',{text:en[1]}) : null, el('i',{text:'<'})]));
+  return card;
+}
+function rpSaveImage(key){
+  var card=$('rpCard'); if (!card) return;
+  function go(){
+    var p = (document.fonts && document.fonts.ready) ? document.fonts.ready : { then:function(f){ f(); } };
+    p.then(function(){
+      window.html2canvas(card, {backgroundColor:'#FBF7EC', scale:2, useCORS:true}).then(function(cv){
+        var a=document.createElement('a'); a.download='운행리포트_'+key+'.png'; a.href=cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
+        toast('운행 리포트 이미지를 저장했습니다');
+      }).catch(function(){ toast('이미지를 만들지 못했습니다. 화면을 캡처해 주세요'); });
+    });
+  }
+  if (window.html2canvas){ go(); return; }
+  var s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  s.onload=go; s.onerror=function(){ toast('인터넷이 연결되어야 저장할 수 있습니다. 화면을 캡처해 주세요'); };
+  document.head.appendChild(s); toast('이미지를 만드는 중…');
+}
+function renderRpt(){
+  var box=$('vw-rpt'), now=Date.now(), today=todayKey(), key, o, t;
+  if (!box) return;
+  rpFont();
+  if (!RP.key) RP.key=today;
+  key=RP.key; clear(box);
+  box.appendChild(el('div',{cls:'dnav'},[
+    el('button',{type:'button','aria-label':'전날', text:'‹', onclick:function(){ RP.key=addDays(RP.key,-1); renderRpt(); }}),
+    el('div',{cls:'m'},[el('b',{text:mdK(key)}), el('small',{text:'일일 운행 리포트 · 하루 기준 '+baseTxt()})]),
+    el('button',{type:'button','aria-label':'다음날', text:'›', disabled: key>=today, onclick:function(){ RP.key=addDays(RP.key,1); renderRpt(); }})
+  ]));
+  o=rpDay(key, now); t=rpGet(key, o);
+  box.appendChild(el('div',{cls:'rp-tools'},[
+    el('button',{type:'button', cls:'y', text:'✏️ 글 쓰기', onclick:function(){ rpEdit(key, o); }}),
+    el('button',{type:'button', text:'🖨 인쇄', onclick:function(){ window.print(); }}),
+    el('button',{type:'button', cls:'g', text:'📷 이미지 저장', onclick:function(){ rpSaveImage(key); }})
+  ]));
+  box.appendChild(rpCard(key, o, t));
+  if (!o.n) box.appendChild(el('div',{cls:'rp-none', text:'이 날은 운행 기록이 없습니다. ‹ 버튼으로 다른 날을 보세요.'}));
+}
+
 /* ═════════ 화면 전환 ═════════ */
 var ICONS = {
   today:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
   trip:'<path d="M5 17h14M6 17l1.5-6h9L18 17M8 11l1-3h6l1 3"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/>',
   stat:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  rpt:'<path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-3M12 17v-6M15 17v-4"/>',
   log:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
   book:'<path d="M4 4h12l4 4v12H4zM8 12h8M8 16h5"/>'
 };
-var VIEWS = EMBED ? [['stat','수익'],['log','기록'],['book','장부']] : [['today','오늘'],['trip','손님'],['stat','수익'],['log','기록'],['book','장부']];
+var VIEWS = EMBED ? [['stat','수익'],['rpt','리포트'],['log','기록'],['book','장부']] : [['today','오늘'],['trip','손님'],['stat','수익'],['rpt','리포트'],['log','기록'],['book','장부']];
 var cur='stat', pendingRender=false;
 function go(v){
   var ok=false, i, bs, vs;
@@ -1653,7 +1972,7 @@ function go(v){
   window.scrollTo(0,0);
 }
 function renderCur(){
-  if (cur==='stat') renderStat(); else if (cur==='log') renderLog(); else if (cur==='book') renderBook();
+  if (cur==='stat') renderStat(); else if (cur==='rpt') renderRpt(); else if (cur==='log') renderLog(); else if (cur==='book') renderBook();
   else if (cur==='today') renderToday(); else if (cur==='trip') renderTrip(); else if (cur==='set') renderSet();
   fitNums();
 }
