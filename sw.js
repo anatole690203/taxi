@@ -10,7 +10,7 @@
    - 404 같은 오류 응답도 저장하던 것을, 정상 응답만 저장하게 했다.
    - 관리 앱 파일도 미리 저장해서 터널에서도 열린다.
    - 번호를 v3로 올려 오염된 v2 저장본은 지운다. */
-var CACHE = 'airportcall-v3';
+var CACHE = 'airportcall-v4';
 
 var SHELL = [
   './',
@@ -58,6 +58,27 @@ function pageKey(url){
   if (/\/$/.test(p)) p += 'index.html';
   return url.origin + p;
 }
+
+/* v4 (2026-10-12) — [공유] → 공항콜 받기
+   안드로이드 공유 목록에서 공항콜을 고르면 manifest.json share_target 이 이 주소로 POST 한다.
+   - 사진(콜카드 캡처)은 'share-inbox' 저장소에 잠깐 넣고 index.html?share_img=1 로 넘긴다 → 앱이 글자를 읽는다
+   - 글자만 공유하면 예전처럼 ?share_text=… 로 넘긴다 */
+self.addEventListener('fetch', function(e){
+  var req=e.request, url;
+  if (req.method !== 'POST') return;
+  try { url = new URL(req.url); } catch(err){ return; }
+  if (!/[?&]share-target=1/.test(url.search)) return;
+  e.respondWith(req.formData().then(function(fd){
+    var file=fd.get('share_image'), base=new URL('./index.html', self.location).href, q=new URLSearchParams();
+    ['share_title','share_text','share_url'].forEach(function(k){ var v=fd.get(k); if (v) q.set(k, String(v).slice(0,2000)); });
+    if (file && file.size){
+      return caches.open('share-inbox').then(function(c){
+        return c.put('./__shared_image', new Response(file, {headers:{'content-type': file.type || 'image/png'}}));
+      }).then(function(){ q.set('share_img','1'); return Response.redirect(base+'?'+q.toString(), 303); });
+    }
+    return Response.redirect(base+(q.toString() ? '?'+q.toString() : ''), 303);
+  }).catch(function(){ return Response.redirect(new URL('./index.html', self.location).href, 303); }));
+});
 
 self.addEventListener('fetch', function(e){
   var req = e.request, url, key;

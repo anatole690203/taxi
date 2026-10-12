@@ -2091,7 +2091,21 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .wpst{font-size:13px;color:var(--muted);margin:3px 0 0 54px;min-height:16px}
 .wpst.ok{color:#6FE08F;font-weight:700}
 .wpst.warn{color:#FFB74D;font-weight:700}
-.btn.wpadd{width:100%;margin-top:8px;min-height:44px;border:1px dashed #FFD65A;background:transparent;color:#FFD65A;font-weight:800}
+.btn.ccbtn{width:100%;margin-top:8px;min-height:46px;border:1px solid #4FC3F7;background:rgba(79,195,247,.10);color:#8FDcff;font-weight:800;border-radius:12px;font-size:15px}
+.ccbar{margin-top:8px;border:1px solid #4FC3F7;border-radius:12px;padding:8px 10px;background:rgba(79,195,247,.08);font-size:13.5px;line-height:1.45}
+.ccbar .r{display:flex;align-items:center;gap:6px;margin:3px 0}
+.ccbar .r span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ccbar .r button,.ccsh .go{border:0;border-radius:9px;padding:7px 10px;font-weight:800;font-size:13px;white-space:nowrap}
+.ccbar .hd{display:flex;justify-content:space-between;color:#8FDcff;font-weight:800}
+.ccbar .hd button{background:transparent;border:0;color:#9aa;font-size:16px;padding:0 4px}
+.ccsh label{display:block;font-size:13px;color:#9aa;margin:10px 0 4px}
+.ccsh .nm{font-weight:800;font-size:15px;margin-bottom:4px}
+.ccsh input{width:100%;padding:10px;border-radius:10px;border:1px solid #555;background:#202328;color:#fff;font-size:15px}
+.ccsh .prog{text-align:center;padding:26px 0;font-size:15px}
+.ccsh .lines{max-height:34vh;overflow:auto;margin-top:6px}
+.ccsh .lines button{display:block;width:100%;text-align:left;background:#26292f;border:0;color:#ddd;padding:8px;border-radius:8px;margin:4px 0;font-size:13px}
+.go.p{background:#FFC81E;color:#17191c}.go.d{background:#4FC3F7;color:#0b2230}
+.wpadd{width:100%;margin-top:8px;min-height:44px;border:1px dashed #FFD65A;background:transparent;color:#FFD65A;font-weight:800}
 .navrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .btn.navk{background:#FEE500;border-color:#FEE500;color:#191919;font-weight:900}
 .btn.navn{background:#03C75A;border-color:#03C75A;color:#fff;font-weight:900}
@@ -2593,6 +2607,9 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
           <button type="button" id="btnFind" class="mini mic" title="목적지로 지정">찾기</button>
         </div>
       </div>
+      <button class="btn ccbtn" type="button" id="btnCc">📷 콜카드 캡처로 출발지·목적지 넣기</button>
+      <input type="file" id="ccFile" accept="image/*" style="display:none">
+      <div id="ccBar"></div>
       <div id="wpBox"></div>
       <button class="btn wpadd" type="button" id="btnWpAdd">＋ 경유지 추가 (최대 4곳)</button>
       <button class="btn ai" type="button" id="btnAi">T맵(실시간 교통)</button>
@@ -7635,7 +7652,9 @@ function shareDestText(o){
   return String(best||'').slice(0,120);
 }
 function shareHandle(){
-  var o=shareParams(), t;
+  var o, t;
+  if (ccFromShare()) return true;
+  o=shareParams();
   if (!o) return false;
   try { history.replaceState(null, '', location.pathname); } catch(e){}
   t=shareDestText(o);
@@ -7645,6 +7664,126 @@ function shareHandle(){
   return true;
 }
 
+
+/* ═══════════ 📷 콜카드 캡처 → 출발지·목적지 ═══════════
+   갤럭시 캡처 → [공유] → 공항콜 (또는 📷 버튼으로 사진 고르기)
+   → 휴대폰 안에서 글자를 읽고(Tesseract, 한국어) → 출발지(손님 위치)·목적지를 골라 네비 탭에 넣는다.
+   우버·카카오 앱은 건드리지 않는다. 기사님이 직접 찍은 캡처만 읽는다. */
+var CC_KEY='airportCallLog.ccLast.v1', ccWorker=null, ccLoading=null;
+/* 콜카드 글자에서 출발지·목적지 찾기 (ES5) */
+function ccParse(raw){
+  var CITY='(서울특별시|서울시|서울|경기도|경기|인천광역시|인천)';
+  var reStart=new RegExp('^(.{0,40}?)[,，]\\s*('+CITY+'\\s.+)$');
+  var lines=String(raw||'').split(/\r?\n/).map(function(l){ return l.split(/\s{3,}/)[0].replace(/[|｜「」：:;"'`~<>]/g,' ').replace(/\s+/g,' ').trim(); });
+  function okTok(t){ return /^\d{1,5}(-\d{1,4})?$/.test(t) || /^[가-힣0-9]{1,15}(특별시|광역시|도|시|구|군|동|읍|면|리|가|로|길|대로)$/.test(t) || /^[가-힣]+\d+(가|로|길)$/.test(t) || /^(서울|경기|인천)$/.test(t); }
+  function addrClean(s){ var out=[], tk=s.split(' '), i; for (i=0;i<tk.length;i++){ if (okTok(tk[i])) out.push(tk[i]); } return out.join(' '); }
+  function nameClean(s){
+    s=String(s||'').replace(/^.*(남음|거리|km|KM|㎞)\s*/,'').replace(/[^가-힣A-Za-z0-9&·()\s\-]/g,' ').replace(/\s+/g,' ').trim();
+    return s.length>=1 && s.length<=30 ? s : '';
+  }
+  var res=[], i, m, a, nx, nt;
+  for (i=0;i<lines.length;i++){
+    m=reStart.exec(lines[i]); if (!m) continue;
+    a=addrClean(m[2]);
+    nx=lines[i+1]||'';
+    if (nx && !reStart.test(nx)){ nt=addrClean(nx); if (/^[가-힣0-9]+(로|길|대로)(\s|$)/.test(nt)) { a+=' '+nt; i++; } }
+    if (/(구|군|시)\s/.test(a)) res.push({name:nameClean(m[1]), addr:a.trim()});
+  }
+  if (res.length<2){ /* 도시 이름 없이 '○○구 ○○동 ○○로 12' 같은 줄 */
+    for (i=0;i<lines.length && res.length<2;i++){
+      a=addrClean(lines[i]);
+      if (/(구|군)\s.*(로|길|대로)\s\d/.test(a) && !res.some(function(r){ return r.addr===a; })) res.push({name:'', addr:a});
+    }
+  }
+  var f=res[0]||null, t=res[1]||null;
+  if (f && !t){ t=f; f=null; }   /* 하나만 있으면 목적지로 본다 */
+  return {from:f, to:t};
+}
+
+function ccLoadOcr(){
+  if (ccWorker) return Promise.resolve(ccWorker);
+  if (ccLoading) return ccLoading;
+  ccLoading=new Promise(function(ok, no){
+    function mk(){
+      window.Tesseract.createWorker('kor', 1, {langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/kor/4.0.0_best_int', gzip:true})
+        .then(function(w){ ccWorker=w; ok(w); }, no);
+    }
+    if (window.Tesseract){ mk(); return; }
+    var sc=document.createElement('script'); sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+    sc.onload=mk; sc.onerror=function(){ no(new Error('net')); }; document.head.appendChild(sc);
+  });
+  ccLoading.then(null, function(){ ccLoading=null; });
+  return ccLoading;
+}
+function ccSave(o){ try { sSet(CC_KEY, JSON.stringify({from:o.from, to:o.to, at:Date.now()})); } catch(e){} ccBar(); }
+function ccGet(){ var o=null; try { o=JSON.parse(sGet(CC_KEY)||'null'); } catch(e){} return (o && Date.now()-o.at < 3*3600000) ? o : null; }
+function ccLabel(x){ return x ? (x.name ? x.name+' · ' : '')+x.addr : ''; }
+function ccBar(){
+  var b=$('ccBar'), o=ccGet(); if (!b) return; clear(b);
+  if (!o || (!o.from && !o.to)){ b.className=''; return; }
+  b.className='ccbar';
+  b.appendChild(el('div',{cls:'hd'},[el('span',{text:'📷 콜카드에서 읽은 주소'}), el('button',{type:'button', title:'지우기', onclick:function(){ try { localStorage.removeItem(CC_KEY); } catch(e){} ccBar(); }},['✕'])]));
+  if (o.from) b.appendChild(el('div',{cls:'r'},[el('span',{text:'🙋 '+ccLabel(o.from)}), el('button',{type:'button', cls:'go p', onclick:function(){ auxGo(o.from.addr); }},['손님에게'])]));
+  if (o.to) b.appendChild(el('div',{cls:'r'},[el('span',{text:'🏁 '+ccLabel(o.to)}), el('button',{type:'button', cls:'go d', onclick:function(){ auxGo(o.to.addr); }},['목적지로'])]));
+}
+function ccShow(o, raw){
+  var fIn=el('input',{type:'text'}), tIn=el('input',{type:'text'}), kids=[], lines;
+  fIn.value=o.from ? o.from.addr : ''; tIn.value=o.to ? o.to.addr : '';
+  function cur(){
+    var f=fIn.value.trim(), t=tIn.value.trim();
+    return {from: f ? {name: o.from && o.from.addr===f ? o.from.name : '', addr:f} : null, to: t ? {name: o.to && o.to.addr===t ? o.to.name : '', addr:t} : null};
+  }
+  function go(which){ var c=cur(), x=c[which]; if (!x){ toast('주소가 비어 있습니다'); return; } ccSave(c); closeSheet(); auxGo(x.addr); }
+  kids.push(el('h3',{style:'margin:0 0 4px;font-size:18px', text: (o.from||o.to) ? '📷 콜카드에서 읽었습니다' : '📷 주소를 찾지 못했습니다'}));
+  kids.push(el('div',{style:'font-size:12.5px;color:#9aa', text:'틀린 글자가 있으면 고친 뒤 눌러 주세요.'}));
+  kids.push(el('label',{text:'🙋 출발지 (손님 위치)'})); if (o.from && o.from.name) kids.push(el('div',{cls:'nm', text:o.from.name})); kids.push(fIn);
+  kids.push(el('label',{text:'🏁 목적지'})); if (o.to && o.to.name) kids.push(el('div',{cls:'nm', text:o.to.name})); kids.push(tIn);
+  kids.push(el('div',{cls:'btns', style:'margin-top:14px;display:flex;gap:8px'},[
+    el('button',{type:'button', cls:'go p', style:'flex:1;padding:13px 6px;font-size:15px', onclick:function(){ go('from'); }},['🙋 손님에게 가기']),
+    el('button',{type:'button', cls:'go d', style:'flex:1;padding:13px 6px;font-size:15px', onclick:function(){ go('to'); }},['🏁 목적지로 안내'])
+  ]));
+  lines=String(raw||'').split(/\r?\n/).map(function(l){ return l.split(/\s{3,}/)[0].trim(); }).filter(function(l){ return l.length>=4 && /[가-힣]{2}/.test(l); }).slice(0,30);
+  if (lines.length){
+    var box=el('div',{cls:'lines', style:'display:'+((o.from||o.to)?'none':'block')});
+    lines.forEach(function(l){ box.appendChild(el('button',{type:'button', onclick:function(){ tIn.value=l; }},[l])); });
+    kids.push(el('button',{type:'button', style:'margin-top:12px;background:transparent;border:0;color:#8FDcff;font-size:13px', onclick:function(){ box.style.display = box.style.display==='none' ? 'block' : 'none'; }},['읽은 글 전체 보기 (누르면 목적지 칸에 넣기)']));
+    kids.push(box);
+  }
+  kids.push(el('button',{type:'button', cls:'btn', style:'width:100%;margin-top:10px', onclick:function(){ var c=cur(); if (c.from||c.to) ccSave(c); closeSheet(); }},['닫기 (주소만 저장)']));
+  var wrap=el('div',{cls:'ccsh'}, kids); openSheet([wrap]);
+}
+function ccRun(blob){
+  openSheet([el('div',{cls:'ccsh'},[el('div',{cls:'prog', text:'📷 콜카드 글자를 읽는 중…'}), el('div',{style:'text-align:center;color:#9aa;font-size:12.5px', text:'처음 한 번은 한글 자료를 받느라 조금 더 걸립니다.'})])]);
+  ccLoadOcr().then(function(w){ return w.recognize(blob); }).then(function(r){
+    var raw=(r && r.data && r.data.text) || '', o=ccParse(raw);
+    if (o.from || o.to){ try { if (navigator.vibrate) navigator.vibrate(120); } catch(e){} }
+    ccShow(o, raw);
+  }, function(){
+    closeSheet(); toast('글자를 읽지 못했습니다. 인터넷 연결을 확인하거나 잠시 뒤 다시 해 주세요');
+  });
+}
+/* 공유로 받은 캡처: 서비스 워커가 'share-inbox'에 넣어 둔 것을 꺼낸다 */
+function ccFromShare(){
+  if (!/[?&]share_img=1\b/.test(location.search)) return false;
+  try { history.replaceState(null, '', location.pathname); } catch(e){}
+  if (currentTab!=='v-road') showTab('v-road');
+  if (!window.caches){ toast('이 브라우저에서는 공유한 사진을 받을 수 없습니다. 📷 버튼으로 사진을 골라 주세요'); return true; }
+  caches.open('share-inbox').then(function(c){
+    return c.match('./__shared_image').then(function(res){
+      c.delete('./__shared_image');
+      if (!res) throw new Error('none');
+      return res.blob();
+    });
+  }).then(ccRun, function(){ toast('공유한 사진을 찾지 못했습니다. 📷 버튼으로 다시 골라 주세요'); });
+  return true;
+}
+function ccInit(){
+  var b=$('btnCc'), f=$('ccFile');
+  if (!b || !f) return;
+  b.addEventListener('click', function(){ f.value=''; f.click(); });
+  f.addEventListener('change', function(){ if (f.files && f.files[0]) ccRun(f.files[0]); });
+  ccBar();
+}
 
 /* ═══════════ 경유지 (최대 4곳) ═══════════
    경유지마다 🎤 말하기·글자 입력·찾기. T맵 경로 카드 계산과 세 내비(T맵·카카오내비·네이버 지도) 길안내에 함께 넘긴다.
@@ -16087,6 +16226,7 @@ function init(){
 
   $('btnVoice').addEventListener('click', startVoice);
   $('btnPaste').addEventListener('click', pasteDest);
+  try { ccInit(); } catch(e){}
   $('btnFind').addEventListener('click', findTypedDest);
   $('destText').addEventListener('keydown', function(e){ if (e.keyCode===13){ e.preventDefault(); findTypedDest(); } });
   $('rdFrom').addEventListener('change', function(){
