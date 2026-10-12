@@ -13,6 +13,16 @@
 /* 안심도착(?s)·여행가이드(?pl)·손님 안내(?g, ?p=1)·태블릿(?tablet) 주소로 열면
    그 화면이 준비될 때까지 기사용 입력 화면을 보여 주지 않는다 */
 (function(){
+  /* 보조폰(우버·카카오 기사 앱이 있는 폰)으로 정한 기기: 공항콜을 열면 '목적지 보내기' 화면으로.
+     [공유] → 공항콜 로 열린 경우(?share_img=1, ?share_text=…)도 그 화면으로 넘긴다. ?app=main 이면 기사 앱 그대로 */
+  try {
+    var r=JSON.parse(localStorage.getItem('airportCallLog.auxRole.v1')||'null');
+    if (r && /^[a-z0-9]{16}$/.test(r.id||'') && r.k && !/[?&](s|pl|g|tablet|bk|sos|aux)=|[?&]p=1\b|[?&]app=main\b/.test(location.search)){
+      var q=location.search.replace(/^\?/,'');
+      location.replace(location.pathname+'?aux='+r.id+(q ? '&'+q : '')+'#k='+r.k);
+      return;
+    }
+  } catch(e){}
   if (/[?&](s|pl|g|tablet|bk|sos|aux)=|[?&]p=1\b/.test(location.search)){
     document.documentElement.className+=' bootx';
     setTimeout(function(){ document.documentElement.className=document.documentElement.className.replace(/\s*\bbootx\b/g,''); }, 5000);
@@ -2072,6 +2082,11 @@ html.tbfixed,html.tbfixed body{overflow:hidden!important;overscroll-behavior:non
 .aux-ta{width:100%;box-sizing:border-box;min-height:96px;border-radius:12px;border:2px solid #FFC81E;background:#fff;color:#1b1d21;font:inherit;font-size:19px;font-weight:700;padding:12px;resize:vertical}
 .aux-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .aux-b{min-height:50px;border-radius:10px;border:1px solid #454B54;background:#262A30;color:#EDEFF2;font:inherit;font-size:16px;font-weight:700}
+.aux-cc{display:block;width:100%;min-height:58px;margin:0 0 12px;border:2px solid #4FC3F7;border-radius:12px;background:rgba(79,195,247,.12);color:#8FDcff;font:inherit;font-size:18px;font-weight:900}
+.aux-lab{font-size:14px;font-weight:800;color:#C9CED4;margin:10px 0 6px}
+.aux-nm{font-size:15px;font-weight:800;color:#FFD65A;margin:-2px 0 6px}
+.aux-fin{width:100%;box-sizing:border-box;border-radius:12px;border:2px solid #4FC3F7;background:#fff;color:#1b1d21;font:inherit;font-size:17px;font-weight:700;padding:11px}
+.aux-main{display:block;width:100%;margin-top:22px;min-height:44px;border-radius:10px;border:1px dashed #5A606A;background:transparent;color:#A8AEB6;font:inherit;font-size:14px}
 .aux-send{display:block;width:100%;min-height:62px;margin-top:10px;border:0;border-radius:12px;background:#FFC81E;color:#1b1d21;font:inherit;font-size:21px;font-weight:900}
 .aux-send:disabled{opacity:.6}
 .aux-st{min-height:22px;margin-top:10px;font-size:15px;font-weight:700;color:#A8AEB6}
@@ -7521,7 +7536,28 @@ function auxListen(){
   }, function(){});
 }
 function auxGot(m){
-  var text=String(m.text).replace(/\s+/g,' ').trim().slice(0,120);
+  var text=String(m.text).replace(/\s+/g,' ').trim().slice(0,120), f=m.f ? String(m.f).replace(/\s+/g,' ').trim().slice(0,120) : '';
+  if (f || m.tn){   /* 콜카드에서 읽어 보낸 것: 출발지(손님 위치)·목적지 둘 다 */
+    try { sSet('airportCallLog.auxLast.v1', JSON.stringify({t:text, at:Date.now()})); } catch(e){}
+    auxPaint();
+    try { if (navigator.vibrate) navigator.vibrate([200,80,200]); } catch(e){}
+    auxAck(m.ts);
+    var cc={from: f ? {name:String(m.fn||''), addr:f} : null, to:{name:String(m.tn||''), addr:text}};
+    try { ccSave(cc); } catch(e){}
+    openSheet([el('div',{cls:'ccsh'},[
+      el('h3',{style:'margin:0 0 8px;font-size:18px', text:'📲 보조폰에서 콜카드 주소가 왔습니다'}),
+      f ? el('label',{text:'🙋 출발지 (손님 위치)'}) : null,
+      f ? el('div',{cls:'auxgot', text:(m.fn ? m.fn+' · ' : '')+f}) : null,
+      el('label',{text:'🏁 목적지'}),
+      el('div',{cls:'auxgot', text:(m.tn ? m.tn+' · ' : '')+text}),
+      el('div',{style:'margin-top:14px;display:flex;gap:8px'},[
+        f ? el('button',{type:'button', cls:'go p', style:'flex:1;padding:13px 6px;font-size:15px', onclick:function(){ closeSheet(); auxGo(f); }},['🙋 손님에게 가기']) : null,
+        el('button',{type:'button', cls:'go d', style:'flex:1;padding:13px 6px;font-size:15px', onclick:function(){ closeSheet(); auxGo(text); }},['🏁 목적지로 안내'])
+      ]),
+      el('button',{cls:'btn', type:'button', style:'width:100%;margin-top:10px', onclick:closeSheet},['닫기 (네비 탭 아래에 남겨 둠)'])
+    ])]);
+    return;
+  }
   try { sSet('airportCallLog.auxLast.v1', JSON.stringify({t:text, at:Date.now()})); } catch(e){}
   auxPaint();
   try { if (navigator.vibrate) navigator.vibrate([200,80,200]); } catch(e){}
@@ -7564,18 +7600,30 @@ function auxBind(){
 function auxBoot(){
   var m=/[?&]aux=([a-z0-9]{16})\b/.exec(location.search), km=/[#&]k=([A-Za-z0-9_-]{40,60})/.exec(location.hash);
   if (!m) return false;
-  var id=m[1], root=el('div',{cls:'auxv'}), ta, st, list, key=null, es=null, hist=[], sendBtn;
+  var id=m[1], root=el('div',{cls:'auxv'}), ta, st, list, key=null, es=null, hist=[], sendBtn, fIn, fWrap, fNm, tNm, fn='', tn='', ccBtn, ccIn;
+  /* 이 폰은 보조폰: 다음부터 공항콜을 열거나 [공유] → 공항콜 을 하면 이 화면으로 온다 */
+  if (km) { try { sSet('airportCallLog.auxRole.v1', JSON.stringify({id:id, k:km[1]})); } catch(e){} }
   document.body.appendChild(root);
   document.body.className+=' solo';
   document.title='📲 목적지 보내기 · 보조폰';
   try { hist=JSON.parse(sGet(AUXS_KEY+'.'+id)||'[]'); } catch(e){ hist=[]; }
   ta=el('textarea',{cls:'aux-ta', rows:'3', placeholder:'손님 목적지를 붙여 넣으세요 (예: 롯데호텔 서울, 강남구 테헤란로 152)'});
+  fIn=el('input',{cls:'aux-fin', type:'text', placeholder:'콜카드 캡처를 읽으면 자동으로 채워집니다'});
+  fNm=el('div',{cls:'aux-nm'}); tNm=el('div',{cls:'aux-nm'});
+  fWrap=el('div',{style:'display:none'},[el('div',{cls:'aux-lab', text:'🙋 출발지 (손님 위치)'}), fNm, fIn]);
+  fIn.addEventListener('input', function(){ fn=''; fNm.textContent=''; });
+  ta.addEventListener('input', function(){ tn=''; tNm.textContent=''; });
+  ccIn=el('input',{type:'file', accept:'image/*', style:'display:none'});
+  ccIn.addEventListener('change', function(){ if (ccIn.files && ccIn.files[0]) ccAux(ccIn.files[0]); });
+  ccBtn=el('button',{cls:'aux-cc', type:'button', onclick:function(){ ccIn.value=''; ccIn.click(); }},['📷 콜카드 캡처 읽기']);
   st=el('div',{cls:'aux-st', text:''});
   list=el('div',{cls:'aux-hist'});
-  sendBtn=el('button',{cls:'aux-send', type:'button', onclick:send},['🚕 목적지 보내기']);
+  sendBtn=el('button',{cls:'aux-send', type:'button', onclick:send},['🚕 기사 앱으로 보내기']);
   root.appendChild(el('div',{cls:'aux-h'},[el('b',{text:'📲 목적지 보내기'}), el('span',{text:'보조폰 → 기사 앱 네비'})]));
   root.appendChild(el('div',{cls:'aux-body'},[
-    el('div',{cls:'aux-tip', text:'카카오·우버·티머니 기사 앱에서 목적지를 복사한 뒤 아래 [붙여넣기]를 누르세요. 글자가 복사되지 않으면 최근 앱 버튼(|||)에서 글자를 길게 눌러 선택해 복사하세요.'}),
+    el('div',{cls:'aux-tip', text:'우버·카카오 콜카드를 캡처한 뒤 [공유] → 공항콜 을 누르면 여기서 출발지·목적지를 읽습니다. 사진을 직접 고르려면 아래 📷 버튼을 누르세요. 글자를 복사했다면 [붙여넣기]를 누르세요.'}),
+    ccBtn, ccIn, fWrap,
+    el('div',{cls:'aux-lab', text:'🏁 목적지'}), tNm,
     ta,
     el('div',{cls:'aux-row'},[
       el('button',{cls:'aux-b', type:'button', onclick:paste},['📋 붙여넣기']),
@@ -7583,8 +7631,27 @@ function auxBoot(){
     ]),
     sendBtn, st,
     el('div',{cls:'aux-lb', text:'최근 보낸 목적지 (누르면 다시 보내기)'}),
-    list
+    list,
+    el('button',{cls:'aux-main', type:'button', onclick:function(){
+      if (!window.confirm('이 폰을 보조폰에서 해제하고 기사 앱으로 쓸까요?\n다시 보조폰으로 쓰려면 기사 앱의 QR을 다시 찍으면 됩니다.')) return;
+      try { localStorage.removeItem('airportCallLog.auxRole.v1'); } catch(e){}
+      location.href=location.pathname+'?app=main';
+    }},['이 폰에서 기사 앱 쓰기 (보조폰 해제)'])
   ]));
+  /* 📷 콜카드 캡처 → 출발지·목적지 */
+  function ccAux(blob){
+    st.className='aux-st sent'; st.textContent='📷 콜카드 글자를 읽는 중… (처음 한 번은 조금 더 걸립니다)';
+    ccLoadOcr().then(function(w){ return w.recognize(blob); }).then(function(r){
+      var o=ccParse((r && r.data && r.data.text) || '');
+      if (!o.from && !o.to){ st.className='aux-st warn'; st.textContent='주소를 찾지 못했습니다. 콜카드가 잘 보이게 다시 캡처하거나 직접 붙여 넣어 주세요.'; return; }
+      fIn.value=o.from ? o.from.addr : ''; fn=o.from ? (o.from.name||'') : ''; fNm.textContent=fn;
+      ta.value=o.to ? o.to.addr : ''; tn=o.to ? (o.to.name||'') : ''; tNm.textContent=tn;
+      fWrap.style.display='';
+      st.className='aux-st ok'; st.textContent='✓ 읽었습니다. 틀린 글자가 있으면 고친 뒤 [기사 앱으로 보내기]를 누르세요';
+      try { if (navigator.vibrate) navigator.vibrate(120); } catch(e){}
+      try { sendBtn.scrollIntoView({behavior:'smooth', block:'center'}); } catch(e){}
+    }, function(){ st.className='aux-st warn'; st.textContent='글자를 읽지 못했습니다. 인터넷 연결을 확인해 주세요.'; });
+  }
   function paintHist(){
     clear(list);
     if (!hist.length){ list.appendChild(el('div',{cls:'aux-none', text:'아직 보낸 목적지가 없습니다'})); return; }
@@ -7601,7 +7668,10 @@ function auxBoot(){
     if (!t){ st.textContent='보낼 목적지를 넣어 주세요'; return; }
     if (!key){ st.textContent='연결 정보가 올바르지 않습니다. 기사 앱의 QR을 다시 찍어 주세요.'; return; }
     sendBtn.disabled=true; st.className='aux-st'; st.textContent='보내는 중…';
-    bkEnc(key, {t:'dest', text:t.slice(0,200), ts:ts}).then(function(ct){ return bkPost(auxTopic(id), {message:'#AUX '+ct}); }).then(function(){
+    var f=String(fIn.value||'').replace(/\s+/g,' ').trim(), pay={t:'dest', text:t.slice(0,200), ts:ts};
+    if (f){ pay.f=f.slice(0,200); if (fn) pay.fn=fn.slice(0,40); }
+    if (tn) pay.tn=tn.slice(0,40);
+    bkEnc(key, pay).then(function(ct){ return bkPost(auxTopic(id), {message:'#AUX '+ct}); }).then(function(){
       sendBtn.disabled=false; st.className='aux-st sent'; st.textContent='보냈습니다 · 기사 앱이 받으면 ✓ 표시가 나옵니다';
       hist=[{t:t, at:ts}].concat(hist.filter(function(h){ return h.t!==t; })).slice(0,10);
       sSet(AUXS_KEY+'.'+id, JSON.stringify(hist)); paintHist();
@@ -7610,6 +7680,20 @@ function auxBoot(){
     }, function(){ sendBtn.disabled=false; st.className='aux-st warn'; st.textContent='보내지 못했습니다. 인터넷 연결을 확인해 주세요.'; });
   }
   paintHist();
+  (function(){
+    var q=new URLSearchParams(location.search), o;
+    if (!q.has('share_img') && !q.has('share_text') && !q.has('share_title') && !q.has('share_url')) return;
+    try { history.replaceState(null, '', location.pathname+'?aux='+id+location.hash); } catch(e){}
+    if (q.get('share_img')==='1'){
+      if (!window.caches){ st.textContent='이 브라우저에서는 공유한 사진을 받을 수 없습니다. 📷 버튼으로 골라 주세요.'; return; }
+      caches.open('share-inbox').then(function(c){
+        return c.match('./__shared_image').then(function(res){ c['delete']('./__shared_image'); if (!res) throw new Error('none'); return res.blob(); });
+      }).then(ccAux, function(){ st.className='aux-st warn'; st.textContent='공유한 사진을 찾지 못했습니다. 📷 버튼으로 다시 골라 주세요.'; });
+      return;
+    }
+    o={title:q.get('share_title')||'', text:q.get('share_text')||'', url:q.get('share_url')||''};
+    ta.value=shareDestText(o); st.className='aux-st'; st.textContent='공유받은 목적지입니다. 확인 후 보내 주세요.';
+  })();
   if (!km || !BKC){ st.textContent = !km ? '연결 주소가 완전하지 않습니다. 기사 앱 설정의 QR을 다시 찍어 주세요.' : '이 브라우저에서는 쓸 수 없습니다. 크롬으로 열어 주세요.'; return true; }
   bkAesImport(km[1]).then(function(k){
     key=k;
